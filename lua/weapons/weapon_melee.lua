@@ -1437,7 +1437,6 @@ function SWEP:SecondaryAttack(override)
 
     local mul = 1 / math.Clamp((180 - ply.organism.stamina[1]) / 90, 1, 2)
 
-
     self.HitEnts = nil
     self.FirstAttackTick = false
     self.AttackHitPlayed = false

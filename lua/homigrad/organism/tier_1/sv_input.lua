@@ -371,12 +371,6 @@ function hg.NPCDamage(ent,dmgInfo,npcdmg)
 	end
 end
 
-hook.Add("PostEntityFireBullets","donthittwice",function(ent,data)
-	--if data.Trace.Entity:IsPlayer() and IsValid(data.Trace.Entity.FakeRagdoll) then
-		--data.Trace.Entity = data.Trace.Entity.FakeRagdoll
-	--end
-end)
-
 function hg.AddHarmToAttacker(dmgInfo, harm, reason)
 	local ply = dmgInfo:GetAttacker()
 

@@ -73,7 +73,6 @@ module[2] = function(owner, org, timeValue)
 	stamina.weight = owner:IsPlayer() and math.Clamp((1 / hg.CalculateWeight(owner,250)) - 1,0,1) or 0
 	local muffed = owner.armors and owner.armors["face"] == "mask2"
 	stamina.sub = stamina.sub + stamina.sub * stamina.weight * (muffed and 2 or 1)
-
 	org.hungry = org.hungry or 0
 	stamina.max = (org.superfighter and 2 or 1) * ((stamina.range * (1 - (org.pneumothorax) / 2) + org.adrenaline * 20 ) * math.max(1 - org.hemotransfusionshock,0.2)) * math.max(1 - (org.hungry/100),0.65)
 	stamina[1] = max(stamina[1] - stamina.sub * timeValue * 17, 0)

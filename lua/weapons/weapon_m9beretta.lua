@@ -15,7 +15,7 @@ SWEP.FakePos = Vector(-12, 1.805, 4.9)
 SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(0,-0.1,0)
 SWEP.AttachmentAng = Angle(0,90,0)
-SWEP.ZoomPos = Vector(0, 0.15, 4.5)
+SWEP.ZoomPos = Vector(0, -0.0644, 4.3413)
 
 SWEP.AnimList = {
 	["idle"] = "base_idle",

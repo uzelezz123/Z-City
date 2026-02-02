@@ -11,16 +11,15 @@ if CLIENT then
 	end)
 
 	concommand.Add("hg_change_ammotype", function(ply, cmd, args)
-		local wep = ply:GetActiveWeapon()
-		local type_ = math.Round(args[1])
-		if wep and ishgweapon(wep) and wep:Clip1() == 0 or wep.AllwaysChangeAmmo and wep:CanUse() and wep.AmmoTypes and wep.AmmoTypes[type_] then
-			--wep:ApplyAmmoChanges(type_)
-			ply:ChatPrint("Changed ammotype to: " .. wep.AmmoTypes[type_][1])
-			net.Start("changeAmmoType")
-			net.WriteEntity(wep)
-			net.WriteInt(type_, 4)
-			net.SendToServer()
-		end
+	    local wep = ply:GetActiveWeapon()
+	    local type_ = math.Round(args[1])
+	    if wep and ishgweapon(wep) and (wep:Clip1() == 0 or wep.AllwaysChangeAmmo) and wep:CanUse() and wep.AmmoTypes and wep.AmmoTypes[type_] then
+	        ply:ChatPrint("Changed ammotype to: " .. wep.AmmoTypes[type_][1])
+	        net.Start("changeAmmoType")
+	        net.WriteEntity(wep)
+	        net.WriteInt(type_, 4)
+	        net.SendToServer()
+	    end
 	end)
 
 	net.Receive("unload_ammo",function()
@@ -52,9 +51,15 @@ else
 	end)
 
 	net.Receive("changeAmmoType", function(len, ply)
-		local wep = net.ReadEntity()
-		local type_ = net.ReadInt(4)
-		if wep and ishgweapon(wep) and wep:Clip1() == 0 or wep.AllwaysChangeAmmo and wep:CanUse() and wep.AmmoTypes and wep.AmmoTypes[type_] then wep:ApplyAmmoChanges(type_) end
+	    local wep = net.ReadEntity()
+	    local type_ = net.ReadInt(4)
+	    if not IsValid(wep) then return end
+	    if wep:GetOwner() ~= ply then return end
+	    if not ishgweapon(wep) then return end
+	    if not wep:CanUse() then return end
+	    if not wep.AmmoTypes or not wep.AmmoTypes[type_] then return end
+	    if not wep.AllwaysChangeAmmo and wep:Clip1() ~= 0 then return end
+	    wep:ApplyAmmoChanges(type_)
 	end)
 end
 

@@ -836,6 +836,15 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 			--org.stomach = math.min(org.stomach + math.Rand(0.0005,0.0008),1) 
 			org.trachea = math.min(org.trachea + smallRand,1)
 		end
+	else
+		local sfd = org.fakePlayer and ent or ply
+		if not IsValid(sfd) then return true end
+		if sfd:Health() < 0 then
+			sfd:Kill() 
+			return true -- кодинг это просто :fumo_bounce:
+		else
+			sfd:SetHealth(sfd:Health()-dmg_before * .15)
+		end
 	end
 	--end
 	
@@ -1438,6 +1447,15 @@ local function velocityDamage(ent, data)
 			if neck_not_broken and org.spine3 >= 0.8 then
 				hg.BreakNeck(ent)
 			end
+		end
+	else
+		local sfd = org.fakePlayer and ent or ply
+		if not IsValid(sfd) then return end
+		if sfd:Health() > 0 then
+			sfd:SetHealth(sfd:Health()-dmg * 1)
+		else
+			sfd:Kill() 
+			return
 		end
 	end
 

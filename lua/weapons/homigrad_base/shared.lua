@@ -622,7 +622,7 @@ function SWEP:EmitShoot()
 			dir:Mul(10000)
 			local inside = util.QuickTrace(ply:EyePos(), dir, {ply, self, hg.GetCurrentCharacter(ply)})
 
-			debugoverlay.Line(ply:EyePos(), ply:EyePos() + dir, 1, color_white, true)
+			--debugoverlay.Line(ply:EyePos(), ply:EyePos() + dir, 1, color_white, true)
 			insideVal = insideVal + (inside.Hit and !inside.HitSky and 1 or 0)
 		end
 	end
@@ -2227,7 +2227,7 @@ function SWEP:CanRest()
     tr.endpos = pos + vec * -30
     tr.filter = {self, self:GetOwner(), hg.GetCurrentCharacter(self:GetOwner())}
 
-    debugoverlay.Line(tr.start, tr.endpos, 1, color_white)
+    --debugoverlay.Line(tr.start, tr.endpos, 1, color_white)
 
     local trace = util.TraceLine(tr)
 	--print(pos + vec * 10)

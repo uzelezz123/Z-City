@@ -82,6 +82,16 @@ local function Run()
 end
 
 local initpost
-hook.Add("InitPostEntity", "zcity", function() initpost = true IncludeDir("initpost") print("Loading initpost...") end)
+hook.Add("InitPostEntity", "zcity", function()
+	initpost = true
+	IncludeDir("initpost")
+	print("Loading initpost...")
+end)
 if initpost then Run() end
 Run()
+
+if not istable(ulx) then
+	for i = 1, 3 do
+		MsgC(Color(255, 0, 0), "WARNING: Server doesn't have ULX & ULib installed! Z-City will not work properly without it!\n")
+	end
+end

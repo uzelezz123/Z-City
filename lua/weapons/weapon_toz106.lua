@@ -136,19 +136,13 @@ SWEP.availableAttachments = {
 	barrel = {
 		[1] = {"supressor1", Vector(0,0,0), {}},
 		[2] = {"supressor6", Vector(3,0,0), {}},
-		["mount"] = Vector(-0.5,0.6,0),
+		["mount"] = Vector(-3,2,0.2),
 	},
 	sight = {
 		["mountType"] = {"picatinny", "dovetail"},
-		["mount"] = {["dovetail"] = Vector(-30.5, 2, -0.45),["picatinny"] = Vector(-31, 2.35, -0.2)},
+		["mount"] = {["dovetail"] = Vector(-18.5, 2, 0),["picatinny"] = Vector(-18, 2.1, 0.02)},
 	},
 	mount = {
-		["picatinny"] = {
-			"mount3",
-			Vector(-28, -0.3, -1.3),
-			{},
-			["mountType"] = "picatinny",
-		},
 		["dovetail"] = {
 			"empty",
 			Vector(0, 0, 0),
@@ -157,6 +151,7 @@ SWEP.availableAttachments = {
 		},
 	},
 }
+
 
 SWEP.addSprayMul = 1
 SWEP.cameraShakeMul = 1

@@ -162,7 +162,7 @@ function CLASS.On(self, data)
         callsign = table.Random(callsigns) .. "-" .. math.random(1,25)
     end
 
-    if zb.GiveRole then zb.GiveRole(self, "Oficcer", Color(89,230,255)) end
+    if zb.GiveRole then zb.GiveRole(self, "Officer", Color(89,230,255)) end
     self:SetNWString("PlayerName", callsign)
 
     for k,v in ipairs(ents.FindByClass("npc_*")) do

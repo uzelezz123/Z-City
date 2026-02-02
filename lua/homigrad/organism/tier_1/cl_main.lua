@@ -851,7 +851,7 @@ function hg.applyFountain(pos, ang, mul, mul2, forward, ent)
 	end
 end
 
-local hg_new_blood = ConVarExists("hg_new_blood") and GetConVar("hg_new_blood") or CreateClientConVar("hg_new_blood", 0, true, false, "new decals, or old", 0, 1)
+local hg_old_blood = ConVarExists("hg_old_blood") and GetConVar("hg_old_blood") or CreateClientConVar("hg_old_blood", 0, true, false, "new decals, or old", 0, 1)
 local vecTorso = Vector(1, 1, 1)
 local checkpulsebones = {
 	["ValveBiped.Bip01_Head1"] = true,
@@ -931,7 +931,7 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 	local org = ent.organism or {}
 	local owner = ent
 	
-	local beatsPerSecond = math.max(min(30 / math.max(org.pulse or 70,2), 4), 0.1) * (hg_new_blood:GetBool() and 0.3 or 1)
+	local beatsPerSecond = math.max(min(30 / math.max(org.pulse or 70,2), 4), 0.1) * (!hg_old_blood:GetBool() and 0.3 or 1)
 		
 	if org.pulse and org.heartbeat > 30 and (org.lastpulse or 0) + (1 / math.Clamp(org.heartbeat, 1, 600)) * 60 < CurTime() then
 		org.lastpulse = CurTime()
@@ -1028,7 +1028,7 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 							hg.addBloodPart(pos, VectorRand(-15, 15), nil, size, size, false, nil, ent)
 						end
 
-						wound[5] = time + (water and 2 or (math.Rand(0, 1) * (hg_new_blood:GetBool() and 0.5 or 1) / wound[1] * 15))
+						wound[5] = time + (water and 2 or (math.Rand(0, 1) * (!hg_old_blood:GetBool() and 0.5 or 1) / wound[1] * 15))
 					else
 						local pos = ent:GetPos()
 
@@ -1039,7 +1039,7 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 							hg.addBloodPart(pos, VectorRand(-15, 15), nil, size, size, false, nil, ent)
 						end
 
-						wound[5] = time + (water and 2 or (math.Rand(0, 1) * (hg_new_blood:GetBool() and 0.5 or 1) / wound[1] * 15))
+						wound[5] = time + (water and 2 or (math.Rand(0, 1) * (!hg_old_blood:GetBool() and 0.5 or 1) / wound[1] * 15))
 					end
 				end
 			end

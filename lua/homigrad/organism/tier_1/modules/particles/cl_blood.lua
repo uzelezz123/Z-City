@@ -78,7 +78,7 @@ bloodparticles_hook[1] = function(anim_pos, mul)
 	--render.OverrideBlend( false )
 end
 
-local hg_new_blood = ConVarExists("hg_new_blood") and GetConVar("hg_new_blood") or CreateClientConVar("hg_new_blood", 0, true, false, "new decals, or old", 0, 1)
+local hg_old_blood = ConVarExists("hg_old_blood") and GetConVar("hg_old_blood") or CreateClientConVar("hg_old_blood", 0, true, false, "new decals, or old", 0, 1)
 
 hg.bloodpositions = hg.bloodpositions or {}
 hg.bloodcount = hg.bloodcount or 0
@@ -95,7 +95,7 @@ local function decalBlood(pos, normal, tr, artery, owner)
 	-- я не знаю насколько большой можно делать такие таблицы... надеюсь, что это не так страшно выйдет
 
 	if artery then
-		if hg_new_blood:GetBool() then
+		if !hg_old_blood:GetBool() then
 			local howmuch = 1
 			
 			//timer.Simple(0.1, function()
@@ -116,7 +116,7 @@ local function decalBlood(pos, normal, tr, artery, owner)
 			end
 		end
 	else
-		if hg_new_blood:GetBool() then
+		if !hg_old_blood:GetBool() then
 			local howmuch = 1
 			
 			//timer.Simple(0.1, function()

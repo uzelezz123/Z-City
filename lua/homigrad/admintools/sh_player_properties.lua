@@ -1,0 +1,723 @@
+local function check(self, ent, ply)
+    if not ply:ZCTools_GetAccess() then return false end 
+	if ( !IsValid( ent ) ) then return false end
+	if ( ent:IsPlayer() ) then return true end
+    local pEnt = hg.RagdollOwner( ent )
+    if ( ent:IsRagdoll() ) and pEnt and pEnt:IsPlayer() and pEnt:Alive() then return true end
+end
+properties.Add( "notify", {
+	MenuLabel = "Notify", -- Name to display on the context menu
+	Order = 1, -- The order to display this property relative to other properties
+	MenuIcon = "icon16/note_add.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+        Derma_StringRequest(
+            "Notify "..ent:GetPlayerName(), 
+            "Write a message",
+            "",
+            function(text) 
+                self:MsgStart()
+                    net.WriteEntity( ent )
+                    net.WriteString( text )
+                self:MsgEnd()
+            end
+        )
+
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+        local text = net.ReadString()
+
+		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
+		if ( !self:Filter( ent, ply ) ) then return end
+        ent = hg.RagdollOwner( ent ) or ent
+
+		ent:Notify( text, 0 )
+	end 
+} )
+
+properties.Add( "givegun", {
+	MenuLabel = "Give", -- Name to display on the context menu
+	Order = 2, -- The order to display this property relative to other properties
+	MenuIcon = "icon16/gun.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+        Derma_StringRequest(
+            "Give "..ent:GetPlayerName(), 
+            "Write a entity class name",
+            "",
+            function(text) 
+                self:MsgStart()
+                    net.WriteEntity( ent )
+                    net.WriteString( text )
+                self:MsgEnd()
+            end
+        )
+
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+        local text = net.ReadString()
+		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
+		if ( !self:Filter( ent, ply ) ) then return end
+        ent = hg.RagdollOwner( ent ) or ent
+
+		local spawned = ent:Give( text )
+        if not spawned then return end
+        spawned:Use( ent )
+	end 
+} )
+
+properties.Add( "strip", {
+	MenuLabel = "Strip", -- Name to display on the context menu
+	Order = 3, -- The order to display this property relative to other properties
+	MenuIcon = "icon16/basket_delete.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+        Derma_Query(
+            "The player will automatically get a hands",
+            "Are you sure?",
+            "Yes",
+            function()
+                self:MsgStart()
+                    net.WriteEntity( ent )
+                self:MsgEnd()
+            end,
+        	"No"
+        )
+
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+
+		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
+		if ( !self:Filter( ent, ply ) ) then return end
+        ent = hg.RagdollOwner( ent ) or ent
+		ent:StripWeapons( )
+        ent:Give("weapon_hands_sh")
+	end 
+} )
+
+properties.Add( "fullstrip", {
+	MenuLabel = "Full Strip", -- Name to display on the context menu
+	Order = 4, -- The order to display this property relative to other properties
+	MenuIcon = "icon16/lorry_delete.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+        Derma_Query(
+            "Hands will be stripped, too",
+            "Are you sure?",
+            "Yes",
+            function()
+                self:MsgStart()
+                    net.WriteEntity( ent )
+                self:MsgEnd()
+            end,
+        	"No"
+        )
+
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+
+		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
+		if ( !self:Filter( ent, ply ) ) then return end
+        ent = hg.RagdollOwner( ent ) or ent
+
+		ent:StripWeapons( )
+	end 
+} )
+
+properties.Add( "reset_org", {
+	MenuLabel = "Reset organism", -- Name to display on the context menu
+	Order = 5, -- The order to display this property relative to other properties
+	MenuIcon = "icon16/heart_add.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+        Derma_Query(
+            "Organism will be new like a respawn",
+            "Are you sure?",
+            "Yes",
+            function()
+                self:MsgStart()
+                    net.WriteEntity( ent )
+                self:MsgEnd()
+            end,
+        	"No"
+        )
+
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+
+		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
+		if ( !self:Filter( ent, ply ) ) then return end
+        ent = hg.RagdollOwner( ent ) or ent
+        
+		hg.organism.Clear( ent.organism )
+	end 
+} )
+
+properties.Add( "freeze", {
+	MenuLabel = "Freeze", -- Name to display on the context menu
+	Order = 6, -- The order to display this property relative to other properties
+	MenuIcon = "icon16/control_pause_blue.png", -- The icon to display next to the property
+
+	Filter = function( self, ent, ply )
+        if not ply:ZCTools_GetAccess() then return false end 
+	    if ( !IsValid( ent ) ) then return false end
+        local pEnt = hg.RagdollOwner( ent ) or ent
+        self.MenuLabel = pEnt:IsPlayer() and pEnt:IsFrozen() and "Unfreeze" or "Freeze"
+        self.MenuIcon = pEnt:IsPlayer() and pEnt:IsFrozen() and "icon16/control_pause.png" or "icon16/control_pause_blue.png"
+	    if ( ent:IsPlayer() ) then return true end
+        if ( ent:IsRagdoll() ) and pEnt and pEnt:IsPlayer() and pEnt:Alive() then return true end
+    end,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+        self:MsgStart()
+            net.WriteEntity( ent )
+        self:MsgEnd()
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+
+		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
+		if ( !self:Filter( ent, ply ) ) then return end
+        ent = hg.RagdollOwner( ent ) or ent
+        
+		ent:Freeze(not ent:IsFrozen())
+	end 
+} )
+
+properties.Add( "breakneck", {
+	MenuLabel = "Kill", -- Name to display on the context menu
+	Order = 7, -- The order to display this property relative to other properties
+	MenuIcon = "icon16/cross.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+        Derma_Query(
+            "It will break his neck",
+            "Are you sure?",
+            "Yes",
+            function()
+                self:MsgStart()
+                    net.WriteEntity( ent )
+                self:MsgEnd()
+            end,
+        	"No"
+        )
+
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+
+		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
+		if ( !self:Filter( ent, ply ) ) then return end
+        ent = hg.RagdollOwner( ent ) or ent
+
+		hg.BreakNeck(ent)
+	end 
+} )
+
+properties.Add( "snatch", {
+	MenuLabel = "Snatch", -- Name to display on the context menu
+	Order = 7, -- The order to display this property relative to other properties
+	MenuIcon = "icon16/cross.png", -- The icon to display next to the property
+
+	Filter = function(self, ent, ply)
+        if !CurrentRound then return false end
+        
+        return check(self, ent, ply)
+    end,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+        Derma_Query(
+            "If no players are around, he will simply disappear.",
+            "Are you sure?",
+            "Yes",
+            function()
+                self:MsgStart()
+                    net.WriteEntity( ent )
+                self:MsgEnd()
+            end,
+        	"No"
+        )
+
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+
+		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
+		if ( !self:Filter( ent, ply ) ) then return end
+        ent = hg.RagdollOwner( ent ) or ent
+
+		local bot = ents.Create("bot_fear")
+        bot.Victim = ent
+        bot:Spawn()
+	end 
+} )
+
+properties.Add( "ragdollize", {
+	MenuLabel = "Stun/Get up", -- Name to display on the context menu
+	Order = 8, -- The order to display this property relative to other properties
+	MenuIcon = "icon16/anchor.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+		self:MsgStart()
+			net.WriteEntity( ent )
+		self:MsgEnd()
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+
+		if not self:Filter(ent, ply) then return end
+        ent = hg.RagdollOwner(ent) or ent
+
+		if not IsValid(ent.FakeRagdoll) then
+			hg.LightStunPlayer(ent, 5)
+		else
+			hg.FakeUp(ent)
+		end
+	end 
+} )
+
+properties.Add( "vomit", {
+	MenuLabel = "Make vomit", -- Name to display on the context menu
+	Order = 9, -- The order to display this property relative to other properties
+	MenuIcon = "pluv/pluv51.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+		self:MsgStart()
+			net.WriteEntity( ent )
+		self:MsgEnd()
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+
+		if not self:Filter(ent, ply) then return end
+        ent = hg.RagdollOwner(ent) or ent
+
+		hg.organism.Vomit(ent)
+	end 
+} )
+
+properties.Add( "lobotomize", {
+	MenuLabel = "Lobotomize", -- Name to display on the context menu
+	Order = 10, -- The order to display this property relative to other properties
+	MenuIcon = "pluv/pluv51.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+		self:MsgStart()
+			net.WriteEntity( ent )
+		self:MsgEnd()
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+        
+		if not self:Filter(ent, ply) then return end
+        ent = hg.RagdollOwner(ent) or ent
+        
+        ent.organism.brain = ent.organism.brain + 0.05
+        ply:ChatPrint("Lobotomized brain to "..math.Round(ent.organism.brain * 100).."%")
+        
+        if ent.organism.brain >= 0.25 and ent.organism.brain < 0.3 then
+            ply:ChatPrint("Consciousness loss on the next lobotomization!")
+        end
+    end 
+} )
+
+properties.Add( "breakaleg", {
+	MenuLabel = "Break a leg", -- Name to display on the context menu
+	Order = 11, -- The order to display this property relative to other properties
+	MenuIcon = "pluv/pluv51.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+		self:MsgStart()
+			net.WriteEntity( ent )
+		self:MsgEnd()
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+        
+		if not self:Filter(ent, ply) then return end
+        ent = hg.RagdollOwner(ent) or ent
+        
+        local dmgInfo = DamageInfo()
+        if ent.organism.rleg != 1 then
+            hg.organism.input_list.rlegup(ent.organism, 0, 1, dmgInfo)
+        elseif ent.organism.lleg != 1 then
+            hg.organism.input_list.llegup(ent.organism, 0, 1, dmgInfo)
+        end
+    end 
+} )
+
+properties.Add( "breakanarm", {
+	MenuLabel = "Break an arm", -- Name to display on the context menu
+	Order = 12, -- The order to display this property relative to other properties
+	MenuIcon = "pluv/pluv51.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+		self:MsgStart()
+			net.WriteEntity( ent )
+		self:MsgEnd()
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+        
+		if not self:Filter(ent, ply) then return end
+        ent = hg.RagdollOwner(ent) or ent
+        
+        local dmgInfo = DamageInfo()
+        if ent.organism.rarm != 1 then
+            hg.organism.input_list.rarmup(ent.organism, 0, 1, dmgInfo)
+        elseif ent.organism.larm != 1 then
+            hg.organism.input_list.larmup(ent.organism, 0, 1, dmgInfo)
+        end
+    end 
+} )
+
+properties.Add( "breakspine", {
+	MenuLabel = "Break the spine", -- Name to display on the context menu
+	Order = 13, -- The order to display this property relative to other properties
+	MenuIcon = "pluv/pluv51.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+		self:MsgStart()
+			net.WriteEntity( ent )
+		self:MsgEnd()
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+        
+		if not self:Filter(ent, ply) then return end
+        ent = hg.RagdollOwner(ent) or ent
+        
+        local dmgInfo = DamageInfo()
+        if ent.organism.spine1 != 1 then
+            hg.organism.input_list.spine1(ent.organism, 0, 1, dmgInfo)
+        elseif ent.organism.spine2 != 1 then
+            hg.organism.input_list.spine2(ent.organism, 0, 1, dmgInfo)
+        elseif ent.organism.spine3 != 1 then
+            hg.organism.input_list.spine3(ent.organism, 0, 1, dmgInfo)
+        end
+    end 
+} )
+
+properties.Add( "amputatealeg", {
+	MenuLabel = "Amputate a leg", -- Name to display on the context menu
+	Order = 11, -- The order to display this property relative to other properties
+	MenuIcon = "effects/arc9_eft/evil.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+		self:MsgStart()
+			net.WriteEntity( ent )
+		self:MsgEnd()
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+        
+		if not self:Filter(ent, ply) then return end
+        ent = hg.RagdollOwner(ent) or ent
+
+        if !ent.organism.rlegamputated then
+            hg.organism.AmputateLimb(ent.organism, "rleg")
+        elseif !ent.organism.llegamputated then
+            hg.organism.AmputateLimb(ent.organism, "lleg")
+        end
+    end 
+} )
+
+properties.Add( "amputateanarm", {
+	MenuLabel = "Amputate an arm", -- Name to display on the context menu
+	Order = 11, -- The order to display this property relative to other properties
+	MenuIcon = "effects/arc9_eft/evil.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+		self:MsgStart()
+			net.WriteEntity( ent )
+		self:MsgEnd()
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+        
+		if not self:Filter(ent, ply) then return end
+        ent = hg.RagdollOwner(ent) or ent
+
+        if !ent.organism.larmamputated then
+            hg.organism.AmputateLimb(ent.organism, "larm")
+        elseif !ent.organism.rarmamputated then
+            hg.organism.AmputateLimb(ent.organism, "rarm")
+        end
+    end 
+} )
+
+properties.Add( "explodehead", {
+	MenuLabel = "Explode head", -- Name to display on the context menu
+	Order = 11, -- The order to display this property relative to other properties
+	MenuIcon = "effects/arc9_eft/evil.png", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+		self:MsgStart()
+			net.WriteEntity( ent )
+		self:MsgEnd()
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+        
+		if not self:Filter(ent, ply) then return end
+        ent = hg.RagdollOwner(ent) or ent
+
+        if SERVER and not ent.noHead then
+			ent:Kill()
+			timer.Simple(0, function()
+				if not IsValid(ent.RagdollDeath) then return end
+				Gib_Input(ent.RagdollDeath, ent.RagdollDeath:LookupBone("ValveBiped.Bip01_Head1"))
+			end)
+        end
+    end 
+} )
+
+local function doorCheck(self, ent, ply)
+    if not ply:IsAdmin() then return false end
+    if not IsValid(ent) then return false end
+    if not ent:GetClass():lower():find("door") then return false end
+    return true
+end
+
+properties.Add( "door_toggle", {
+    MenuLabel = "Toggle Door",
+    Order = 7,
+    MenuIcon = "icon16/door.png",
+    Filter = doorCheck,
+    Action = function(self, ent)
+        self:MsgStart()
+            net.WriteEntity(ent)
+        self:MsgEnd()
+    end,
+    Receive = function(self, length, ply)
+        local ent = net.ReadEntity()
+        if not self:Filter(ent, ply) then return end
+        ent:Fire("toggle")
+    end
+})
+
+properties.Add( "door_lock", {
+    MenuLabel = "Lock Door",
+    Order = 8,
+    MenuIcon = "icon16/lock.png",
+    Filter = doorCheck,
+    Action = function(self, ent)
+        self:MsgStart()
+            net.WriteEntity(ent)
+        self:MsgEnd()
+    end,
+    Receive = function(self, length, ply)
+        local ent = net.ReadEntity()
+        if not self:Filter(ent, ply) then return end
+        ent:Fire("lock")
+    end
+})
+
+properties.Add( "door_unlock", {
+    MenuLabel = "Unlock Door",
+    Order = 9,
+    MenuIcon = "icon16/lock_open.png",
+    Filter = doorCheck,
+    Action = function(self, ent)
+        self:MsgStart()
+            net.WriteEntity(ent)
+        self:MsgEnd()
+    end,
+    Receive = function(self, length, ply)
+        local ent = net.ReadEntity()
+        if not self:Filter(ent, ply) then return end
+        ent:Fire("unlock")
+    end
+})
+
+local defaultinv = {
+    Weapons = {},
+    Ammo = {},
+    Armor = {},
+    Attachments = {}
+}
+local function Respawn(ply,body)
+    if ply:Alive() then
+        ply:Kill()
+    end
+    ply.gottarespawn = true
+    //OverrideSpawn = true
+    timer.Simple(0.1, function()
+        ply:Spawn()
+        //OverrideSpawn = false
+        timer.Simple(0.1, function()
+            ply.inventory = table.Copy(body.inventory or defaultinv)
+            --PrintTable(ply.inventory)
+            
+            ply:SetNetVar("Inventory", ply.inventory)
+            ply:SetNetVar("Armor",body:GetNetVar( "Armor", {} ))
+            ply:SetNetVar("HideArmorRender", body:GetNetVar("HideArmorRender", false))
+            body:SetNetVar( "Armor", {} )
+            body:SetNetVar("HideArmorRender", false)
+
+            for k,v in pairs( ply.inventory["Weapons"] ) do
+                --print(k,v)
+                if v == true or not IsValid(v) then continue end
+                v:SetParent( ply )
+                v:SetOwner( ply )
+                v:Use( ply )
+            end
+            for k,v in pairs( ply.inventory["Ammo"] ) do
+                --print(k,v)
+                ply:SetAmmo( v, k )
+            end
+            ply:Give( "weapon_hands_sh" )
+            hg.Fake( ply, body )
+            hg.LightStunPlayer( ply )
+
+            timer.Simple(0.1,function()
+                if body.CurAppearance then
+                    local color = body:GetNWVector("PlayerColor",Vector(0,0,0) )
+                    body.CurAppearance.AColor = Color( color[1] * 255,color[2] * 255,color[3] * 255 )
+                    ply:SetPlayerColor(color)
+                    hg.Appearance.ForceApplyAppearance( ply, body.CurAppearance )
+                    ply:SetModel(body:GetModel())
+                else
+                    -- prevent funny submaterial glitch
+                    local Appearance = ply.CurAppearance or hg.Appearance.GetRandomAppearance()
+                    Appearance.AColthes = ""
+                    ply:SetNetVar("Accessories", "")
+                    ply:SetModel(body:GetModel())
+                    ply:SetSubMaterial()
+                    ply:SetPlayerColor(ply:GetNWVector("PlayerColor",Vector(0,0,0) ))
+                end
+                ply:Give( "weapon_hands_sh" )
+            end)
+        end)
+    end)
+end
+
+hg.RespawnIntoBody = Respawn
+
+properties.Add( "respawn_ply_in_rag", {
+	MenuLabel = "Spawn Player", -- Name to display on the context menu
+	Order = 1, -- The order to display this property relative to other properties
+	MenuIcon = "icon16/heart.png", -- The icon to display next to the property
+
+	Filter = function( self, ent, ply )
+        if not ply:ZCTools_GetAccess() then return false end 
+	    if ( !IsValid( ent ) ) then return false end
+        local pEnt = hg.RagdollOwner( ent ) or ent
+        if ( pEnt:IsRagdoll() ) then return true end
+    end,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+
+        hg.DermaPlayerQuery(
+            function( ply )
+                self:MsgStart()
+                    net.WriteEntity( ent )
+                    net.WriteEntity( ply )
+                self:MsgEnd()
+        end)
+        
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+        local sPly = net.ReadEntity()
+		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
+		if ( !self:Filter( ent, ply ) ) then return end
+        --ent = hg.RagdollOwner( ent ) or ent
+        
+		Respawn(sPly,ent)
+	end 
+} )
+
+properties.Add( "respawn_lply_in_rag", {
+	MenuLabel = "Spawn Self", -- Name to display on the context menu
+	Order = 2, -- The order to display this property relative to other properties
+	MenuIcon = "icon16/heart.png", -- The icon to display next to the property
+
+	Filter = function( self, ent, ply )
+        if not ply:ZCTools_GetAccess() then return false end 
+	    if ( !IsValid( ent ) ) then return false end
+        local pEnt = hg.RagdollOwner( ent ) or ent
+        if ( pEnt:IsRagdoll() ) then return true end
+    end,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+
+        Derma_Query(
+            "You will be spawn into this body",
+            "Are you sure?",
+            "Yes",
+            function()
+                self:MsgStart()
+                    net.WriteEntity( ent )
+                    net.WriteEntity( LocalPlayer() )
+                self:MsgEnd()
+            end,
+        	"No"
+        )    
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+        local sPly = net.ReadEntity()
+		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
+		if ( !self:Filter( ent, ply ) ) then return end
+        --ent = hg.RagdollOwner( ent ) or ent
+        
+		Respawn(sPly,ent)
+	end 
+} )
+
+properties.Add( "respawn_ragply_in_rag", {
+	MenuLabel = "Spawn RagOwner", -- Name to display on the context menu
+	Order = 3, -- The order to display this property relative to other properties
+	MenuIcon = "icon16/heart.png", -- The icon to display next to the property
+
+	Filter = function( self, ent, ply )
+        if not ply:ZCTools_GetAccess() then return false end 
+	    if ( !IsValid( ent ) ) then return false end
+        local pEnt = hg.RagdollOwner( ent ) or ent
+        if ( pEnt:IsRagdoll() ) then return true end
+    end,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+
+        Derma_Query(
+            "Ragdoll owner will be respawned into his body",
+            "Are you sure?",
+            "Yes",
+            function()
+                self:MsgStart()
+                    net.WriteEntity( ent )
+                self:MsgEnd()
+            end,
+        	"No"
+        )    
+	end,
+	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+		local ent = net.ReadEntity()
+        local sPly = ent.ply
+		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
+		if ( !self:Filter( ent, ply ) ) then return end
+        if not sPly then return end
+        --ent = hg.RagdollOwner( ent ) or ent
+        
+		Respawn(sPly,ent)
+	end 
+} )
+
+
+--hg.Fake(owner, body)

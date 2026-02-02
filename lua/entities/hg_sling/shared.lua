@@ -1,0 +1,10 @@
+ENT.Type = "anim"
+ENT.Base = "base_gmodentity"
+ENT.PrintName = "Weapon Sling"
+ENT.Spawnable = true
+ENT.Category = "ZCity Other"
+ENT.Model = "models/tourniquet/tourniquet.mdl"
+ENT.Color = Color(90,72,43)
+ENT.Material = "models/xqm/rails/gumball_1"
+ENT.IconOverride = "vgui/inventory/tactical_sling" -- vgui/inventory/ppsh41_sling
+ENT.IsZPickup = true

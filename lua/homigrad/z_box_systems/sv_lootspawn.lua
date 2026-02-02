@@ -1,0 +1,237 @@
+-- Машинки, споты для спавна. 1 машинка респавнится раз в 30 минут, если прошлая была уничтожена.
+--ZBox = ZBox or {}
+
+--ZBox.Plugins = ZBox.Plugins or {}
+--ZBox.Plugins["LootSystem"] = ZBox.Plugins["LootSystem"] or {}
+--local PLUGIN = ZBox.Plugins["LootSystem"]
+--
+--PLUGIN.Name = "LootSystem"
+--
+--PLUGIN.Hooks = {}
+--local Hook = PLUGIN.Hooks
+--
+--local spots = {
+--    ["rp_truenorth_v1a"] = { 
+--        { "CITIZEN_Fridge", Vector(8351.514648, 2064.900879, 72.031250), Angle(0,51,0) },
+--        { "CITIZEN_Tools", Vector(10132.209961, 6829.252441, 72.031250), Angle(0,85,0) },
+--        { "CITIZEN_Tools", Vector(10003.568359, 6833.104004, 72.031250), Angle(0,125,0) },
+--        { "CITIZEN_RandomBox", Vector(11989.300781, 6712.915527, 72.031250), Angle(0,90,0) },
+--        { "CITIZEN_RandomBox", Vector(12080.988281, 7516.130371, 72.031250), Angle(0,-90,0) },
+--        { "CITIZEN_Fridge", Vector(11636.213867, 9893.500977, 72.031250), Angle(0,-90,0) },
+--        { "CITIZEN_Wardrobe", Vector(11482.880859, 10153.61328, 72.031250), Angle(0,-15,0) },
+--        { "MEDICAL_Big", Vector(12840.954102, 12716.078125, 128.031250), Angle(0,45,0) },
+--        { "MEDICAL_Small", Vector(12589.561523, 13026.850586, 128.031250), Angle(0,-75,0) },
+--        { "MEDICAL_Big", Vector(12391.170898, 13087.472656, 128.031250), Angle(0,90,0) },
+--        { "POLICE_Lockers", Vector(2506.220703, 2606.276855, 72.03125), Angle(0,125,0) },
+--        { "POLICE_SmallLocker", Vector(2176.526367, 2912.829590, 72.031250), Angle(0,-90,0) },
+--        { "CITIZEN_Fridge", Vector(1410.321777, 3226.913330, 72.031250), Angle(0,90,0) },
+--        { "CITIZEN_Tools", Vector(-5628.767090, 13414.394531, 224.031250), Angle(0,-148,0) },
+--        { "CITIZEN_Wardrobe", Vector(-5859.718262, 13326.231445, 224.338593), Angle(0,-148,0) },
+--        { "CITIZEN_RandomBox", Vector(-2913.7041015625, 7924.0844726563, 224.03125), Angle(0, -178.88481140137, 0) },
+--        { "CITIZEN_Wardrobe", Vector(-2935.3425292969, 8706.1494140625,232.03125), Angle(0, -129.30551147461, 0) },
+--        { "CITIZEN_Wardrobe", Vector(-6025.0771484375, 7675.3442382813,232.03125), Angle(0, -0.084955058991909, 0) },
+--        { "CITIZEN_Fridge", Vector(-8359.3232421875, -9563.486328125,84.031242370605), Angle(0, -0.52506071329117, 0) },
+--        { "CITIZEN_Fridge", Vector(-5975.6381835938, 9726.900390625, 232.03125), Angle(0,-0.25380444526672, 0)  },
+--        { "CITIZEN_Tools", Vector(-5664.7880859375, 10009.493164063, 232.03125), Angle(0,-90.419593811035, 0) },
+--        { "RUS_BIG_Military", Vector(-5667.1342773438, -14090.797851563,1232.03125), Angle(0, 38.195552825928, 0) },
+--        { "RUS_BIG_Military", Vector(-5440.52734375, -14279.495117188,1232.03125), Angle(0, 134.76229858398, 0) },
+--        { "RUS_SMALL_Military", Vector(-5701.8383789063, -14282.678710938,520.03125), Angle(0, 40.429828643799, 0) },
+--        { "NATO_BIG_Military", Vector(3238.5302734375, -5409.587890625,4168.03125), Angle(0, 1.5475751161575, 0) },
+--        { "NATO_BIG_Military", Vector(333.07083129883, -7332.9799804688, 4168.03125), Angle(0, 162.63523864746, 0) },
+--        { "NATO_SMALL_Military", Vector(10224.688476563, -4748.5166015625,5448.03125), Angle(0, -7.5749936103821, 0) },
+--        { "CITIZEN_Tools", Vector(12521.33203125, -8334.7021484375, 104.03125), Angle(0, -36.273052215576, 0) },
+--        { "CITIZEN_Tools", Vector(12495.84375, -8546.654296875, 104.03125), Angle(0, 7.7077345848083, 0) },
+--        { "CITIZEN_Tools", Vector(12726.20703125, -8451.41796875, 104.03125), Angle(0, -136.04554748535, 0) },
+--        { "CITIZEN_Tools", Vector(13196.733398438, -8427.6083984375, 104.03125), Angle(0, -28.643323898315, 0) },
+--        { "CITIZEN_Tools", Vector(13125.4375, -8699.259765625, 104.03125), Angle(0, -54.714027404785, 0) },
+--        { "CITIZEN_Tools", Vector(12879.662109375, -8971.8427734375, 104.03126525879), Angle(0, -99.98454284668, 0) },
+--        { "CITIZEN_Tools", Vector(13238.259765625, -8961.765625, 104.03125), Angle(0, -25.894985198975, 0) },
+--        { "CITIZEN_Fridge", Vector(14847.734375, 4635.43359375, 6504.03125), Angle(0,0.71536165475845, 0) },
+--        { "NATO_SMALL_Military", Vector(14530.174804688, -6644.2099609375,744.03125), Angle(0, 46.717220306396, 0) },
+--        { "NATO_SMALL_Military", Vector(14081.37109375, -8083.2661132813,360.03125), Angle(0, -88.689559936523, 0) },
+--        { "CITIZEN_Tools", Vector(15112.809570313, 4531.7700195313,6640.03125), Angle(0, 1.6030628681183, 0) },
+--        { "CITIZEN_Wardrobe", Vector(14951.8515625, 4695.154296875,6640.03125), Angle(0, -90.252922058105, 0) },
+--        { "CITIZEN_Wardrobe", Vector(7371.333984375, -11174.262695313,5480.03125), Angle(0, -90.145561218262, 0) },
+--        { "CITIZEN_Wardrobe", Vector(13778.247070313, -11950.5703125,5480.03125), Angle(0, -179.80844116211, 0) },
+--        { "MEDICAL_Small", Vector(12380.564453125, 13023.940429688, 136.03125), Angle(0, -111.55251312256, 0) },
+--        { "MEDICAL_Big", Vector(12165.049804688, 12716.471679688, 136.03125), Angle(0, 89.498962402344, 0) },
+--        { "MEDICAL_Big", Vector(12079.586914063, 12717.197265625, 136.03125), Angle(0, 89.608093261719, 0) },
+--        { "MEDICAL_Big", Vector(12069.24609375, 13253.619140625, 136.03125), Angle(0, -0.78050297498703, 0) },
+--        { "MEDICAL_Big", Vector(12068.232421875, 13181.629882813, 136.03125), Angle(0, -0.77981323003769, 0) },
+--        { "CITIZEN_Fridge", Vector(5392.333984375, 6309.4853515625, 80.03125), Angle(0, 90.040794372559, 0) },
+--        { "CITIZEN_Fridge", Vector(5392.5131835938, 6671.7758789063, 80.03125), Angle(0, 89.492767333984, 0) },
+--        { "CITIZEN_Fridge", Vector(5392.701171875, 7030.6328125, 80.03125), Angle(0, 90.095932006836, 0) },
+--        { "CITIZEN_Fridge", Vector(5392.5190429688, 7391.0668945313, 80.03125), Angle(0, 89.711761474609, 0) },
+--        { "CITIZEN_Fridge", Vector(5388.6430664063, 7751.32421875, 80.03125), Angle(0, 90.370727539063, 0) },
+--       -- Warning! Detected missing render.PopRenderTarget call!
+--       -- Welcome to ZCity and don't enjoy your state
+--        { "CITIZEN_Fridge", Vector(5396.6625976563, 8112.630859375, 80.03125), Angle(0, 89.16096496582, 0) },
+--        { "CITIZEN_Fridge", Vector(5388.8134765625, 8469.1923828125, 80.03125), Angle(0, 89.272644042969, 0) },
+--        { "CITIZEN_Fridge", Vector(5395.9174804688, 8832.240234375, 80.03125), Angle(0, 89.712097167969, 0) },
+--        { "CITIZEN_Wardrobe", Vector(5855.458984375, 6456.2172851563, 80.03125), Angle(0, 179.65850830078, 0) },
+--        { "CITIZEN_Wardrobe", Vector(5848.171875, 6840.09375, 80.031253814697), Angle(0, -138.09861755371, 0) },
+--        { "CITIZEN_Wardrobe", Vector(5681.6376953125, 7774.8818359375,80.03125), Angle(0, 81.486045837402, 0) },
+--        { "CITIZEN_Fridge", Vector(9980.7568359375, 4763.5375976563,344.03125), Angle(0, 80.246482849121, 0) },
+--        { "CITIZEN_Wardrobe", Vector(12214.666992188, 8885.8427734375,5616.03125), Angle(0, 90.052108764648, 0) },
+--        { "MEDICAL_Small", Vector(12053.68359375, 8986.4482421875,5480.03125), Angle(0, 0.67303943634033, 0) },
+--        { "CITIZEN_RandomBox", Vector(9388.1494140625, 5208.03515625,344.03125), Angle(0, -49.46155166626, 0) },
+--        { "CITIZEN_RandomBox", Vector(10198.301757813, 5206.2509765625,344.03125), Angle(0, -134.99119567871, 0) },
+--        { "CITIZEN_RandomBox", Vector(10196.162109375, 7704.404296875, 344.03125), Angle(0, -136.06307983398, 0) },
+--        { "CITIZEN_RandomBox", Vector(9384.5078125, 7604.0556640625, 344.03125), Angle(0, -2.992205619812, 0) },
+--        { "POLICE_Lockers", Vector(2542.5373535156, 3215.470703125, 80.03125), Angle(0, 178.97607421875, 0) },
+--        { "POLICE_Lockers", Vector(2432.5373535156, 2595.0368652344, 80.03125),Angle(0, 90.08332824707, 0) }
+--    }
+--}
+--local Boxes = {
+--    ["NATO_BIG_Military"] = { 
+--        EntTable = {
+--            "weapon_hk416", "weapon_m249", "weapon_m60", "weapon_sr25", "weapon_xm1014", 
+--            "ent_armor_headphones1", "ent_armor_vest1", "ent_armor_vest4", "ent_armor_helmet1", 
+--            "ent_armor_helmet5", "ent_armor_nightvision1", "ent_att_optic6", "ent_att_holo4",
+--            "ent_att_holo15", "ent_att_optic7", "ent_att_optic8", "ent_att_holo1", "ent_att_holo14",
+--            "ent_att_optic9", "ent_ammo_5.56x45mm", "ent_ammo_5.56x45mmm856", "ent_ammo_5.56x45mmap",
+--            "ent_ammo_7.62x51mm", "ent_ammo_9x39mm", "ent_ammo_12/70gauge", "ent_ammo_12/70slug",
+--            "hg_sling", "weapon_walkie_talkie"
+--        }, 
+--        Models = {"models/kali/props/cases/hard case a.mdl"}
+--    },
+--    ["NATO_SMALL_Military"] = { 
+--        EntTable = {
+--            "weapon_mp7", "weapon_mp5", "weapon_p90", "weapon_hg_grenade_tpik", "weapon_hg_flashbang_tpik",
+--            "weapon_hg_smokenade_tpik", "weapon_fn45", "weapon_deagle", "ent_att_supressor7", "ent_att_supressor2",
+--            "ent_att_optic6", "ent_att_holo4","ent_att_holo15", "ent_att_optic7", "ent_att_optic8", 
+--            "ent_att_holo1", "ent_att_holo14","ent_att_optic9", "ent_ammo_5.56x45mm", "ent_ammo_5.56x45mmm856", 
+--            "ent_ammo_5.56x45mmap","ent_ammo_7.62x51mm", "ent_ammo_9x39mm", "ent_ammo_12/70gauge", 
+--            "ent_ammo_12/70slug", "ent_att_grip2", "ent_att_grip3", "hg_sling", "weapon_walkie_talkie",
+--            "weapon_melee", "weapon_sogknife", "weapon_tomahawk"
+--        }, 
+--        Models = {"models/props/CS_militia/footlocker01_closed.mdl", "models/kali/props/cases/hard case c.mdl"}
+--    },
+--    ["RUS_BIG_Military"] = { 
+--        EntTable = {
+--            "weapon_asval", "weapon_akm", "weapon_hg_rgd_tpik", "weapon_makarov", "weapon_hg_smokenade_tpik",
+--            "weapon_melee", "weapon_sogknife", "ent_ammo_9x39mm", "ent_ammo_7.62x39mm",
+--            "ent_att_supressor1", "ent_att_supressor8", "ent_att_holo6", "ent_att_holo5", "ent_att_holo7",
+--            "ent_att_optic3", "ent_att_holo12", "ent_att_holo13", "ent_att_optic4", "ent_att_optic11",
+--            "ent_att_holo2", "ent_armor_vest5", "ent_armor_helmet1",
+--        }, 
+--        Models = {"models/props/de_prodigy/ammo_can_01.mdl"}
+--    },
+--    ["RUS_SMALL_Military"] = { 
+--        EntTable = {
+--            "weapon_ak74", "weapon_ak74u", "weapon_hg_rgd_tpik", "weapon_makarov", "weapon_hg_smokenade_tpik",
+--            "weapon_melee", "weapon_sogknife", "ent_ammo_5.45x39mm", "ent_ammo_7.62x39mm", "ent_ammo_9x18mm",
+--            "ent_att_supressor1", "ent_att_supressor8", "ent_att_holo6", "ent_att_holo5", "ent_att_holo7",
+--            "ent_att_optic3", "ent_att_holo12", "ent_att_holo13", "ent_att_optic4", "ent_att_optic11",
+--            "ent_att_holo2", "ent_armor_vest5", "ent_armor_helmet1",
+--        }, 
+--        Models = {"models/props/de_prodigy/ammo_can_02.mdl"}
+--    },
+--    ["POLICE_Lockers"] = { 
+--        EntTable = {
+--            "weapon_ar15", "weapon_remington870", "ent_ammo_5.56x45mm", "ent_ammo_12/70beanbag", "ent_ammo_12/70gauge",
+--            "ent_armor_vest3", "ent_armor_vest2", "ent_armor_helmet3", "ent_armor_vest6", "ent_att_holo15", "ent_att_optic2", 
+--            "ent_att_optic2", "ent_att_holo14", "ent_att_laser3", "ent_att_grip2", "weapon_ram", "hg_sling", "weapon_walkie_talkie"
+--        }, 
+--        Models = {"models/props_c17/Lockers001a.mdl"}
+--    },
+--    ["POLICE_SmallLocker"] = { 
+--        EntTable = {
+--            "weapon_glock17", "weapon_hk_usp", "weapon_px4beretta", "weapon_hg_tonfa", "weapon_handcuffs", "weapon_handcuffs_key",
+--            "weapon_taser", "ent_att_holo16", "ent_att_laser3", "hg_flashlight", "ent_ammo_9x19mmparabellum", "hg_sling", "weapon_walkie_talkie"
+--        }, 
+--        Models = {"models/props_wasteland/controlroom_filecabinet001a.mdl"}
+--    },
+--    ["CITIZEN_Wardrobe"] = { 
+--        EntTable = {
+--            "weapon_remington870", "weapon_glock17", "weapon_px4beretta", "weapon_pocketknife", "ent_armor_vest3",
+--            "weapon_bigconsumable", "weapon_smallconsumable", "weapon_ducttape", "hg_flashlight", "ent_ammo_9x19mmparabellum",
+--            "weapon_hg_pipebomb_tpik", "weapon_bat", "weapon_zoraki", "ent_ammo_9mmpakflashdefense", "weapon_p22", 
+--            "ent_ammo_.22longrifle", "weapon_revolver2"
+--        }, 
+--        Models = {"models/props_c17/FurnitureDresser001a.mdl", "models/props_c17/FurnitureDrawer001a.mdl"}
+--    },
+--    ["CITIZEN_RandomBox"] = { 
+--        EntTable = {
+--            "weapon_fn45", "weapon_px4beretta", "weapon_pocketknife", "weapon_revolver2", "weapon_revolver357",
+--            "weapon_smallconsumable", "weapon_ducttape", "hg_flashlight", "ent_ammo_9x19mmparabellum",
+--            "weapon_hg_pipebomb_tpik", "weapon_bat", "weapon_zoraki", "ent_ammo_9mmpakflashdefense", 
+--            "ent_ammo_.357magnum", "ent_ammo_.45acp"
+--        }, 
+--        Models = {"models/props_c17/FurnitureDrawer002a.mdl", "models/props_c17/FurnitureDrawer003a.mdl"}
+--    },
+--    ["CITIZEN_Fridge"] = { 
+--        EntTable = {
+--            "weapon_smallconsumable", "weapon_bigconsumable"
+--        }, 
+--        Models = {"models/props_c17/FurnitureFridge001a.mdl"}
+--    },
+--    ["CITIZEN_Tools"] = { 
+--        EntTable = {
+--            "weapon_ducttape", "weapon_hammer", "ent_ammo_nails", "ent_hg_hmcd_radio", "weapon_brick", "weapon_hg_sledgehammer", "weapon_hg_shovel",
+--            "weapon_leadpipe", "weapon_hg_crowbar", "weapon_hg_extinguisher"
+--        }, 
+--        Models = {"models/props_junk/wood_crate001a.mdl", "models/props_junk/wood_crate002a.mdl"}
+--    },
+--    ["MEDICAL_Small"] = { 
+--        EntTable = {
+--            "weapon_bandage_sh", "weapon_betablock", "weapon_painkillers", "weapon_tourniquet", "weapon_naloxone"
+--        }, 
+--        Models = {"models/props_wasteland/controlroom_filecabinet001a.mdl"}
+--    },
+--    ["MEDICAL_Big"] = { 
+--        EntTable = {
+--            "weapon_bandage_sh", "weapon_betablock", "weapon_painkillers", "weapon_tourniquet", "weapon_naloxone",
+--            "weapon_medkit_sh", "weapon_adrenaline", "weapon_needle", "weapon_morphine", "weapon_naloxone",
+--            "weapon_traitor_poison1"
+--        }, 
+--        Models = {"models/props_wasteland/controlroom_filecabinet002a.mdl", "models/props_wasteland/controlroom_storagecloset001a.mdl"}
+--    },
+--}
+--hg = hg or {}
+--hg.Boxes = Boxes
+--
+--function Hook.InitPostEntity()
+--    if not spots[game.GetMap()] then return end
+--    timer.Simple( 5, function()
+--        for k, spot in pairs(spots[game.GetMap()]) do
+--            local ent = ents.Create("zbox_lootbox")
+--            local tbl = {}
+--            for i,v in pairs(Boxes[spot[1]].EntTable) do
+--                tbl[i] = {class = v}
+--            end
+--            ent.LootTable = tbl
+--            ent:SetModel( table.Random(Boxes[spot[1]].Models) )
+--            local pos = util.TraceEntityHull({start = spot[2], endpos = spot[2] - vector_up * 100},ent).HitPos
+--            ent:SetPos( pos )
+--            ent:SetAngles( spot[3] )
+--            ent:Spawn()
+--        end
+--    end)
+--end
+--
+--function Hook.PostCleanupMap()
+--    if not spots[game.GetMap()] then return end
+--    timer.Simple( 1,function()
+--        for k, spot in pairs(spots[game.GetMap()]) do
+--            local ent = ents.Create("zbox_lootbox")
+--            local tbl = {}
+--            for i,v in pairs(Boxes[spot[1]].EntTable) do
+--                tbl[i] = {class = v}
+--            end
+--            ent.LootTable = tbl
+--            ent:SetModel( table.Random(Boxes[spot[1]].Models) )
+--            local pos = util.TraceEntityHull({start = spot[2], endpos = spot[2] - vector_up * 100},ent).HitPos
+--            ent:SetPos( pos )
+--            ent:SetAngles( spot[3] )
+--            ent:Spawn()
+--        end
+--    end)
+--end
+--
+--
+--function Hook.ZBox_Start()
+--end
+--
+--function Hook.ZBox_Disable()
+--end

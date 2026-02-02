@@ -23,10 +23,15 @@ end)
 function hg.AddAttachment(ply,wep,att)
 	if wep:GetNWFloat("addAttachment", 0) + 1 > CurTime() then return end
 
-	if not IsValid(wep) or not wep.attachments or att == "" then return end
+	if not IsValid(wep) or att == "" then return end
 	if not IsValid(ply) then return end
 	if not table.HasValue(ply.inventory.Attachments, att) then return end --oops :(
 	if ply.organism.larmamputated or ply.organism.rarmamputated then return end -- зубами
+
+	wep.attachments = wep.attachments or wep:GetNetVar("attachments") or {}
+	if hg.NormalizeAttachments then
+		wep.attachments = hg.NormalizeAttachments(wep, wep.attachments)
+	end
 
 	if att and istable(att) then
 		for i,atta in pairs(att) do
@@ -40,6 +45,9 @@ function hg.AddAttachment(ply,wep,att)
 	for plc, tbl in pairs(hg.attachments) do
 		placement = tbl[att] and tbl[att][1] or placement
 	end
+
+	if not placement then return end
+	wep.attachments[placement] = wep.attachments[placement] or {}
 
 	if not wep.attachments[placement].noblock then
 		local restrictAtt = hg.attachments[placement][att].restrictatt
@@ -60,7 +68,6 @@ function hg.AddAttachment(ply,wep,att)
 		end
 	end
 
-	if not placement then return end
 	if not (table.IsEmpty(wep.attachments[placement]) or wep.attachments[placement][1] == "empty") then
 		ply:ChatPrint("There is no space for this attachment.")
 		return
@@ -105,7 +112,12 @@ function hg.AddAttachment(ply,wep,att)
 end
 
 function hg.AddAttachmentForce(ply,wep,att)
-	if not IsValid(wep) or not wep.attachments or att == "" then return end
+	if not IsValid(wep) or att == "" then return end
+
+	wep.attachments = wep.attachments or wep:GetNetVar("attachments") or {}
+	if hg.NormalizeAttachments then
+		wep.attachments = hg.NormalizeAttachments(wep, wep.attachments)
+	end
 	
 	if att and istable(att) then
 		for i,atta in pairs(att) do
@@ -120,6 +132,9 @@ function hg.AddAttachmentForce(ply,wep,att)
 		placement = tbl[att] and tbl[att][1] or placement
 	end
 
+	if not placement then return end
+	wep.attachments[placement] = wep.attachments[placement] or {}
+
 	if not wep.attachments[placement].noblock then
 		local restrictAtt = hg.attachments[placement][att].restrictatt
 		
@@ -127,8 +142,6 @@ function hg.AddAttachmentForce(ply,wep,att)
 			if not att or not istable(att) or table.IsEmpty(att) or att[1] == "empty" then continue end
 		end
 	end
-
-	if not placement then return end
 
 	--if not wep.availableAttachments[placement] then return end
 	local i
@@ -176,6 +189,7 @@ net.Receive("ZB_AttachRemove", function(len, ply)
 	end
 
 	if not placement then return end
+	if not wep.attachments[placement] then return end
 	if wep.attachments[placement][1] != att then return end
 	if table.IsEmpty(wep.attachments[placement]) or wep.attachments[placement][1] == "empty" then return end
 	if wep.availableAttachments[placement].cannotremove then return end

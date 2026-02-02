@@ -67,7 +67,6 @@ local function CreateNotification(ply, msg, delay, msgKey, showTime, func, clr)
 end
 
 //erm it's ass but i don't care enough
-local hev_color = Color(255, 125, 0)
 local function CreateNotificationBerserk(ply, msg, delay, msgKey, showTime, func, clr)
     if ply.organism and ply.organism.otrub then return end
     if ply.PlayerClassName and ply.PlayerClassName == "Gordon" and clr != hev_color then return end

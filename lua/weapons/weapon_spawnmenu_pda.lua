@@ -139,9 +139,9 @@ if SERVER then
         local CartWeight = 0
         
         for k, item in pairs(Cart) do
-            entTbl = weapons.GetStored(item[1]) or scripted_ents.GetStored(item[1])["t"] or nil
-            entTbl.Category = entTbl.Category
-            --PrintTable(entTbl)
+            if not item or not item[1] then wep:AddNotificate("No.") return end
+            local entStore = scripted_ents.GetStored(item[1])
+            local entTbl = weapons.GetStored(item[1]) or (entStore and entStore.t) or nil
             CartWeight = CartWeight + 5
             if not entTbl or not CategoresAllowed[entTbl.Category] then wep:AddNotificate("No.") return end
             if not item[1] or BlackList[item[1]] then wep:AddNotificate("No.") return end

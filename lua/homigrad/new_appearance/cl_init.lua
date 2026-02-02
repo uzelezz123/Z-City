@@ -62,6 +62,8 @@ net.Receive("OnlyGet_Appearance", OnlyGetAppearance)
 
 -- Render things
 
+local hg_cshs_fake = ConVarExists("hg_cshs_fake") and GetConVar("hg_cshs_fake") or CreateConVar("hg_cshs_fake", 0, FCVAR_ARCHIVE, "fake from cshs", 0, 1)
+
 local whitelist = {
     weapon_physgun = true,
     gmod_tool = true,
@@ -216,7 +218,8 @@ function DrawAccesories(ply, ent, accessories,accessData, islply, force, setup)
 	end
 
 	if model:GetParent() != ent then model:SetParent(ent, bone) end
-	if !(islply and accessData.norender) and (!setup or accessData.bonemerge) then
+	local cat = islply and IsValid(ply.FakeRagdoll) and hg_cshs_fake and hg_cshs_fake:GetBool()
+	if not ((islply and accessData.norender) and not cat) and (!setup or accessData.bonemerge) then
 		if accessData["bSetColor"] then
 			local colorDraw = accessData["vecColorOveride"] or ( ply.GetPlayerColor and ply:GetPlayerColor() or ply:GetNWVector("PlayerColor",Vector(1,1,1)) )
 			render.SetColorModulation( colorDraw[1],colorDraw[2],colorDraw[3] )

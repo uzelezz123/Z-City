@@ -5,12 +5,13 @@ util.AddNetworkString("HGNotificateBerserk")
 local hev_color = Color(255, 125, 0)
 
 local function ValidateNotification(ply, clr, msg)
+    if msg == "" then return false end
     if not IsValid(ply) or not ply:IsPlayer() then error("player is not valid!") return false end
     
     if !ply.organism then return false end
     if ply.organism.otrub then return false end
     if ply.PlayerClassName and ply.PlayerClassName == "Gordon" and clr != hev_color then return false end
-    if not msg or not isstring(msg) or msg == "" then error("no message or message is invalid!") return false end
+    if not msg or not isstring(msg) then error("no message or message is invalid!") return false end
 
     return true
 end

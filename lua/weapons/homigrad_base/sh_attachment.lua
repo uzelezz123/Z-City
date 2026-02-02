@@ -69,6 +69,36 @@ function hg.ClearAttachments(wep)
 	return tbl.attachments
 end
 
+function hg.NormalizeAttachments(wep, attachments)
+	if isstring(wep) then
+		wep = weapons.Get(wep)
+	end
+
+	if not istable(attachments) then
+		attachments = {}
+	end
+
+	if not wep then return attachments end
+
+	wep.availableAttachments = wep.availableAttachments or {}
+
+	attachments.barrel = attachments.barrel or {}
+	attachments.sight = attachments.sight or {}
+	attachments.mount = attachments.mount or {}
+	attachments.grip = attachments.grip or {}
+	attachments.underbarrel = attachments.underbarrel or {}
+	attachments.magwell = attachments.magwell or {}
+
+	if SERVER then
+		local available = wep.availableAttachments
+		if table.IsEmpty(attachments.barrel) then attachments.barrel = available.barrel and available.barrel["empty"] or {} end
+		if table.IsEmpty(attachments.sight) then attachments.sight = available.sight and available.sight["empty"] or {} end
+		if table.IsEmpty(attachments.mount) then attachments.mount = available.mount and available.mount["empty"] or {} end
+	end
+
+	return attachments
+end
+
 function hg.SetAttachment(tbl,att,wep)
 	if not wep then return end
 	local wep = weapons.Get(wep)

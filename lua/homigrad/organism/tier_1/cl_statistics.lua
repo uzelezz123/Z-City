@@ -462,7 +462,7 @@ net.Receive("tracePosesSend", function()
 	local inf = net.ReadString()
 	local att = net.ReadString()
 
-	--timer.Simple(0.1,function()
+	timer.Simple(0.1,function()
 		local ent = hg.GetCurrentCharacter(ent) or ent
 		local basebone = ent:GetBoneMatrix(bone)
 		if not basebone then return end
@@ -524,7 +524,7 @@ net.Receive("tracePosesSend", function()
 			armors = armors,
 			inf = inf,
 		})
-	--end)
+	end)
 end)
 
 function draw.RotatedText( text, x, y, font, color, ang)

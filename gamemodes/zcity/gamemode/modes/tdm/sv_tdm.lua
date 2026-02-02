@@ -187,8 +187,13 @@ net.Receive("tdm_buyitem",function(len,ply)
 	if !CurrentRound().buymenu then return end
 	if ((zb.ROUND_START or 0) + 40 < CurTime()) then ply:ChatPrint("Time's up!") return end
 	local tItem = net.ReadTable()
-	
-	local item = CurrentRound().BuyItems[tItem[1]][tItem[2]]
+	if not istable(tItem) then return end
+	local category = tItem[1]
+	local index = tItem[2]
+	if not category or not index then return end
+	local buyItems = CurrentRound().BuyItems
+	if not buyItems or not buyItems[category] or not buyItems[category][index] then return end
+	local item = buyItems[category][index]
 
 	if not item then return end
 

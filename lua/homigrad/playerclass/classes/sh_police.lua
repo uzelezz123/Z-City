@@ -68,3 +68,4 @@ function CLASS.Guilt(self, Victim)
 
     return 1
 end
+

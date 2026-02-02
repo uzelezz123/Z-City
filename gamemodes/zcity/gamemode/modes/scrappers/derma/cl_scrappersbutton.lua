@@ -75,3 +75,4 @@ function PANEL:Disabled(bool)
 end
 
 vgui.Register("ZB_ScrappersButton", PANEL, "DButton")
+

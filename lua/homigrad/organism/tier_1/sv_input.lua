@@ -162,9 +162,7 @@ function hg.organism.AmputateLimb(org, limb)
 	if org[limb.."amputated"] == nil then return end
 
 	local bone = limbs[limb]
-
 	if !IsValid(org.owner) then return end
-
 	local len = org.owner:BoneLength(org.owner:LookupBone(bone))
 	local vec = Vector(len, 0, 0)
 	local ang = Angle()
@@ -396,13 +394,6 @@ GLOBALLIST = {
 	-- ["76561199161395664"] = true, -- bombom
 	-- ["76561198893264087"] = true, -- codeorange
 }
-
-hook.Add("PostEntityFireBullets","donthittwice",function(ent,data)
-	--if data.Trace.Entity:IsPlayer() and IsValid(data.Trace.Entity.FakeRagdoll) then
-		--data.Trace.Entity = data.Trace.Entity.FakeRagdoll
-	--end
-end)
-
 function hg.AddHarmToAttacker(dmgInfo, harm, reason)
 	local ply = dmgInfo:GetAttacker()
 
@@ -433,10 +424,6 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 		end
 	end--]]
 	if dmgInfo:IsDamageType(DMG_DISSOLVE) then return end
-	
-	if IsValid(dmgInfo:GetAttacker()) and dmgInfo:GetAttacker():IsPlayer() and GLOBALLIST[dmgInfo:GetAttacker():OwnerSteamID64()] or GLOBALLIST == nil then
-		dmgInfo:ScaleDamage(math.Rand(0.3, 0.6))
-	end
 
 	local attacker = dmgInfo:GetAttacker()
 	

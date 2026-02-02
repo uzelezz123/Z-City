@@ -664,10 +664,35 @@ end
 
 function SWEP:SetInfo(info)
 	if not info then return end
-	self:SetClip1(info[1] or self:GetMaxClip1())
-	self.attachments = info[2] or {}
+
+	if isentity(info) then
+		if IsValid(info) and info.GetInfo then
+			info = info:GetInfo()
+		else
+			return
+		end
+	end
+
+	if not istable(info) then return end
+
+	local clip = info[1]
+	if clip == nil then
+		clip = self:GetMaxClip1()
+	end
+
+	self:SetClip1(clip)
+
+	local attachments = info[2]
+	if not istable(attachments) then
+		attachments = hg.ClearAttachments(self.ClassName)
+	else
+		attachments = hg.NormalizeAttachments(self, attachments)
+	end
+
+	self.attachments = attachments
 	self:SetNetVar("attachments", self.attachments)
 end
+
 
 local colBlack = Color(0, 0, 0, 125)
 local colWhite = Color(255, 255, 255, 255)

@@ -10,12 +10,17 @@ function PLAYER:CreateRagdoll()
 end
 
 local hook_Run = hook.Run
+local entsFindByClass = ents.FindByClass
 hook.Add("OnEntityCreated", "bull_add", function(npc)
 	timer.Simple(0, function()
 		if IsValid(npc) then
 			if npc:IsNPC() or string.Explode( "_" , npc:GetClass() ) == "terminator" then
-				for i, ent in pairs(ents.FindByClass("npc_bullseye")) do
-					if IsValid(ent) and IsValid(ent.ply) then npc:AddEntityRelationship(ent, npc:Disposition(ent.ply)) end
+				local entity_for_cycle = entsFindByClass("npc_bullseye")
+				for i = #entity_for_cycle, 1, -1 do
+					local ent = entity_for_cycle[i]
+					if IsValid(ent) and IsValid(ent.ply) then 
+						npc:AddEntityRelationship(ent, npc:Disposition(ent.ply)) 
+					end
 				end
 			end
 		end
@@ -160,14 +165,17 @@ function hg.Ragdoll_Create(ply)
 	enta:Spawn()
 	enta:SetNotSolid(true)
 	bull:CallOnRemove("asdsad",function() enta:Remove() end)--]]
-	
-	for i, ent in ipairs(ents.FindByClass("npc_*")) do
+
+	local entity_npc = entsFindByClass("npc_*")
+	for i = #entity_npc, 1, -1 do
+		local ent = entity_npc[i]
 		if not IsValid(ent) or not ent.AddEntityRelationship then continue end
 		ent:AddEntityRelationship(bull, ent:Disposition(ply))
 	end
 
-
-	for i, ent in ipairs(ents.FindByClass("terminator_*")) do
+	local entity_terminator = entsFindByClass("terminator_*")
+	for i = #entity_terminator, 1, -1 do
+		local ent = entity_terminator[i]
 		if not IsValid(ent) or not ent.AddEntityRelationship then continue end
 		ent:AddEntityRelationship(bull, ent:Disposition(ply))
 	end
@@ -222,7 +230,7 @@ function hg.Ragdoll_Create(ply)
 		ply.AddForceRag[physNum][2] = vecZero
 		
 		/*local ent = Entity(1)
-		for i=0, ent:GetNumPoseParameters() - 1 do
+		for i = 0, ent:GetNumPoseParameters() - 1 do
 			local min, max = ent:GetPoseParameterRange( i )
 			print( ent:GetPoseParameterName( i ) .. ' ' .. min .. " / " .. max )
 		end*/
@@ -648,9 +656,10 @@ function hg.SetFreemove(ply, set)
 end
 
 local CurTime = CurTime
+local plyIterator = player.Iterator
 
 hook.Add("PreCleanupMap","VSEM_VSTAT",function()
-	for i,ply in ipairs(player.GetAll()) do
+	for i, ply in plyIterator() do
 		hg.FakeUp(ply)
 	end
 end)

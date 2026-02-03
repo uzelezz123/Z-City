@@ -341,7 +341,7 @@ net.Receive("hg_phrase", function(len, ply)
 	-- overrides
 	local override = hook.Run("HG_ReplacePhrase", ent, phrase, muffed, pitch)
 	if override ~= nil then
-		ent, phrase, muffed, pitch = hook.Run("HG_ReplacePhrase", ent, phrase, muffed, pitch)
+		ent, phrase, muffed, pitch = override
 	end
 
 	if ply.PlayerClassName == "bloodz" or ply.PlayerClassName == "groove" then

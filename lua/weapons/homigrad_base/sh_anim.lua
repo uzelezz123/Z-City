@@ -167,8 +167,10 @@ function SWEP:AnimHold()
 		progress = math.ease.OutBack(progress)
 	end
 
-	self:BoneSet("spine1", vecZero, Angle(0, 0, progress * 25), "buttstockattack", 0.0001)
-	self:BoneSet("head", vecZero, Angle(0, 0, -progress * 25), "buttstockattack", 0.0001)
+	if progress > 0 then
+		self:BoneSet("spine1", vecZero, Angle(0, 0, progress * 25), "buttstockattack", 0.0001)
+		self:BoneSet("head", vecZero, Angle(0, 0, -progress * 25), "buttstockattack", 0.0001)
+	end
 
 	local func = hg.postureFunctions[ply.posture] or funcNil
 
@@ -196,7 +198,9 @@ function SWEP:AnimZoom()
 	angZoom1[1] = self:IsZoom() and (-angZoom1[1] * 50) or 0
 	angZoom1[1] = self:IsZoom() and math.Clamp(angZoom1[1],-20,20) or 0
 	
-	self:BoneSet("head", vecZero, angZoom1, "aiming", 0.1)
+	if !angZoom1:IsEqualTol(angle_zero, 0.01) then
+		self:BoneSet("head", vecZero, angZoom1, "aiming", 0.1)
+	end
 end
 
 local math_max, math_Clamp = math.max, math.Clamp

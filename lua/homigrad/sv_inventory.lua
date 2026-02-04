@@ -419,19 +419,22 @@ hook.Add("Player Think","loot-fellows",function(ply)
     if not ply:Alive() then return end
     ply.keypressed = ply.keypressed or false
     --if not ply:GetLookTrace() then return end
-    local trace = hg.eyeTrace(ply, 60)
-    
-    if not trace then return end
-    local ent = trace.Entity
-    ent = IsValid(hg.RagdollOwner(ent)) and hg.RagdollOwner(ent) or ent
 
     local use = IsValid(ply.FakeRagdoll) and (ply:KeyDown(IN_WALK) and ply:KeyDown(IN_SPEED) and not ply:KeyDown(IN_ATTACK) and not ply:KeyDown(IN_ATTACK2)) or (not IsValid(ply.FakeRagdoll) and (ply:KeyDown(IN_ATTACK2) and ply:KeyDown(IN_USE)))
     
     if use then
-        hook.Run("ZB_InventoryChecked",ply,ent)
+        local trace = hg.eyeTrace(ply, 60)
+    
+        if not trace then return end
+        local ent = trace.Entity
+        ent = IsValid(hg.RagdollOwner(ent)) and hg.RagdollOwner(ent) or ent
+    
         if not IsValid(ent) or not ent:GetNetVar("Inventory") then return end
-        --if IsValid(ply.FakeRagdoll) then return end
+        
+        hook.Run("ZB_InventoryChecked", ply, ent)
+
         if not ply.keypressed then ply:OpenInventory(ent) end
+        
         ply.keypressed = true
     else
         ply.keypressed = false

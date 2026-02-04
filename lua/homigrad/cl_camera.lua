@@ -780,7 +780,9 @@ hook.Add("Bones","HeadTurnAway",function(ply)
 	angle[2] = -(ply.LookY or 0) * 0.6
 	angle[3] = -(ply.LookX or 0) * 0.6
 
-	hg.bone.Set(ply, "head", vector_origin, angle, "headturn")
+	if !angle:IsEqualTol(angle_zero, 0.01) then
+		hg.bone.Set(ply, "head", vector_origin, angle, "headturn")
+	end
 end)
 
 local n = 35

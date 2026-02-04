@@ -10,9 +10,10 @@ MODE.OverideSpawnPos = true
 MODE.LootSpawn = false
 
 function MODE:CanLaunch()
-	local points = zb.GetMapPoints( "HMCD_TDM_T" )
+	return true
+	--[[local points = zb.GetMapPoints( "HMCD_TDM_T" )
 	local points2 = zb.GetMapPoints( "HMCD_TDM_CT" )
-    return (#points > 0) and (#points2 > 0)
+    return (#points > 0) and (#points2 > 0)--]]
 end
 
 function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)

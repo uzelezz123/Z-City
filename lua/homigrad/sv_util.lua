@@ -409,7 +409,11 @@ hook.Add("Player Think", "homigrad-dropholstered", function(ply)
 	if ply.organism and ply.organism.allowholster then return end
 
 	local activewep = ply:GetActiveWeapon()
-	for i,wep in ipairs(ply:GetWeapons()) do
+	local weps = ply:GetWeapons()
+	local wep
+	for i = 1, #weps do
+		wep = weps[i]
+		
 		if wep.NoHolster and activewep ~= wep and wep.picked then 
 			ply:DropWeapon(wep)
 		end

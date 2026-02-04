@@ -1163,11 +1163,6 @@ function hg.GoreCalc(ent, ply)
 		local mat2 = ent:GetBoneMatrix(bon - 1)
 		mat:SetScale(vecalmostzero)
 		
-		--for i, bona in pairs(hg.get_children(ent, bon)) do
-			--ent:ManipulateBoneScale(bona, vecalmostzero)
-		--end
-		--ent:ManipulateBoneScale(bon, vecalmostzero)
-		
 		hg.bone_apply_matrix(ent, bon, mat)
 		
 		if IsValid(ply.OldFakeRagdoll) then

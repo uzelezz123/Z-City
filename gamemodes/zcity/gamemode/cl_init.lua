@@ -387,9 +387,10 @@ end
 
 gameevent.Listen("player_connect")
 hook.Add("player_connect", "zcityhuy", function(data)
-	if hg.playerInfo and hg.playerInfo[data.networkid] then
-		Player(data.userid):SetMuted(hg.playerInfo[data.networkid][1])
-		Player(data.userid):SetVoiceVolumeScale(hg.playerInfo[data.networkid][2])
+	local ply = Player(data.userid)
+	if IsValid(ply) and ply.SetMuted and hg.playerInfo and hg.playerInfo[data.networkid] then
+		ply:SetMuted(hg.playerInfo[data.networkid][1])
+		ply:SetVoiceVolumeScale(hg.playerInfo[data.networkid][2])
 	end
 end)
 

@@ -399,8 +399,10 @@ players : 1 humans, 0 bots (20 max)
 		if CLIENT then
 			lply = IsValid(lply) and lply or LocalPlayer()
 			local entities = hg.seenents
-
-			for _, ent in ipairs(entities) do
+			
+			for i = 1, #entities do
+				ent = entities[i]
+				
 				if not IsValid(ent) or (ent:IsPlayer() and not ent:Alive()) or IsValid(ent.FakeRagdoll) then continue end
 				--print(ent, CurTime())
 				local ply = ent:IsPlayer() and ent or IsValid(ent.ply) and ent.ply
@@ -645,32 +647,13 @@ players : 1 humans, 0 bots (20 max)
 			if not talker:IsSpeaking() then return end
 			if not IsValid(listener) or not IsValid(talker) or listener == talker then return end
 
-			local entr = talker
-
-			local distance = listener:GetPos():Distance(talker:GetPos())
-
-			if distance > 900000 then return end
-
 			local trace = util.TraceLine({
 				start = listener:EyePos(),
-				endpos = entr:EyePos(),
+				endpos = talker:EyePos(),
 				mask = MASK_SOLID_BRUSHONLY,
 			})
 
-			local volume = 1
-			local mute = 0.5
-
-			if distance < 200 then
-				mute = math.min(0.5 * 2, 1)
-			end
-			if talker:WaterLevel() == 3 then
-				mute = math.max(0.5 / 2, 0)
-			end
-			if trace.Hit or talker:WaterLevel() == 3 then
-				volume = (((distance / 900000) * -1) + 1) * mute
-			else
-				volume = (((distance / 900000) * -1) + 1)
-			end
+			local volume = (talker:WaterLevel() == 3) and 0.25 or (trace.Hit and 0.5 or 1)
 
 			talker:SetVoiceVolumeScale(!hg.muteall and math.min(hg.playerInfo[talker:SteamID()] and hg.playerInfo[talker:SteamID()][2] or 1, volume) or 0)
 		end
@@ -681,16 +664,18 @@ players : 1 humans, 0 bots (20 max)
 			ply:SetVoiceVolumeScale(!hg.muteall and (!hg.mutespect or ply:Alive()) and (hg.playerInfo[ply:SteamID()] and hg.playerInfo[ply:SteamID()][2] or 1) or 0)
 
 			if not ply:Alive() then return end
+			
 			local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
+			
 			if ply:VoiceVolume() != 0 then
 				if (ply.timedupdate or 0) < CurTime() then
-					UpdateVoiceDSP(LocalPlayer(), ply)
+					UpdateVoiceDSP(lply, ply)
 					
 					ply.timedupdate = CurTime() + 0.5
 				end
 			end
 
-			if LocalPlayer():GetPos():Distance(ent:GetPos()) > 1500 then return end
+			if lply:GetPos():DistToSqr(ent:GetPos()) > 1500 * 1500 then return end
 			
 			local flexes = {
 				[1] = ent:GetFlexIDByName( "jaw_drop" ),

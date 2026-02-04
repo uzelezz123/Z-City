@@ -187,10 +187,16 @@ function hg.HomigradBones(ply, dtime)
 	if IsValid(ply.FakeRagdoll) then return end
 
 	if not ply.manipulated then reset(ply) return end
-
+	
 	for bone, tbl in pairs(ply.manipulated) do
 		for layer, tbl in pairs(tbl.layers) do
 			if (tbl.lastset != time) then
+				if tbl.Pos:IsEqualTol(vector_origin, 0.01) and tbl.Ang:IsEqualTol(angle_zero, 0.01) then
+					ply.manipulated[bone] = nil
+
+					continue
+				end
+
 				hg.bone.Set(ply, bone, vector_origin, angle_zero, layer, 0.01, dtime2, true)
 			end
 		end

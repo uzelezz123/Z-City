@@ -14,7 +14,7 @@ MODE.OverrideSpawn = true
 MODE.LootSpawn = true
 MODE.LootOnTime = true
 
-MODE.Chance = 0.28
+MODE.Chance = 0.05
 MODE.LootDivTime = 500
 
 MODE.LootTable = {
@@ -640,7 +640,7 @@ end
 function MODE:Intermission()
 	game.CleanUpMap()
 
-	local _,CROUND = CurrentRound()
+	local _, CROUND = CurrentRound()
 
 	if not CROUND or CROUND == "hmcd" then
 		CROUND = table.Random(self:SubModes())

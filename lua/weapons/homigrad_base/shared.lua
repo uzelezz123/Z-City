@@ -1859,6 +1859,9 @@ end
 
 function SWEP:InUse()
 	local ply = self:GetOwner()
+	
+	if !IsValid(ply) then return false end
+	
 	local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 	local org = ply.organism
 

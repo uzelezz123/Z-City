@@ -594,7 +594,7 @@ hook.Add("RenderScreenspaceEffects", "organism-effects", function()
 			lply:SetDSP(17)
 			plyCommand(lply,"soundfade 100 25")
 		end
-	elseif lply.tinnitus - CurTime() < 0.5 then
+	elseif lply.tinnitus + 0.5 < CurTime() then
 		plyCommand(lply,"soundfade "..tinnitusSoundFactor2.." 25")
 
 		if ((disorientation and disorientation > 3) or (brain and brain > 0.2)) and lply:Alive() then

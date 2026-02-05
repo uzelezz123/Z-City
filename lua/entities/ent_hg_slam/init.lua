@@ -13,6 +13,7 @@ function ENT:Initialize()
 	self:DrawShadow(true)
 	self:SetBodygroup(1, 1)
 	self.Safety = CurTime() + 3
+	self:SetNWFloat("Safety", self.Safety)
 
 	local phys = self:GetPhysicsObject()
 	if IsValid(phys) then

@@ -178,6 +178,10 @@ function SWEP:Shoot(override)
                 ply = hg.RagdollOwner(ent) or ent
             end
 
+			if ply:InVehicle() then
+				ply:ExitVehicle()
+			end
+
 			local drugged = ply.organism and ply.organism.analgesia > 0.5
 
             local time = math.random(5,7) * (drugged and 0.2 or 1)

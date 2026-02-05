@@ -522,7 +522,7 @@ hg.organism.input_list.protovisor = function(org, bone, dmg, dmgInfo, ...)
 end
 
 hook.Add("HG_ReplacePhrase", "MaskMuffed", function(ent, phrase, muffed, pitch)
-	if ent.armors["face"] == "mask2" then
+	if ent.armors and ent.armors["face"] == "mask2" then
 		return ent, phrase, true, pitch
 	end
 end)

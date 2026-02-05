@@ -1456,9 +1456,10 @@ hg.postureFunctions2 = {
 			self.AdditionalPosPreLerp[2] = self.AdditionalPosPreLerp[2] - 2
 			self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] + 6 - add
 		else
-			self.AdditionalPosPreLerp[1] = self.AdditionalPosPreLerp[1] - 2
+			self.AdditionalPosPreLerp[1] = self.AdditionalPosPreLerp[1] - -5
 			self.AdditionalPosPreLerp[2] = self.AdditionalPosPreLerp[2] + -2
 			self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] + 6 - add
+			self.AdditionalAngPreLerp[1] = self.AdditionalAngPreLerp[1] + 12
 		end
 	end,
 	[7] = function(self,ply)
@@ -1741,6 +1742,20 @@ function SWEP:GetAdditionalValues()
 	self.AdditionalAngPreLerp[2] = self.AdditionalAngPreLerp[2] + x * 4 * lena
 	self.AdditionalAngPreLerp[1] = self.AdditionalAngPreLerp[1] - y * 2 * lena
 	self.AdditionalAngPreLerp[3] = self.AdditionalAngPreLerp[3] - y * 3 * lena
+
+	if CLIENT and self:IsLocal() and owner:IsOnGround() then
+		local runMul = vellen / owner:GetRunSpeed()
+		if runMul >= 0.32 then
+			if not self:IsPistolHoldType() and not self.CanEpicRun then
+				self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] - y * 3 * runMul
+				self.AdditionalAngPreLerp[1] = self.AdditionalAngPreLerp[1] - y * 3 * -2 * runMul
+				self.AdditionalAngPreLerp[3] = self.AdditionalAngPreLerp[3] - y * 3 * -6 * runMul
+			--[[else
+				self.AdditionalPosPreLerp[2] = self.AdditionalPosPreLerp[2] - y * 2 * runMul * -1
+				self.AdditionalAngPreLerp[2] = self.AdditionalAngPreLerp[2] - y * 6 * runMul]]
+			end
+		end
+	end
 
 	if CLIENT and self:IsLocal2() then
 		angle_huy[1] = x / 300

@@ -39,6 +39,8 @@ local effect = {
 
 local bulletHit
 --local hg_bulletholes = GetConVar("hg_bulletholes") or CreateClientConVar("hg_bulletholes", "150", true, false, "0-500, amount of bullet hole effects (r6s-like)", 0, 500)
+local timer, util, math, IsValid, WorldToLocal, Vector, sound, EffectData, game = timer, util, math, IsValid, WorldToLocal, Vector, sound, EffectData, game
+
 local function callbackBullet(self, tr, dmg, force, bullet)
 	if CLIENT then return end
 
@@ -128,7 +130,7 @@ local function callbackBullet(self, tr, dmg, force, bullet)
 				Tracer = 0,
 				TracerName = "nil",
 				Dir = dir,
-				Spread = Vector(0, 0, 0),
+				Spread = vector_origin,
 				Src = SearchPos + dir,
 				Callback = bulletHit,
 				DisableLagComp = true,
@@ -161,7 +163,7 @@ local function callbackBullet(self, tr, dmg, force, bullet)
 				util.Effect("eff_tracer", effectdata1)
 			end)
 		end
-	elseif ApproachAngle < MaxRicAngle * 0.7 then--previosly 0.2, made 1 for fun
+	elseif ApproachAngle < MaxRicAngle * 0.7 then --previosly 0.2, made 1 for fun
 		--if CLIENT then return end
 		-- ping whiiiizzzz
 		local rnd = math.random(12)
@@ -169,6 +171,7 @@ local function callbackBullet(self, tr, dmg, force, bullet)
 		sound.Play("arc9_eft_shared/ricochet/ricochet" .. rnd .. ".ogg", hitPos, 75, math.random(90, 110))
 		--sound.Play("snd_jack_hmcd_ricochet_" .. math.random(1, 2) .. ".wav", hitPos, 75, math.random(90, 110))
 		--sound.Play("weapons/arccw/ricochet0" .. math.random(1, 5) .. "_quiet.wav", hitPos, 75, math.random(90, 110))
+		util.Decal("ManhackCut", tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
 		local NewVec = dir:Angle()
 		NewVec:RotateAroundAxis(hitNormal, 180)
 		NewVec = NewVec:Forward()
@@ -180,7 +183,7 @@ local function callbackBullet(self, tr, dmg, force, bullet)
 			Tracer = 0,
 			TracerName = "nil",
 			Dir = -NewVec,
-			Spread = Vector(0, 0, 0),
+			Spread = vector_origin,
 			Src = hitPos + hitNormal,
 			Callback = bulletHit,
 			DisableLagComp = true,
@@ -239,6 +242,33 @@ local hands = {
 	[7] = true,
 }
 
+local shootDecals, shootDecalRand = {
+	"decals/metal/shot6",
+	"decals/metal/shot7",
+	"decals/bigshot2",
+	"decals/bigshot4",
+	"decals/bigshot5",
+}, 1
+for i, decal in ipairs(shootDecals) do
+	game.AddDecal("Impact.ShootAdd" .. i, decal)
+	shootDecalRand = i
+end
+
+game.AddDecal("Impact.ShootPowderAdd", "decals/burn01a")
+
+local ipairs, ents = ipairs, ents
+local ents_FindInSphere = ents.FindInSphere
+local function gasInertia(pos, force)
+	for _, ent in ipairs(ents_FindInSphere(pos, force)) do
+		if IsValid(ent) and not ent:IsNPC() and not ent:IsPlayer() then
+			local phys = ent:GetPhysicsObject()
+			if IsValid(phys) then
+				phys:ApplyForceCenter((pos - ent:GetPos()) * (-phys:GetMass() / 2))
+			end
+		end
+	end
+end
+
 bulletHit = function(ply, tr, dmgInfo, bullet, Weapon)
 	if CLIENT then return end
 	local inflictor = IsValid(ply) and not ply:IsNPC() and ply.GetActiveWeapon and ply:GetActiveWeapon() or dmgInfo:GetInflictor()
@@ -248,6 +278,7 @@ bulletHit = function(ply, tr, dmgInfo, bullet, Weapon)
 		return false, false
 	end
 
+	--// uncomment to use default impact effects
 	--[[local effectdata = EffectData()
 	effectdata:SetOrigin( tr.HitPos )
 	effectdata:SetEntity( tr.Entity )
@@ -255,10 +286,25 @@ bulletHit = function(ply, tr, dmgInfo, bullet, Weapon)
 	effectdata:SetSurfaceProp( tr.SurfaceProps )
 	effectdata:SetDamageType( dmgInfo:GetDamageType() )
 	effectdata:SetHitBox( tr.HitBox )
-	util.Effect( "Impact", effectdata )--]]
+	util.Effect( "Impact", effectdata )]]
 
+	local trPos, trNormal, trStart = tr.HitPos, tr.HitNormal, tr.StartPos
 	if tr.MatType == MAT_FLESH then
-		util.Decal("Impact.Flesh", tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
+		util.Decal("Impact.Flesh", trPos + trNormal, trPos - trNormal)
+	end
+
+	local force = bullet.Force
+	if force >= 20 then
+		local dist = trStart:DistToSqr(trPos)
+		if dist <= 160000 and (math.random(3) == 2 or force >= 30) and tr.Entity:IsWorld() then
+			util.Decal("Impact.ShootAdd" .. math.random(shootDecalRand), trPos + trNormal, trPos - trNormal)
+		end
+		if force >= 30 and dist <= 1400000 and (math.random(3) == 2 or force >= 45) then
+			util.Decal("Impact.ShootPowderAdd", trPos + trNormal, trPos - trNormal)
+		end
+
+		gasInertia(trPos, force * 2)
+		gasInertia(trStart, force * 4)
 	end
 
 	timer.Simple(0,function()

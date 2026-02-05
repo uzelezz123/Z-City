@@ -126,7 +126,7 @@ else
 			end
 		else
 			ply.posture = ply.posture or 0
-			ply.posture = (ply.posture + 1) >= 9 and 0 or ply.posture + 1
+			ply.posture = (ply.posture + 1) > 9 and 0 or ply.posture + 1
 		end
 		net.Start("change_posture")
 		net.WriteEntity(ply)

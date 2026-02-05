@@ -90,16 +90,6 @@ net.Receive("hg_bloodimpact", function()
 	for i = 1, amt do impact(pos,vel,mul) end
 end)
 
-hook.Add("PostEntityFireBullets","kishki",function(ent,bullet)
-	local tr = bullet.Trace
-	local hitEnt = tr.Entity
-	local dmg = bullet.Damage
-	
-	if hitEnt.organism then
-		--impact(tr.HitPos,tr.Normal * dmg,dmg / 10)
-	end
-end)
-
 local function explode(pos, size, force)
 	size = size or 1
 	local xx, yy = 12, 12

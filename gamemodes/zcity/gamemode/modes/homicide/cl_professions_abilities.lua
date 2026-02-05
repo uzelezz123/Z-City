@@ -191,7 +191,7 @@ hook.Add("radialOptions", "EngineerCraft", function()
 		local have_bottle = ply:HasWeapon("weapon_hg_bottle")
 		
 		for i, ent in ipairs(ents.FindInSphere(ply:GetPos(), 64)) do
-			if hg.gas_models[ent:GetModel()] then
+			if hg.gas_models[ent:GetModel()] and !ent:GetNWBool("EmptyBarrel", false) then
 				have_barrel_nearby = true
 				break
 			end

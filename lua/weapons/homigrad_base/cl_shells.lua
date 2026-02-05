@@ -140,7 +140,8 @@ local lpos2, lang2 = Vector(0,5,0), Angle(0,0,0)
 function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
 	if not IsValid(self) then return end
 	if not IsValid(self:GetWM()) then return end
-	if not IsValid(self:GetOwner()) then return end
+	local owner = self:GetOwner()
+	if not IsValid(owner) then return end
 	
 	local matrix = self:GetWM():GetBoneMatrix(isnumber(self.FakeMagDropBone) and self.FakeMagDropBone or self:GetWM():LookupBone(self.FakeMagDropBone or "Magazine") or self:GetWM():LookupBone("ValveBiped.Bip01_L_Hand"))
 	
@@ -207,10 +208,10 @@ function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
 		phys:SetMass(10)
 
 		local vel = vel and -(-vel) or -(-vector_origin)
-		vel:Rotate(self:GetOwner():EyeAngles())
+		vel:Rotate(owner:EyeAngles())
 		
 
-		phys:SetVelocity(vel + (((IsValid(self) and IsValid(self:GetOwner())) and self:GetOwner():GetVelocity()*1.1) or Vector(0,0,0)))
+		phys:SetVelocity(vel + (((IsValid(self) and IsValid(owner)) and owner:GetVelocity()*1.1) or Vector(0,0,0)))
 		phys:SetAngleVelocity(VectorRand() * 5)
 	end
 

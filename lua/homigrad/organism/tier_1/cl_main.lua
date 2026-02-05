@@ -216,10 +216,10 @@ local function MegaDSP(ply)
 			avgDist = 10 ^ 8
 		end
 	
-		-- Do not set to 0 for no effect; it causes DSP allocation error.
+		-- Do not set to 0 for no effect; it causes DSP allocation error. -- Why is it 0 then???
 		--print(avgDist)
 		if avgDist > 50000000 then
-			RunConsoleCommand("dsp_player", 0)
+			RunConsoleCommand("dsp_player", 1)
 			RunConsoleCommand("room_type", 1)
 		elseif avgDist > 5000000 then
 			RunConsoleCommand("dsp_player", 105)
@@ -594,7 +594,7 @@ hook.Add("RenderScreenspaceEffects", "organism-effects", function()
 			lply:SetDSP(17)
 			plyCommand(lply,"soundfade 100 25")
 		end
-	else
+	elseif lply.tinnitus - CurTime() < 0.5 then
 		plyCommand(lply,"soundfade "..tinnitusSoundFactor2.." 25")
 
 		if ((disorientation and disorientation > 3) or (brain and brain > 0.2)) and lply:Alive() then

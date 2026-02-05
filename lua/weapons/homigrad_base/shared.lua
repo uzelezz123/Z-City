@@ -517,6 +517,8 @@ function SWEP:Draw(server,overide)
 	if self:Clip1() > 0 then self.drawBullet = true end
 end
 
+SWEP.shootingTime = false
+
 SWEP.AutomaticDraw = true
 SWEP.ShootAnimMul = 2
 SWEP.shot2 = 0
@@ -548,6 +550,8 @@ function SWEP:PrimaryShoot()
 	self.shot = self.shot or 0
 	self.shot = math.min(3, self.shot + (self.NumBullet or 1))
 	self.shot2 = math.min(1, self.shot2 + 1)
+
+	if not self.shootingTime then self.shootingTime = CurTime() end
 	
 	if not (CLIENT and self:GetOwner():IsNPC()) then
 		self:TakePrimaryAmmo(1)
@@ -604,8 +608,11 @@ function SWEP:EmitShoot()
 	local ply = self:GetOwner()
 	ply = IsValid(ply) and ply or self
 
+	local ear_protection = false
+
 	if CLIENT then
 		if IsValid(lply) and lply.armors and lply.armors["ears"] == "headphones1" then
+			ear_protection = true
 			vol = vol / 2
 		end
 	end
@@ -627,6 +634,17 @@ function SWEP:EmitShoot()
 			--debugoverlay.Line(ply:EyePos(), ply:EyePos() + dir, 1, color_white, true)
 			insideVal = insideVal + (inside.Hit and !inside.HitSky and 1 or 0)
 		end
+	end
+
+	local MODE = engine.ActiveGamemode() == "zcity" and CurrentRound() or {name = "standard"}
+
+    if not ear_protection and IsValid(ply) and ply:IsPlayer() and GetConVar("hg_guntinnitus"):GetBool() and table.HasValue(tinnitusModes, MODE.name) then
+		ply.TinnitusFactor = (ply.TinnitusFactor or 0) + (self.Primary.Force / 100) * (1 + (insideVal / 32)) * (self.Supressor and 0.5 or 1)
+
+	    local time = math.Clamp(ply.TinnitusFactor, 0, 3)
+	    ply.tinnitus = CurTime() + time * 4
+
+	    ply:SetDSP((self.shootingTime and self.shootingTime + 1 < CurTime()) and 31 or 32)
 	end
 
 	if not self.Supressor and !self.NoWINCHESTERFIRE then
@@ -1211,6 +1229,10 @@ function SWEP:CoreStep()
 		local time2 = time - self:LastShootTime()
 
 		self:MuzzleEffect(time2)
+
+		if self:LastShootTime() + 1.5 < CurTime() and self.shootingTime then
+			self.shootingTime = false
+		end
 	end
 
 	if not IsValid(owner) or (IsValid(actwep) and self != actwep) then return end

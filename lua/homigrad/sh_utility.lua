@@ -887,6 +887,8 @@ local IsValid = IsValid
 	local hg_firstperson_ragdoll = ConVarExists("hg_firstperson_ragdoll") and GetConVar("hg_firstperson_ragdoll") or CreateConVar("hg_firstperson_ragdoll", 0, FCVAR_ARCHIVE, "first person ragdoll", 0, 1)
 	local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "gopro camera", 0, 1)
 
+	local hg_guntinnitus = ConVarExists("hg_guntinnitus") and GetConVar("hg_guntinnitus") or CreateConVar("hg_guntinnitus", 1, FCVAR_ARCHIVE, "guns cause tinnitus when shot", 0, 1)
+
 	local vector_full = Vector(1, 1, 1)
 	local vector_small = Vector(0.01, 0.01, 0.01)
 	local angfuck = Angle()

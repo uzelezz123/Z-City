@@ -227,6 +227,12 @@ players : 1 humans, 0 bots (20 max)
 	end)
 --//
 
+tinnitusModes = {
+	"standard",
+	"soe",
+	"gunfreezone",
+}
+
 --\\ Supression
 	if CLIENT then
 		suppressionVec = Vector(0, 0, 0)
@@ -292,6 +298,17 @@ players : 1 humans, 0 bots (20 max)
 			local dist = pos:Distance(eyePos)
 			local shooterdist = tr.StartPos:Distance(eyePos)
 			local mr = math.random(9)
+
+			local MODE = engine.ActiveGamemode() == "zcity" and CurrentRound() or {name = "standard"}
+
+			if (not lply.armors or lply.armors["ears"] ~= "headphones1") and GetConVar("hg_guntinnitus"):GetBool() and table.HasValue(tinnitusModes, MODE.name) then
+				lply.TinnitusFactor = (lply.TinnitusFactor or 0) + (self.Primary.Force / 100) + math.Remap(shooterdist / 300, 0, 1, 1, 0) * (self.Supressor and 0.5 or 1)
+
+		        local time = math.Clamp(lply.TinnitusFactor, 0, 3)
+                lply.tinnitus = CurTime() + time * 4
+
+			    lply:SetDSP(31)
+		    end
 
 			if shooterdist < 200 and not IsLookingAt(self:GetOwner(),eyePos) then return end
 			if dist < 180 then EmitSound("cracks/heavy/heav_crack_0" .. mr .. ".ogg", pos, 0, CHAN_AUTO, 1,65) end

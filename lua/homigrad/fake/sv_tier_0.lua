@@ -10,11 +10,14 @@ function PLAYER:CreateRagdoll()
 end
 
 local hook_Run = hook.Run
+local entsFindByClass = ents.FindByClass
 hook.Add("OnEntityCreated", "bull_add", function(npc)
 	timer.Simple(0, function()
 		if IsValid(npc) then
 			if npc:IsNPC() or string.Explode( "_" , npc:GetClass() ) == "terminator" then
-				for i, ent in pairs(ents.FindByClass("npc_bullseye")) do
+				local entity_torelation = ents.FindByClass("npc_bullseye")
+				for i = #entity_torelation, 1, -1 do
+					local ent = entity_torelation[i]
 					if IsValid(ent) and IsValid(ent.ply) then npc:AddEntityRelationship(ent, npc:Disposition(ent.ply)) end
 				end
 			end
@@ -160,14 +163,18 @@ function hg.Ragdoll_Create(ply)
 	enta:Spawn()
 	enta:SetNotSolid(true)
 	bull:CallOnRemove("asdsad",function() enta:Remove() end)--]]
-	
-	for i, ent in ipairs(ents.FindByClass("npc_*")) do
+
+	local entity_npc = entsFindByClass("npc_*")
+	for i = #entity_npc, 1, -1 do
+		local ent = entity_npc[i]
 		if not IsValid(ent) or not ent.AddEntityRelationship then continue end
 		ent:AddEntityRelationship(bull, ent:Disposition(ply))
 	end
 
 
-	for i, ent in ipairs(ents.FindByClass("terminator_*")) do
+	local entity_terminator = entsFindByClass("terminator_*")
+	for i = #entity_terminator, 1, -1 do
+		local ent = entity_terminator[i]
 		if not IsValid(ent) or not ent.AddEntityRelationship then continue end
 		ent:AddEntityRelationship(bull, ent:Disposition(ply))
 	end

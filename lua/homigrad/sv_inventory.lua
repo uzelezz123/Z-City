@@ -429,10 +429,10 @@ hook.Add("Player Think","loot-fellows",function(ply)
         local ent = trace.Entity
         ent = IsValid(hg.RagdollOwner(ent)) and hg.RagdollOwner(ent) or ent
     
+        hook.Run("ZB_InventoryChecked", ply, ent)
+        
         if not IsValid(ent) or not ent:GetNetVar("Inventory") then return end
         
-        hook.Run("ZB_InventoryChecked", ply, ent)
-
         if not ply.keypressed then ply:OpenInventory(ent) end
         
         ply.keypressed = true

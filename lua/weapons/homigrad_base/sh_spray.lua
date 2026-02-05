@@ -114,11 +114,12 @@ function SWEP:PrimarySpread()
 		ViewPunch(Angle(-1 * math.Rand(1,2),-1 * math.Rand(-1,1),0) * mul / -2)
 		timer.Simple(0.01, function() ViewPunch2(Angle(-1 * math.Rand(1,2),1 * math.Rand(-1,1),0) * mul) end)
 		timer.Simple(0.02, function() ViewPunch2(Angle(1 * math.Rand(1,2.4),0,0) * mul) end)
-		
-		local sprayAng = spray * (self:IsResting() and 0.1 or 1) * 8 + angrand3 * self.addSprayMul
+
+		local eyeang = owner:EyeAngles()
+		local sprayAng = (spray * (self:IsResting() and 0.1 or 1) * 8 + angrand3 * self.addSprayMul) * (eyeang.z == 180 and -1 or 1)
 		sprayAng[3] = 0
 
-		owner:SetEyeAngles(owner:EyeAngles() + sprayAng * 3 * (organism.recoilmul or 1) * (owner.posture == 1 and not self:IsZoom() and 0.1 or 1) * 0.25)
+		owner:SetEyeAngles(eyeang + sprayAng * 3 * (organism.recoilmul or 1) * (owner.posture == 1 and not self:IsZoom() and 0.1 or 1) * 0.25)
 		
 		local rnd1, rnd2 = math.Rand(1,2), math.Rand(-1,1)
 		ViewPunch2(Angle(2 * rnd1,2 * rnd2,0) * mul * 0.5)
@@ -182,8 +183,12 @@ function SWEP:Step_Spray(time,dtime)
 	if self.Primary.Next + 0.3 < time then self.SprayI = 0 end
 	
 	if SERVER then return end
+
 	local eyeSpray = self.EyeSpray
-	self:GetOwner():SetEyeAngles(self:GetOwner():EyeAngles() + eyeSpray)
+	local owner = self:GetOwner()
+	local eyeang = owner:EyeAngles()
+
+	owner:SetEyeAngles(eyeang + (eyeSpray * (eyeang.z == 180 and -1 or 1)))
 	eyeSpray:Set(LerpAngle(hg.lerpFrameTime2(0.1,dtime), eyeSpray, angZero))
 end
 

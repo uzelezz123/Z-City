@@ -11,7 +11,7 @@ ENT.BlastDis = 3
 ENT.BlastDamage = 70
 
 --local developer = GetConVar("developer")
-ENT.offsetPos = Vector(-2.2, 2, 1)
+ENT.offsetPos = Vector(-2.25, 1.38, 0)
 ENT.offsetAng = Angle(-90, 180, 0)
 
 function ENT:Think()
@@ -24,11 +24,15 @@ function ENT:Think()
     tr.collisiongroup = COLLISION_GROUP_NONE
     local tr = util.TraceLine(tr)
 
-    --if developer:GetBool() then
+    -- if developer:GetBool() then
     --    debugoverlay.Line(pos, tr.HitPos, 1, color_white, true)
-    --end
+    -- end
+
+    self.TraceStart = pos
+    self.TraceHitPos = tr.HitPos
+
     if SERVER then
-    local beepSnd = math.abs(math.sin(CurTime() * 8))
+        local beepSnd = math.abs(math.sin(CurTime() * 8))
         self.Played = self.Played or false
         if self.Safety > CurTime() and beepSnd > 0.9 and not self.Played then
             self.Played = true
@@ -40,6 +44,10 @@ function ENT:Think()
 
     if SERVER and tr.Hit and tr.Entity:GetVelocity():LengthSqr() > 1 and self.Safety < CurTime() then
         self:ActivateExplosive()
+    end
+
+    if CLIENT and not self.HookAdded and self:GetNWFloat("Safety",CurTime()) < CurTime() then
+        self:CreateLaserHook()
     end
 
     self:NextThink(CurTime())

@@ -48,8 +48,8 @@ SWEP.HoldType = "knife"
 
 --models/weapons/gleb/c_knife_t.mdl
 if CLIENT then
-	SWEP.WepSelectIcon = Material("vgui/wep_jack_hmcd_knife")
-	SWEP.IconOverride = "vgui/wep_jack_hmcd_knife.png"
+	SWEP.WepSelectIcon = Material("vgui/icons/ico_buck120.png")
+	SWEP.IconOverride = "vgui/icons/ico_buck120.png"
 	SWEP.BounceWeaponIcon = false
 end
 

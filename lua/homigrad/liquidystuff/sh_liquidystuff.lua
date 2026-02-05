@@ -199,6 +199,8 @@ if SERVER then
 				drum.loopsound = nil
 			end
 
+			ent:SetNWBool("EmptyBarrel", true)
+
 			hg.drums[i] = nil
 		end
 	end)

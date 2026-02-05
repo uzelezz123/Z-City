@@ -1010,6 +1010,43 @@ hg.ammotypes = {
 			ShellColor = Color(255,185,0)
 		}
 	},
+	["20/70"] = { //потом другие добавлю
+		name = "20/70",
+		allowed = true,
+		--dmgtype = DMG_BUCKSHOT,
+		tracer = TRACER_LINE,
+		plydmg = 0,
+		npcdmg = 0,
+		force = 370,
+		maxcarry = 50,
+		minsplash = 15,
+		maxsplash = 15,
+		TracerSetings = {
+			TracerBody = Material("particle/fire"),
+			TracerTail = Material("effects/laser_tracer"),
+			TracerHeadSize = 0.8,
+			TracerLength = 12,
+			TracerWidth = 0.8,
+			TracerColor = Color(255, 237, 155),
+			TracerTPoint1 = 0.25,
+			TracerTPoint2 = 1,
+			TracerSpeed = 9000,
+			NoSpin = true,
+		},
+		BulletSettings = {
+			Damage = 12,
+			Force = 6,
+			Penetration = 6,
+			NumBullet = 14,
+			Shell = "20x70",
+			Speed = 420,
+			AirResistMul = 0.00025,
+			Diameter = 20/6,
+			Mass = 26/6,
+			Icon = matShotgunAmmo,
+			ShellColor = Color(255,150,0)
+		}
+	},
 	["9x18mm"] = {
 		name = "9x18 mm",
 		allowed = true,
@@ -2504,6 +2541,12 @@ local ammoents = {
 		Material = "models/hmcd_ammobox_12",
 		Scale = 1.2,
 		Count = 12,
+	},
+	["20/70"] = {
+		Material = "models/hmcd_ammobox_12",
+		Scale = 1.1,
+		Count = 12,
+		Color = Color(255,150,0)
 	},
 	["9x18mm"] = {
 		Model = "models/zcity/ammo/ammo_9x18_pmm.mdl",

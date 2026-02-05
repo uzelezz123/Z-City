@@ -1119,7 +1119,7 @@ hg.Accessories = {
 
     ["hood"] = {
         model = "models/distac/kapishon2.mdl",
-        femmodel = "models/distac/kapishon2.mdl",
+        femmodel = "models/distac/kapishon2_f.mdl",
         bone = "ValveBiped.Bip01_Head1",
         malepos = {Vector(0.2,4.8,0),Angle(0,90,90),1},
         fempos = {Vector(-1.2,3.5,0),Angle(0,90,90),1},

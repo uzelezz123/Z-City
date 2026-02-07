@@ -98,7 +98,7 @@ SWEP.LHAng = Angle(-65,-15,-180)
 
 SWEP.availableAttachments = {
     agsmag = {
-        [1] = {"agsmag",Vector(0,0,0), {}},
+        [1] = {"agsmag0",Vector(0,0,0), {}},
 		["noblock"] = true,
     },
 	sight = {

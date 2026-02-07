@@ -257,9 +257,6 @@ local heatstroke_phraselist = {
 	"I feel dizzy.. Fuuck-",
 	"MY HEAD!- It hurts..",
 	"My head is aching..",
-	"Why.. Do I feel weird..?",
-	"My heart.. It's about to burst..",
-	"I feel my heart pounding, FUCK!!"
 }
 
 local heatvomit_phraselist = {
@@ -308,9 +305,8 @@ function hg.likely_to_phrase(ply)
 
 	return (broken_dislocated) and 5
 		or (pain > 65) and 5
-		or (temperature < 28 and 0.5)
-		or (temperature < 31 and 1)
-		or (temperature > 40 and 2)
+		or (temperature < 31 and 0.5)
+		or (temperature > 38 and 0.5)
 		or (blood < 3000 and 0.3)
 		--or (fear > 0.5 and 0.7)
 		or (brain > 0.1 and brain * 5)

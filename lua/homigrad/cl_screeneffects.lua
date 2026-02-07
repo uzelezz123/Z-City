@@ -222,12 +222,13 @@ end )]]
 --that one furry game
 
 
-local painMat = Material( "effects/shaders/zb_grain" )
-local noiseMat = Material( "effects/shaders/zb_grainwhite" )
-local vignetteMat = Material( "effects/shaders/zb_vignette" )
-local assimilationMat = Material( "effects/shaders/zb_assimilation" )
-local coldMat = Material( "effects/shaders/zb_colda" )
-local grainMat = Material( "effects/shaders/zb_grain2" )
+local painMat = Material("effects/shaders/zb_grain")
+local noiseMat = Material("effects/shaders/zb_grainwhite")
+local vignetteMat = Material("effects/shaders/zb_vignette")
+local assimilationMat = Material("effects/shaders/zb_assimilation")
+local coldMat = Material("effects/shaders/zb_colda")
+local grainMat = Material("effects/shaders/zb_grain2")
+local heatMat = Material("effects/shaders/zb_heat")
 
 local PainLerp = 0
 local O2Lerp = 0
@@ -353,6 +354,21 @@ hook.Add("Post Post Processing", "ItHurts", function()
 	local brain = org.brain or 0
 	O2Lerp = LerpFT(0.01, O2Lerp, (30 - o2) * (org.otrub and 2 or 10) + (brain * 100) * (org.otrub and 1 or 5))
 
+	tempLerp = LerpFT(0.01, tempLerp, org.temperature)
+
+	if tempLerp > 38 then
+		local heat = tempLerp - 38
+
+		render.UpdateScreenEffectTexture()
+
+		heatMat:SetFloat("$c0_x", -CurTime() * 0.25)//math.sin(CurTime() * 0.1) * CurTime() * 0.01) //time
+		heatMat:SetFloat("$c0_y", 0.06 * heat)//(math.sin(CurTime()) + 1) * 2) //intensity (strict)
+		heatMat:SetFloat("$c2_x", (math.sin(CurTime()) - 2) * heat)
+
+		render.SetMaterial(heatMat)
+		render.DrawScreenQuad()
+	end
+
 	local pain = org.pain or 0
 	pain = math.max(pain - 15, 0)
 	local shock = (org.shock or 0) * 1 + (1 - org.consciousness) * 40
@@ -361,8 +377,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 	-- local immobilization = org.immobilization
 	PainLerp = LerpFT(0.05, PainLerp, math.max(pain * (org.otrub and 0.2 or 1), 0))
 	assimilatedLerp = LerpFT(0.01, assimilatedLerp, (org.assimilated or 0))
-	tempLerp = LerpFT(0.01, tempLerp, org.temperature)
-	
+
 	if assimilatedLerp > 0.001 then
 		render.UpdateScreenEffectTexture()
 

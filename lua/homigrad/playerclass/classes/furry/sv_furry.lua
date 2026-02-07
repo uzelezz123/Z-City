@@ -112,12 +112,18 @@ local uwuspeak_phrases = {
 	"zbattle/furry/beep2.wav",
 }
 
+<<<<<<< HEAD
 hook.Add("HG_ReplacePhrase", "UwUPhrases", function(ent, phrase, muffed, pitch)
 	if ent.PlayerClassName == "furry" or ent.PlayerClassName == "expie" then
 		local inpain = ent.organism.pain > 60
+=======
+hook.Add("HG_ReplacePhrase", "UwUPhrases", function(ply, phrase, muffed, pitch)
+	if IsValid(ply) and ply.PlayerClassName == "furry" then
+		local inpain = ply.organism.pain > 60
+>>>>>>> 20758d2b77be70f8259e54d3a05c8004376c81dc
 		local phr = (inpain and fur_pain[math.random(#fur_pain)] or uwuspeak_phrases[math.random(#uwuspeak_phrases)])
 
-		return ent, phr, muffed, pitch
+		return ply, phr, muffed, pitch
 	end
 end)
 

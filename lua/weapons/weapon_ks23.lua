@@ -57,7 +57,7 @@ SWEP.WepSelectIcon2 = Material("entities/arc9_eft_ks23.png")
 SWEP.WepSelectIcon2box = true
 SWEP.IconOverride = "entities/arc9_eft_ks23.png"
 
-SWEP.LocalMuzzlePos = Vector(26,0.09,5.098)
+SWEP.LocalMuzzlePos = Vector(32,0.09,5.098)
 SWEP.LocalMuzzleAng = Angle(0.2,-0.0,0)
 SWEP.WeaponEyeAngles = Angle(-0.7,0.1,0)
 
@@ -220,10 +220,9 @@ function SWEP:GetAnimPos_Draw(time)
 	return 0
 end
 
-local function cock(self,time)
-
+local function cock(self, time)
 	if SERVER then
-		self:Draw(true,true)
+		self:Draw(true, true)
 	end
 
 	if self:Clip1() == 0 then
@@ -267,19 +266,22 @@ local function reloadFunc(self)
 		end
 		
 		local key = hg.KeyDown(self:GetOwner(), IN_RELOAD)
-		--print("reload",key)
 		
 		if key and self:CanReload() then
 			reloadFunc(self)
+
 			return
 		end
-		--self:GetOwner():ChatPrint(tostring(self.drawBullet))
-		--self:PlaySnd(self.CockSound or "weapons/shotgun/shotgun_cock.wav",true,CHAN_AUTO)
+
 		if !self.drawBullet then
-			--cock(self,1)
-			self:PlayAnim(self.AnimList["finish_empty"] or "sgreload_finish_empty", 0.3, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true) 
+			self:PlayAnim(self.AnimList["finish_empty"], 0.3, false, function(self)
+				cock(self, 1)
+				self:PlayAnim(self.AnimList["cycle"], 1, false, function(self)
+					self:SetNetVar("shootgunReload", 0)
+				end, false, true) 
+			end, false, true) 
 		else
-			self:PlayAnim(self.AnimList["finish"] or "sgreload_finish", 0.3, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true) 
+			self:PlayAnim(self.AnimList["finish"], 0.3, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true) 
 		end
 	end, false, true)
 end
@@ -296,9 +298,9 @@ function SWEP:Reload(time)
 	local ply = self:GetOwner()
 	if ply.organism and (ply.organism.larmamputated or ply.organism.rarmamputated) then return end
 
-	if self.drawBullet == false and SERVER and self:Clip1() > 0 then
-		cock(self,1)
-		self:SetNetVar("shootgunReload",CurTime() + 0.5)
+	if self.drawBullet == false and SERVER then
+		cock(self, 1)
+		self:SetNetVar("shootgunReload", CurTime() + 0.5)
 		self:PlayAnim(self.AnimList["cycle"] or "cycle", 1, false, nil, false, true)
 		return
 	end
@@ -315,16 +317,21 @@ function SWEP:Reload(time)
 			end
 			
 			local key = hg.KeyDown(self:GetOwner(), IN_RELOAD)
-			--print("reload",key)
 			
 			if key and self:CanReload() then
 				reloadFunc(self)
 				return
 			end
-			--self:GetOwner():ChatPrint(tostring(self.drawBullet))
-			--self:PlaySnd(self.CockSound or "weapons/shotgun/shotgun_cock.wav",true,CHAN_AUTO)
-			--self.drawBullet = false
-			self:PlayAnim(self.AnimList["finish"] or "sgreload_finish", 0.3, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true) 
+			if !self.drawBullet then
+				self:PlayAnim(self.AnimList["finish_empty"], 0.3, false, function(self)
+					cock(self, 1)
+					self:PlayAnim(self.AnimList["cycle"], 1, false, function(self)
+						self:SetNetVar("shootgunReload", 0)
+					end, false, true) 
+				end, false, true) 
+			else
+				self:PlayAnim(self.AnimList["finish"], 0.3, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true) 
+			end
 		end,
 		false, true)
 	end

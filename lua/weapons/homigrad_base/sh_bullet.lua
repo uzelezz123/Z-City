@@ -257,13 +257,23 @@ end
 game.AddDecal("Impact.ShootPowderAdd", "decals/burn01a")
 
 local ipairs, ents = ipairs, ents
-local ents_FindInSphere = ents.FindInSphere
-local function gasInertia(pos, force)
-	for _, ent in ipairs(ents_FindInSphere(pos, force)) do
+local ents_FindInCone = ents.FindInCone
+local vectorup = Vector(0, 0, 25)
+local ang = math.cos( math.rad( 125 ) )
+local function gasInertia(pos, force, dir)
+	if force >= 150 then return end
+	for _, ent in ipairs(ents_FindInCone(pos, dir, force, ang)) do
+		--print(ent)
 		if IsValid(ent) and not ent:IsNPC() and not ent:IsPlayer() then
 			local phys = ent:GetPhysicsObject()
 			if IsValid(phys) then
-				phys:ApplyForceCenter((pos - ent:GetPos()) * (-phys:GetMass() / 2))
+				if phys:GetMass() > 5 then continue end
+				local entpos = ent:GetPos()
+				local dist = pos:Distance(entpos)
+				local falloff = 1.5 - (dist / (force))
+
+				phys:Wake()
+				phys:ApplyForceCenter( ( ( (pos - entpos):GetNormalized() + dir) * 2 * ((-phys:GetMass() / 1.5) * (force / 5)) + vectorup ) * falloff)
 			end
 		end
 	end
@@ -303,8 +313,8 @@ bulletHit = function(ply, tr, dmgInfo, bullet, Weapon)
 			util.Decal("Impact.ShootPowderAdd", trPos + trNormal, trPos - trNormal)
 		end
 
-		gasInertia(trPos, force * 2)
-		gasInertia(trStart, force * 4)
+		gasInertia(trPos, force * 3, -tr.Normal)
+		gasInertia(trStart, force * 3, tr.Normal)
 	end
 
 	timer.Simple(0,function()

@@ -202,41 +202,41 @@ function ENT:Explode()
 	end
 
 	net.Start("projectileFarSound")
-		net.WriteString(table.Random(self.Sound))
-		net.WriteString(table.Random(self.SoundFar))
+		net.WriteString(self.Sound[math.random(#self.Sound)])
+		net.WriteString(self.SoundFar[math.random(#self.SoundFar)])
 		net.WriteVector(self:GetPos())
 		net.WriteEntity(self)
 		net.WriteBool(self:WaterLevel() > 0)
-		net.WriteString(self.SoundWater)
+		net.WriteString(self.SoundWater[math.random(#self.SoundWater)])
 	net.Broadcast()
 
 	if self:WaterLevel() > 0 then
 		self:EmitSound(self.SoundWater, 140, 85, 1, CHAN_WEAPON)
-		self:EmitSound(table.Random(self.SoundBass), 150, 70, 0.8, CHAN_AUTO)
+		self:EmitSound(self.SoundBass[math.random(#self.SoundBass)], 150, 70, 0.8, CHAN_AUTO)
 	else
-		self:EmitSound(table.Random(self.Sound), 145, 85, 1, CHAN_WEAPON)
-		self:EmitSound(table.Random(self.SoundFar), 140, 85, 0.9, CHAN_WEAPON)
+		self:EmitSound(self.Sound[math.random(#self.Sound)], 145, 85, 1, CHAN_WEAPON)
+		self:EmitSound(self.SoundFar[math.random(#self.SoundFar)], 140, 85, 0.9, CHAN_WEAPON)
 		
 		timer.Simple(0.05, function() 
 			if IsValid(self) then
-				self:EmitSound(table.Random(self.SoundBass), 150, 70, 0.95, CHAN_AUTO) 
+				self:EmitSound(self.SoundBass[math.random(#self.SoundBass)], 150, 70, 0.95, CHAN_AUTO) 
 			end
 		end)
 
 		timer.Simple(0.1, function() 
 			if IsValid(self) then
-				self:EmitSound(table.Random(self.SoundBass), 155, 60, 0.9, CHAN_BODY) 
+				self:EmitSound(self.SoundBass[math.random(#self.SoundBass)], 155, 60, 0.9, CHAN_BODY) 
 			end
 		end)
 	end
 
-	EmitSound(table.Random(self.Sound), self:GetPos(), self:EntIndex() + 100, CHAN_STATIC, 1, 140, nil, math.random(75, 85))
+	EmitSound(self.Sound[math.random(#self.Sound)], self:GetPos(), self:EntIndex() + 100, CHAN_STATIC, 1, 140, nil, math.random(75, 85))
 
 	if self:WaterLevel() > 0 then
 		self:EmitSound(self.SoundWater, 100, 100, 1, CHAN_WEAPON)
 	else
-		self:EmitSound(table.Random(self.Sound), 100, 100, 1, CHAN_WEAPON)
-		self:EmitSound(table.Random(self.SoundFar), 95, 100, 0.8, CHAN_WEAPON)
+		self:EmitSound(self.Sound[math.random(#self.Sound)], 100, 100, 1, CHAN_WEAPON)
+		self:EmitSound(self.SoundFar[math.random(#self.SoundFar)], 95, 100, 0.8, CHAN_WEAPON)
 	end
 
 
@@ -244,7 +244,7 @@ function ENT:Explode()
 
 		if not util.TraceLine({start = self:GetPos(), endpos = self:GetPos() + Vector(0,0,500), filter = self,mask = MASK_SOLID_BRUSHONLY}).HitSky then
 			for i = 1, 3 do
-				local debris_sound = table.Random(self.DebrisSounds)
+				local debris_sound = self.DebrisSounds[math.random(#self.DebrisSounds)]
 				timer.Simple(i * 0.15, function()
 					if IsValid(self) then
 						self:EmitSound(debris_sound, 90, math.random(95, 105), 1, CHAN_AUTO)
@@ -253,7 +253,7 @@ function ENT:Explode()
 			end
 		end
 		
-		EmitSound(table.Random(self.DebrisSounds), self:GetPos(), self:EntIndex(), CHAN_AUTO, 1, 80)
+		EmitSound(self.DebrisSounds[math.random(#self.DebrisSounds)], self:GetPos(), self:EntIndex(), CHAN_AUTO, 1, 80)
 	end
 
 	util.BlastDamage(self, IsValid(self.owner) and self.owner or self, selfPos, self.BlastDis / 0.01905, 35)
@@ -302,9 +302,8 @@ function ENT:Explode()
 	end
 
 	if entsCount > 10 and not self.LegacyInDoorSound then
-		
 		for i = 1, 3 do
-			local debris_sound = table.Random(self.DebrisSounds)
+			local debris_sound = self.DebrisSounds[math.random(#self.DebrisSounds)]
 			timer.Simple(i * 0.15, function()
 				if IsValid(self) then
 					self:EmitSound(debris_sound, 90, math.random(95, 105), 1, CHAN_AUTO)
@@ -312,7 +311,7 @@ function ENT:Explode()
 			end)
 		end
 
-		EmitSound(table.Random(self.DebrisSounds), self:GetPos(), self:EntIndex(), CHAN_AUTO, 1, 80)
+		EmitSound(self.DebrisSounds[math.random(#self.DebrisSounds)], self:GetPos(), self:EntIndex(), CHAN_AUTO, 1, 80)
 	end
 	
 	local Poof=EffectData()
@@ -402,7 +401,7 @@ function ENT:PlaySndExplosion(snd, server, chan, vol, pitch, entity, tripleaffir
 	if not string.find(snd:lower(), "water") then
 		timer.Simple(0.05, function()
 			if IsValid(self) then
-				EmitSound(table.Random(self.SoundBass), self:GetPos(), (entity or self:EntIndex()) + 50, CHAN_AUTO, vol * 0.8, 140, nil, 70)
+				EmitSound(self.SoundBass[math.random(#self.SoundBass)], self:GetPos(), (entity or self:EntIndex()) + 50, CHAN_AUTO, vol * 0.8, 140, nil, 70)
 			end
 		end)
 	end
@@ -413,7 +412,7 @@ function ENT:PlaySndExplosion(snd, server, chan, vol, pitch, entity, tripleaffir
 
 		timer.Simple(0.1, function()
 			if IsValid(self) then
-				EmitSound(table.Random(self.SoundBass), self:GetPos(), (entity or self:EntIndex()) + 3, CHAN_BODY, vol * 0.7, 140, nil, 60)
+				EmitSound(self.SoundBass[math.random(#self.SoundBass)], self:GetPos(), (entity or self:EntIndex()) + 3, CHAN_BODY, vol * 0.7, 140, nil, 60)
 			end
 		end)
 	end

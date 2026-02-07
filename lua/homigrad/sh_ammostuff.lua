@@ -1010,8 +1010,8 @@ hg.ammotypes = {
 			ShellColor = Color(255,185,0)
 		}
 	},
-	["20/70"] = { //потом другие добавлю
-		name = "20/70",
+	["20/70gauge"] = { //потом другие добавлю
+		name = "20/70 gauge",
 		allowed = true,
 		--dmgtype = DMG_BUCKSHOT,
 		tracer = TRACER_LINE,
@@ -1037,14 +1037,88 @@ hg.ammotypes = {
 			Damage = 12,
 			Force = 6,
 			Penetration = 6,
-			NumBullet = 14,
-			Shell = "20x70",
+			NumBullet = 11,
+			Shell = "20/70",
 			Speed = 420,
 			AirResistMul = 0.00025,
 			Diameter = 20/6,
 			Mass = 26/6,
 			Icon = matShotgunAmmo,
 			ShellColor = Color(255,150,0)
+		}
+	},
+	["20/70slug"] = {
+		name = "20/70 Slug",
+		allowed = true,
+		--dmgtype = DMG_BUCKSHOT,
+		tracer = TRACER_LINE,
+		plydmg = 0,
+		npcdmg = 0,
+		force = 400,
+		maxcarry = 50,
+		minsplash = 15,
+		maxsplash = 15,
+		TracerSetings = {
+			TracerBody = Material("particle/fire"),
+			TracerTail = Material("effects/laser_tracer"),
+			TracerHeadSize = 0.8,
+			TracerLength = 12,
+			TracerWidth = 0.8,
+			TracerColor = Color(255, 237, 155),
+			TracerTPoint1 = 0.25,
+			TracerTPoint2 = 1,
+			TracerSpeed = 9000,
+			NoSpin = true,
+		},
+		BulletSettings = {
+			Damage = 120,
+			Force = 120,
+			Penetration = 8,
+			Shell = "20x70slug",
+			Spread = Vector(0, 0, 0),
+			Speed = 420,
+			AirResistMul = 0.00025,
+			Diameter = 20/6,
+			Mass = 26/6,
+			Icon = matShotgunAmmo,
+			ShellColor = Color(12,75,12)
+		}
+	},
+	["20/70flechette"] = {
+		name = "20/70 Flechette",
+		allowed = true,
+		--dmgtype = DMG_BUCKSHOT,
+		tracer = TRACER_LINE,
+		plydmg = 0,
+		npcdmg = 0,
+		force = 350,
+		maxcarry = 50,
+		minsplash = 15,
+		maxsplash = 15,
+		TracerSetings = {
+			TracerBody = Material("particle/fire"),
+			TracerTail = Material("effects/laser_tracer"),
+			TracerHeadSize = 0.8,
+			TracerLength = 12,
+			TracerWidth = 0.8,
+			TracerColor = Color(255, 237, 155),
+			TracerTPoint1 = 0.25,
+			TracerTPoint2 = 1,
+			TracerSpeed = 9000,
+			NoSpin = true,
+		},
+		BulletSettings = {
+			Damage = 16,
+			Force = 6,
+			Penetration = 6,
+			NumBullet = 8,
+			Shell = "20/70flechette",
+			Speed = 520,
+			AirResistMul = 0.00025,
+			Diameter = 20/6,
+			Mass = 26/6,
+			Icon = matShotgunAmmo,
+			ShellColor = Color(195,143,0),
 		}
 	},
 	["9x18mm"] = {
@@ -2542,11 +2616,23 @@ local ammoents = {
 		Scale = 1.2,
 		Count = 12,
 	},
-	["20/70"] = {
+	["20/70gauge"] = {
 		Material = "models/hmcd_ammobox_12",
 		Scale = 1.1,
 		Count = 12,
 		Color = Color(255,150,0)
+	},
+	["20/70slug"] = {
+		Material = "models/hmcd_ammobox_12",
+		Scale = 1.1,
+		Count = 12,
+		Color(0,84,0)
+	},
+	["20/70flechette"] = {
+		Material = "models/hmcd_ammobox_12",
+		Scale = 1.1,
+		Count = 12,
+		Color = Color(154,154,154)
 	},
 	["9x18mm"] = {
 		Model = "models/zcity/ammo/ammo_9x18_pmm.mdl",

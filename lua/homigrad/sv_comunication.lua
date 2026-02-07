@@ -152,10 +152,10 @@ local braindeadphrase_female = {
 	"vo/episode_1/npc/female01/cit_behindyousfx01.wav",
 	"vo/episode_1/npc/female01/cit_behindyousfx02.wav",
 }
-hook.Add("HG_ReplacePhrase", "BraindeadPhrase", function(ent, phrase, muffed, pitch)
-	if ent.organism.brain >= 0.5 then
-		local phr = ThatPlyIsFemale(ent) and braindeadphrase_female[math.random(#braindeadphrase_female)] or braindeadphrase_male[math.random(#braindeadphrase_male)]
-		return ent, phr, muffed, pitch
+hook.Add("HG_ReplacePhrase", "BraindeadPhrase", function(ply, phrase, muffed, pitch)
+	if IsValid(ply) and ply.organism and ply.organism.brain >= 0.5 then
+		local phr = ThatPlyIsFemale(ply) and braindeadphrase_female[math.random(#braindeadphrase_female)] or braindeadphrase_male[math.random(#braindeadphrase_male)]
+		return ply, phr, muffed, pitch
 	end
 end)
 

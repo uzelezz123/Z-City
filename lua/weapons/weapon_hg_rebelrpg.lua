@@ -85,7 +85,7 @@ SWEP.LHAng = Angle(-0,0,-100)
 SWEP.availableAttachments = {}
 
 function SWEP:InitializePost()
-	self.attachments.underbarrel = {[1] = "laserrpg"}
+	self.attachments.underbarrel = {[1] = "laserrpg0"}
 end
 
 SWEP.NoIdleLoop = true

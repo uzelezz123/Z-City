@@ -117,7 +117,7 @@ SWEP.WepSelectIcon2box = true
 SWEP.IconOverride = "entities/arc9_eft_toz106.png"
 SWEP.weight = 2
 SWEP.weaponInvCategory = 1
-SWEP.CustomShell = "20x70"
+SWEP.CustomShell = "20/70"
 --SWEP.EjectPos = Vector(0,5,5)
 --SWEP.EjectAng = Angle(-5,180,0)
 SWEP.AutomaticDraw = false
@@ -125,7 +125,7 @@ SWEP.UseCustomWorldModel = false
 SWEP.Primary.ClipSize = 3
 SWEP.Primary.DefaultClip = 3
 SWEP.Primary.Automatic = false
-SWEP.Primary.Ammo = "20/70"
+SWEP.Primary.Ammo = "20/70 gauge"
 SWEP.Primary.Cone = 0
 SWEP.Primary.Spread = Vector(0.006, 0.006, 0.006)
 SWEP.Primary.Damage = 65
@@ -155,7 +155,7 @@ SWEP.availableAttachments = {
 
 SWEP.addSprayMul = 1
 SWEP.cameraShakeMul = 1
-SWEP.RecoilMul = 0.7
+SWEP.RecoilMul = 1
 
 SWEP.LocalMuzzlePos = Vector(20,-0.022,2.758)
 SWEP.LocalMuzzleAng = Angle(0,0,0)

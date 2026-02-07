@@ -139,6 +139,7 @@ SWEP.AnimsEvents = {
 			self:EmitSound("weapons/tfa_ins2/k98/m40a1_boltback.wav", 45, math_random(95, 105))
 		end,
 		[0.3] = function(self)
+			self:RejectShell(self.ShellEject)
 			self:EmitSound("weapons/tfa_ins2/k98/m40a1_boltforward.wav", 45, math_random(95, 105))
 		end,
 		[0.5] = function(self)
@@ -190,7 +191,7 @@ end
 
 local function cock(self,time)
 	if SERVER then
-		self:Draw(true)
+		self:Draw(true, true)
 	end
 
 	if self:Clip1() == 0 then

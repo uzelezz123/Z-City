@@ -55,7 +55,7 @@ end
 
 module[2] = function(owner, org, timeValue)
     --print("huy")
-    if org.timeToRandom < CurTime() and owner:IsPlayer() and owner:Alive() and owner.PlayerClassName ~= "Combine" then -- Манютка переделывай говно. сделай в классе переменную об этом. либо дай овнеру просто переменную насчет этого.
+    if org.timeToRandom < CurTime() and owner:IsPlayer() and owner:Alive() and owner.GetPlayerClass and owner:GetPlayerClass() and owner:GetPlayerClass().CanEmitRNDSound then
         if not org.otrub then
             table.Random(RandomEvents)(owner,org)
         end 

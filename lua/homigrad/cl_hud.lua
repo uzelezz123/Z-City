@@ -1,7 +1,6 @@
 local hide = {
 	["CHudHealth"] = true,
 	["CHudBattery"] = true,
-	["CHudAmmo"] = false,
 	["CHudSecondaryAmmo"] = true,
 	["CHudCrosshair"] = true,
 	["CHudDamageIndicator"] = true,
@@ -14,12 +13,17 @@ local hide = {
 	["CHudHistoryResource"] = true,
 }
 
+local gordon_hide = {
+	["CHudHealth"] = true,
+	["CHudBattery"] = true,
+	["CHudSecondaryAmmo"] = true,
+	["CHudCrosshair"] = true,
+	["CHudSuitPower"] = true,
+}
+
 hook.Add("HUDShouldDraw", "homigrad", function(name)
-	if hide[name] then
+	if hide[name] or lply.PlayerClassName and lply.PlayerClassName == "Gordon" and gordon_hide[name] then
 		return false
-	end
-	if IsValid(lply) and lply.PlayerClassName == "Gordon" and name == "CHudHistoryResource" then
-		return true
 	end
 end)
 hook.Add("HUDDrawTargetID", "homigrad", function()
@@ -27,6 +31,44 @@ hook.Add("HUDDrawTargetID", "homigrad", function()
 end)
 
 hook.Add("DrawDeathNotice", "homigrad", function()
+	return false
+end)
+
+hook.Add("HUDWeaponPickedUp", "HidePickedStuff", function(wep)
+	--if not IsValid(lply) or not lply:Alive() then return end
+	if IsValid(lply) and lply.PlayerClassName and lply.PlayerClassName == "Gordon" then
+		return
+	end
+
+	--[[if not IsValid(wep) then return end
+	if not wep.GetPrintName then return end
+	
+	lply:Notify("+ " .. wep:GetPrintName(), 0)]]
+
+	return false
+end)
+
+hook.Add("HUDAmmoPickedUp", "HidePickedStuff", function(ammoname, amt)
+	if IsValid(lply) and lply.PlayerClassName and lply.PlayerClassName == "Gordon" then
+		return
+	end
+
+	return false
+end)
+
+hook.Add("HUDItemPickedUp", "HidePickedStuff", function(itemname)
+	if IsValid(lply) and lply.PlayerClassName and lply.PlayerClassName == "Gordon" then
+		return
+	end
+
+	return false
+end)
+
+hook.Add("HUDDrawPickupHistory", "HidePickedStuff", function()
+	if IsValid(lply) and lply.PlayerClassName and lply.PlayerClassName == "Gordon" then
+		return
+	end
+
 	return false
 end)
 
@@ -476,7 +518,7 @@ hook.Add("radialOptions", "7", function()
     local ply = LocalPlayer()
     local organism = ply.organism or {}
 
-    if ply:Alive() and not organism.otrub and hg.GetCurrentCharacter(ply) == ply then
+    if ply:Alive() and not organism.otrub and hg.GetCurrentCharacter(ply) == ply and ply:GetPlayerClass() and ply:GetPlayerClass().CanUseGestures then
         local tbl = {function(mouseClick)
 			if mouseClick == 1 then
 				RunConsoleCommand("act", randomGestures[math.random(#randomGestures)])
@@ -665,8 +707,10 @@ hook.Add("HUDPaint","afflictionlist",function()
 		end
 	end--]]
 end)
-if game.SinglePlayer() then
+
+-- Now playable :steamhappy:
+--[[if game.SinglePlayer() then
 	hook.Add("HUDPaint","Exit the singleplayer",function()
 		draw.SimpleText("Z-City is not for SINGLEPLAYER server, in map select change green SINGLEPLAYER to 2 players or any.", "HomigradFontMedium",ScrW()/2,ScrH()/2,nil,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	end)
-end
+end]]

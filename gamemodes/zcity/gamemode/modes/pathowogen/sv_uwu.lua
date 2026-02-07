@@ -830,7 +830,7 @@ function MODE:PlayerDeath(ply, inflictor, att)
 		if last_attacker then
 			if math.random(1, 3) == 1 then
 				if last_attacker.PlayerClassName != "furry" then
-					last_attacker:Notify(table.Random(killfurries))
+					last_attacker:Notify(killfurries[math.random(#killfurries)])
 				end
 			end
 		end

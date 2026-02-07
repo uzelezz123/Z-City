@@ -1820,6 +1820,7 @@ local IsValid = IsValid
 		local move = ply:GetRunSpeed() * 1.1
 		k = 1 * weightmul
 		k = k * math.Clamp(consmul, 0.7, 1)
+		k = k * math.Clamp((org.temperature and (1 - (org.temperature - 38) * 0.25) or 1), 0.5, 1)
 		k = k * math.Clamp((org.stamina and org.stamina[1] or 180) / 120, 0.3, 1)
 		k = k * math.Clamp(5 / ((org.immobilization or 0) + 1), 0.25, 1)
 		k = k * math.Clamp((org.blood or 0) / 5000, 0, 1)
@@ -2061,6 +2062,15 @@ local IsValid = IsValid
 		if self.ReloadSound then util.PrecacheSound(self.ReloadSound) end
 	end
 --//
+--\\ Faster npcs (does not works)
+	--[[hook.Add("OnEntityCreated", "fasternpcs", function(ent)
+		if IsValid(ent) and ent:IsNPC() then
+			timer.Simple(.1, function()
+				ent:SetPlaybackRate(2)
+			end)
+		end
+	end)]]--
+--//
 --\\ timescale pitch change
 	local cheats = GetConVar( "sv_cheats" )
 	local timeScale = GetConVar( "host_timescale" )
@@ -2117,10 +2127,14 @@ local IsValid = IsValid
 		end
 
 		if not flashlightwep then --custom flashlight
+			if IsValid(wep) and (wep.IsPistolHoldType and not wep:IsPistolHoldType() and ply.PlayerClassName ~= "Gordon") then return end
+
 			local inv = ply:GetNetVar("Inventory",{})
 			if inv and inv["Weapons"] and inv["Weapons"]["hg_flashlight"] and enabled and hg.CanUseLeftHand(ply) then
-				hg.GetCurrentCharacter(ply):EmitSound("items/flashlight1.wav",65)
-				ply:SetNetVar("flashlight",not ply:GetNetVar("flashlight"))
+				local flashvar = ply:GetNetVar("flashlight")
+
+				hg.GetCurrentCharacter(ply):EmitSound("items/flashlight1.wav", 65, flashvar and 110 or 130)
+				ply:SetNetVar("flashlight",not flashvar)
 				--return true
 				if IsValid(ply.flashlight) then ply.flashlight:Remove() end
 			else
@@ -2497,6 +2511,7 @@ duplicator.Allow( "homigrad_base" )
 			else
 				anim = ACT_HL2MP_RUN_FAST
 			end
+
 			return anim, -1
 		end
 	end)

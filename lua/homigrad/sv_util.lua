@@ -1517,10 +1517,12 @@ function hg.TranslateToBodyTemp(temp, org)
 	return math.Remap(temp, -20, 20, 27, org and org.needed_temp or 36.7) -- math.Remap doesn't clamp
 end
 
+local hg_temperaturesystem = CreateConVar("hg_temperaturesystem", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Enables/disabled temperature system", 0, 1)
+
 hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- переделал систему температуры
 	if not owner:IsPlayer() or not owner:Alive() then return end
 	if owner.GetPlayerClass and owner:GetPlayerClass() and owner:GetPlayerClass().NoFreeze then return end
-
+	if !hg_temperaturesystem:GetBool() then return end
 	if (owner.CheckTemp or 0) > CurTime() then return end
 	owner.CheckTemp = CurTime() + 0.5--optimization update
 
@@ -1531,18 +1533,18 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 		start = ent:GetPos() + vector_up * 15,
 		endpos = ent:GetPos() + vector_up * 999999,
 		mask = MASK_SOLID_BRUSHONLY
-	} ).HitSky and hg.TemperatureMaps[game.GetMap()]
+	} ).HitSky
 
 	org.temperature = org.temperature or 36.7
 
 	local currentPulse = org.pulse or 70
 	local pulseHeat = 0
-	local temp = hg.MapTemps[game.GetMap()] or -10
-
+	local temp = hg.MapTemps[game.GetMap()] or 20
+	
 	if currentPulse > 80 then
 		local pulseMultiplier = math.min((currentPulse - 70) / 100, 1.2)
 		pulseHeat = timeValue / 50 * pulseMultiplier * 0.2
-	end
+	end -- unused
 
 	local warming = org.stamina.sub > 0 and 0.5 or 0
 	local ownerpos = owner:GetPos()
@@ -1562,13 +1564,17 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 
 	local changeRate = timeValue / 30 -- 1 degree every 1 minute
 
-	local temp = (IsVisibleSkyBox and temp or math.max(10, temp)) + warming * 5
-
+	local temp = (IsVisibleSkyBox and temp or 20) + warming * 5
+	
 	local isFreezing = temp < 0
 	local isHeating = temp > 30
-
+	
 	if temp < -20 then
-		changeRate = changeRate * 2
+		changeRate = changeRate * math.abs(temp) * 0.1
+	end
+
+	if temp > 25 then
+		changeRate = changeRate * 1
 	end
 
 	org.tempchanging = changeRate
@@ -1580,7 +1586,7 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 	org.temperature = math.Approach(org.temperature, hg.TranslateToBodyTemp(temp, org), org.tempchanging)
 
 	-- При холоде
-	if owner:Alive() and not org.otrub and isFreezing and org.temperature < 36 then
+	if owner:Alive() and not org.otrub and org.temperature < 36 then
 		org.FreezeSndCD = org.FreezeSndCD or CurTime() + math.random(5, 15)
 		
 		if org.FreezeSndCD < CurTime() then
@@ -1591,13 +1597,13 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 	end
 	
 	org.FreezeDMGCd = org.FreezeDMGCd or CurTime()
-	if isFreezing and org.temperature < 35 and org.FreezeDMGCd < CurTime() then
+	if org.temperature < 35 and org.FreezeDMGCd < CurTime() then
 		org.painadd = org.painadd + math.Rand(0, 1) * ((35 - org.temperature) / 35 * 4 + 1)
 		org.FreezeDMGCd = CurTime() + 0.5
 	end
 
 	-- При жаре
-	if owner:Alive() and isHeating and org.temperature > 40 then
+	if owner:Alive() and org.temperature > 40 then
 		org.VomitCD = org.VomitCD or CurTime() + math.random(35, 75)
 		
 		if org.VomitCD < CurTime() then
@@ -1611,7 +1617,7 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 	end
 
 	org.HeatDMGCd = org.HeatDMGCd or CurTime()
-	if isHeating and org.temperature > 38 and org.HeatDMGCd < CurTime() and not org.otrub then
+	if org.temperature > 38 and org.HeatDMGCd < CurTime() and not org.otrub then
 		org.painadd = org.painadd + math.Rand(0.5, 1) * ((org.temperature - 38) / 38 * 6 + 1)
 		org.HeatDMGCd = CurTime() + 0.5
 	end

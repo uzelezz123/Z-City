@@ -48,7 +48,7 @@ local skins = {
 	0,1,3
 }
 function SWEP:InitializePost()
-	local Skin = table.Random(skins)
+	local Skin = skins[math.random(#skins)]
 	if math.random(0,100) > 99 then
 		Skin = math.random(0,1) == 1 and 4 or 2 
 	end

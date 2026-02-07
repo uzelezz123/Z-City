@@ -90,7 +90,7 @@ local function Dot3D(tbl, x, y, z)
 end
 
 local function Dot4D( tbl, x,y,z,w) 
-	return tbl[1]*x + tbl[2]*y + tbl[3]*z + tbl[3]*w;
+	return tbl[1]*x + tbl[2]*y + tbl[3]*z + tbl[4]*w;
 end
 
 local Prev2D = {}

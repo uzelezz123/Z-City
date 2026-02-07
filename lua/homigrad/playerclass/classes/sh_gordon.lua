@@ -13,6 +13,7 @@ end
 
 CLASS.NoFreeze = true
 CLASS.NoGloves = true
+CLASS.CanEmitRNDSound = false
 
 local model = "models/gfreakman/gordonf_highpoly.mdl"
 
@@ -396,7 +397,7 @@ if CLIENT then
     local color_glow_ar = Color(255,155,0,0)
     local color_glow_ammo = Color(255,155,0,0)
     local color_bld = Color(255,155,0)
-    local color_sight = Color(255,155,0,220)
+    local color_sight = Color(255,155,0,220) -- Color(240,240,240,255) uncomment for real hl2 crosshair
     local armorTxt = 0
     local hpTxt = 0
     local BloodTxt = 0
@@ -456,6 +457,13 @@ if CLIENT then
             local tr = wep:GetTrace(true)
             posSight = LerpVector(FRT*5, posSight, Vector(tr.HitPos:ToScreen().x,tr.HitPos:ToScreen().y,0) )
             color_sight.a = Lerp(FRT*5,color_sight.a, lply:KeyDown(IN_ATTACK2) and 0 or 255)
+			--[[ uncomment for real hl2 crosshair
+				draw.RoundedBox(0, posSight.x - 1, posSight.y - 1, 1, 1, color_sight)
+				draw.RoundedBox(0, posSight.x - 1, posSight.y + 6, 1, 1, color_sight)
+				draw.RoundedBox(0, posSight.x - 1, posSight.y - 8, 1, 1, color_sight)
+				draw.RoundedBox(0, posSight.x + 8, posSight.y - 1, 1, 1, color_sight)
+				draw.RoundedBox(0, posSight.x - 10, posSight.y - 1, 1, 1, color_sight)
+			]]
             draw.RoundedBox(0, posSight.x - 1, posSight.y + 2, 2, 6, color_sight)
             draw.RoundedBox(0, posSight.x - 1, posSight.y - 8, 2, 6, color_sight)
             draw.RoundedBox(0, posSight.x + 2, posSight.y - 1, 6, 2, color_sight)

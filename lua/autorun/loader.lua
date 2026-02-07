@@ -1,5 +1,5 @@
 hg = hg or {}
-hg.Version = "Release 1.05"
+hg.Version = "Release 1.07"
 hg.GitHub_ReposOwner = "uzelezz123"
 hg.GitHub_ReposName = "Z-City" -- please add your real git fork!
 
@@ -91,7 +91,12 @@ if initpost then Run() end
 Run()
 
 if not istable(ulx) then
-	for i = 1, 3 do
+	for i = 1, 6 do
 		MsgC(Color(255, 0, 0), "WARNING: Server doesn't have ULX & ULib installed! Z-City will not work properly without it!\n")
+	end
+end
+if game.SinglePlayer() then
+	for i = 1, 3 do
+		MsgC(Color(255, 0, 0), "WARNING: Game started in singleplayer! Z-City may not work properly until you start multiplayer game!\n")
 	end
 end

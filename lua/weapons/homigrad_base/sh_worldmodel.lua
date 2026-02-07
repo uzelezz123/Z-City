@@ -100,7 +100,7 @@ function SWEP:ChangeGunPos(dtime)
 	
 	local should = true and not (fakeRagdoll and not (inuse))
 
-	self.lerped_positioning = Lerp(hg.lerpFrameTime2(0.1, dtime), self.lerped_positioning or 0, should and (ent != owner and 0.8 or 1) or 0.3)
+	self.lerped_positioning = Lerp(hg.lerpFrameTime2(0.1, dtime), self.lerped_positioning or 0, should and 1 or 0.3)
 	self.lerped_angle = Lerp(hg.lerpFrameTime2(0.1, dtime), self.lerped_angle or 0, should and 1 or (hg.KeyDown(owner, IN_ATTACK2) and 1 or 0))
 
 	self.weaponAng[1] = 0

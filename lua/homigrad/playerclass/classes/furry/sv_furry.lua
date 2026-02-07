@@ -112,15 +112,9 @@ local uwuspeak_phrases = {
 	"zbattle/furry/beep2.wav",
 }
 
-<<<<<<< HEAD
-hook.Add("HG_ReplacePhrase", "UwUPhrases", function(ent, phrase, muffed, pitch)
-	if ent.PlayerClassName == "furry" or ent.PlayerClassName == "expie" then
-		local inpain = ent.organism.pain > 60
-=======
 hook.Add("HG_ReplacePhrase", "UwUPhrases", function(ply, phrase, muffed, pitch)
 	if IsValid(ply) and ply.PlayerClassName == "furry" then
 		local inpain = ply.organism.pain > 60
->>>>>>> 20758d2b77be70f8259e54d3a05c8004376c81dc
 		local phr = (inpain and fur_pain[math.random(#fur_pain)] or uwuspeak_phrases[math.random(#uwuspeak_phrases)])
 
 		return ply, phr, muffed, pitch
@@ -128,13 +122,13 @@ hook.Add("HG_ReplacePhrase", "UwUPhrases", function(ply, phrase, muffed, pitch)
 end)
 
 hook.Add("HG_ReplaceBurnPhrase", "UwUBurnPhrases", function(ply, phrase)
-	if ply.PlayerClassName == "furry" or ply.PlayerClassName == "expie" then
+	if ply.PlayerClassName == "furry" then
 		return ply, fur_pain[math.random(#fur_pain)]
 	end
 end)
 
 hook.Add("Org Think", "ItHurtsfrfr",function(owner, org, timeValue)
-	if owner.PlayerClassName != "furry" and owner.PlayerClassName != "expie" then return end
+	if owner.PlayerClassName != "furry" then return end
 
 	if (owner.lastPainSoundCD or 0) < CurTime() and !org.otrub and org.pain >= 30 and math.random(1, 50) == 1 then
 		local phrase = table.Random(fur_pain)

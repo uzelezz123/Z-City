@@ -303,7 +303,7 @@ tinnitusModes = {
 
 			lply.TinnitusFactor = (lply.TinnitusFactor or -5) + (self.Primary.Force / 200) + math.Clamp(math.Remap(shooterdist / 300, 0, 1, 1, 0), 0, 1) * (self.Supressor and 0.5 or 1)
 
-			if (not lply.armors or lply.armors["ears"] ~= "headphones1") and shooterdist < 600 and GetConVar("hg_guntinnitus"):GetBool() and lply.TinnitusFactor >= 0 and table.HasValue(tinnitusModes, MODE.name) then
+			if (not lply.armors or lply.armors["ears"] ~= "headphones1") and shooterdist < 600 and GetGlobalBool("hg_shoot_tinnitus") and lply.TinnitusFactor >= 0 and table.HasValue(tinnitusModes, MODE.name) then
 		        local time = math.Clamp(lply.TinnitusFactor, 0, 3)
                 lply.tinnitus = CurTime() + time * 4
 

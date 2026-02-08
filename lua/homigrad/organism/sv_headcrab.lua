@@ -2,6 +2,7 @@
 local PLAYER = FindMetaTable("Player")
 util.AddNetworkString("hg_headcrab")
 function PLAYER:AddHeadcrab(headcrab)
+	if self.PlayerClassName == "headcrabzombie" then return end
     --self.organism.headcrabon = headcrab
     self:SetNetVar("headcrab",headcrab)
    

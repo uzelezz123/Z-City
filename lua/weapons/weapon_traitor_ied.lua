@@ -164,7 +164,9 @@ if CLIENT then
 end
 
 function hg.ExplosionDisorientation(enta, tinnitus, disorientation)
-	enta.organism.owner:AddTinnitus(tinnitus)
+	enta.organism.owner.TinnitusFactor = (enta.organism.owner.TinnitusFactor or 0) + tinnitus
+	enta.organism.owner:AddTinnitus(enta.organism.owner.TinnitusFactor)
+
 	enta.organism.disorientation = enta.organism.disorientation + (disorientation)
 
 	net.Start("organism_send") // отправляем только дизориентацию (чтобы не нагружать нет), и сразу

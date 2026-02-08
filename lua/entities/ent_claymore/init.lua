@@ -139,7 +139,8 @@ function ENT:ActivateExplosive()
 		if tr.Entity != ply then continue end
 		local dist = ply:GetPos():Distance(selfPos)
 		local tinnitusDuration = math.Clamp(10 * (1 - dist/self.ConcussionDis), 2, 10)
-		ply:AddTinnitus(math.max(tinnitusDuration,1.5), true)
+		ply.TinnitusFactor = (ply.TinnitusFactor or 0) + math.max(tinnitusDuration,1.5)
+		ply:AddTinnitus(ply.TinnitusFactor, true)
 	end
 	   
 	--util.BlastDamage(self, attacker, selfPos, self.ShrapnelDis, self.BlastDamage)

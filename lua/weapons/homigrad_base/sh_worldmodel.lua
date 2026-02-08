@@ -74,7 +74,7 @@ hg.postureFuncWorldModel = {
 		if self:IsZoom() then return end
 		self.weaponAng[3] = self.weaponAng[3] + 20
 	end,
-	[9] = function(self,ply)
+	[7] = function(self,ply)
 		if self:IsZoom() then return end
 		self.weaponAng[3] = self.weaponAng[3] - 40
 	end,
@@ -119,9 +119,9 @@ function SWEP:ChangeGunPos(dtime)
 		func(self, ply, huya)
 	end
 
-	if (ply.posture == 7 or ply.posture == 8) and not self.reload and not ply.suiciding then
+	if (ply.posture == 8 or ply.posture == 9) and not self.reload and not ply.suiciding then
 		--gangsta mode!!!
-		if ply.posture == 7 then
+		if ply.posture == 8 then
 			self.weaponAng[3] = self.weaponAng[3] - (not self:IsZoom() and 60 or 0)
 		else
 			self.weaponAng[3] = self.weaponAng[3] - (not self:IsZoom() and 10 or 0)
@@ -194,7 +194,7 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
 		
 	self.setrhik = true
 	self.setlhik = !self:IsPistolHoldType() or !ply.suiciding
-	self.setlhik = (not (ply.posture == 7 or ply.posture == 8 or ( (self:IsPistolHoldType() or self.CanEpicRun) and self:IsSprinting() and !(ply.organism and ply.organism.rarmamputated) ) or (self:IsPistolHoldType() and ply.posture == 9) or (self:IsPistolHoldType() and ply.suiciding) ) or self.reload and self.setlhik or false)
+	self.setlhik = (not (ply.posture == 8 or ply.posture == 9 or ( (self:IsPistolHoldType() or self.CanEpicRun) and self:IsSprinting() and !(ply.organism and ply.organism.rarmamputated) ) or (self:IsPistolHoldType() and ply.posture == 7) or (self:IsPistolHoldType() and ply.suiciding) ) or self.reload and self.setlhik or false)
 	self.setlhik = !(self:IsPistolHoldType() and (self:GetButtstockAttack() - CurTime() > -0.5)) and self.setlhik
 	
 	local tr = hg.eyeTrace(ply, 60, ent)
@@ -241,7 +241,7 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
 		self.prankang[1] = 2 * math.sin(pranktime) * math.sin(pranktime - 5) * math.cos(pranktime + 15)
 	end
 
-	if ply.posture == 7 or ply.posture == 8 then
+	if ply.posture == 8 or ply.posture == 9 then
 		self.prankang = self.prankang * 2
 	end
 
@@ -284,7 +284,7 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
 	local x,y,z = hg.GunPositions[ply] and hg.GunPositions[ply][1], hg.GunPositions[ply] and hg.GunPositions[ply][2], hg.GunPositions[ply] and hg.GunPositions[ply][3]
 	
 	veccopy.x = x or 0
-	veccopy.x = ((ply.posture == 7 or ply.posture == 8) and not self.reload) and 1 or veccopy.x
+	veccopy.x = ((ply.posture == 8 or ply.posture == 9) and not self.reload) and 1 or veccopy.x
 	veccopy.y = -(y or 0)
 	veccopy.z = z or 0
 

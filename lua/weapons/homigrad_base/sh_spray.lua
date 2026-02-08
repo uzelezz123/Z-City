@@ -61,7 +61,7 @@ function SWEP:PrimarySpread()
 		
 		local force = self.Primary.Damage / 100 * self.addSprayMul * (self.NumBullet or 1) * math.min(sprayI / 30,0.6)--(self.Primary.Automatic and math.min(sprayI / 30,1) or 1)
 		mul = mul * (((organism.larm or 0) + (organism.rarm or 0) + 2) / 1 + ((organism.larmamputated and 5 or 0) + (organism.rarmamputated and 5 or 0)))
-		mul = mul * ((owner.posture == 7 or owner.posture == 8 or owner.holdingWeapon) and 2 or 1)
+		mul = mul * ((owner.posture == 8 or owner.posture == 9 or owner.holdingWeapon) and 2 or 1)
 		mul = mul * self.RecoilMul
 		mul = mul * (owner:Crouching() and 0.75 or 1)
 		--mul = mul * (hg.IsOnGround(hg.GetCurrentCharacter(owner)) and 1 or 5)

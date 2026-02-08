@@ -522,6 +522,8 @@ function SWEP:Draw(server, overide)
 	if self:Clip1() > 0 then self.drawBullet = true end
 end
 
+SWEP.shootingTime = false
+
 SWEP.AutomaticDraw = true
 SWEP.ShootAnimMul = 2
 SWEP.shot2 = 0
@@ -553,6 +555,8 @@ function SWEP:PrimaryShoot()
 	self.shot = self.shot or 0
 	self.shot = math.min(3, self.shot + (self.NumBullet or 1))
 	self.shot2 = math.min(1, self.shot2 + 1)
+
+	if not self.shootingTime then self.shootingTime = CurTime() end
 	
 	if not (CLIENT and self:GetOwner():IsNPC()) then
 		self:TakePrimaryAmmo(1)
@@ -595,12 +599,12 @@ if SERVER then
 else
 	net.Receive("resettinnitus", function(len, ply)
 		local ply = net.ReadPlayer() or ply
-		ply.TinnitusFactor = 0
+		ply.TinnitusFactor = -5
 	end)
 
 	hook.Add("Player Think", "TinnitusPadaet", function(ply, ent)
-		if (ply.TinnitusFactor or 0) > 0 then
-			ply.TinnitusFactor = math.min(math.max((ply.TinnitusFactor or 0) - 0.5, 0),300)
+		if (ply.TinnitusFactor or -5) > -5 then
+			ply.TinnitusFactor = math.Clamp((ply.TinnitusFactor or -5) - (FrameTime() * 0.3), -5, 30)
 		end
 	end)
 end
@@ -643,6 +647,18 @@ function SWEP:EmitShoot()
 		end
 	end
 
+	local MODE = engine.ActiveGamemode() == "zcity" and CurrentRound() or {name = "standard"}
+
+    if CLIENT then
+		lply.TinnitusFactor = (lply.TinnitusFactor or -5) + (self.Primary.Force / 100) * (self.NumBullet or 1) * (1 + (insideVal / 32)) * (self.Supressor and 0.5 or 1)
+		if IsValid(ply) and lply == ply and not hadEarProtection and GetGlobalBool("hg_shoot_tinnitus") and lply.TinnitusFactor >= 0 and table.HasValue(tinnitusModes, MODE.name) then
+			local time = math.Clamp(lply.TinnitusFactor, 0, 3)
+	        lply.tinnitus = CurTime() + time * 4
+
+	        lply:SetDSP((self.shootingTime and self.shootingTime + 1 < CurTime()) and 131 or 32)
+		end
+	end
+
 	if !self.Supressor and !self.NoWINCHESTERFIRE then
 		self:PlaySnd("rifle_win1892/win1892_fire_01.wav", nil, nil, vol * (1 - insideVal / 16), math.Clamp(1 / self.Primary.Force / (self.NumBullet or 1) * 100 * 50,90,150), 55555, true)
 
@@ -651,16 +667,8 @@ function SWEP:EmitShoot()
 
 		self:PlaySnd("weapons/shoot/shot1.wav", nil, nil, vol * 1, 150, 52256, true)
 	end
-	local nearDist = (GetViewEntity() == ply or GetViewEntity():GetPos():Distance( self:GetPos() ) < 150)
 
-	if GetGlobalBool("hg_shoot_tinnitus", false) and nearDist and !self.Supressor and !hadEarProtection then
-		lply.TinnitusFactor = (lply.TinnitusFactor or 0) + ( (self.Primary.Force * (self.NumBullet or 1) ) / 3) + insideVal
-		if lply.TinnitusFactor > 32 then
-			lply:AddTinnitus(lply.TinnitusFactor / 100)
-		end
-	end
-
-	if (self.Primary.SoundFP or self.Supressor and self.SupressedSoundFP) and nearDist then
+	if (self.Primary.SoundFP or self.Supressor and self.SupressedSoundFP) then
 		self:PlaySnd((self.Supressor and self.SupressedSoundFP) or self.Primary.SoundFP, nil, nil, vol, nil, 55533, not self.Supressor)
 	else
 		self:PlaySnd(self.Supressor and (self.SupressedSound or (self:IsPistolHoldType() and "homigrad/weapons/pistols/sil.wav" or "m4a1/m4a1_suppressed_fp.wav")) or self.Primary.Sound, nil, nil, vol, nil, 55533, not self.Supressor)
@@ -1233,6 +1241,10 @@ function SWEP:CoreStep()
 		local time2 = time - self:LastShootTime()
 
 		self:MuzzleEffect(time2)
+
+		if self:LastShootTime() + 1.5 < CurTime() and self.shootingTime then
+			self.shootingTime = false
+		end
 	end
 
 	if not IsValid(owner) or (IsValid(actwep) and self != actwep) then return end
@@ -1462,7 +1474,7 @@ hg.postureFunctions2 = {
 			self.AdditionalAngPreLerp[1] = self.AdditionalAngPreLerp[1] + 12
 		end
 	end,
-	[9] = function(self,ply)
+	[7] = function(self,ply)
 		if self:IsZoom() and not force then return end
 		local add = (hg.GunPositions[ply] and hg.GunPositions[ply][3]) or 0
 		self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] + 3
@@ -1799,7 +1811,7 @@ function SWEP:GetAdditionalValues()
 	local speed_add = math.Clamp(1 / skillissue,0.5,1.5)
 	
 	if not suiciding and !self.norecoil then
-		local mulhuy = (self:IsPistolHoldType() or self.PistolKinda) and 2 or (((ply.posture == 1 and not self:IsZoom()) or ply.posture == 7 or ply.posture == 8) and 2 or 0.75)
+		local mulhuy = (self:IsPistolHoldType() or self.PistolKinda) and 2 or (((ply.posture == 1 and not self:IsZoom()) or ply.posture == 8 or ply.posture == 9) and 2 or 0.75)
 		local animpos = self:GetAnimShoot2(0.09 * mulhuy / host_timescale(), true) * 0.5
 		animpos = animpos * 0.3 * mulhuy * (self:IsPistolHoldType() and 1 or 1)
 		animpos = animpos * math.min((self.Primary.Force2 or self.Primary.Force) / 40,3) * ((self.NumBullet or 1) * 3 or 1) * (self.animposmul or 1) // * 4

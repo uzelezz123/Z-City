@@ -66,7 +66,7 @@ function SlipWeapon(self, bullet)
 	local owner = self:GetOwner()
 	local force = -bullet.Dir * bullet.Force * 1
 	local pos = self:WorldModel_Transform(true)
-	if (owner.posture == 7 or owner.posture == 8) then
+	if (owner.posture == 8 or owner.posture == 9) then
 		if math.random(5) == 1 then
 			timer.Simple(0.05,function()
 				owner:DropWeapon(self, nil, force)

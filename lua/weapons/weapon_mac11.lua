@@ -195,7 +195,7 @@ SWEP.LHAng = Angle(5,9,-100)
 --45
 function SWEP:PrimaryShootPost()
 	local owner = self:GetOwner()
-	if SERVER and self.SprayI > 25 and (owner.posture == 7 or owner.posture == 8) then
+	if SERVER and self.SprayI > 25 and (owner.posture == 8 or owner.posture == 9) then
 		hg.drop(owner,self,nil,-150)
 	end
 end

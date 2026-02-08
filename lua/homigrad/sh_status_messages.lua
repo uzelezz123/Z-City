@@ -228,7 +228,7 @@ local cold_phraselist = {
 
 local freezing_phraselist = {
 	"I.. ca.. can't feel m-my b-body..",
-	"I can't.. f-feel my legs",
+	"I can't.. f-feel my legs...",
 	"I'm f-fuck-king fre-ezing..",
 	"I-I think-k my face is num-mb..",
 	"Cold-d..",

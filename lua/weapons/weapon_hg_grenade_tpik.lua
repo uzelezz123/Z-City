@@ -1,4 +1,4 @@
-﻿if SERVER then AddCSLuaFile() end
+if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_tpik_base"
 SWEP.PrintName = "M67"
 SWEP.Instructions = 
@@ -28,6 +28,8 @@ SWEP.Secondary.Ammo = "none"
 SWEP.HoldType = "camera"
 SWEP.ViewModel = ""
 SWEP.WorkWithFake = true
+
+SWEP.Spoonsound = false --выставите в ручную на гранатах это... должно быть по сути на ргд, f1 и китайском аналоге ргд
 
 SWEP.WorldModel = "models/weapons/tfa_ins2/w_m67.mdl"
 SWEP.WorldModelReal = "models/weapons/zcity/c_m67.mdl"
@@ -452,8 +454,11 @@ function SWEP:CreateSpoon(entownr)
 		entasd:SetAngles(hand:GetAngles())
 		entasd:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 		entasd:Spawn()
-		
 
+		if self.Spoonsound then
+			entasd:EmitSound("m9/m9_fp.wav", 70, 150)
+		end
+		
 		entownr:EmitSound("weapons/m67/m67_spooneject.wav",65)
 
 		if self.SpoonSounds then
@@ -470,6 +475,10 @@ function SWEP:CreateSpoon(entownr)
 		entasd:SetAngles(self:GetAngles())
 		entasd:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 		entasd:Spawn()
+
+		if self.Spoonsound then
+			entasd:EmitSound("m9/m9_fp.wav", 70, 150)
+		end
 
 		entasd:EmitSound("weapons/m67/m67_spooneject.wav",65)
 

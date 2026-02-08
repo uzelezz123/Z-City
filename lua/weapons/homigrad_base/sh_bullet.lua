@@ -525,7 +525,7 @@ end*/
 function SWEP:FireBullet()
     local gun = self:GetWeaponEntity()
     local owner = self:GetOwner()
-	local isply = IsValid(owner) and owner:IsPlayer()
+	local isply = IsValid(owner) and owner:IsPlayer() and !owner.suiciding
 	local ent = owner
 
 	if self:ShouldUseFakeModel() and not self.NoIdleLoop then self:PlayAnim("idle", 1) end

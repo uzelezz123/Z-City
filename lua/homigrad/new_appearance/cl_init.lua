@@ -73,6 +73,8 @@ local whitelist = {
 
 local islply
 
+local hg_firstperson_death = ConVarExists("hg_firstperson_death") and GetConVar("hg_firstperson_death") or CreateClientConVar("hg_firstperson_death", "0", "first person death", true, false, 0, 1)
+
 function RenderAccessories(ply, accessories, setup)
 
 	if not IsValid(ply) or not accessories then return end
@@ -85,6 +87,9 @@ function RenderAccessories(ply, accessories, setup)
 	ent = IsValid(ply.OldRagdoll) and ply.OldRagdoll:IsRagdoll() and ply.OldRagdoll or ent
 
 	islply = ((ply:IsRagdoll() and hg.RagdollOwner(ply)) or ply) == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer())) and GetViewEntity() == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer()))
+	
+	local fountains = GetNetVar("fountains") or {}
+	if ent == follow and hg_firstperson_death:GetBool() and !fountains[ent] then islply = true end
 
 	if islply and IsValid(wep) and whitelist[wep:GetClass()] then
 		if not ent.modelAccess then return end

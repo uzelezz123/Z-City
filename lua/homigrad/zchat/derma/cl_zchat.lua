@@ -3,6 +3,7 @@
 local maxLength = GetConVar("zchat_maxmessagelength")
 
 local NoDrop = CreateClientConVar("zchat_dropcharacters", 1, true, false, "Play the character dropping animation when erasing text", 0, 1)
+local ShowTextBoxInactive = CreateClientConVar("zchat_showtextboxinactive", 1, true, false, "Showing your text in textbox while chat is turned off", 0, 1)
 
 local function CallbackBind(self, callback)
 	return function(_, ...)
@@ -170,6 +171,17 @@ function PANEL:Paint(w, h)
 		if v.alpha <= 0 then
 			table.remove(self.droppedCharacters, k)
 		end
+	end
+
+	if ShowTextBoxInactive:GetBool() and !hg.chat:GetActive() and self.prevText != "" then
+		DisableClipping(true)
+		surface.SetAlphaMultiplier(1)
+			surface.SetTextColor(150, 150, 150, 55)
+			surface.SetTextPos(0, 0)
+			surface.SetFont("zChatFont")
+			surface.DrawText(self.prevText)
+		surface.SetAlphaMultiplier(0)
+		DisableClipping(false)
 	end
 
 	BaseClass.Paint(self, w, h)

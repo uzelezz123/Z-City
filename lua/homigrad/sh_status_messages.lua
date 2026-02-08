@@ -359,6 +359,16 @@ local function get_status_message(ply)
 	local str = ""
 
 	local most_wanted_phraselist
+	
+	if temperature < 35 then
+		most_wanted_phraselist = temperature > 31 and cold_phraselist or (temperature < 28 and numb_phraselist or freezing_phraselist)
+	elseif temperature > 38 then
+		most_wanted_phraselist = temperature < 40 and hot_phraselist or heatstroke_phraselist
+	end
+
+	if not most_wanted_phraselist and hungry and hungry > 25 and math.random(3) == 1 then
+		most_wanted_phraselist = hungry > 45 and very_hungry or hungry_a_bit
+	end
 
 	if (blood < 3100) or (pain > 75) or (broken_dislocated) or (broken_notify) or (dislocated_notify) then
 		if pain > 75 and (broken_dislocated) then
@@ -392,16 +402,6 @@ local function get_status_message(ply)
 		end
 	--elseif hg.fearful(ply) then
 		--most_wanted_phraselist = ((IsAimedAt(ply) > 0.9) and is_aimed_at_phrases or (math.random(10) == 1 and fear_hurt_ironic or fear_phrases))
-	end
-
-	if temperature < 35 then
-		most_wanted_phraselist = temperature > 31 and cold_phraselist or (temperature < 28 and numb_phraselist or freezing_phraselist)
-	elseif temperature > 38 then
-		most_wanted_phraselist = temperature < 40 and hot_phraselist or heatstroke_phraselist
-	end
-
-	if not most_wanted_phraselist and hungry and hungry > 25 and math.random(3) == 1 then
-		most_wanted_phraselist = hungry > 45 and very_hungry or hungry_a_bit
 	end
 
 	if brain > 0.1 then

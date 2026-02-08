@@ -29,11 +29,12 @@ hook.Add("Org Clear", "removeheadcrab", function(org)
 	org.noHead = false
 end)
 
+local clr_red, lerpAng = Color(150, 0, 0), Angle(0, 0, 0)
 hook.Add("Org Think", "Headcrab",function(owner, org, timeValue)
     if not IsValid(owner) then return end
     if not owner:IsPlayer() or not owner:Alive() then return end
 
-    if org.headcrabon and (org.headcrabon + 15) < CurTime() and org.brain != 1 and org.owner.organism.spine3 != 1 then
+    if org.headcrabon and (org.headcrabon + 15) < CurTime() and org.brain != 1 and owner.organism.spine3 != 1 then
 		local ent = hg.GetCurrentCharacter(owner) or owner
 		local mul = ((org.headcrabon + 60) - CurTime()) / 60
 		if mul > 0 then
@@ -41,42 +42,46 @@ hook.Add("Org Think", "Headcrab",function(owner, org, timeValue)
 		end
 	end
 
-    if org.owner:IsPlayer() then
+    if owner:IsPlayer() then
 		if org.headcrabon then
-			org.owner.noHead = true
-			org.owner:SetNWString("PlayerName", "Body with headcrab")
+			owner.noHead = true
+			owner:SetNWString("PlayerName", "Body with headcrab")
 			if org.alive then
-				local ang = AngleRand(-5, 5)
-				ang.r = 0
-				org.owner:SetEyeAngles(org.owner:EyeAngles() + ang)
+				lerpAng = LerpAngle(FrameTime() * 3, lerpAng, AngleRand(-90, 90))
+				lerpAng.r = 0
+				owner:SetEyeAngles(owner:EyeAngles() + lerpAng)
 			end
-			if (org.headcrabon + 10) < CurTime() and org.alive and not org.headcrabevent then
-				org.owner:EmitSound("npc/zombie/zombie_pain"..math.random(6)..".wav", 80, math.random(90, 110))
-				if math.random(1, 6) == 3 then
-					local neckang = -org.owner:EyeAngles()
-					neckang.x = -90
-					org.owner:SetEyeAngles(neckang)
-					org.owner:Kill()
-					org.owner.organism.spine3 = 1
-					org.owner:EmitSound("neck_snap_01.wav", 60, 100, 1, CHAN_AUTO)
-					-- do zombification here!!
-				else
-					org.painadd = org.painadd + 40
-					hg.StunPlayer(owner, 5)
+			if (org.headcrabon + 30) < CurTime() and org.alive and not org.headcrabevent then
+				owner:EmitSound("npc/zombie/zombie_alert" .. math.random(3) .. ".wav", 80, math.random(60, 70))
+				owner:EmitSound("neck_snap_01.wav", 80, 80, 1, CHAN_AUTO)
+				owner:SetPlayerClass("headcrabzombie")
+				org.painadd = org.painadd + 40
+				hg.StunPlayer(owner, 5)
+				if zb and zb.GiveRole then
+					zb.GiveRole(owner, "Zombie", clr_red)
 				end
 				org.headcrabevent = true
+				org.headcrabon = nil
+				org.headcrabevent = false
+				if IsValid(owner) and not IsValid(owner.FakeRagdoll) then
+					owner:SetNetVar("headcrab", false)
+				end
+				org.noHead = false
 			end
 		end
 
         if org.alive and org.headcrabon and (org.headcrabon + 20) < CurTime() then
 			if (org.headcrabon + 21) > CurTime() then
-				org.owner:EmitSound("npc/zombie/zombie_pain"..math.random(6)..".wav", 80, math.random(80, 90))
+				owner:EmitSound("npc/zombie/zombie_pain"..math.random(6)..".wav", 80, math.random(80, 90))
+				org.painadd = org.painadd + 40
+				hg.StunPlayer(owner, 5)
+				org.needotrub = true
 			end
 			org.needotrub = true
 		end
 
         if org.alive and org.headcrabon and (org.headcrabon + 60) < CurTime() then
-			org.owner:SetNWString("PlayerName", "Body with headcrab")
+			owner:SetNWString("PlayerName", "Body with headcrab")
 			org.alive = false
 		end
     end

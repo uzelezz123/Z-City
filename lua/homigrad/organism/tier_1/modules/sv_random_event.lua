@@ -55,10 +55,15 @@ end
 
 module[2] = function(owner, org, timeValue)
     --print("huy")
-    if org.timeToRandom < CurTime() and owner:IsPlayer() and owner:Alive() and owner.GetPlayerClass and owner:GetPlayerClass() and owner:GetPlayerClass().CanEmitRNDSound then
+    if org.timeToRandom < CurTime() and owner:IsPlayer() and owner:Alive() then
+		if owner:GetPlayerClass() and owner:GetPlayerClass().CanEmitRNDSound ~= nil and not owner:GetPlayerClass().CanEmitRNDSound then
+			return
+		end
+
         if not org.otrub then
             table.Random(RandomEvents)(owner,org)
-        end 
+        end
+
         org.timeToRandom = CurTime() + math.random(120,320)
     end
 end

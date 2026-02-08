@@ -57,7 +57,7 @@ local function DrawFirstPersonHelmet(ply, strModel, vecAdjust, fFov, setMat)
 			render.SetStencilFailOperation( STENCIL_KEEP )
 			render.SetStencilZFailOperation( STENCIL_KEEP )
 			render.ClearStencil()
-			
+
 			-- Enable stencils
 			render.SetStencilEnable( true )
 			-- Set everything up everything draws to the stencil buffer instead of the screen

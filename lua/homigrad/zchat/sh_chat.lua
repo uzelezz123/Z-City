@@ -1,10 +1,10 @@
 local maxLength = CreateConVar("zchat_maxmessagelength", "256", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Maximum message length allowed")
 
 if CLIENT then
-	local fontSize = CreateClientConVar("zchat_fontsize", 4, true, false, "Self explanatory", 3, 10)
-	local fontName = CreateClientConVar("zchat_font", "Lucida Console", true, false, "Self explanatory, should be available to GMod")
-	local fontAA = CreateClientConVar("zchat_fontaa", 0, true, false, "Font anti-aliasing", 0, 1)
-	local fontWeight = CreateClientConVar("zchat_fontweight", 0, true, false, "Font weight", 0, 1000)
+	local fontSize = CreateClientConVar("zchat_fontsize", 5.5, true, false, "Self explanatory", 3, 10)
+	local fontName = CreateClientConVar("zchat_font", "Bahnschrift", true, false, "Self explanatory, should be available to GMod")
+	local fontAA = CreateClientConVar("zchat_fontaa", 1, true, false, "Font anti-aliasing", 0, 1)
+	local fontWeight = CreateClientConVar("zchat_fontweight", 1000, true, false, "Font weight", 0, 1000)
 
 	local function CreateChat()
 		if (IsValid(hg.chat)) then
@@ -39,6 +39,7 @@ if CLIENT then
 	end)
 
 	hook.Add("OnShowZCityPause", "ZChat", function()
+		if !hg.chat:GetActive() then return end
 		hg.chat:SetActive(false)
 
 		return false
@@ -65,6 +66,12 @@ if CLIENT then
 		end
 
 		CHAT_SPEAKER = nil
+	end)
+
+	net.Receive("zChatGlobalMessage", function(len)
+		local buffer = net.ReadTable()
+
+		chat.AddText(unpack(buffer))
 	end)
 
 	hook.Add("ChatText", "ZChat", function(index, name, text, messageType)
@@ -112,7 +119,7 @@ if CLIENT then
 
 		surface.CreateFont("zChatFontSmall", {
 			font = font,
-			size = ScreenScale(3),
+			size = ScreenScale(4),
 			extended = true,
 			weight = fontW,
 			antialias = fontAntiAliasing
@@ -170,15 +177,16 @@ if CLIENT then
 	end
 
 	local ghost = Color(118, 159, 255)
-
+	local dead = Color(255, 0, 0)
 	hook.Add("OnPlayerChat", "ZChatDead", function(ply, text, bTeam, bDead, bWhisper)
 		if ( ply:IsPlayer() and !ply:Alive() ) then
-			chat.AddText( ply:GetPlayerColor():ToColor(), ply:Nick(), ghost, ": "..text )
+			chat.AddText( dead, "*DEAD* ", ghost, ply:Nick(), ghost, ": "..text )
 			return true
 		end
 	end)
 else
 	util.AddNetworkString("zChatMessage")
+	util.AddNetworkString("zChatGlobalMessage")
 	util.AddNetworkString("zChatTyping")
 
 	net.Receive("zChatMessage", function(len, ply)
@@ -200,10 +208,10 @@ else
 
 		if ply:Alive() and ply.organism and ply.organism.otrub then return end
 
-		ply.ChatWhisper = ply.ChatWhisper or false
+		ply.ChatWhisper = ply:Alive() and ply.ChatWhisper or false
 
 		local rf = RecipientFilter()
-		local checkdist = ply.ChatWhisper and 128 * 128 or 1024 * 1024
+		-- local checkdist = ply.ChatWhisper and 128 * 128 or 1024 * 1024
 		for i, plya in player.Iterator() do
 			if plya:Alive() and plya.organism and plya.organism.otrub then continue end
 			if plya:Alive() and !ply:Alive() then continue end
@@ -243,5 +251,11 @@ else
 
 	function META:IsTyping()
 		return self:GetNetVar("bIsTyping")
+	end
+
+	function zChatPrint(...)
+		net.Start("zChatGlobalMessage")
+			net.WriteTable({...})
+		net.Broadcast()
 	end
 end

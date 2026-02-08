@@ -248,7 +248,7 @@ module[2] = function(owner, org, timeValue)
 		o2[1] = math.max(5, o2[1])
 	end
 	
-	if org.isPly and not org.otrub and o2.curregen < losing_oxy and org.analgesia <= 1.5 then
+	if org.isPly and not org.otrub and o2.curregen < losing_oxy and org.analgesia <= 1.5 and !org.heartstop then
 		if mask_blevota then
 			if o2[1] < 15 then
 				org.owner:Notify("DROP THE FUCKING MASK", 25, "take_gasmask2", 0, nil, color_red2)
@@ -280,7 +280,7 @@ module[2] = function(owner, org, timeValue)
 		end
 	end
 
-	if org.lungsL[1] == 1 and org.lungsR[1] == 1 then
+	if (org.lungsL[1] == 1 and org.lungsR[1] == 1) or org.heartstop then
 		org.lungsfunction = false
 	end
 
@@ -360,7 +360,7 @@ module[2] = function(owner, org, timeValue)
 			end
 		end
 
-		if org.brain > 0.35 then
+		if org.brain > 0.35 and !org.heartstop then
 			if math.random(60) == 1 then
 				org.lungsfunction = true
 			end

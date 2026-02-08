@@ -1507,6 +1507,7 @@ local IsValid = IsValid
 
 
 	local vecZero = Vector()
+	local vomitVPAng = Angle(1,0,0)
 	hook.Add("SetupMove", "HG(StartCommand)", function(ply, mv, cmd)
 		--if CLIENT then return end
 		-- if(1)then return end
@@ -1628,7 +1629,7 @@ local IsValid = IsValid
 		if ply:GetNetVar("vomiting", 0) > CurTime() then
 			cmd:AddKey(IN_DUCK)
 			mv:AddKey(IN_DUCK)
-			if ply == lply then ViewPunch(Angle(1,0,0)) end
+			if ply == lply then ViewPunch(vomitVPAng) end
 		end
 
 		--\\Running
@@ -1819,6 +1820,7 @@ local IsValid = IsValid
 		k = 1 * weightmul
 		k = k * math.Clamp(consmul, 0.7, 1)
 		k = k * math.Clamp((org.temperature and (1 - (org.temperature - 38) * 0.25) or 1), 0.5, 1)
+		k = k * math.Clamp((org.temperature and ((org.temperature - 35) * 0.25 + 1) or 1), 0.5, 1)
 		k = k * math.Clamp((org.stamina and org.stamina[1] or 180) / 120, 0.3, 1)
 		k = k * math.Clamp(5 / ((org.immobilization or 0) + 1), 0.25, 1)
 		k = k * math.Clamp((org.blood or 0) / 5000, 0, 1)
@@ -2635,27 +2637,6 @@ duplicator.Allow( "homigrad_base" )
 			PrintMessage(HUD_PRINTTALK, ply:Nick().." - zteam dev here!")
 		end
 	end)
---//
-
-
---\\ Shared maps with temperatures
-hg.TemperatureMaps = {
-	["gm_wintertown"] = true,
-	["cs_drugbust_winter"] = true,
-	["cs_office"] = true,
-	["gm_zabroshka_winter"] = true,
-	["mu_smallotown_v2_snow"] = true,
-	["ttt_cosy_winter"] = true,
-	["ttt_winterplant_v4"] = true,
-	["gm_everpine_mall"] = true,
-	["gm_boreas"] = true,
-	["gm_reservoir_a1"] = true,
-	["mu_riverside_snow"] = true,
-	["gm_fork_north"] = true,
-	["gm_fork_north_day"] = true,
-	["gm_ijm_boreas"] = true,
-	["gm_construct"] = true, -- test
-}
 --//
 
 --\\ Fireworks effects? why so many, we use only one lol

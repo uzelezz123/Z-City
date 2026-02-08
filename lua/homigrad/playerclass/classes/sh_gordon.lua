@@ -143,8 +143,8 @@ function CLASS.On(self, data)
         end
         self:SyncArmor()
         hevchanged(self)
-        
-        print("JOOOPAAAA")
+
+        --print("JOOOPAAAA")
     end
 end
 
@@ -592,15 +592,19 @@ elseif SERVER then
     }
 
     local hev_color = Color(255,125,0)
+    local dead_color = Color(255,0,0)
 
     hook.Add("Org Think","gordon_healing",function(ply, org, timeValue)
 
-        if org.HEV then
-            if not org.alive and not org.emitflatline then
-                org.emitflatline = true
-                hg.GetCurrentCharacter(ply):EmitSound("hl1/fvox/flatline.wav")
-                if CurrentRound and CurrentRound().name == "coop" then
-                    PrintMessage(HUD_PRINTTALK,"<c=155,0,0>"..phrases[math.random(#phrases)].."</c>")
+        if org.HEV and not org.alive and not org.emitflatline then
+            org.emitflatline = true
+            hg.GetCurrentCharacter(ply):EmitSound("hl1/fvox/flatline.wav")
+
+            if CurrentRound and CurrentRound().name == "coop" then
+                if zChatPrint then
+                    zChatPrint(dead_color, phrases[math.random(#phrases)])
+                else
+                    PrintMessage(HUD_PRINTTALK, phrases[math.random(#phrases)])
                 end
             end
         end

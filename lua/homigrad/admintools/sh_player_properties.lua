@@ -502,6 +502,10 @@ properties.Add( "amputate_limb", {
 				ent:Kill()
 				timer.Simple(0, function()
 					if not IsValid(ent.RagdollDeath) then return end
+					--[[if not isbool(ent) then
+						hook.Run("OnHeadExplode", ent, ent.RagdollDeath)
+					end]]
+
 					Gib_Input(ent.RagdollDeath, ent.RagdollDeath:LookupBone("ValveBiped.Bip01_Head1"))
 				end)
 			end

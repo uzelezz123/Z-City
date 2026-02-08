@@ -48,6 +48,10 @@ hook.Add("PostPostPlayerDeath", "PlayerClass", function(ply, ragdoll)
 	ply:SetPlayerClass()
 end)
 
+hook.Add("Player Think", "ClassPlyThink", function(ply, time, dtime)
+	ply:PlayerClassEvent("Think", time, dtime)
+end)
+
 COMMANDS.playerclass = {
 	function(ply, args)
 		if not ply:IsAdmin() then return end

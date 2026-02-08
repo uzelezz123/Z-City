@@ -95,7 +95,7 @@ function SWEP:MakeShell(shell, pos, ang, vel)
 	hg_potatopc = hg_potatopc or hg.ConVars.potatopc
 	
 	if not hg_potatopc:GetBool() then
-		if math.random(1) == 1 and #hg_trails < 10 then
+		if math.random(1) == 1 and #hg_trails < hg_maxsmoketrails:GetInt() then
 			local eff = ent:CreateParticleEffect("smoke_trail_wild",1,{PATTACH_ABSORIGIN_FOLLOW,ent,ent:GetPos()})
 			table.insert(hg_trails,eff)
 			eff:StartEmission()

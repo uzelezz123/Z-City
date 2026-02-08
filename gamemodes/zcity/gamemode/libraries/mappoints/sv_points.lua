@@ -117,6 +117,10 @@ hook.Add( "Initialize", "LoadMapPoints", zb.CreateMapDir )
 --PrintTable(zb.Points.Example.Points)
 -- pointData = { pos = Vector(), ang = Angle() } // Таблица пойнта
 COMMANDS.pointnew = {function(ply,args)
+    if not args[1] then
+        ply:ChatPrint("Usage: !pointnew <pointGroup>")
+        return
+    end
     local ang = ply:EyeAngles()
     ang.x = 0
     local pointData = {
@@ -131,6 +135,10 @@ COMMANDS.pointnew = {function(ply,args)
 end,1,"Creates a new point on the map\nArgs - pointGroup"}
 
 COMMANDS.pointset = {function(ply,args)
+    if not args[1] or not args[2] then
+        ply:ChatPrint("Usage: !pointset <pointGroup> <pointNumber>")
+        return
+    end
 
     zb.SetMapPoint( args[1], args[2], args[3] )
 
@@ -139,6 +147,10 @@ COMMANDS.pointset = {function(ply,args)
 end,1,"Sets a point on the map\nArgs - pointGroup, pointNumber"}
 
 COMMANDS.pointremove = {function(ply,args)
+    if not args[1] then
+        ply:ChatPrint("Usage: !pointremove <pointGroup> <pointNumber|*>\nUse * to remove all points")
+        return
+    end
 
     zb.RemoveMapPoint( args[1], args[2], true, args[2] == "*" )
 

@@ -92,6 +92,23 @@ MODE.LootTable = {
 	}},
 }
 
+local RemoveGordonWeapons = {
+    ["weapon_hg_crowbar"] = true,
+	["weapon_pocketknife"] = true,
+	["weapon_hk_usp"] = true,
+	["weapon_revolver357"] = true,
+	["weapon_spas12"] = true,
+	["weapon_hg_crossbow"] = true,
+	["weapon_osipr"] = true,
+	["weapon_mp7"] = true,
+	["weapon_hg_slam"] = true,
+	["weapon_hg_rpg"] = true,
+    ["weapon_hg_hl2nade_tpik"] = true,
+    ["weapon_bugbait"] = true,
+    ["weapon_physcannon"] = true,
+    ["item_suit"] = true
+}
+
 hook.Add("EntityTakeDamage","dontfuckingdamagethem",function(ent,dmginfo)
     if CurrentRound().name == "coop" then
         local att = dmginfo:GetAttacker()
@@ -190,6 +207,25 @@ function MODE:ShouldRoundEnd()
 end
 
 function MODE:RoundStart()
+    for _,ply in player.Iterator() do
+        if ply.PlayerClassName == "Gordon" then
+            for k,ent in ipairs(ents.FindInSphere( ply:GetPos(), 512 )) do
+                if RemoveGordonWeapons[ent:GetClass()] and not IsValid(ent:GetOwner()) then
+                    SafeRemoveEntity(ent)
+                end
+            end
+        else
+            for k,v in ipairs(ply:GetWeapons()) do
+                if v:GetClass() == "weapon_bugbait" then
+                    ply:StripWeapon("weapon_bugbait")
+                end
+
+                if v:GetClass() == "weapon_physcannon" then 
+                    ply:StripWeapon("weapon_physcannon")
+                end
+            end
+        end
+    end
 end
 
 local function getspawnpos(i)

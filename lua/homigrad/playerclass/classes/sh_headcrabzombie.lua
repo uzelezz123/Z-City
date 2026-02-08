@@ -334,6 +334,12 @@ if SERVER then
 			return ply, ent, false
 		end
 	end)
+
+	hook.Add("HG_PlayerCanHearPlayersVoice", "ZombVoice", function(listener, speaker)
+		if speaker.PlayerClassName == "headcrabzombie" then
+			return false, false
+		end
+	end)
 else
 	local function DrawHeadcrab(ply, strModel, vecAdjust, fFov, setMat)
 		if not IsValid(ply.FirstPersonCrab) then
@@ -372,45 +378,56 @@ else
 			mdl.matseted1 = false
 		end
 	
-		local view = render.GetViewSetup()
-		cam.Start3D(view.origin,view.angles,view.fov + fFov,nil,nil,nil,nil,1,30)
-			cam.IgnoreZ(true)
-			local viewpunching = GetViewPunchAngles()
-			local ang = view.angles + viewpunching
-			ang:RotateAroundAxis(ang:Up(), -90)
-			ang:RotateAroundAxis(ang:Forward(), 100)
-			mdl:SetRenderOrigin(view.origin + ang:Forward() * vecAdjust.x + ang:Right() * vecAdjust.y + ang:Up() * vecAdjust.z)
-			mdl:SetRenderAngles(ang)
-			mdl2:SetRenderOrigin(view.origin + ang:Forward() * vecAdjust.x + ang:Right() * vecAdjust.y + ang:Up() * vecAdjust.z)
-			mdl2:SetRenderAngles(ang)
-			mdl:SetParent(ply, ply:LookupBone("ValveBiped.Bip01_Head1"))
-			render.SetColorModulation(1,1,1)
-				render.SetStencilWriteMask( 0xFF )
-				render.SetStencilTestMask( 0xFF )
-				render.SetStencilReferenceValue( 0 )
-				render.SetStencilCompareFunction( STENCIL_ALWAYS )
-				render.SetStencilPassOperation( STENCIL_KEEP )
-				render.SetStencilFailOperation( STENCIL_KEEP )
-				render.SetStencilZFailOperation( STENCIL_KEEP )
-				render.ClearStencil()
+		if ply == GetViewEntity() then
+			local view = render.GetViewSetup()
+
+			cam.Start3D(view.origin, view.angles, view.fov + fFov, nil, nil, nil, nil, 1, 30)
+				cam.IgnoreZ(true)
+
+				local viewpunching = GetViewPunchAngles()
+				local ang = view.angles + viewpunching
+
+				ang:RotateAroundAxis(ang:Up(), -90)
+				ang:RotateAroundAxis(ang:Forward(), 100)
+				mdl:SetRenderOrigin(view.origin + ang:Forward() * vecAdjust.x + ang:Right() * vecAdjust.y + ang:Up() * vecAdjust.z)
+				mdl:SetRenderAngles(ang)
+				mdl2:SetRenderOrigin(view.origin + ang:Forward() * vecAdjust.x + ang:Right() * vecAdjust.y + ang:Up() * vecAdjust.z)
+				mdl2:SetRenderAngles(ang)
+				mdl:SetParent(ply, ply:LookupBone("ValveBiped.Bip01_Head1"))
 				
-				-- Enable stencils
-				render.SetStencilEnable( true )
-				-- Set everything up everything draws to the stencil buffer instead of the screen
-				render.SetStencilReferenceValue( 1 )
-				render.SetStencilCompareFunction( STENCIL_NOTEQUAL )
-				render.SetStencilPassOperation( STENCIL_REPLACE )
-				render.SetBlend(0)
-					mdl2:DrawModel()
-				render.SetBlend(1)
-				render.SetStencilCompareFunction( STENCIL_EQUAL )
-				mdl:DrawModel()
-				DrawBokehDOF(26,0.93,15)
-				-- Let everything render normally again
-				render.SetStencilEnable( false )
-			render.SetColorModulation(1,1,1)
-			cam.IgnoreZ(false)
-		cam.End3D()
+				render.SetColorModulation(1, 1, 1)
+					render.SetStencilWriteMask(0xFF)
+					render.SetStencilTestMask(0xFF)
+					render.SetStencilReferenceValue(0)
+					render.SetStencilCompareFunction(STENCIL_ALWAYS)
+					render.SetStencilPassOperation(STENCIL_KEEP)
+					render.SetStencilFailOperation(STENCIL_KEEP)
+					render.SetStencilZFailOperation(STENCIL_KEEP)
+					render.ClearStencil()
+					
+					-- Enable stencils
+					render.SetStencilEnable(true)
+					-- Set everything up everything draws to the stencil buffer instead of the screen
+					render.SetStencilReferenceValue(1)
+					render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
+					render.SetStencilPassOperation(STENCIL_REPLACE)
+					
+					render.SetBlend(0)
+						mdl2:DrawModel()
+					render.SetBlend(1)
+
+					render.SetStencilCompareFunction(STENCIL_EQUAL)
+					
+					mdl:DrawModel()
+
+					DrawBokehDOF(26, 0.93, 15)
+					-- Let everything render normally again
+					render.SetStencilEnable(false)
+				render.SetColorModulation(1, 1, 1)
+
+				cam.IgnoreZ(false)
+			cam.End3D()
+		end
 	end
 
 	hook.Add("Post Pre Post Processing", "ZombProcessing", function()

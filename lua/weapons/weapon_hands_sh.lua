@@ -39,8 +39,8 @@ SWEP.ModelScale2 = 1.5
 SWEP.blockinganim = 0
 
 local clawClasses = {
-	["furry"] = true,
-	["headcrabzombie"] = true
+	["furry"] = 0.5,
+	["headcrabzombie"] = 1
 }
 
 local function qerp(delta, a, b)
@@ -759,10 +759,10 @@ function SWEP:SecondaryAttack()
 		self:PrimaryAttack(true)
 	end
 
-	if self:GetFists() and owner.PlayerClassName ~= "headcrabzombie" then return end
-	if self:GetFists() and owner.PlayerClassName == "headcrabzombie" then
+	if self:GetFists() --[[and owner.PlayerClassName ~= "headcrabzombie"]] then return end
+	--[[if self:GetFists() and owner.PlayerClassName == "headcrabzombie" then
 		self:SetFists(false)
-	end
+	end--]]
 	if owner:GetNetVar("handcuffed",false) then return end
 
 	if SERVER then
@@ -1284,7 +1284,7 @@ function SWEP:Think()
 		self:SetCarrying()
 	end
 
-	if self:GetFists() and owner:KeyDown(IN_ATTACK2) and (self:GetNextSecondaryFire() < CurTime()) and owner.PlayerClassName ~= "sc_infiltrator" then
+	if self:GetFists() and owner:KeyDown(IN_ATTACK2) and (self:GetNextSecondaryFire() < CurTime()) and owner.PlayerClassName ~= "sc_infiltrator" and owner.PlayerClassName ~= "headcrabzombie" then
 		self:SetNextPrimaryFire(CurTime() + .5)
 		self:SetBlocking(true)
 	else
@@ -1374,7 +1374,7 @@ function SWEP:PrimaryAttack(forcespecial)
 		side = "fists_left"
 	end
 
-	if owner:KeyDown(IN_ATTACK2) and owner.PlayerClassName ~= "sc_infiltrator" then return end
+	if owner:KeyDown(IN_ATTACK2) and owner.PlayerClassName ~= "sc_infiltrator" and owner.PlayerClassName ~= "headcrabzombie" then return end
 	if owner:GetNetVar("handcuffed",false) then return end
 	local olddown = self:GetNextDown()
 	self:SetNextDown(CurTime() + 7)
@@ -1423,8 +1423,8 @@ function SWEP:PrimaryAttack(forcespecial)
 
 	self:UpdateNextIdle()
 
-	self:SetNextPrimaryFire(CurTime() + .35 * math.Clamp((180 - owner.organism.stamina[1]) / 90,1,2) + (special_attack and 0.5 or clawClasses[owner.PlayerClassName] and 0.4 or 0))
-	self:SetNextSecondaryFire(CurTime() + .35 + (special_attack and 0.5 or clawClasses[owner.PlayerClassName] and 0.4 or 0))
+	self:SetNextPrimaryFire(CurTime() + .35 * math.Clamp((180 - owner.organism.stamina[1]) / 90,1,2) + (math.max(special_attack and 0.5 or 0, clawClasses[owner.PlayerClassName] or 0)))
+	self:SetNextSecondaryFire(CurTime() + .35 + (math.max(special_attack and 0.5 or 0, clawClasses[owner.PlayerClassName] or 0)))
 	self:SetLastShootTime(CurTime())
 
 	local snd, pitch = "weapons/slam/throw.wav", math.random(110, 120)

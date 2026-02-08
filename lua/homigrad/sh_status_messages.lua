@@ -116,7 +116,7 @@ local is_aimed_at_phrases = {
 }
 
 local near_death_poetic = {
-	"Trying to stand... but I just cant...",
+	"Trying to stand... but I just can't...",
 	"Breathing's just shallow sips of nothing...",
 	"Can't tell if my eyes are open or not anymore...",
 	"Last thing I'll taste is my own blood and copper.",
@@ -149,11 +149,11 @@ local near_death_positive = {
 local broken_limb = {
 	"FUCK. FUCK. ITS DEFINITELY BROKEN",
 	"I CAN FEEL THE BONE PIECES MOVING",
-	"ITS FUCKING BROKEN. I THINK..",
+	"IT'S FUCKING BROKEN. I THINK..",
 	"It hurts just thinking about it. Definitely broken.",
-	"I dont think it should bend here.",
+	"I don't think it should bend here.",
 	"Oh fuck. It is snapped.",
-	"I dont see any open fracture, but I feel like I broke something",
+	"I don't see any open fracture, but I feel like I broke something",
 }
 
 local dislocated_limb = {
@@ -168,7 +168,7 @@ local hungry_a_bit = {
     "Mgh, I'm hungry...",
     "Some food would be great...",
     "I'm hungry...",
-    "It's time to eat",
+    "I should eat something.",
 }
 
 local very_hungry = {
@@ -188,7 +188,7 @@ local after_unconscious = {
 	"Ohh-fuck... my head is aching...",
 	"Oh it's gonna be hard to get up right now... but I have to...",
 	"I don't recognize this place at all... or do I?",
-	"I don't want to experience this EVER AGAIN",
+	"I don't want to experience this EVER AGAIN!",
 }
 
 local slight_braindamage_phraselist = {
@@ -221,17 +221,18 @@ local cold_phraselist = {
 	"Too cold for me.",
 	"I'm shivering, fucking hell, man.",
 	"Extremely chilly out here..",
-	"Need something to heat up",
+	"Need something to heat up...",
+	"I feel pretty cold...",
 	"I feel sick from that cold, fuck."
 }
 
 local freezing_phraselist = {
-	"I.. Do not feel m-my b-body..",
-	"I cant.. f-feel my legs",
+	"I.. ca.. can't feel m-my b-body..",
+	"I can't.. f-feel my legs...",
 	"I'm f-fuck-king fre-ezing..",
 	"I-I think-k my face is num-mb..",
 	"Cold-d..",
-	"I.. Cannot feel any-ythi-ing..",
+	"I.. can't feel any-ythi-ing..",
 }
 
 local numb_phraselist = {
@@ -239,16 +240,18 @@ local numb_phraselist = {
 	"Why.. does it feel warm..?",
 	"I think I'm okay.. I think...",
 	"Finally some warmth...",
+	"I'm warm again... Somehow...",
+	"I was just freezing... Where did this heat come from..?",
 }
 
 local hot_phraselist = {
 	"I'm so sweaty..",
-	"This hot is killing me..",
+	"This heat is killing me..",
 	"My clothing is covered in sweat, fuck.",
-	"I'm smelling like shit!",
+	"My sweat fucking reeks. I should really cool down...",
 	"It's a bit too hot, fuck, man.",
-	"I'm heating up real bad",
-	"Why is it so hot in here",
+	"I'm heating up real bad...",
+	"Why is it so hot in here?",
 }
 
 local heatstroke_phraselist = {
@@ -262,7 +265,7 @@ local heatstroke_phraselist = {
 local heatvomit_phraselist = {
 	"That heat..- I'm gonna vomit-",
 	"Ugghhh... I'm about to puke-",
-	"Fuuck.. Oughhh.. I dont feel-"
+	"Fuuck.. Oughhh.. I don't feel-"
 }
 
 local hg_showthoughts = ConVarExists("hg_showthoughts") and GetConVar("hg_showthoughts") or CreateClientConVar("hg_showthoughts", "1", true, true, "Show the thoughts of your character", 0, 1)

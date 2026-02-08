@@ -105,7 +105,7 @@ local function getmaps()
     for _, map in ipairs(maps) do
         map = map:sub(1, -5)
         local mapstr = map:Split("_")
-        if allowedPrefix[mapstr[1]] and not blacklist[map] then
+        if (allowedPrefix[mapstr[1]] or not string.find(map, "_")) and not blacklist[map] then
             table.insert(mappull, map)
         end
     end

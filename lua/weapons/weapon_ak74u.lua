@@ -205,7 +205,7 @@ SWEP.availableAttachments = {
 	barrel = {
 		[1] = {"supressor1", Vector(0,0,0), {}},
 		[2] = {"supressor8", Vector(0,0,0), {}},
-		["mount"] = Vector(-2.5,0.55,0.25),
+		["mount"] = Vector(-2.5,1,0.45),
 		["mountAngle"] = Angle(0,-1.5,0)
 	},
 	grip = {

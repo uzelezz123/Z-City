@@ -1508,7 +1508,7 @@ local IsValid = IsValid
 		hg.approach_vector = approach_vector
 	--//
 
-
+	local hg_movement_stamina_debuff = CreateConVar("hg_movement_stamina_debuff","0.3",{FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY},"movement debuff when low stamina",0,1)
 	local vecZero = Vector()
 	local vomitVPAng = Angle(1,0,0)
 	hook.Add("SetupMove", "HG(StartCommand)", function(ply, mv, cmd)
@@ -1824,7 +1824,7 @@ local IsValid = IsValid
 		k = k * math.Clamp(consmul, 0.7, 1)
 		k = k * math.Clamp((org.temperature and (1 - (org.temperature - 38) * 0.25) or 1), 0.5, 1)
 		k = k * math.Clamp((org.temperature and ((org.temperature - 35) * 0.25 + 1) or 1), 0.5, 1)
-		k = k * math.Clamp((org.stamina and org.stamina[1] or 180) / 120, 0.3, 1)
+		k = k * math.Clamp((org.stamina and org.stamina[1] or 180) / 120, hg_movement_stamina_debuff:GetFloat(), 1)
 		k = k * math.Clamp(5 / ((org.immobilization or 0) + 1), 0.25, 1)
 		k = k * math.Clamp((org.blood or 0) / 5000, 0, 1)
 		k = k * math.Clamp(10 / ((org.shock or 0) + 1), 0.25, 1)

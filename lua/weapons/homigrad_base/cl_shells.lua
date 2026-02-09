@@ -8,7 +8,7 @@ Shells["50cal"] = {m = "models/shells/fhell_50cal.mdl", s = {"weapons/shells/m24
 Shells["545x39"] = {m = "models/shells/fhell_545.mdl", s = "Shell"}
 Shells["556x45"] = {m = "models/shells/fhell_556.mdl", s = "Shell"}
 Shells["762x39"] = {m = "models/shells/fhell_762x39.mdl", s = "Shell"}
-Shells["366tkm"] = {m = "models/weapons/arc9/darsu_eft/shells/366tkm.mdl", s = "Shell"} -- models/weapons/arccw/uc_shells/366tkm.mdl
+Shells["366tkm"] = {m = "models/weapons/arccw/uc_shells/366tkm.mdl", s = "Shell", vCustomScale = 0.6} -- models/weapons/arccw/uc_shells/366tkm.mdl
 Shells["762x51"] = {m = "models/shells/fhell_762x51.mdl", s = "Shell"}
 Shells["762x54"] = {m = "models/weapons/arc9/darsu_eft/shells/762x54r.mdl", s = "Shell"}
 Shells[".338Lapua"] = {m = "models/shells/shell_338mag.mdl", s = "Shell"}
@@ -28,6 +28,7 @@ Shells["23x75sh25"] = {m = "models/weapons/arc9/darsu_eft/shells/patron_23x75_sh
 Shells["23x75barricade"] = {m = "models/weapons/arc9/darsu_eft/shells/patron_23x75_bar.mdl", s = "12Guage"}
 Shells["23x75zvezda"] = {m = "models/weapons/arc9/darsu_eft/shells/patron_23x75_zvezda.mdl", s = "12Guage"}
 Shells["23x75waver"] = {m = "models/weapons/arc9/darsu_eft/shells/patron_23x75_waver.mdl", s = "12Guage"}
+Shells["20/70"] = {m = "models/weapons/arc9/darsu_eft/shells/patron_23x75_sh10.mdl", s = "12Guage", vCustomScale = 0.75}
 
 hg_shelles = hg_shelles or {}
 local gamemod = engine.ActiveGamemode()
@@ -81,7 +82,8 @@ function SWEP:MakeShell(shell, pos, ang, vel)
 	ent:PhysicsInitBox( t.vCustomPhys and -t.vCustomPhys or Vector(-0.5, -0.15, -0.5), t.vCustomPhys or Vector(0.5, 0.15, 0.5),"gmod_silent")
 
 	ent:SetAngles(ang)
-	ent:SetMoveType(MOVETYPE_VPHYSICS) 
+	ent:SetMoveType(MOVETYPE_VPHYSICS)
+	ent:SetModelScale(t.vCustomScale and t.vCustomScale or 1)
 	ent:SetSolid(SOLID_VPHYSICS) 
 	ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
     hg_shelles[#hg_shelles+1] = ent

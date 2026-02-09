@@ -202,11 +202,11 @@ bloodparticles_hook[2] = function(mul)
 			table_remove(hg.bloodparticles1, i)
 			local dir = result.HitNormal
 			decalBlood(result.HitPos, dir, result, part.artery, part.owner)
-			
-			
+
+
 			--sound.Play("zbattle/blood_drop.mp3", hitPos, math.random(10, 60), math.random(120, 120))
 			--sound.Play("homigrad/blooddrip" .. math_random(1, 4) .. ".wav", hitPos, math.random(10, 60), math.random(80, 120))
-			
+
 			continue
 		else
 			local ph = 0
@@ -215,10 +215,10 @@ bloodparticles_hook[2] = function(mul)
 				ph = result.Entity:TranslatePhysBoneToBone(result.PhysicsBone)
 				ph = ph != -1 and ph or 0
 				local nam = result.Entity:GetBoneName(ph)
-				
+
 				shouldhit = !(result.Entity.organism and hg.amputatedlimbs2[nam] and result.Entity.organism[hg.amputatedlimbs2[nam].."amputated"])
 			end
-			
+
 			result.Hit = result.Hit and shouldhit
 
 			if result.Hit then
@@ -246,10 +246,10 @@ bloodparticles_hook[2] = function(mul)
 				local pulldown = (-vector_up * (grav / 600)):Cross(-result.HitNormal:Angle():Right())
 				nextpos:Add(pulldown)
 				part.lerpedmove = LerpVector(1, part.lerpedmove or part[3] * mul, nextpos * mul * 2)
-				
+
 				if part.lerpedmove:LengthSqr() < 0.1 * mul then
 					decalBlood(result.HitPos, result.HitNormal, result, part.artery, part.owner)
-					
+
 					table_remove(hg.bloodparticles1, i)
 				end
 

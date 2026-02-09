@@ -1386,7 +1386,7 @@ function hg.FlashlightPos(ply)
     if IsValid(ply.FakeRagdoll) then return end
     if not rhmat or not lhmat then return end
     if not ishgweapon(wep) or wep.reload then return end
-	if ply.organism and ply.organism.larmamputated then return end
+    if ply.organism and ply.organism.larmamputated then return end
 
     if veclh and lang then
 	    lhmat:SetTranslation(veclh)

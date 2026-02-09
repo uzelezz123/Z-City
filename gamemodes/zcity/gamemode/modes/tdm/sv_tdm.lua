@@ -15,10 +15,9 @@ function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
 end
 
 function MODE:CanLaunch()
-	return true
-	--[[local points = zb.GetMapPoints( "HMCD_TDM_T" )
+	local points = zb.GetMapPoints( "HMCD_TDM_T" )
 	local points2 = zb.GetMapPoints( "HMCD_TDM_CT" )
-    return (#points > 0) and (#points2 > 0)]] -- can work without them
+    return (#points > 0) and (#points2 > 0)
 end
 
 MODE.ForBigMaps = true
@@ -188,6 +187,7 @@ net.Receive("tdm_buyitem",function(len,ply)
 	if !CurrentRound().buymenu then return end
 	if ((zb.ROUND_START or 0) + 40 < CurTime()) then ply:ChatPrint("Time's up!") return end
 	local tItem = net.ReadTable()
+	
 	if not istable(tItem) then return end
 	local category = tItem[1]
 	local index = tItem[2]

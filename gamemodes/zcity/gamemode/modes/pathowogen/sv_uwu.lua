@@ -131,9 +131,9 @@ function MODE:Intermission()
 end
 
 MODE.Vehicles = {
-	"blackterios_glide_ika_renault_torino_coupe",
-	"blackterios_glide_fiat_duna",
-	"blackterios_glide_renault_trafic"
+	"gtav_sanchez",
+	"gtav_speedo",
+	"gtav_infernus"
 }
 
 function MODE:SpawnInterests()
@@ -168,7 +168,7 @@ function MODE:SpawnInterests()
 	end
 
 	for k, v in ipairs(zb.Points["SCRAPPERS_VEHICLE"].Points or {}) do
-		local random = math.random(1, 4)
+		local random = math.random(1, 2)
 
 		if random == 1 then
 			local vehicle_class = self.Vehicles[math.random(#self.Vehicles)]
@@ -517,7 +517,7 @@ function MODE:SpawnSquadHelicopter()
 	local heliPoints = zb.Points["UWU_GlideHeli"].Points or {}
 
 	if #heliPoints > 0 then
-		self:CreateTimer("UWUCopter", math.random(240, 300), 1, function()
+		self:CreateTimer("UWUCopter", math.random(60, 120), 1, function()
 			local squad = self:SpawnDeltaSquad(5)
 
 			print("delta squad:")
@@ -547,7 +547,7 @@ function MODE:InitiateCQExtraction()
 	local spawnPoint = self.saved.extractPoint
 
 	if spawnPoint then
-		self:CreateTimer("CQExtract", math.random(120, 180), 1, function()
+		self:CreateTimer("CQExtract", math.random(60, 120), 1, function()
 			local squad = self:SpawnDeltaSquad(5)
 
 			print("delta squad:")
@@ -622,7 +622,7 @@ function MODE:ShouldRoundEnd()
 		self:BroadcastContractor(table.Random(self.FirstCasualtyContractor))
 	end
 
-	if !self.saved.HalfWay and self.saved.PlayerCount > 6 and self.saved.PlayerCount / 2 >= #self.humans then
+	if !self.saved.HalfWay and self.saved.PlayerCount > 4 and self.saved.PlayerCount / 2 >= #self.humans then
 		self.saved.HalfWay = true
 
 		if self.saved.CloseQuarters then
@@ -640,13 +640,13 @@ function MODE:ShouldRoundEnd()
 		self:BroadcastContractor(table.Random(self.HalfWayContractor))
 	end
 
-	if !self.saved.ThreeLeft and self.saved.PlayerCount > 6 and #self.humans <= 3 then
+	if !self.saved.ThreeLeft and self.saved.PlayerCount > 4 and #self.humans <= 3 then
 		self.saved.ThreeLeft = true
 		self:BroadcastCommander(table.Random(self.ThreeLeftCommander))
 		self:BroadcastContractor(table.Random(self.ThreeLeftContractor))
 	end
 
-	if !self.saved.TwoLeft and self.saved.PlayerCount > 6 and #self.humans <= 2 then
+	if !self.saved.TwoLeft and self.saved.PlayerCount > 3 and #self.humans <= 2 then
 		self.saved.TwoLeft = true
 		self:BroadcastCommander(table.Random(self.TwoLeftCommander))
 		self:BroadcastContractor(table.Random(self.TwoLeftContractor))
@@ -1073,7 +1073,7 @@ function MODE:ZB_JoinSpectators(ply)
 end
 
 function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
-    if Victim:GetPlayerClass() == Attacker:GetPlayerClass() then
-        return 1, true
-    end
+	if Victim:GetPlayerClass() == Attacker:GetPlayerClass() then
+		return 1, true
+	end
 end

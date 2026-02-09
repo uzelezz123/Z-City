@@ -125,7 +125,7 @@ function ENT:Think()
 
     if CLIENT and (not self.ColorCD or self.ColorCD < CurTime()) then
         color_b:SetLightness(self:GetFireLeft())
-		if color_b:GetLightness() <= 0.1 then
+        if color_b:GetLightness() <= 0.1 then
 			self:SetMaterial("models/props_foliage/tree_deciduous_01a_trunk")
 		end
         self:SetColor(color_b)

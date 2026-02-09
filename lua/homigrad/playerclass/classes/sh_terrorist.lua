@@ -18,7 +18,7 @@ function CLASS.On(self)
 
         Appearance.AAttachments = {
             masks[math.random(#masks)],
-            "terrorist_band"
+            --"terrorist_band"
         }
         self:SetNetVar("Accessories", Appearance.AAttachments or "none")
         

@@ -4,6 +4,7 @@ hg.berserkStartTime = hg.berserkStartTime or 0
 hg.berserkStartTime2 = hg.berserkStartTime2 or 0
 hg.berserkStation = hg.berserkStation or nil
 
+
 local tab = {
 	[ "$pp_colour_addr" ] = 0,
 	[ "$pp_colour_addg" ] = 0,

@@ -10,7 +10,7 @@ local combines = {
     "npc_hunter",
     "npc_strider",
     "npc_turret_floor",
-	"npc_combine_camera",
+    "npc_combine_camera",
     "npc_manhack",
     "npc_cscanner",
     "npc_clawscanner"

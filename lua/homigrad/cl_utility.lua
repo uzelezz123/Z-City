@@ -399,10 +399,10 @@ players : 1 humans, 0 bots (20 max)
 		if CLIENT then
 			lply = IsValid(lply) and lply or LocalPlayer()
 			local entities = hg.seenents
-			
+
 			for i = 1, #entities do
 				ent = entities[i]
-				
+
 				if not IsValid(ent) or (ent:IsPlayer() and not ent:Alive()) or IsValid(ent.FakeRagdoll) then continue end
 				--print(ent, CurTime())
 				local ply = ent:IsPlayer() and ent or IsValid(ent.ply) and ent.ply
@@ -503,7 +503,7 @@ players : 1 humans, 0 bots (20 max)
 			return (math.max((lply.PlayerClassName == "furry" and 0.2 or 0.25) / ((org.immobilization or 0) / 30 + 1),0.2) * wepMul) * weaponAdjust * stunmul + brainadjust
 		end
 		if isrunning and lply:GetMoveType() ~= MOVETYPE_NOCLIP then
-			return 0.5 * math.max(1 / ((org.immobilization or 0) / 30 + 1),0.4) * wepMul * weaponAdjust * stunmul + brainadjust
+			return 1 * math.max(1 / ((org.immobilization or 0) / 30 + 1),0.4) * wepMul * weaponAdjust * stunmul + brainadjust
 		end
 
 		return (math.max(1 / ((org.immobilization or 0) / 30 + 1),0.4) * wepMul) * weaponAdjust * stunmul + brainadjust
@@ -664,9 +664,9 @@ players : 1 humans, 0 bots (20 max)
 			ply:SetVoiceVolumeScale(!hg.muteall and (!hg.mutespect or ply:Alive()) and (hg.playerInfo[ply:SteamID()] and hg.playerInfo[ply:SteamID()][2] or 1) or 0)
 
 			if not ply:Alive() then return end
-			
+
 			local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
-			
+
 			if ply:VoiceVolume() != 0 then
 				if (ply.timedupdate or 0) < CurTime() then
 					UpdateVoiceDSP(lply, ply)

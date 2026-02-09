@@ -26,7 +26,7 @@ hook.Add("HG_PlayerFootstep_Notify", "HMCD_Professions_Abilities", function(ply,
 			net.WriteVector(pos)
 			net.WriteFloat(ply:EyeAngles().y)
 			net.WriteBool(foot == 0)
-			
+
 			local character_color = ply:GetNWVector("PlayerColor")
 			
 			if(!IsColor(character_color))then

@@ -88,7 +88,7 @@ function CLASS.Off(self)
 	self:SetNWString("PlayerRole", nil)
     self.organism.CantCheckPulse = nil
     self.leader = nil
-	hook.Remove("OnEntityCreated", "relation_shipdo"..self:EntIndex())
+    hook.Remove("OnEntityCreated", "relation_shipdo"..self:EntIndex())
 end
 
 

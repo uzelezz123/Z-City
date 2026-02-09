@@ -339,11 +339,10 @@ net.Receive("hg_phrase", function(len, ply)
 	local pitch = nil
 
 	-- overrides
-	local override_ply, override_phrase, override_muffed, override_pitch = hook.Run("HG_ReplacePhrase", ply, phrase, muffed, pitch) -- pitch means pitched effect, not exact sound pitch
+	local override_ply, override_phrase, override_muffed, override_pitch = hook.Run("HG_ReplacePhrase", ply, phrase, muffed, pitch)  -- pitch means pitched effect, not exact sound pitch
 	if override_ply ~= nil then
 		phrase, muffed, pitch = override_phrase, override_muffed, override_pitch
 	end
-
 
 	if ply.PlayerClassName == "bloodz" or ply.PlayerClassName == "groove" then
 		phrase = table.Random(hg.ghetto_phrases)

@@ -655,7 +655,7 @@ end
 local CurTime = CurTime
 
 hook.Add("PreCleanupMap","VSEM_VSTAT",function()
-	for i, ply in player.Iterator() do
+	for i,ply in player.Iterator() do
 		hg.FakeUp(ply)
 	end
 end)

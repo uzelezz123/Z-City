@@ -242,7 +242,7 @@ function MODE:EndVoting()
         self.CurrentSubMode = "EXTENDED"
         self.TotalWaves = 12
     elseif selectedMode == 3 then
-        self.CurrentSubMode = "STANDARD" 
+        self.CurrentSubMode = "STANDARD"
         self.TotalWaves = 6
     end
     
@@ -397,7 +397,6 @@ function MODE:RoundThink()
         -- Для чего ты вызываешь вообще все ентити, ТЕБЕ БАНАЛЬНО ВЫГОДНО ИСПОЛЬЗОВАТЬ ents.FindByClass() 
         -- КАКОГО ЧЕРТА У ТЕБЯ ТУТ ВООБЩЕ ЧЕРЕЗ ПЕЙРСЫ... И еще и в думалке D:
         for _, ent in ents.Iterator() do -- дека если ты это не перепишишь я удалю этот режим. | SALAT :3
-			-- бедни дека
             if IsValid(ent) and ent.IsDefenseWaveNPC and not ent.DefenseNPCCountedAsDead then
                 local class = ent:GetClass() or ""
                 
@@ -472,7 +471,7 @@ function MODE:EndRound()
     self.NPCCount = 0
     
 
-    for _, ent in ents.Iterator() do -- дека если ты это не перепишишь я удалю этот режим. | SALAT :3
+    for _, ent in pairs(ents.GetAll()) do -- дека если ты это не перепишишь я удалю этот режим. | SALAT :3
         if IsValid(ent) and (ent:IsNPC() or 
             string.find(tostring(ent:GetClass() or ""), "npc_vj_") or
             string.find(tostring(ent:GetClass() or ""), "sent_vj_") or

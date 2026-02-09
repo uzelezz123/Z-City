@@ -275,7 +275,7 @@ CreateEndMenu = function()
 end
 
 function MODE:RoundStart()
-    for i, ply in player.Iterator() do
+    for i,ply in player.Iterator() do
 		ply.won = nil
     end
 

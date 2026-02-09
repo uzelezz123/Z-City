@@ -64,15 +64,23 @@ local function harmdone(harm)
     end
 end
 
-local showstuff = CurTime() + 5
+local showstuff = CurTime() + 10
 hook.Add("Player_Death","karmacheck",function(ply)
     if ply != LocalPlayer() then return end
     
-    showstuff = CurTime() + 5
+    showstuff = CurTime() + 10
 end)
 
 local pressed
 hook.Add("HUDPaint","shownotification",function()
+
+    if lply:Alive() then
+		if IsValid(flashlight) then
+			flashlight:Remove()
+			flashlight = nil
+		end
+	end
+
     if LocalPlayer():Alive() then return end
 
     if showstuff > CurTime() then
@@ -83,6 +91,17 @@ hook.Add("HUDPaint","shownotification",function()
         surface.SetTextColor(255,255,255,255)
         local w, h = surface.GetTextSize(txt)
         surface.SetTextPos(x - w / 2, y - h / 2)
+        surface.DrawText(txt)
+    end
+
+    if showstuff > CurTime() then
+        local w, h = ScrW(), ScrH()
+        local x, y = w / 2, h / 25 * 24
+        local txt = "Press P to turn on flashlight. (For dark areas.)"
+        surface.SetFont( "HomigradFontBig" )
+        surface.SetTextColor(255,255,255,255)
+        local w, h = surface.GetTextSize(txt)
+        surface.SetTextPos(x - w / 2, y - h / 0.29)
         surface.DrawText(txt)
     end
 

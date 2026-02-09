@@ -113,7 +113,7 @@ hook.Add("PostDrawTranslucentRenderables", "HMCD_Professions_Abilities", functio
 		else
 			MODE.FootStepsCurDrawDistanceSqr = Lerp(frame_time * 3, MODE.FootStepsCurDrawDistanceSqr, MODE.FootStepsDrawDistanceSqr)
 		end
-		
+	
 		cam.Start3D(ply_pos, ply_angs)
 			for footstep_key, footstep_info in ipairs(MODE.ArrangedFootSteps) do
 				local length = 20

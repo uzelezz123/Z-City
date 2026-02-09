@@ -346,8 +346,8 @@ module[2] = function(owner, org, timeValue)
 		org.brain = math.min(0.5, org.brain)
 	end
 
-	if org.skull >= 0.6 then k = 0 end
-	if org.brain >= 0.6 then k = 0 end
+	if org.skull >= 0.5 then k = 0 end
+	if org.brain >= 0.5 then k = 0 end
 
 	if org.skull < 1 and org.skull >= 0.5 and org.bandagedskull then
 		org.skull = math.Approach(org.skull, 0, timeValue / 600)
@@ -370,7 +370,7 @@ module[2] = function(owner, org, timeValue)
 	end
 
 	local death_from_braindamage = false
-	if org.brain >= 0.7 and org.alive then
+	if org.brain >= 0.6 and org.alive then
 		death_from_braindamage = true
 		org.alive = false
 	end

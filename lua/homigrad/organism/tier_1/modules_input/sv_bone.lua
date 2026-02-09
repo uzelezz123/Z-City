@@ -359,10 +359,7 @@ input_list.skull = function(org, bone, dmg, dmgInfo, boneindex, dir, hit, ricoch
 end
 
 local ribs = {
-	"MY CHEST... SNAPPED",
-	"SOMETHING SNAPPED IN MY TORSO",
-	"THERE'S SOMETHING SHARP IN MY CHEST...",
-	"I FEEL SOMETHING SHARP IN MY TORSO",
+	"Fuck... I think my ribs shattered.",
 }
 
 input_list.chest = function(org, bone, dmg, dmgInfo, boneindex, dir, hit, ricochet)	
@@ -381,7 +378,7 @@ input_list.chest = function(org, bone, dmg, dmgInfo, boneindex, dir, hit, ricoch
 		org.brokenribs = math.Round(org.chest * 3)
 		
 		if org.brokenribs > 0 then
-			//org.owner:Notify(ribs[math.random(#ribs)], 5, "ribs", 4)
+			org.owner:Notify(ribs[math.random(#ribs)], 5, "ribs", 4)
 
 			org.owner:EmitSound("bones/bone"..math.random(8)..".mp3", 75, 100, 1, CHAN_AUTO)
 

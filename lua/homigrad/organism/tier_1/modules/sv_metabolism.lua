@@ -12,7 +12,7 @@ end
 
 local colorRed = Color(125,25,25)
 module[2] = function(owner, org, timeValue)
-    if org.satiety <= 0 and hg_hungersystem:GetBool() then 
+    if org.satiety <= 0 and hg_hungersystem:GetBool() then
         org.hungry = min(max(org.hungry + timeValue * 0.01, 0),100)
         //if org.isPly and not org.otrub and org.hungry > 25 and org.hungry < 45 then org.owner:Notify(table.Random(pharse),60,"hungry",6) end
         org.hungryDmgCd = org.hungryDmgCd or 0

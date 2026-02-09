@@ -925,5 +925,3 @@ end)
 function SWEP:ShouldDrawViewModel()
 	return false
 end
-
-

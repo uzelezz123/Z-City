@@ -35,9 +35,11 @@ function ENT:Initialize()
 		phys:Wake()
 		phys:EnableMotion(true)
 	end
+
 end
 
 function ENT:OnRemove()
+
 end
 
 function ENT:Use(activator)
@@ -75,6 +77,7 @@ end
 hook.Add("ItemsTransfered","TransferMats",function(ply, ragdoll)
 	local armors = ply:GetNetVar("Armor",{})
 	for k,v in pairs(armors) do
+
 		ragdoll:SetNWString("ArmorMaterials" .. v, ply:GetNWString("ArmorMaterials" .. v))
 		ply:SetNWString("ArmorMaterials" .. v, nil)
 

@@ -37,6 +37,7 @@ hg.settings:AddOpt("Blood","hg_blood_sprites", "Blood Sprites (DISABLED FOR EVER
 
 --hg.settings:AddOpt("Other","hg_coolvetica", "Coolvetica font")
 hg.settings:AddOpt("UI","hg_font", "Change Custom Font", false, true)
+hg.settings:AddOpt("UI","hg_nostatic", "Remove static border effects")
 
 hg.settings:AddOpt("Weapons","hg_weaponshotblur_enable", "Shooting Blur")
 hg.settings:AddOpt("Weapons","hg_dynamic_mags", "Dynamic Ammo Inspect")

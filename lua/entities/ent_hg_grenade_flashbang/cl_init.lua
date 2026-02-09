@@ -1,5 +1,9 @@
 include("shared.lua")
 
+function ENT:Initialize()
+	self.HudHintMarkup = markup.Parse("<font=ZCity_Tiny>Flashbang\n<colour=150,150,150>Why are you looking at a flashbang?</colour></font>",450)
+end
+
 function ENT:Draw()
 	self:DrawModel()
 end

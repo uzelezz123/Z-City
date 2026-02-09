@@ -197,7 +197,7 @@ function SWEP:AnimZoom()
 	angZoom1[1] = self:IsZoom() and (self.desiredPos - pos):GetNormalized():Dot(owner:EyeAngles():Right()) or 0
 	angZoom1[1] = self:IsZoom() and (-angZoom1[1] * 50) or 0
 	angZoom1[1] = self:IsZoom() and math.Clamp(angZoom1[1],-20,20) or 0
-	
+
 	if !angZoom1:IsEqualTol(angle_zero, 0.01) then
 		self:BoneSet("head", vecZero, angZoom1, "aiming", 0.1)
 	end
@@ -344,9 +344,8 @@ Angle(3, 0, 0), Angle(2, -5, 0), Angle(4, -5, 0), Angle(-5, -8, 0), Angle(35, -2
 
 hook.Add("Bones", "homigrad-lean-bone", function(ply, dtime)
 	ply.weightmul = weightmul or hg.CalculateWeight(ply, 140)
-	
-	local mul = ply.weightmul ^ 2
 	local ragdollcombat = hg.RagdollCombatInUse(ply)
+	local mul = ply.weightmul ^ 2
 	local isragdoll = IsValid(ply.FakeRagdoll) and !IsValid(ply:GetNWEntity("FakeRagdollOld"))
 	local left = ((isragdoll and !ragdollcombat and hg.KeyDown(ply, IN_MOVERIGHT)) or hg.KeyDown(ply, IN_ALT2)) and not hg.KeyDown(ply, IN_ALT1)
 	local right = ((isragdoll and !ragdollcombat and hg.KeyDown(ply, IN_MOVELEFT)) or hg.KeyDown(ply, IN_ALT1)) and not hg.KeyDown(ply, IN_ALT2)

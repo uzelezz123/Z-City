@@ -48,7 +48,7 @@ function MODE:Intermission()
         zb.Winners = {}
         zb.bombexploded = nil
         zb.bomb = nil
-        --zb.rtype = zb.nextcsround or (math.random(2) == 1 and "bomb" or "hostage")
+        zb.rtype = zb.nextcsround or (math.random(2) == 1 and "bomb" or "bomb")
         zb.nextcsround = nil
     end
     

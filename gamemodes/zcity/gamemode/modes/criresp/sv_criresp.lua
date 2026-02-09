@@ -168,7 +168,7 @@ function MODE:GiveEquipment()
 			if ply:Team() == TEAM_SPECTATOR then continue end
 
 			if ply:Team() == 0 then
-				timer.Create("SWATSpawn" .. ply:EntIndex(), 90, 1, function()
+				timer.Create("SWATSpawn"..ply:EntIndex(), 90, 1, function()
 					if !IsValid(ply) or ply:Team() == TEAM_SPECTATOR then return end
 					ply:Spawn()
 					ply:SetSuppressPickupNotices(true)

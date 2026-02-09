@@ -187,7 +187,7 @@ function hg.HomigradBones(ply, dtime)
 	if IsValid(ply.FakeRagdoll) then return end
 
 	if not ply.manipulated then reset(ply) return end
-	
+
 	for bone, tbl in pairs(ply.manipulated) do
 		for layer, tbl in pairs(tbl.layers) do
 			if (tbl.lastset != time) then

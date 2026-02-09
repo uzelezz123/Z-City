@@ -11,15 +11,16 @@ if CLIENT then
 	end)
 
 	concommand.Add("hg_change_ammotype", function(ply, cmd, args)
-	    local wep = ply:GetActiveWeapon()
-	    local type_ = math.Round(args[1])
-	    if wep and ishgweapon(wep) and (wep:Clip1() == 0 or wep.AllwaysChangeAmmo) and wep:CanUse() and wep.AmmoTypes and wep.AmmoTypes[type_] then
-	        ply:ChatPrint("Changed ammotype to: " .. wep.AmmoTypes[type_][1])
-	        net.Start("changeAmmoType")
-	        net.WriteEntity(wep)
-	        net.WriteInt(type_, 4)
-	        net.SendToServer()
-	    end
+		local wep = ply:GetActiveWeapon()
+		local type_ = math.Round(args[1])
+		if wep and ishgweapon(wep) and wep:Clip1() == 0 or wep.AllwaysChangeAmmo and wep:CanUse() and wep.AmmoTypes and wep.AmmoTypes[type_] then
+			--wep:ApplyAmmoChanges(type_)
+			ply:ChatPrint("Changed ammotype to: " .. wep.AmmoTypes[type_][1])
+			net.Start("changeAmmoType")
+			net.WriteEntity(wep)
+			net.WriteInt(type_, 4)
+			net.SendToServer()
+		end
 	end)
 
 	net.Receive("unload_ammo",function()
@@ -64,13 +65,13 @@ else
 end
 
 hg.postures = {
-    [0] = "Regular hold",
-    [1] = "Hipfire",
-    [2] = "Left shoulder",
-    [3] = "High ready",
-    [4] = "Low ready",
-    [5] = "Point shooting",
-    [6] = "Shooting from cover",
+	[0] = "Regular hold",
+	[1] = "Hipfire",
+	[2] = "Left shoulder",
+	[3] = "High ready",
+	[4] = "Low ready",
+	[5] = "Point shooting",
+	[6] = "Shooting from cover",
     [7] = {"Gangsta",isPistolOnly = true},
     [8] = {"One-handed",isPistolOnly = true},
 	[9] = "Somalian",

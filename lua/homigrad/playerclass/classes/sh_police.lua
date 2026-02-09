@@ -17,12 +17,12 @@ local models = {
 }
 
 local ranks = {
-    {name = "Chief", chance = 5},
-    {name = "Cmdr.", chance = 5},
-    {name = "Cpt.", chance = 15},
+    {name = "Chief", chance = 5},    
+    {name = "Cmdr.", chance = 5},    
+    {name = "Cpt.", chance = 15},    
     {name = "Lt.", chance = 35},
-    {name = "Sgt.", chance = 45},
-    {name = "Officer", chance = 80}
+    {name = "Sgt.", chance = 45},     
+    {name = "Officer", chance = 80}  
 }
 
 local clr = Color(10, 10, 100):ToVector()

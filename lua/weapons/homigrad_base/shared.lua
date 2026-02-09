@@ -432,14 +432,34 @@ local CantDoIt = {
 	"I... Cannot bring myself to do this.",
 	"What am i even doing? I can't do this."
 }
+
+local doesntwantto = {
+	"Please don't do this.",
+	"I don't want to die... Please.",
+	"...",
+	"Please don't pull the trigger...",
+	"Please spare me...",
+	"Did I.. do something wrong...?",
+	"Please stop pointing that at me...",
+	"Please somehow miss... Please somehow miss...",
+	"Why...?",
+}
 --qol lmao
 function SWEP:CanPrimaryAttack()
 	local owner = self:GetOwner()
+	local random = math.random(1,2)
 	if !IsValid(owner) then return end
 
 	if owner.PlayerClassName and owner.PlayerClassName == "furry" and owner.suiciding then
 		if SERVER then
 			owner:Notify(table.Random(CantDoIt), 20, "cantdoit", 0)
+		end
+		return false
+	end
+
+	if owner.suiciding and random == 1 then
+		if SERVER then
+			owner:Notify(table.Random(doesntwantto), 20, "doesntwantto", 0)
 		end
 		return false
 	end
@@ -459,6 +479,15 @@ if SERVER then
 		if (!wep.ishgweapon and !wep.ismelee2) or !wep.CanSuicide then ply.suiciding = false end
 	end)
 end
+--[[
+if SERVER then
+	hook.Add("Player Think","aborting suicide",function(ply)
+	if !ply.suiciding then return end
+	if ply.suiciding then
+		ply:Notify( math.random(1,2) == 1 and "test" or "awesome", 1, "test2", 0, nil, Color(200, 55, 55)) end
+	end)
+end
+]]
 
 function SWEP:PrimaryShootPre()
 end
@@ -1095,13 +1124,13 @@ local bashvpang = Angle(-10, 0, 0)
 function SWEP:CoreStep()
 	local owner = self:GetOwner()
 	local actwep = owner.GetActiveWeapon and owner:GetActiveWeapon() or nil
-	
+
 	if CLIENT and IsValid(self:GetWeaponEntity()) then self:GetWeaponEntity():SetLOD(0); end
 
 	if self:GetClass() == "weapon_taser" then
 		self:WorldModel_Transform()
 	end
-	
+
 	if SERVER and (not IsValid(owner) or (IsValid(actwep) and self != actwep)) then
 		self:SetNWBool("IsResting", false)
 
@@ -1453,7 +1482,7 @@ hg.postureFunctions2 = {
 	[6] = function(self,ply)
 		if self:IsZoom() then return end
 		local add = (hg.GunPositions[ply] and hg.GunPositions[ply][2]) or 0
-		if self:IsPistolHoldType() then 
+		if self:IsPistolHoldType() then
 			self.AdditionalPosPreLerp[2] = self.AdditionalPosPreLerp[2] - 2
 			self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] + 6 - add
 		else
@@ -1897,9 +1926,9 @@ end
 
 function SWEP:InUse()
 	local ply = self:GetOwner()
-	
+
 	if !IsValid(ply) then return false end
-	
+
 	local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 	local org = ply.organism
 
@@ -2087,6 +2116,7 @@ function SWEP:SetHandPos(noset)
 				local hold = self.hold_type or (self:IsPistolHoldType() and "pistol_hold2" or "ak_hold")
 				hold = self.attachments.grip and #self.attachments.grip ~= 0 and hg.attachments.grip[self.attachments.grip[1]].hold or hold
 
+
 				hg.set_hold(ent, hold)
 			end
 		end
@@ -2197,7 +2227,7 @@ function SWEP:PlayAnim(anim, time, cycling, callback, reverse, sendtoclient)
 	end
 	
 	local mdl = self:GetWM()
-	self.tries = 10
+    self.tries = 10
 	self.seq = self.AnimList[anim] or anim
 	mdl:SetSequence(self.seq)
     self.animtime = CurTime() + time

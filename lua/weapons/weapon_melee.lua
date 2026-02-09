@@ -127,19 +127,18 @@ end
 
 function SWEP:InUse()
 	local ply = self:GetOwner()
-
     if !IsValid(ply) then return false end
-    
+
     local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 	local org = ply.organism
-    
-	local power = ply:GetNWFloat("power", 1)
+
+    local power = ply:GetNWFloat("power", 1)
 
 	if power < 0.4 and ent != ply then
 		return false
 	end
 
-	return ( ((not ply.InVehicle || !ply:InVehicle()) and !hg.RagdollCombatInUse(ply)) && self:KeyDown(IN_USE)) || ((ply.InVehicle && ply:InVehicle() or hg.RagdollCombatInUse(ply) or ent == ply) && not self:KeyDown(IN_USE)) || (IsValid(ply.OldRagdoll))
+    return ( ((not ply.InVehicle || !ply:InVehicle()) and !hg.RagdollCombatInUse(ply)) && self:KeyDown(IN_USE)) || ((ply.InVehicle && ply:InVehicle() or hg.RagdollCombatInUse(ply) or ent == ply) && not self:KeyDown(IN_USE)) || (IsValid(ply.OldRagdoll))
 end
 
 SWEP.modelscale = 1
@@ -926,7 +925,7 @@ end
 
 function SWEP:BlockingLogic(ent, mul, attacktype, trace)
     local ent = hg.RagdollOwner(ent) or ent
-	local owner = self:GetOwner()
+    local owner = self:GetOwner()
 
 	if ent:IsPlayer() and ((istable(self.HitEnts) and !table.HasValue(self.HitEnts, ent)) or owner:IsNPC()) then
         local wep = ent:GetActiveWeapon()
@@ -934,9 +933,10 @@ function SWEP:BlockingLogic(ent, mul, attacktype, trace)
         local pos, aimvec = hg.eye(ent)
         local pos2, aimvec2 = hg.eye(owner)
 
-		if owner:IsNPC() then
+        if owner:IsNPC() then
 			pos, aimvec, aimvec2 = owner:EyePos(), owner:GetAimVector(), owner:GetAimVector()
 		end
+
 
         if not aimvec or not aimvec2 then return 1 end
 
@@ -1684,7 +1684,7 @@ function SWEP:NPCThink()
     end
 
     if dist < 85 and (self.LastNPCAttack or 0) < CurTime() then
-		local timerId = (self:EntIndex() .. "_NPCAttack")
+        local timerId = (self:EntIndex() .. "_NPCAttack")
 		if timer.Exists(timerId) then return end
 
         local dmg = math.random(self.DamagePrimary - 3, self.DamagePrimary + 3)
@@ -1700,7 +1700,6 @@ function SWEP:NPCThink()
 		if IsValid(trEnt) then
 			self.LastNPCAttack = CurTime() + (self.AnimTime1 or 1)
 			npc:EmitSound(self.AttackSwing, 70)
-
             npc:SetSchedule(SCHED_MELEE_ATTACK1)
 			timer.Create(timerId, (self.AttackTime + 0.1) or 0.4, 1, function()
 				if IsValid(self) and IsValid(npc) and npc:Alive() and IsValid(trEnt) then

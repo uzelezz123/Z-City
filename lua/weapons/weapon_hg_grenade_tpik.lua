@@ -1,4 +1,4 @@
-if SERVER then AddCSLuaFile() end
+﻿if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_tpik_base"
 SWEP.PrintName = "M67"
 SWEP.Instructions = 
@@ -225,7 +225,6 @@ end
 
 function SWEP:Throw(mul, time, nosound, throwPosAdjust, throwAngAdjust)
 	if not self.ENT then return end
-
 	local owner = self.Thrower or self:GetOwner()
 	local ent = ents.Create(self.ENT)
 	local entOwner = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or IsValid(owner) and owner
@@ -452,7 +451,7 @@ function SWEP:CreateSpoon(entownr)
 		entasd:SetAngles(hand:GetAngles())
 		entasd:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 		entasd:Spawn()
-		
+
 		entownr:EmitSound("weapons/m67/m67_spooneject.wav",65)
 
 		if self.SpoonSounds then

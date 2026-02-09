@@ -81,6 +81,7 @@ local upDir = Vector(0, 0, 1)
 local fwdDir = Vector(0, 2.5, 0)
 local rightDir = Vector(2.5, 0, 0)
 
+
 local function plyCommand(ply,cmd)
 	local time = CurTime()
 	ply.cmdtimer = ply.cmdtimer or time
@@ -274,7 +275,7 @@ hook.Add("radialOptions", "DislocatedJaw", function()
 end)
 
 hook.Add("PostRender", "screenshot_think", function()
-	do return end
+--	do return end
 	local org = lply.organism
 	
 	if not org or not org.brain or org.otrub or !lply:Alive() then return end
@@ -315,7 +316,7 @@ local lerpedpart = 0
 local lerpedbrain = 0
 
 hook.Add("Post Pre Post Processing", "ShowScreens", function()
-	do return end
+	--do return end
 	local org = lply.organism
 	
 	if !lply:Alive() then return end
@@ -400,6 +401,7 @@ hook.Add("RenderScreenspaceEffects", "organism-effects", function()
 	local immobilization = org.immobilization or 0
 	local incapacitated = org.incapacitated or false
 	local critical = org.critical or false
+	local shock = org.shock or false
 	tinnitusSoundFactor = Lerp(FrameTime()*2.5,tinnitusSoundFactor or 0, math.min(math.max( lply.tinnitus and (lply.tinnitus - CurTime()) or 0, 0)*7.5,120))
 	local tinnitusSoundFactor2 = tinnitusSoundFactor + (hook.Run("ModifyTinnitusFactor", tinnitusSoundFactor) or 0)
 
@@ -454,7 +456,6 @@ hook.Add("RenderScreenspaceEffects", "organism-effects", function()
 
 	DrawSharpen(k1 * 2, k1 * 1)
 	local lowpulse = math.max((70 - pulse) / 70, 0) + math.max(3000 * ((math.cos(CurTime()/2) + 1) / 2 * 0.1 + 1) - (blood * adrenK - 300),0) / 400
-
 	if (lply.PlayerClassName == "headcrabzombie" or lply:GetNetVar("headcrab")) and lply:Alive() then
 		disorientation = disorientation + 100
 	end
@@ -463,7 +464,7 @@ hook.Add("RenderScreenspaceEffects", "organism-effects", function()
 
 	disorientationLerp = LerpFT(disorientation > disorientationLerp and 1 or 0.01, disorientationLerp, disorientation)
 
-	if (disorientationLerp > 1) and lply:Alive() or brain > 0 then
+	if (disorientationLerp > 1) and lply:Alive() or brain > 0 and !lply.organism.otrub then // brain damage breaks the text from appearing
 		local add2 = disorientationLerp - 1
 		if not brain_motionblur and lply.PlayerClassName ~= "headcrabzombie" then DrawMotionBlur(0.15 - math.Clamp(add2 / 1, 0, 0.1), add2 * 2, 0.001) end
 		if disorientationLerp > 2 then
@@ -571,32 +572,40 @@ hook.Add("RenderScreenspaceEffects", "organism-effects", function()
 	local ent = IsValid(lply.FakeRagdoll) and lply.FakeRagdoll or lply
 
 	if otrub then
-		--[[render.PushFilterMag( TEXFILTER.ANISOTROPIC )
+		render.PushFilterMag( TEXFILTER.ANISOTROPIC )
 		render.PushFilterMin( TEXFILTER.ANISOTROPIC )
 
 		local textOtrub = "You are unconscious. "
 		local textOtrub2 =  
 			( critical and "You can't be saved." ) or 
-			( incapacitated and "You will not get up without someone's help." ) or 
+			( incapacitated and "You will not get up without someone's help." ) or
+			( pain > 80 and "You're experiencing too much pain. You can't wake up yet.") or
+			( shock <= 0.8 and "Something is preventing you from waking up.") or
 			( 
-				"You will probably wake up in "
+				"You will wake up in "
 				..( 	
-					( pain < 50 and "about a minute." ) or 
-					( pain < 100 and "about two minutes." ) or 
-					"a few minutes."
+					math.floor(((shock - 5) / 4) + 1) .. " second(s)."
 				) 
 			)
+		local textOtrub3 =
+		(brain >= 0.57 and "We'll meet again.") or
+		(brain >= 0.52 and "Farewell, "..lply:GetPlayerName()..".") or
+		(brain >= 0.385 and "Unfortunately for you this is where it ends.") or
+		(brain >= 0.34 and "...") or
+		(brain >= 0.3 and "...I'll survive this right?") or
+		(brain >= 0.25 and "...") or
+		(brain >= 0.15 and "...Is anyone there?") or
+		(brain >= 0.1 and "...") or
+		(brain < 0.1 and critical and "You might as well kill bind.") or
+		(brain < 0.1 and incapacitated and "Well I'm not sure about you surviving now.") or
+		(brain < 0.1 and "You can still survive, at least for now.")
 
 		local parsed = markup.Parse( 
 			"<font=HomigradFontMedium>"..
 			( critical and "You're criticaly injured." or textOtrub )..
 			"\n<colour=255,"..( critical and 25 or 255 )..","..( critical and 25 or 255 ) ..",255>"..
-			( textOtrub2 ).."</colour></font>" 
+			( textOtrub2 ).."\n\n"..( textOtrub3 ).."</colour></font>"
 		)
-		--((critical and "You can not be saved.") or 
-		--(incapacitated and "You will not get up without someone's help.") or 
-		--( "You will probably wake up in " .. (pain < 50 and "about a minute.") ) or 
-		--((pain < 100 and "about two minutes.") or "a few minutes.")) -- WTF???
 		
 		--surface.SetTextColor(255,255,255,255)
 		--surface.SetFont("HomigradFontMedium")
@@ -604,10 +613,10 @@ hook.Add("RenderScreenspaceEffects", "organism-effects", function()
 		--surface.SetTextPos(ScrW()/2 - (txtSizeX/2),ScrH()/1.1 - (txtSizeY/2))
 		--surface.DrawText(textOtrub)
 
-		parsed:Draw( ScrW()/2, ScrH()/1.1, TEXT_ALIGN_CENTER, nil, nil, TEXT_ALIGN_CENTER )
+		parsed:Draw( ScrW()/2, ScrH()/2.2, TEXT_ALIGN_CENTER, nil, nil, TEXT_ALIGN_CENTER )
 		
 		render.PopFilterMag()
-		render.PopFilterMin()--]]
+		render.PopFilterMin()
 	end
 	
 	if IsValid(ent) and ent.Blinking and lply:Alive() then
@@ -727,7 +736,7 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 		local pulse = org.heartbeat
 		ent.pulsethink = ent.pulsethink or 0
 		local speed = math.Clamp(org.heartbeat / 60, 1, 120) * (0.4 / math.max(org.o2.curregen, 0.3)) * 0.5 * (org.o2[1] < 8 and 0 or 1)
-		ent.pulsethink = ent.pulsethink + (org.heartbeat > 1 and 1 or 0) * (org.holdingbreath and 0 or 1) * FrameTime() * 4 * (speed) * (org.lungsfunction and 1 or 0)
+		ent.pulsethink = ent.pulsethink + (org.heartbeat > 1 and 1 or 0) * (org.holdingbreath and 0 or 1) * FrameTime() * 4 * (speed) * (org.lungsfunction and 1 or 0) * (org.lungsfunction and 1 or 0)
 
 		local torso = ent:LookupBone("ValveBiped.Bip01_Spine2")
 		--local chest = ent:LookupBone("ValveBiped.Bip01_Spine1")
@@ -922,7 +931,7 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 						local should = !(hg.amputatedlimbs2[bone] and org[hg.amputatedlimbs2[bone].."amputated"])
 
 						if !should then continue end
-						
+
 						local mat = ent:GetBoneMatrix(ent:LookupBone(bone))
 						if not mat then return end
 						local bonePos, boneAng = mat:GetTranslation(), mat:GetAngles()
@@ -1031,9 +1040,9 @@ function hg.GoreCalc(ent, ply)
 		local mat = ent:GetBoneMatrix(bon)
 		local mat2 = ent:GetBoneMatrix(bon - 1)
 		mat:SetScale(vecalmostzero)
-		
+
 		hg.bone_apply_matrix(ent, bon, mat)
-		
+
 		if IsValid(ply.OldFakeRagdoll) then
 			hg.bone_apply_matrix(ply, bon, mat)
 		end

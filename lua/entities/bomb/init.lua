@@ -118,7 +118,7 @@ function ENT:ActivateBomb()
 		PrintMessage(HUD_PRINTTALK, "Bomb has been planted"
 			..(siteName and (" on site "..siteName) or "")
 			..".")
-		
+
 		hg.UpdateRoundTime(zb.ROUND_TIME + self.ExplodeTime + 1)
 	end
 

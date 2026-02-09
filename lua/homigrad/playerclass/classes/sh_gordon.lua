@@ -143,7 +143,7 @@ function CLASS.On(self, data)
         end
         self:SyncArmor()
         hevchanged(self)
-
+        
         --print("JOOOPAAAA")
     end
 end
@@ -151,7 +151,7 @@ end
 if SERVER then
     hook.Add("PostCleanupMap","huyhuygordonspasjizn",function(ent)
         timer.Simple(1,function()
-            for i, ent in ents.Iterator() do
+            for i,ent in ents.Iterator() do
                 if ent:GetClass() == "item_suitcharger" then
                     local entnew = ents.Create("prop_physics")
                     entnew:SetModel(ent:GetModel())
@@ -463,7 +463,7 @@ if CLIENT then
             local tr = wep:GetTrace(true)
             posSight = LerpVector(FRT*5, posSight, Vector(tr.HitPos:ToScreen().x,tr.HitPos:ToScreen().y,0) )
             color_sight.a = Lerp(FRT*5,color_sight.a, lply:KeyDown(IN_ATTACK2) and 0 or 255)
-			--[[ uncomment for real hl2 crosshair
+            --[[ uncomment for real hl2 crosshair
 				draw.RoundedBox(0, posSight.x - 1, posSight.y - 1, 1, 1, color_sight)
 				draw.RoundedBox(0, posSight.x - 1, posSight.y + 6, 1, 1, color_sight)
 				draw.RoundedBox(0, posSight.x - 1, posSight.y - 8, 1, 1, color_sight)

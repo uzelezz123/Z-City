@@ -107,7 +107,8 @@ hook.Add("HUDPaint","FUCKINGSAMENAMEUSEDINHOOKFUCKME",function()
 	local spect = LocalPlayer():GetNWEntity("spect")
 	if not IsValid(spect) then return end
 	if viewmode == 3 then return end
-	
+	if spect.organism == nil then return end -- annoying cilentside lua error if this isn't in the code
+
 	surface.SetFont("HomigradFont")
 	surface.SetTextColor(255, 255, 255, 255)
 	local txt = "Spectating player: "..spect:Name()
@@ -118,8 +119,51 @@ hook.Add("HUDPaint","FUCKINGSAMENAMEUSEDINHOOKFUCKME",function()
 	local w, h = surface.GetTextSize(txt)
 	surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() / 8 * 7 + h)
 	surface.DrawText(txt)
+
+	if spect.organism.otrub then
+		local txt = spect:GetPlayerName().." is unconscious."
+		local w, h = surface.GetTextSize(txt)
+		surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() / 2.1)
+		surface.DrawText(txt)
+	end
+
+	if spect.organism.o2[1] < 15 or spect.organism.jaw == 1 or spect.organism.jawdislocation then
+		local txt = spect:GetPlayerName().." is unable speak to other alive players."
+		local w, h = surface.GetTextSize(txt)
+		surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() / 8 * 7 + h + h)
+		surface.DrawText(txt)
+	end
 end)
 
+hook.Add("HUDPaint","flashlightspectator",function()
+if LocalPlayer():Alive() then return end
+local key = input.IsButtonDown(KEY_P)
+if not lply:Alive() and keyOld2 ~= key and key then
+	flashlightOn = not flashlightOn
+
+	if flashlightOn then
+		if not IsValid(flashlight) then
+			flashlight = ProjectedTexture()
+			flashlight:SetTexture("effects/flashlight001")
+			flashlight:SetFarZ(900)
+			flashlight:SetFOV(70)
+			flashlight:SetEnableShadows( false )
+		end
+	else
+		if IsValid(flashlight) then
+			flashlight:Remove()
+			flashlight = nil
+		end
+	end
+end
+keyOld2 = key
+
+if flashlight then
+	flashlight:SetPos(EyePos())
+	flashlight:SetAngles(EyeAngles())
+	flashlight:Update()
+end
+end)
 hook.Add("HG_CalcView", "zzzzzzzUwU", function(ply, pos, angles, fov)
 	if not lply:Alive() then
 		if lply:KeyDown(IN_ATTACK) then
@@ -590,7 +634,7 @@ function GM:ScoreboardShow()
 		end 
 	end
 
-	local ServerName = GetHostName() or "ZCity | Developer Server | #01"
+	local ServerName = "Z-City | Elias's Semi Functional World"
 	local tick
 	scoreBoardMenu.PaintOver = function(self,w,h)
 		surface.SetDrawColor( 255, 0, 0, 128)
@@ -847,7 +891,7 @@ function GM:ScoreboardHide()
 		scoreBoardMenu = nil
 	end
 end
-local AdminShowVoiceChat = CreateClientConVar("zb_admin_show_voicechat","0",false,false,"Shows voicechat panles",0,1)
+local AdminShowVoiceChat = CreateClientConVar("zb_admin_show_voicechat","0",false,false,"Shows voicechat panels of those who are alive. (useful for moderating)",0,1)
 hook.Add("PlayerStartVoice", "asd", function(ply)
 	if !IsValid(ply) then return end
 	if LocalPlayer():IsAdmin() and AdminShowVoiceChat:GetBool() then return end

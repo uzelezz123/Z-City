@@ -350,8 +350,7 @@ hg.Accessories = {
         price = 4500,
         name = "Bandana colorable"
     },
-
-	-- cs stuff
+    -- cs stuff
     ["arctic_balaclava"] = {
         model = "models/d/balaklava/arctic_reference.mdl",
         femmodel = "models/distac/feminine_mask.mdl",
@@ -365,6 +364,21 @@ hg.Accessories = {
         name = "Arctic Balaclava"
     },
 
+   	--[[
+    "hood_balaclava"] = {
+        model = "models/balaclava_hood/balaclava_hood.mdl",
+        femmodel = "models/distac/feminine_mask.mdl",
+        bone = "ValveBiped.Bip01_Head1",
+        malepos = {Vector(-30,-5,0),Angle(180,100,90),1},
+		fempos = {Vector(-0.6,-0.6,0),Angle(180,100,90),0.95},
+        skin = 0,
+        norender = true,
+		placement = "head",
+		vpos = Vector(-45,-45,0),
+        name = "Hood Balaclava"
+    },
+    ]]
+
     ["phoenix_balaclava"] = {
         model = "models/d/balaklava/phoenix_balaclava.mdl",
         femmodel = "models/distac/feminine_mask.mdl",
@@ -377,20 +391,6 @@ hg.Accessories = {
         bonemerge = true,
         name = "Phoenix Balaclava"
     },
-   	--[[
-	["hood_balaclava"] = {
-        model = "models/balaclava_hood/balaclava_hood.mdl",
-        femmodel = "models/distac/feminine_mask.mdl",
-        bone = "ValveBiped.Bip01_Head1",
-        malepos = {Vector(-27,-5,0),Angle(180,100,90),1},
-		fempos = {Vector(-0.6,-0.6,0),Angle(180,100,90),0.95},
-        skin = 0,
-        norender = true,
-		placement = "head",
-		vpos = Vector(-45,-45,0),
-        name = "Hood Balaclava"
-    },
-	]]
     ["terrorist_band"] = {
         model = "models/distac/band_team.mdl",
         femmodel = "models/distac/band_team_f.mdl",
@@ -1148,8 +1148,6 @@ hg.Accessories = {
         norender = true,
         bonemerge = true,
         bSetColor = true,
-        bPointShop = true,
-        price = 850,
         vpos = Vector(0,0,69),
         name = "Hood"
     },
@@ -1393,21 +1391,6 @@ hg.Accessories = {
         name = "Evil (evil) Bandana"
     },
 
-    ["baseball hub"] = {
-        model = "models/grinchfox/head_wear/baseballhat.mdl",
-        bone = "ValveBiped.Bip01_Head1",
-        malepos = {Vector(1,0.4,0),Angle(0,-95,-90),1.1},
-        fempos = {Vector(0,0.1,0),Angle(0,-95,-90),1},
-        skin = 6,
-        placement = "head",
-        norender = true,
-        bonemerge = true,
-        bSetColor = false,
-        bPointShop = true,
-        price = 1750,
-        vpos = Vector(0,0,5),
-        name = "Baseball Hat"
-    },
 
     ["leather bag"] = {
         model = "models/distac/bag.mdl",
@@ -1482,8 +1465,6 @@ hg.Accessories = {
         norender = true,
         bonemerge = true,
         bSetColor = true,
-        bPointShop = true,
-        price = 950,
         vpos = Vector(0,0,69),
         name = "Medieval hood"
     },

@@ -9,6 +9,8 @@ local function DrawSunEffect()
 	DrawSunbeams(0.1, 0.15 * dot * sun.obstruction, 0.1, scrpos.x / ScrW(), scrpos.y / ScrH())
 end
 
+local hg_nostatic = ConVarExists("hg_nostatic") and GetConVar("hg_nostatic") or CreateClientConVar("hg_nostatic","0",true,false,"requires you to rejoin or wait for the next map change in order to take effect.",0,1)
+
 hg.postprocess = hg.postprocess or {}
 local postprs = hg.postprocess
 postprs.addtiveLayer = {
@@ -69,7 +71,7 @@ hook.Add("RenderScreenspaceEffects", "homigrad", function()
 		addtiveLayer["brightness"] = Lerp(weight, 0, layer["brightness"] or 0)
 		--end
 	end
-
+	
 	//DrawBloom(addtiveLayer.bloom_darken, addtiveLayer.bloom_mul, addtiveLayer.bloom_sizex, addtiveLayer.bloom_sizey, addtiveLayer.bloom_passes, addtiveLayer.bloom_colormul, addtiveLayer.bloom_colorr, addtiveLayer.bloom_colorg, addtiveLayer.bloom_colorb)
 	//DrawSharpen(addtiveLayer.sharpen, addtiveLayer.sharpen_dist)
 	//if not brain_motionblur then DrawMotionBlur(addtiveLayer.blur_addalpha, addtiveLayer.blur_drawalpha, addtiveLayer.blur_delay) end
@@ -249,6 +251,16 @@ local lobotomy_mats = {
 	[8] = Material("overlays/tallflash3.png")
 }
 
+if GetConVar("hg_nostatic"):GetBool() then
+	painMat = Material( "null" )
+	noiseMat = Material( "null" )
+	vignetteMat = Material( "effects/shaders/zb_vignette" )
+else
+	painMat = Material( "effects/shaders/zb_grain" )
+	noiseMat = Material( "effects/shaders/zb_grainwhite" )
+	vignetteMat = Material( "effects/shaders/zb_vignette" )
+end
+
 local function stopthings()
 	PainLerp = 0
 	O2Lerp = 0
@@ -319,6 +331,7 @@ local stations = {
 }
 
 local choosera = 1
+
 local tempolerp = 0
 hook.Add("Post Post Processing", "ItHurts", function()
 	local spect = IsValid(lply:GetNWEntity("spect")) and lply:GetNWEntity("spect")
@@ -369,7 +382,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 
 		render.UpdateScreenEffectTexture()
 		render.UpdateFullScreenDepthTexture()
-		
+
 		zombMat:SetFloat("$c0_x", CurTime()) -- time
 		zombMat:SetFloat("$c0_y", -1) -- gate
 		zombMat:SetFloat("$c0_z", 1) -- Pixelize
@@ -380,7 +393,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		zombMat:SetFloat("$c2_y", 0.05) -- g
 		zombMat:SetFloat("$c2_z", 0) -- b
 		zombMat:SetFloat("$c3_x", 0) -- ImageIntensity
-	
+
 		render.SetMaterial(zombMat)
 		render.DrawScreenQuad()
 	end
@@ -456,14 +469,19 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		grainMat:SetFloat("$c2_y", 0) -- g
 		grainMat:SetFloat("$c2_z", 0) -- b
 		grainMat:SetFloat("$c3_x", 0) -- ImageIntensity
-	
+		if org.otrub then
+			grainMat:SetFloat("$c0_z", 0) -- Pixelize
+			grainMat:SetFloat("$c1_x", consciousness) -- lerp
+			grainMat:SetFloat("$c1_y", 0) -- vignette intensity
+			grainMat:SetFloat("$c1_z", 0) -- blur
+		end
 		render.SetMaterial(grainMat)
 		render.DrawScreenQuad()
 	end
 
 	local tempo = math.Clamp((5 - (tempLerp - 29)) * 0.5 - 5 * (org.heartbeat < 1 and 1 or 0), 0, 5)
 	tempolerp = LerpFT(0.01, tempolerp, tempo)
-	
+
 	if (tempolerp > 0) then
 		render.UpdateScreenEffectTexture()
 
@@ -480,8 +498,8 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		render.UpdateScreenEffectTexture()
 
 		vignetteMat:SetFloat("$c2_x", CurTime() + 10000) //Time
-		vignetteMat:SetFloat("$c0_z", org.otrub and 5 or (pain / 40 + math.max(shock - 5, 0) / 3)) //ColorIntensity
-		vignetteMat:SetFloat("$c1_y", org.otrub and 10 or (pain / 40 + math.max(shock - 5, 0) / 3)) //Vignette
+		vignetteMat:SetFloat("$c0_z", org.otrub and 5 or (pain / 40 + math.max(shock - 50, 0) / 3)) //ColorIntensity
+		vignetteMat:SetFloat("$c1_y", org.otrub and 10 or (pain / 40 + math.max(shock - 50, 0) / 3)) //Vignette
 
 		render.SetMaterial(vignetteMat)
 		render.DrawScreenQuad()
@@ -623,7 +641,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		
 		if o2 > 50 and !org.otrub then
 			if !IsValid(NoiseStation2) or NoiseStation2:GetState() != GMOD_CHANNEL_PLAYING then
-				sound.PlayFile("sound/zbattle/conscioustypebeat.ogg", "noblock noplay", function(station)
+				sound.PlayFile("sound/zbattle/conscioustypebeat_old.ogg", "noblock noplay", function(station)
 					if IsValid(station) then
 						station:SetVolume(0)
 						station:Play()
@@ -645,7 +663,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		
 		if o2 > 20 and org.otrub then
 			if !IsValid(NoiseStation) or NoiseStation:GetState() != GMOD_CHANNEL_PLAYING then
-				sound.PlayFile("sound/zbattle/unconscious_type_beat.ogg", "noblock noplay", function(station)
+				sound.PlayFile("sound/zbattle/end.ogg", "noblock noplay", function(station)
 					if IsValid(station) then
 						station:SetVolume(0)
 						station:Play()

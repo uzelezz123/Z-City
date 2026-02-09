@@ -10,8 +10,8 @@ SWEP.SlotPos = 10
 SWEP.ViewModel = ""
 SWEP.WorldModel = "models/zcity/weapons/w_crossbow.mdl"
 --models/weapons/c_crossbow.mdl
-SWEP.WorldModelFake = "models/weapons/c_crossbow.mdl"
-
+SWEP.WorldModelFake = "models/weapons/c_crossbow.mdl" // МОДЕЛЬКИ ЧУТЬ ПОПОЗЖЕ ЗАЛЬЮ
+//SWEP.FakeScale = 1.5
 SWEP.FakePos = Vector(-11, 8.2, 7.5)
 SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(0.5,-1.2,-6.5)

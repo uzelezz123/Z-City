@@ -87,7 +87,7 @@ function RenderAccessories(ply, accessories, setup)
 	ent = IsValid(ply.OldRagdoll) and ply.OldRagdoll:IsRagdoll() and ply.OldRagdoll or ent
 
 	islply = ((ply:IsRagdoll() and hg.RagdollOwner(ply)) or ply) == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer())) and GetViewEntity() == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer()))
-	
+
 	local fountains = GetNetVar("fountains") or {}
 	if ent == follow and hg_firstperson_death:GetBool() and !fountains[ent] then islply = true end
 

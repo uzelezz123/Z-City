@@ -14,7 +14,7 @@ MODE.OverrideSpawn = true
 MODE.LootSpawn = true
 MODE.LootOnTime = true
 
-MODE.Chance = 0.05
+MODE.Chance = 0.28
 MODE.LootDivTime = 500
 
 MODE.LootTable = {
@@ -268,8 +268,9 @@ MODE.Types.standard = {
 		ply:Give("weapon_traitor_poison3")
 		ply:Give("weapon_traitor_poison_consumable")
 		ply:Give("weapon_traitor_suit")
-		local wep = ply:Give("weapon_zoraki")
-		timer.Simple(1,function() wep:ApplyAmmoChanges(2) end)
+		local wep = ply:Give("weapon_m45")
+		ply:GiveAmmo(wep:GetMaxClip1() * 2,wep:GetPrimaryAmmoType(),true)
+		hg.AddAttachmentForce(ply,wep,"supressor4")
 
 		ply.organism.stamina.range = 220
 
@@ -278,7 +279,8 @@ MODE.Types.standard = {
 		ply:SetNetVar("Inventory",inv)
 	end,
 	GunManLoot = function(ply)
-		ply:Give("weapon_px4beretta")
+		local gun = ply:Give("weapon_px4beretta")
+		ply:GiveAmmo(gun:GetMaxClip1() * 1, gun:GetPrimaryAmmoType(), true)
 		ply.organism.recoilmul = 1
 	end,
 	PoliceTime = 220,
@@ -404,7 +406,7 @@ MODE.Types.wildwest = {
 					"weapon_doublebarrel_short"
 				}
 
-				local weapon = v:Give(guns[math.random(#guns)], true)
+				local weapon = v:Give(table.Random(guns), true)
 				weapon:SetClip1(weapon:GetMaxClip1())
 			end
 
@@ -566,6 +568,7 @@ MODE.Types.soe = {
 		if gun:GetClass() == "weapon_kar98" then
 			hg.AddAttachmentForce(ply,gun,"optic12")
 		end
+		ply:GiveAmmo(gun:GetMaxClip1() * 1, gun:GetPrimaryAmmoType(), true)
 		local inv = ply:GetNetVar("Inventory")
 		inv["Weapons"]["hg_sling"] = true
 		ply:SetNetVar("Inventory",inv)
@@ -640,7 +643,7 @@ end
 function MODE:Intermission()
 	game.CleanUpMap()
 
-	local _, CROUND = CurrentRound()
+	local _,CROUND = CurrentRound()
 
 	if not CROUND or CROUND == "hmcd" then
 		CROUND = table.Random(self:SubModes())
@@ -879,7 +882,7 @@ function MODE:CheckAlivePlayers()
 			continue
 		end
 		
-		if((not ply.isTraitor)and ply.organism and ply.organism.incapacitated)then
+		if(ply.organism and ply.organism.incapacitated)then
 			continue
 		end
 		
@@ -1010,9 +1013,6 @@ function MODE:SpawnForce(teamtype, count)
     return spawned
 end
 
-local function tbl_Random(tbl) -- when you can't even say
-	return tbl[math.random(#tbl)] -- my name
-end
 function MODE:EquipSWAT(ply, index)
     ply:SetPlayerClass("swat")
     
@@ -1572,8 +1572,6 @@ function MODE.SpawnPlayers(spawn_with_subroles)
         end
     end
 
-
-    local all_players = player.GetAll()
     for idx, current_ply in player.Iterator() do
         if(current_ply:Team() != TEAM_SPECTATOR)then
             current_ply.SubRole = nil
@@ -1751,7 +1749,7 @@ hook.Add("PlayerSpawn", "HMCD_UpdateTraitorsList", function(ply)
 			if IsValid(main_traitor) and main_traitor.isTraitor and main_traitor.MainTraitor then
 				local traitor_assistants = {}
 				
-				for _, other_ply in player.Iterator() do
+				for _, other_ply in ipairs(player.GetAll()) do
 					if other_ply.isTraitor then
 						local Appearance = other_ply.CurAppearance
 						if Appearance then
@@ -1792,11 +1790,11 @@ hook.Add("PlayerDeath", "HMCD_UpdateTraitorsList", function(ply)
 		end
 		
 		timer.Simple(0.4, function()
-			for _, main_traitor in player.Iterator() do
+			for _, main_traitor in ipairs(player.GetAll()) do
 				if IsValid(main_traitor) and main_traitor.isTraitor and main_traitor.MainTraitor then
 					local traitor_assistants = {}
 					
-					for _, other_ply in player.Iterator() do
+					for _, other_ply in ipairs(player.GetAll()) do
 						if other_ply.isTraitor then
 							local Appearance = other_ply.CurAppearance
 							if Appearance then

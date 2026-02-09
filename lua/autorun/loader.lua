@@ -1,15 +1,8 @@
 hg = hg or {}
 hg.Version = "Release 1.0.8"
-hg.GitHub_ReposOwner = "uzelezz123"
-hg.GitHub_ReposName = "Z-City" -- please add your real git fork!
+hg.GitHub_ReposOwner = "EliasQuickness"
+hg.GitHub_ReposName = "Z-City-Fork" -- please add your real git fork!
 
-if SERVER then
-	resource.AddWorkshop("3657285193") -- main addon
-	resource.AddWorkshop("3657897364") -- main content addon
-	resource.AddWorkshop("3657294321") -- first content addon
-	resource.AddWorkshop("3544105055") -- second content addon
-	resource.AddWorkshop("3257937532") -- distac content
-end
 -- if hg.GitHub_ReposOwner and hg.GitHub_ReposOwner != "" then
 -- 	http.Fetch( "https://api.github.com/repos/" .. hg.GitHub_ReposOwner .. "/" .. hg.GitHub_ReposName .. "/commits?sha=" .. hg.GitHub_Branch .. "&per_page=1",
 -- 		function( body, length, headers, code )
@@ -91,7 +84,7 @@ if initpost then Run() end
 Run()
 
 if not istable(ulx) then
-	for i = 1, 6 do
+	for i = 1, 3 do
 		MsgC(Color(255, 0, 0), "WARNING: Server doesn't have ULX & ULib installed! Z-City will not work properly without it!\n")
 	end
 end

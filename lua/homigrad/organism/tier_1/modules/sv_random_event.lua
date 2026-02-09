@@ -18,6 +18,7 @@ local RandomEvents = {
     ["Hungry"] = function( owner, org )
         owner:EmitSound("zcitysnd/uni/hungry_"..math.random(1,6)..".mp3", nil, 100 + (owner.PlayerClassName == "furry" and 20 or 0))
     end,
+    --[[
     ["Burp"] = function( owner, org )
         owner:EmitSound("snd_jack_hmcd_burp.wav", nil, 100 + (owner.PlayerClassName == "furry" and 20 or 0))
         for i = 1, 10 do
@@ -25,7 +26,8 @@ local RandomEvents = {
                 owner:ViewPunch(AngleRand(-.3,.3))
             end)
         end
-    end,
+    end,]]
+    --[[
     ["Fart"] = function( owner, org )
         owner:EmitSound("snd_jack_hmcd_fart.wav")
         for i = 1, 30 do
@@ -34,7 +36,7 @@ local RandomEvents = {
                 owner:ViewPunch(AngleRand(-.1,.1))
             end)
         end 
-    end,
+    end,]]
     ["Cough"] = function( owner, org )
         owner:EmitSound(ThatPlyIsFemale(owner) and "zcitysnd/female/cough_"..math.random(1,6)..".mp3" or "zcitysnd/male/cough_"..math.random(1,6)..".mp3",75,100 + (owner.PlayerClassName == "furry" and 20 or 0),1)
         timer.Simple(.3,function()

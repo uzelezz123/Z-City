@@ -81,6 +81,7 @@ end
 CLASS.NoGloves = true
 local col1 = Color(121, 97, 217)
 
+
 function CLASS.On(self, data)
 	if SERVER then
 		if eightbit and eightbit.EnableEffect and self.UserID then

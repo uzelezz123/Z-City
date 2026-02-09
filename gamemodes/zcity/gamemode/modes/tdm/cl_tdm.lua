@@ -182,7 +182,7 @@ CreateEndMenu = function()
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 	end
 
-	for i, ply in player.Iterator() do
+	for i,ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		local but = vgui.Create("DButton",DScrollPanel)
 		but:SetSize(100,50)

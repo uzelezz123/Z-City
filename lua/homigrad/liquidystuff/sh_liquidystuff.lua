@@ -254,7 +254,7 @@ else
 		
 	hook.Add("PreDrawEffects","fireeffects",function()
 		for i, tbl in ipairs(hg.gasolinePath) do
-			local pos, ignited = tbl[1], tbl[2]
+			local pos, ignited = tbl[1],tbl[2]
 			
 			local effparticles = hg.effparticles
 			
@@ -342,7 +342,7 @@ else
         end
 
 		for i,tbl in pairs(hg.gasolinePath) do
-			local pos, ignited = tbl[1], tbl[2]
+			local pos,ignited = tbl[1],tbl[2]
 			surface.SetDrawColor(255,255,255,255)
 			surface.DrawRect(pos:ToScreen().x,pos:ToScreen().y,10,10)
 		end

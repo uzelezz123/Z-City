@@ -932,6 +932,7 @@ if SERVER then
 		[MAT_PLASTIC] = true,
 	}
 
+
 	function ENT:SpreadThink(ran)
 		-- Attempt to spread
 		if vFireEnableSpread then

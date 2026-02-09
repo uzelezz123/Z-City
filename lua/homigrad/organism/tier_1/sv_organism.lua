@@ -686,14 +686,17 @@ local unlucky_dislocations = {
 	"Why can't I fix this goddamn dislocation...",
 	"Please... why is it so hard.",
 	"Just go back in place already...",
-	"This is irritating",
-	"I should try again",
+	"FOR THE LOVE OF GOD PLEASE GO BACK IN!!!",
+	"You actually can't make this up. WHY WON'T IT GO BACK IN???",
 }
 
 local finally_fixed = {
 	"Finally.",
 	"That was harder than I thought",
 	"One dislocation away.",
+	"Jesus Christ... finally.",
+	"No pain... No gain... At least it's finally fixed.",
+	"I'm gonna be pissed if that dislocates again..."
 }
 
 local function fixlimb(org, key, fixer)

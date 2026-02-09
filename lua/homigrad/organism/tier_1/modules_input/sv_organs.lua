@@ -138,10 +138,14 @@ local arterySize = {
 	["spineartery"] = 10,
 }
 
+// no kirk joke sorry brochacos
 local arteryMessages ={
 	"I can feel blood rushing from my neck...",
-	"My neck.. it's... pumping out blood.",
-	"I'm bleeding out of my neck!"
+	"My neck— it's... pumping out blood.",
+	"I'm bleeding out— my neck— it's spraying.",
+	"No... No No No. They got my neck.. They got my neck... I'm gonna die..",
+	"Well... I can't repair THAT. I might as well enjoy my final moments.",
+	"Why THERE...!? They could've hit anywhere else BUT there..."
 }
 
 local function hitArtery(artery, org, dmg, dmgInfo, boneindex, dir, hit)

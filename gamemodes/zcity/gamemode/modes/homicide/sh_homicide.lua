@@ -26,14 +26,12 @@ MODE.SubRoles = {
 		Name = "Defoko",
 		Description = [[Default.
 You've prepared for a long time.
-You are equipped with various weapons, poisons and explosives, grenades and your favourite heavy duty knife and a zoraki signal pistol to help you kill.]],
+You are equipped with various weapons, poisons and explosives, grenades, your favourite heavy duty knife and a Colt M45A1 with two mags.]],
 		Objective = "You're geared up with items, poisons, explosives and weapons hidden in your pockets. Murder everyone here.",
 		SpawnFunction = function(ply)
-			local wep = ply:Give("weapon_zoraki")
-			
-			timer.Simple(1, function()
-				wep:ApplyAmmoChanges(2)
-			end)
+			local wep = ply:Give("weapon_m45")
+			ply:GiveAmmo(wep:GetMaxClip1() * 2,wep:GetPrimaryAmmoType(),true)
+			hg.AddAttachmentForce(ply,wep,"supressor4")
 			
 			ply:Give("weapon_buck200knife")	
 			ply:Give("weapon_hg_rgd_tpik")
@@ -64,7 +62,7 @@ You are equipped with various weapons, poisons and explosives, grenades and your
 			if not IsValid(ply) then return end
 			local p22 = ply:Give("weapon_p22")
 			if not IsValid(p22) then return end
-			ply:GiveAmmo(p22:GetMaxClip1() * 1, p22:GetPrimaryAmmoType(), true)
+			ply:GiveAmmo(p22:GetMaxClip1() * 2, p22:GetPrimaryAmmoType(), true)
 			
 			hg.AddAttachmentForce(ply, p22, "supressor4")
 			ply:Give("weapon_sogknife")	
@@ -92,7 +90,7 @@ You are equipped with various weapons, poisons and explosives, grenades and your
 		Description = [[Can break people's necks from behind.
 Can completely disguise as other players if they're in ragdoll.
 Has no weapons or tools except knife, epipen and smoke grenade.
-For people who like to play chess.]],
+For people who cosplay as spy.]],
 		Objective = "You're an expert in diversion. Be discreet and kill one by one",
 		SpawnFunction = function(ply)
 			ply:Give("weapon_sogknife")
@@ -111,7 +109,7 @@ For people who like to play chess.]],
 		Description = [[Can break people's necks from behind.
 Can completely disguise as other players if they're in ragdoll.
 Has smoke grenade, walkie-talkie, knife, taser with 2 additional shooting heads and epipen.
-For people who like to play chess.]],
+For people who cosplay as spy.]],
 		Objective = "You're an expert in diversion. Be discreet and kill one by one",
 		SpawnFunction = function(ply)
 			local taser = ply:Give("weapon_taser")
@@ -144,7 +142,7 @@ Disarms faster from front if the victim is in ragdoll.
 Proficient in shooting from guns.
 Has additional stamina (+ 80 units compared to other traitors).
 Equipped with walkie-talkie.
-For people who like to play checkers.]],
+For people who have a plan to kill everyone you meet.]],
 		Objective = "You're an expert in guns and in disarmament. Disarm gunman and use his weapon against others",
 		SpawnFunction = function(ply)
 			-- ply:Give("weapon_sogknife")	
@@ -168,7 +166,7 @@ Disarms faster from front if the victim is in ragdoll.
 Proficient in shooting from guns.
 Has additional stamina (+ 80 units compared to other traitors).
 Equipped with walkie-talkie, knife, epipen and flashlight.
-For people who like to play checkers.]],
+For people who have a plan to kill everyone you meet.]],
 		Objective = "You're an expert in guns and in disarmament. Disarm gunman and use his weapon against others",
 		SpawnFunction = function(ply)
 			ply:Give("weapon_sogknife")	

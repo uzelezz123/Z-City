@@ -197,7 +197,7 @@ function HGAddView(ply, origin, angles, velLen)
 	if origin_override ~= nil then
 		origin, angles = origin_override, angles_override
 	end
-	
+
 	return origin, angles
 end
 
@@ -245,7 +245,7 @@ surface.CreateFont(
 	"BODYCAMFONT",
 	{
 		font = "Bahnschrift",
-		size = ScreenScale(16),
+		ScreenScale(16),
 		italic = true,
 		weight = 1500
 	}
@@ -662,7 +662,7 @@ local mapswithfog = { -- Надо от сервер сайда сделать...
 	--["gm_white_forest_countryside"] = 6000,
 	--["gm_york_remaster"] = 9500,
 	--["gm_city_of_silence"] = 1500,
-	----["gm_construct"] = 8000,
+	--["gm_construct"] = 8000,
 	--["gm_fork"] = 9500,
 	--["rp_zapolye_v2"] = 7500
 }

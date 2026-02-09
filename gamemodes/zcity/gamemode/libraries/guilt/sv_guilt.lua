@@ -223,7 +223,7 @@ hook.Add("HomigradDamage", "GuiltReg", function(ply, dmgInfo, hitgroup, ent, har
 
     if shouldBanGuilt and Attacker.Guilt >= 100 then
 		-- if ULib then
-        	ULib.addBan( Attacker:SteamID(), 30, "Kicked and banned for dealing too much team damage.", Attacker:Name(), "System" )
+        ULib.addBan( Attacker:SteamID(), 30, "Kicked and banned for dealing too much team damage.", Attacker:Name(), "System" )
 		-- else
 		-- 	Attacker:Ban(30, true)
 		-- end
@@ -252,7 +252,7 @@ hook.Add("HomigradDamage", "GuiltReg", function(ply, dmgInfo, hitgroup, ent, har
             local time = math.Round(60 - karma * 4, 0)
 
 			-- if ULib then
-				ULib.addBan( steamID, 60, "Kicked and banned for having too low karma.", name, "System" )
+            ULib.addBan( steamID, 60, "Kicked and banned for having too low karma.", name, "System" )
 			-- else
 			-- 	Attacker:Ban(60, true)
 			-- end

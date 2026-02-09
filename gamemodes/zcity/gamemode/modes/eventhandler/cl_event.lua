@@ -166,7 +166,7 @@ CreateEndMenu = function()
 	DScrollPanel:SetPos(10, 80)
 	DScrollPanel:SetSize(sizeX - 20, sizeY - 90)
 
-	for i, ply in player.Iterator() do
+	for i,ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		local but = vgui.Create("DButton",DScrollPanel)
 		but:SetSize(100,50)
@@ -221,7 +221,7 @@ CreateEndMenu = function()
 end
 
 function MODE:RoundStart()
-    for i, ply in player.Iterator() do
+    for i,ply in player.Iterator() do
 		ply.won = nil
     end
 

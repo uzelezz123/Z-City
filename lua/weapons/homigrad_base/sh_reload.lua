@@ -23,7 +23,7 @@ function SWEP:CanReload()
 
 	if ply.organism and (ply.organism.larmamputated or ply.organism.rarmamputated) then
 		if not self.Notified and self:Clip1() < self:GetMaxClip1() then
-			ply:Notify("I can't reload it in my hand...", 10)
+			ply:Notify("I think there's a glaring issue on why I can't reload this gun. Don't you think?", 10)
 			self.Notified = true
 		end
 		return false

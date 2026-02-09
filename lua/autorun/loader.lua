@@ -1,6 +1,6 @@
 hg = hg or {}
 hg.Version = "Release 1.0.8"
-hg.GitHub_ReposOwner = "EliasQuickness"
+hg.GitHub_ReposOwner = "NotaQuickster"
 hg.GitHub_ReposName = "Z-City-Fork" -- please add your real git fork!
 
 -- if hg.GitHub_ReposOwner and hg.GitHub_ReposOwner != "" then

@@ -2149,7 +2149,7 @@ local IsValid = IsValid
 	local adjust = {
 		["steering"] = {Vector(7,9,0),Angle(0,-80,0),Vector(-7,9,0),Angle(0,-100,180)},
 		["steeringwheel"] = {Vector(7.5,-3.5,0),Angle(180,-90,0),Vector(-7.5,-3.5,0),Angle(0,90,0)},
-		["steering_wheel"] = {Vector(7,0,-4),Angle(-90,-90,0),Vector(-7,0,-4),Angle(-90,90,0)},
+		["steering_wheel"] = {Vector(9,13,-1),Angle(0,-90,0),Vector(-9,13,-1),Angle(-180,90,0)},
 		["Rig_Buggy.Steer_Wheel"] = {Vector(8,-2.5,0),Angle(0,-90,0),Vector(-8,-2.5,0),Angle(180,90,0)},
 		["car.steeringwheel"] = {Vector(15,-10,0),Angle(0,180,0),Vector(15,10,0),Angle(180,0,0)},
 		["Airboat.Steer"] = {Vector(-11,-1.5,10),Angle(70,50,50),Vector(11,-1.5,10),Angle(70,50,50)},
@@ -2164,8 +2164,8 @@ local IsValid = IsValid
 	}
 
 	local modelAdjust = {
-		["models/left4dead/vehicles/apc_body.mdl"] = {Vector(11,-11,-1.5),Angle(0,-90,20),Vector(-11,-11,-1.5),Angle(180,90,-20)},
-		["models/left4dead/vehicles/nuke_car.mdl"] = {Vector(7,-12,-1),Angle(0,-90,0),Vector(-7,-12,-1),Angle(180,90,0)},
+		["models/left4dead/vehicles/apc_body_glide.mdl"] = {Vector(10.5,14,-1),Angle(0,-90,0),Vector(-10.5,14,-1),Angle(-180,90,0)},
+		["models/left4dead/vehicles/nuke_car_glide.mdl"] = {Vector(7,12,-1),Angle(0,-90,0),Vector(-7,12,-1),Angle(180,90,0)},
 		["models/gta5/vehicles/sanchez/chassis.mdl"] = {
 			Vector(15,17,-4.5),
 			Angle(-95,90,-90),

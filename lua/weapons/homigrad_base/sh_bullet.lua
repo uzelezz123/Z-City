@@ -279,6 +279,11 @@ local function gasInertia(pos, force, dir)
 	end
 end
 
+local powderMat, powderClr, world = Material("decals/burn01a"), Color(255, 255, 255, 150), game.GetWorld()
+local allowedMats = {
+	[MAT_CONCRETE] = true,
+	[MAT_METAL] = true
+}
 bulletHit = function(ply, tr, dmgInfo, bullet, Weapon)
 	if CLIENT then return end
 	local inflictor = IsValid(ply) and not ply:IsNPC() and ply.GetActiveWeapon and ply:GetActiveWeapon() or dmgInfo:GetInflictor()
@@ -306,11 +311,12 @@ bulletHit = function(ply, tr, dmgInfo, bullet, Weapon)
 	--local force = bullet.Force
 	if force >= 20 then
 		local dist = trStart:DistToSqr(trPos)
-		if dist <= 160000 and (math.random(3) == 2 or force >= 30) and tr.Entity:IsWorld() then
+		if dist <= 160000 and (math.random(3) == 2 or force >= 30) and tr.Entity:IsWorld() and allowedMats[tr.MatType] then
 			util.Decal("Impact.ShootAdd" .. math.random(shootDecalRand), trPos + trNormal, trPos - trNormal)
 		end
 		if force >= 30 and dist <= 1400000 and (math.random(3) == 2 or force >= 45) then
 			util.Decal("Impact.ShootPowderAdd", trPos + trNormal, trPos - trNormal)
+			--util.DecalEx(powderMat, world, trPos, trNormal, powderClr, 1, 1) uzelezz said that DecalEx crashing the game..
 		end
 
 		gasInertia(trPos, force * 3, -tr.Normal)

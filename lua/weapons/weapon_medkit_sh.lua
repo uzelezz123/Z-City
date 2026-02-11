@@ -54,10 +54,16 @@ SWEP.ShouldDeleteOnFullUse = true
 
 local lang1, lang2 = Angle(0, -10, 0), Angle(0, 10, 0)
 function SWEP:Animation()
-	if (self:GetOwner().zmanipstart ~= nil and not self:GetOwner().organism.larmamputated) then return end
-	local aimvec = self:GetOwner():GetAimVector()
+	local owner = self:GetOwner()
+	if (owner.zmanipstart ~= nil and not owner.organism.larmamputated) then return end
+
+	local aimvec = owner:GetAimVector()
+	if not aimvec then return end
+
 	local hold = self:GetHolding()
-    self:BoneSet("r_upperarm", vector_origin, Angle(30 - hold / 5, -30 + hold / 2 + 20 * aimvec[3], 5 - hold / 4))
+	local ducking = owner:IsFlagSet(FL_ANIMDUCKING)
+
+    self:BoneSet("r_upperarm", vector_origin, Angle(30 - hold / 5, -30 + hold / 2 + 20 * aimvec[3] * (ducking and -3 or -1), 5 - hold / 4))
     self:BoneSet("r_forearm", vector_origin, Angle(hold / 25, -hold / 2.5, 35 -hold / 1.4))
 
     self:BoneSet("l_upperarm", vector_origin, lang1)

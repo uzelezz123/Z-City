@@ -694,41 +694,61 @@ function hgWreckBuildings(blaster, pos, power, range, ignoreVisChecks) -- taken 
 	local masMassToLoosen = 30 * power
 	local allProps = ents.FindInSphere(pos, maxRange)
 
-	for k, prop in pairs(allProps) do
-		if not (table.HasValue(WreckBlacklist, prop:GetClass()) or hook.Run("hg_CanDestroyProp", prop, blaster, pos, power, range, ignore) == false or prop.ExplProof == true) then
-			local physObj = prop:GetPhysicsObject()
-			local propPos = prop:LocalToWorld(prop:OBBCenter())
-			local DistFrac = 1 - propPos:Distance(pos) / maxRange
-			local myDestroyThreshold = DistFrac * maxMassToDestroy
-			local myLoosenThreshold = DistFrac * masMassToLoosen
+	local co = coroutine.create(function()
 
-			if DistFrac >= .85 then
-				myDestroyThreshold = myDestroyThreshold * 7
-				myLoosenThreshold = myLoosenThreshold * 7
-			end
+		local LastProcess = SysTime()
 
-			if (prop ~= blaster) and physObj:IsValid() then
-				local mass, proceed = physObj:GetMass(), ignoreVisChecks
+		for k, prop in ipairs(allProps) do
+			LastProcess = SysTime()
+			if not (table.HasValue(WreckBlacklist, prop:GetClass()) or hook.Run("hg_CanDestroyProp", prop, blaster, pos, power, range, ignore) == false or prop.ExplProof == true) then
+				local physObj = prop:GetPhysicsObject()
+				local propPos = prop:LocalToWorld(prop:OBBCenter())
+				local DistFrac = 1 - propPos:Distance(pos) / maxRange
+				local myDestroyThreshold = DistFrac * maxMassToDestroy
+				local myLoosenThreshold = DistFrac * masMassToLoosen
 
-				if not proceed then
-					local tr = util.QuickTrace(pos, propPos - pos, blaster)
-					proceed = IsValid(tr.Entity) and (tr.Entity == prop)
+				if DistFrac >= .85 then
+					myDestroyThreshold = myDestroyThreshold * 7
+					myLoosenThreshold = myLoosenThreshold * 7
 				end
 
-				if proceed then
-					if mass <= myDestroyThreshold then
-						SafeRemoveEntity(prop)
-					elseif mass <= myLoosenThreshold then
-						physObj:EnableMotion(true)
-						constraint.RemoveAll(prop)
-						physObj:ApplyForceOffset((propPos - pos):GetNormalized() * 1000 * DistFrac * power * mass, propPos + VectorRand() * 10)
-					else
-						physObj:ApplyForceOffset((propPos - pos):GetNormalized() * 200 * DistFrac * origPower * mass, propPos + VectorRand() * 10)
+				if (prop ~= blaster) and physObj:IsValid() then
+					local mass, proceed = physObj:GetMass(), ignoreVisChecks
+
+					if not proceed then
+						local tr = util.QuickTrace(pos, propPos - pos, blaster)
+						proceed = IsValid(tr.Entity) and (tr.Entity == prop)
+					end
+
+					if proceed then
+						if mass <= myDestroyThreshold then
+							SafeRemoveEntity(prop)
+						elseif mass <= myLoosenThreshold then
+							physObj:EnableMotion(true)
+							constraint.RemoveAll(prop)
+							physObj:ApplyForceOffset((propPos - pos):GetNormalized() * 200 * DistFrac * power * mass, propPos + VectorRand() * 10)
+						else
+							physObj:ApplyForceOffset((propPos - pos):GetNormalized() * 200 * DistFrac * origPower * mass, propPos + VectorRand() * 10)
+						end
 					end
 				end
 			end
+
+			LastProcess = SysTime() - LastProcess
+
+			if LastProcess > 0.001 then
+				coroutine.yield()
+			end
 		end
-	end
+	end)
+	local index = blaster:EntIndex()
+	timer.Create("ProcessCheck_" .. index, 0, 0, function()
+		if coroutine.status( co ) == "dead" then
+			timer.Remove("ProcessCheck_" .. index)
+		end
+		--print("Yes yelid", coroutine.status( co ))
+		coroutine.resume(co)
+	end)
 end
 
 function hgIsDoor(ent)

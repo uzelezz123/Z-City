@@ -81,9 +81,11 @@ SWEP.FakeEmptyReloadSounds = {
 	[0.85] = "weapons/m45/m45_boltrelease.wav",
 }
 
+local vecfull = Vector(1,1,1)
+
 local function HideMag(model, unhide)
 	if !IsValid(model) then return end
-	local vec = unhide and Vector(1,1,1) or vector_origin
+	local vec = unhide and vecfull or vector_origin
 	model:ManipulateBoneScale(56, vec)
 	model:ManipulateBoneScale(57, vec)
 
@@ -95,7 +97,7 @@ end
 
 local function HideMag2(model, unhide)
 	if !IsValid(model) then return end
-	local vec = unhide and Vector(1,1,1) or vector_origin
+	local vec = unhide and vecfull or vector_origin
 	model:ManipulateBoneScale(54, vec)
 	model:ManipulateBoneScale(55, vec)
 

@@ -117,10 +117,6 @@ function SWEP:ModelCreated(model)
 	model:SetBodyGroups(self.FakeBodyGroups)
 end
 
-
-
-
-
 SWEP.GunCamPos = Vector(4,-15,-6)
 SWEP.GunCamAng = Angle(190,-5,-100)
 

@@ -21,11 +21,12 @@ SWEP.Secondary.DefaultClip = -1
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = "none"
 
-SWEP.HoldType = "normal"
+SWEP.IdleHoldType = "normal"
+SWEP.HoldType = "slam"
 SWEP.ViewModel = ""
 SWEP.WorldModel = "models/sirgibs/ragdoll/css/terror_arctic_radio.mdl"
 
-if(CLIENT)then
+if CLIENT then
 	SWEP.WepSelectIcon = Material("vgui/wep_jack_hmcd_walkietalkie")
 	SWEP.IconOverride = "vgui/wep_jack_hmcd_walkietalkie.png"
 	SWEP.BounceWeaponIcon = false
@@ -51,7 +52,6 @@ SWEP.Frequencies = {
     107.8
 }
 
-
 local ST_TYPE_LOCALFILE = 0
 local ST_TYPE_URL = 1
 
@@ -68,8 +68,7 @@ function SWEP:BippSound(ent, pitch)
     ent:EmitSound("radio/voip_end_transmit_beep_0" .. math.random(1,8) .. ".wav", 35, pitch)
 end
 
-if(SERVER)then
-
+if SERVER then
     function SWEP:CanListen(output, input, isChat)
 		if !self.isOn then
 			return
@@ -102,22 +101,22 @@ if(SERVER)then
     hook.Add("CanListenOthers", "radio", function(output, input, isChat, teamonly, text)
         local wep = output:GetWeapon("weapon_walkie_talkie")
 
-		if(not IsValid(wep))then 
+		if not IsValid(wep) then 
 			return
 		end
 
-        if(wep:CanListen(output, input, isChat))then
+        if wep:CanListen(output, input, isChat) then
 
-            if(isChat)then
+            if isChat then
 				wep:BippSound(output, 100)
 
-				if(output == input)then 
+				if output == input then 
 					return 
 				end
                 
                 wep:BippSound(input, 100)
 
-				if(input:GetPos():DistToSqr(output:GetPos()) < 600000 and not output.organism.otrub and not input.organism.otrub)then
+				if input:GetPos():DistToSqr(output:GetPos()) < 600000 and not output.organism.otrub and not input.organism.otrub then
 					return true
 				else
                     input:ChatPrint("Walkie Talkie: " .. text)
@@ -138,8 +137,8 @@ if(SERVER)then
 		end
 
 		for i, input in player.Iterator() do
-			if(wep:CanListen(output, input, false))then
-				if(output == input)then 
+			if wep:CanListen(output, input, false) then
+				if output == input then 
 					wep:BippSound(output, 100) 
 					continue 
 				end
@@ -152,13 +151,13 @@ if(SERVER)then
 	hook.Add("EndVoice", "radio", function(output)
         local wep = output:GetWeapon("weapon_walkie_talkie")
 
-		if(not IsValid(wep))then 
+		if not IsValid(wep) then 
 			return 
 		end
 
 		for i, input in player.Iterator() do
-			if(wep:CanListen(output, input, false))then
-				if(output == input)then 
+			if wep:CanListen(output, input, false) then
+				if output == input then 
 					wep:BippSound(output, 100) 
 					continue 
 				end
@@ -230,8 +229,36 @@ function SWEP:SetHold(value)
 	self.holdtype = value
 end
 
+local bone, name
+function SWEP:BoneSet(lookup_name, vec, ang)
+	local owner = self:GetOwner()
+    if IsValid(owner) and !owner:IsPlayer() then return end
+	hg.bone.Set(owner, lookup_name, vec, ang, "walkietalkie", 0.01)
+end
+
+local handAng1, handAng2 = Angle(-20, -20, -10), Angle(10, -75, -50)
+local actAng1, actAng2 = Angle(0, -70, -10), Angle(-5, 5, -70)
+function SWEP:Step()
+	local owner = self:GetOwner()
+	local active = owner:KeyDown(IN_ATTACK) and self:GetIsOn()
+
+	if active then
+		self:SetHold(self.HoldType)
+	elseif self:GetHoldType() ~= self.IdleHoldType then 
+		self:SetHold(self.IdleHoldType)
+	end
+
+	if owner:OnGround() and owner:GetVelocity():LengthSqr() <= 1000 and not owner:IsFlagSet(FL_ANIMDUCKING) then
+		self:BoneSet("l_upperarm", vector_origin, self:GetIsOn() and handAng1 or angle_zero)
+		self:BoneSet("l_forearm", vector_origin, self:GetIsOn() and handAng2 or angle_zero)
+
+		self:BoneSet("r_upperarm", vector_origin, active and actAng1 or angle_zero)
+		self:BoneSet("r_forearm", vector_origin, active and actAng2 or angle_zero)
+	end
+end
+
 function SWEP:Think()
-	self:SetHold(self.HoldType)
+	local owner = self:GetOwner()
 
 	if CLIENT then
 		local FMStations = self.FMStations[ math.Round(self:GetHudFrequency(),1) ]
@@ -303,13 +330,17 @@ end
 function SWEP:AdjustFrequency(numAdjust)
 	self.Frequency = math.Round(math.Clamp(self.Frequency + numAdjust, 87.5, 108),1)
 	self:SetHudFrequency(self.Frequency)
-	self:GetOwner():EmitSound("radiotune.mp3",45,math.random(95,105))
+
+	local owner = self:GetOwner()
+	owner:EmitSound("radiotune.mp3", 45, math.random(95, 105))
+	owner:SetAnimation(PLAYER_ATTACK1)
+
 	return self.Frequency
 end
 
 if CLIENT then
 	local walkietalkie_clr = Color(230,230,230)
-	local bg_clr = Color(0,0,0,220)
+	local bg_clr = Color(0,0,0,150)
 	function SWEP:DrawHUD()
 		local Frequency = math.Round(self:GetHudFrequency(),1) .. " MHz"
 		local IsOn = self:GetIsOn() and "On" or "Off"
@@ -317,7 +348,7 @@ if CLIENT then
 		draw.RoundedBox(0, (ScrW() / 2) - width / 2, (ScrH() * 0.912) - height / 2, width, height, bg_clr)
 
 		draw.SimpleText(Frequency, "HomigradFontMedium",ScrW() / 2, ScrH() * 0.9, walkietalkie_clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText("Walkie-Talkie " .. IsOn, "HomigradFontMedium",ScrW() / 2, ScrH() * 0.92, walkietalkie_clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText("Walkie-Talkie | " .. IsOn, "HomigradFontMedium",ScrW() / 2, ScrH() * 0.92, walkietalkie_clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 end
 
@@ -338,6 +369,7 @@ function SWEP:Reload()
 		self.isOn = !self.isOn
 		self:SetIsOn(self.isOn)
 		self:BippSound(owner)
+		owner:SetAnimation(PLAYER_ATTACK1)
 
 		--owner:EmitSound("")
 		owner:zChatPrint("Walkie-Talkie is "..(self.isOn and "on" or "off"))

@@ -14,3 +14,13 @@ A.Bcc -> 1.000
 - A -> Global updates
 - B -> New mechanics, gameplay changes
 - c -> Fixes and other small things
+
+## Support us
+**Donation links:**
+- [Yoomoney](https://yoomoney.ru/fundraise/17GFEQH326Q.250101) 
+- [Boosty](https://boosty.to/sadsalat/donate)
+
+**Crypto**
+- USDT(TRC20): TYgpaZgHQr6qEgemhHzVvV7AQESiyhHpZD
+- BTC(BTC): bc1qa8pk9ag6xa5yav2mvlxkra8xk25lg3htgfqh5w
+- ETH(ERC20)* 0x72AdCCcCEB4E323C64bCF0955A779DD9298E9483

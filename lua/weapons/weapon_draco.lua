@@ -1,9 +1,9 @@
 SWEP.Base = "homigrad_base"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
-SWEP.PrintName = "Draco"
+SWEP.PrintName = "Micro Draco"
 SWEP.Author = "ROMARM via Regia Autonomă pentru producţia de Tehnică Militară (RATMIL), Cugir"
-SWEP.Instructions = "DRACO-Pistol chambered in 7.62x39 mm\n\nALT+E to change stance (+walk,+use)"
+SWEP.Instructions = "Shortened DRACO-Pistol chambered in 7.62x39 mm\n\nALT+E to change stance (+walk,+use)"
 SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
@@ -98,7 +98,7 @@ SWEP.ZoomPos = Vector(-30, -0.0497, 4.1614)
 SWEP.RHandPos = Vector(-5, -1, -1)
 SWEP.LHandPos = false
 SWEP.SprayRand = {Angle(-0.1, -0.2, 0), Angle(-0.2, 0.2, 0)}
-SWEP.Ergonomics = 0.9
+SWEP.Ergonomics = 0.8
 SWEP.Penetration = 15
 SWEP.AnimShootMul = 1
 SWEP.AnimShootHandMul = 0.1
@@ -263,15 +263,24 @@ function SWEP:AnimHoldPost(model)
 	self:BoneSet("l_finger1", vector_zero, finger11)
 	self:BoneSet("l_finger2", vector_zero, finger11)
 end
+
+SWEP.ProceduralMagMethod = 0
+SWEP.ProceduralMagID = 1
+SWEP.ProceduralMagSets = {
+	["remove"] = 0,
+	["return"] = 1
+}
 -- RELOAD ANIM AKM
 SWEP.ReloadAnimLH = {
 	Vector(0,0,0),
 	Vector(.5,2.5,-7),
 	Vector(.5,2.5,-7),
 	Vector(.5,2.5,-7),
+	"removemag",
 	Vector(-6,7,-9),
 	Vector(-7,1,-15),
 	Vector(-7,1,-15),
+	"returnmag",
 	Vector(-13,5,-5),
 	Vector(.5,2.5,-7),
 	Vector(.5,2.5,-7),

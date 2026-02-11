@@ -273,7 +273,42 @@ function SWEP:AnimationReload(time, staminaReload)
 		return true
 	end
 
-	self.LHPosOffset = easedLerp(lerp,pos1,pos2)
+	--// Prodecural reload magazine stuff
+	if pos1 == "removemag" and self.ProceduralMagMethod then
+		local method, rem = self.ProceduralMagMethod, self.ProceduralMagSets["remove"]
+		local wm = self:GetWM()
+
+		if method == 0 then --// Single bodygroup
+			wm:SetBodygroup(self.ProceduralMagID or 1, rem or 1)
+		elseif method == 1 then --// Set of bodygroups
+			wm:SetBodyGroups(tostring(rem) or "1111")
+		elseif method == 2 then --// Submaterial method
+			wm:SetSubMaterial(self.ProceduralMagID or 1, tostring(rem) or "null")
+		end
+
+		--pos1 = anims[math.Clamp(floortime+1,1,#anims)]
+	elseif pos1 == "returnmag" and self.ProceduralMagID and istable(self.ProceduralMagSets) then
+		local method, ret = self.ProceduralMagMethod, self.ProceduralMagSets["return"]
+		local wm = self:GetWM()
+
+		if method == 0 then --// Single bodygroup
+			wm:SetBodygroup(self.ProceduralMagID or 1, ret or 0)
+		elseif method == 1 then --// Set of bodygroups
+			wm:SetBodyGroups(tostring(ret) or "0000")
+		elseif method == 2 then --// Submaterial method
+			wm:SetSubMaterial(self.ProceduralMagID or 1, tostring(ret) or "")
+		end
+
+		--pos1 = anims[math.Clamp(floortime+1,1,#anims)]
+	end
+
+	--print(pos1, pos2)
+
+	if isstring(pos1) or isstring(pos2) then
+		pos1,pos2 = anims[math.Clamp(floortime,1,#anims)], anims[math.Clamp(floortime+1,1,#anims)]
+	else
+		self.LHPosOffset = easedLerp(lerp,pos1,pos2)
+	end
 
 	self.LHAngOffset = easedLerp(lerp2,anims2[math.Clamp(floortime2,1,#anims2)],anims2[math.Clamp(floortime2+1,1,#anims2)])
 

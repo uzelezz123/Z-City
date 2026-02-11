@@ -1,4 +1,7 @@
-# Z-City
+> [!WARNING]
+> While this fork *should* work on your server, I strongly recommend you download and use the official Z-City repository.
+
+# Z-City (Harrison's Fork)
 Z-City is a GMod addon which modifies character damage and controls. Z-City also comes with its own weapon base and a gamemode
 
 https://github.com/uzelezz123/8bit_zcity - 8bit module (compiled version is in lua/bin)
@@ -15,7 +18,7 @@ A.Bcc -> 1.000
 - B -> New mechanics, gameplay changes
 - c -> Fixes and other small things
 
-## Support us
+## Support the Z-City Developers
 **Donation links:**
 - [Yoomoney](https://yoomoney.ru/fundraise/17GFEQH326Q.250101) 
 - [Boosty](https://boosty.to/sadsalat/donate)

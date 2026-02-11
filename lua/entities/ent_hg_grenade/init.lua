@@ -44,9 +44,10 @@ function ENT:Think()
 		self:AddThink()
 	end
 
-	if (CurTime() - self.CreateTime) >= 90 and self.owner ~= nil then
+	if (CurTime() - ( self.CreateTime or 0 )) >= 90 and self.owner ~= nil then
 		self:SetOwner(nil)
 		self.owner = nil
+		self.shouldBoom = true
 	end
 
 	if not self.timer then
@@ -138,7 +139,7 @@ function ENT:PoopBomb()
 end
 
 function ENT:Explode()
-	if self:PoopBomb() or !IsValid(self.owner) then
+	if self:PoopBomb() or (!self.shouldBoom and !IsValid(self.owner)) then
 		self:EmitSound("weapons/p99/slideback.wav", 75)
 		self.Exploded = true
 		return

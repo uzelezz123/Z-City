@@ -196,7 +196,7 @@ local walkietalkie_clr = Color(0,0,0)
 local bg_clr = Color(0,75,0)
 local bg_off_clr = Color(0,32,0)
 
-SWEP.ScreenPosOffset = Vector(3.4,-2.21,3.57)
+SWEP.ScreenPosOffset = Vector(3.4,-2.22,3.57)
 SWEP.ScreenAngleOffset = Angle(-5,-18.5,91)
 
 if CLIENT then

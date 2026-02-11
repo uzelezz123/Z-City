@@ -27,7 +27,7 @@ SWEP.AnimList = {
 }
 
 SWEP.CustomShell = "45acp"
-SWEP.EjectPos = Vector(12,3,0)
+SWEP.EjectPos = Vector(12,1,2)
 SWEP.EjectAng = Angle(0,0,0)
 
 SWEP.weight = 1

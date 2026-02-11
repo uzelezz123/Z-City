@@ -162,7 +162,7 @@ SWEP.AnimsEvents = {
 	["base_reload_start_empty"] = {
 		[0.3] = function(self)
 			SetModelAmmo(self:GetWM(), self)
-			self:EmitSound("weapons/tfa_ins2/k98/m40a1_boltback.wav", 45, math_random(95, 105))
+			self:EmitSound("weapons/easternfront/mosin/handling/mosin_bolt_back.wav", 45, math_random(95, 105))
 			HideMag2(self:GetWM(), true)
 		end,
 	},

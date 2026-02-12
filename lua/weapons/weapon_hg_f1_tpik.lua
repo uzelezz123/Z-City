@@ -4,13 +4,17 @@ SWEP.PrintName = "F1"
 SWEP.Instructions = 
 [[A famous soviet WWII offensive grenade. It's still widely exported and used to this day. It has a pyrotechnic delay of 3.2-4.2 seconds.
 
+Reload looking on surface will set tripwire
+
 LMB - High ready
 While high ready:
 RMB to remove spoon.
+Reload to insert pin back.
 
 RMB - Low ready
 While low ready:
 LMB to remove spoon.
+Reload to insert pin back.
 ]]--"тильда двуеточее три"
 SWEP.Category = "Weapons - Explosive"
 SWEP.Spawnable = true

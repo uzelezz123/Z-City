@@ -4,13 +4,17 @@ SWEP.PrintName = "Type-59 Grenade"
 SWEP.Instructions = 
 [[This is a cheap Chinese clone of an old Soviet RGD-5 offensive hand grenade. It has a lethality radius of 3 meters and casualty radius of 9 meters. It has a pyrotechnic delay of 3.5-4.4 seconds.
 
+Reload looking on surface will set tripwire
+
 LMB - High ready
 While high ready:
 RMB to remove spoon.
+Reload to insert pin back.
 
 RMB - Low ready
 While low ready:
 LMB to remove spoon.
+Reload to insert pin back.
 ]]--"тильда двуеточее три"
 SWEP.Category = "Weapons - Explosive"
 SWEP.Spawnable = true

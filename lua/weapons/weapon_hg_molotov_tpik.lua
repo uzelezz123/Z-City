@@ -6,11 +6,9 @@ SWEP.Instructions =
 
 LMB - High ready
 While high ready:
-RMB to remove spoon.
 
 RMB - Low ready
 While low ready:
-LMB to remove spoon.
 ]]--"тильда двуеточее три"
 SWEP.Category = "Weapons - Explosive"
 SWEP.Spawnable = true

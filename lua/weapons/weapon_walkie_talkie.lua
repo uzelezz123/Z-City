@@ -70,8 +70,8 @@ end
 
 if SERVER then
     function SWEP:CanListen(output, input, isChat)
-		if !self.isOn then
-			return
+		if !self.isOn or !input:GetWeapon("weapon_walkie_talkie").isOn then
+			return false
 		end
 		if(not IsValid(output) or not IsValid(input))then 
 			return

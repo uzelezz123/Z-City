@@ -14,7 +14,9 @@ function CLASS.On(self)
     self:SetPlayerColor(Color(10,10,100):ToVector())
     self:SetModel(models[math.random(#models)])
     self:SetSubMaterial()
-    self:SetBodyGroups("00000000000")
+    timer.Simple(0,function()
+        self:SetBodyGroups("00000000000")
+    end)
     local Appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
     Appearance.AAttachments = ""
     Appearance.AColthes = ""

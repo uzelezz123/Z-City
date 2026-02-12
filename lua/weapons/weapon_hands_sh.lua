@@ -1005,11 +1005,12 @@ function SWEP:ApplyForce()
 
 				local tr = {}
 				tr.start = TargetPos
-				tr.endpos = TargetPos - vector_up * 16
-				tr.mask = MASK_SOLID_BRUSHONLY
+				tr.endpos = TargetPos - vector_up * 32
+				tr.mask = MASK_SOLID
+				tr.filter = {self.CarryEnt, self, ply}
 				local trace = util.TraceLine(tr)
-
-				if bone != "ValveBiped.Bip01_Spine2" or not trace.Hit then
+				
+				if bone != "ValveBiped.Bip01_Spine2" or !trace.Hit then
 					phys:ApplyForceCenter(ply:GetAimVector() * math.min(5000, phys:GetMass() * 800))
 					self:SetCarrying()
 				end

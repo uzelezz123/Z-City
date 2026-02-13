@@ -77,7 +77,7 @@ SWEP.availableAttachments = {
 	},
 	sight = {
 		["mountType"] = "kar98mount",
-		["mount"] = Vector(-20, 5, 0.1),
+		["mount"] = Vector(-22.25, 2, 0),
 	},
 }
 

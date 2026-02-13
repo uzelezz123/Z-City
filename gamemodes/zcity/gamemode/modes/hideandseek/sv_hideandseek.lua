@@ -51,7 +51,7 @@ function MODE:AssignTeams()
 
 	-- Set Seekers
 	for i = 1, numSEEKERS do
-		if IsValid(willingPly[i]) then 
+		if IsValid(players[i]) then 
 			players[i]:SetTeam(0) 
 		end
 	end
@@ -279,9 +279,9 @@ function MODE:RoundThink()
 				local gun = ply:Give("weapon_m4a1")
                 ply:GiveAmmo(gun:GetMaxClip1() * 3, gun:GetPrimaryAmmoType(), true)
                 ply:Give("weapon_medkit_sh")
-				ply:Give("holo15")
-				ply:Give("grip3")
-				ply:Give("laser4")
+				ply:Give("ent_att_holo15")
+				ply:Give("ent_att_grip3")
+				ply:Give("ent_att_laser4")
                 ply:Give("weapon_tourniquet")
                 ply:Give("weapon_walkie_talkie")
                 ply:Give("weapon_hg_flashbang_tpik")

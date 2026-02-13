@@ -50,7 +50,7 @@ function MODE:AssignTeams()
 	end
 end
 
-util.AddNetworkString("criresp_start")
+util.AddNetworkString("criresp_start_hl2")
 function MODE:Intermission()
 	game.CleanUpMap()
     
@@ -61,7 +61,7 @@ function MODE:Intermission()
 		ply:SetupTeam(ply:Team())
 	end
 
-	net.Start("criresp_start")
+	net.Start("criresp_start_hl2")
 	net.Broadcast()
 
 end
@@ -182,15 +182,9 @@ function MODE:GiveEquipment()
 					inv["Weapons"]["hg_sling"] = true
 					ply:SetNetVar("Inventory",inv)
 
-					hg.AddArmor(ply, tblarmors[ply:Team()][math.random(#tblarmors[ply:Team()])]) 
-
 					zb.GiveRole(ply, "Civil Protection", Color(0,0,190))
 
 					table.insert(swatPlayers, ply) 
-
-					for _, item in ipairs(tblotheritems[ply:Team()]) do
-						ply:Give(item)
-					end
 
 					local hands = ply:Give("weapon_hands_sh")
 
@@ -248,7 +242,7 @@ end
 function MODE:CanSpawn()
 end
 
-util.AddNetworkString("cri_roundend")
+util.AddNetworkString("cri_roundend_hl2")
 function MODE:EndRound()
 	for k,ply in player.Iterator() do
 		if timer.Exists("SWATSpawn"..ply:EntIndex()) then
@@ -262,7 +256,7 @@ function MODE:EndRound()
 	local endround, winner = zb:CheckWinner(self:CheckAlivePlayers())
 
 	timer.Simple(2,function()
-		net.Start("cri_roundend")
+		net.Start("cri_roundend_hl2")
 			net.WriteBool(winner)
 		net.Broadcast()
 	end)

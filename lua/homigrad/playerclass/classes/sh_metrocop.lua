@@ -147,7 +147,7 @@ function CLASS.On(self, data)
     --;; Армор
     self.armors = {}
     self.armors["torso"] = "metrocop_armor"
-    self.armors["head"] = "metrocop_helmet"
+    self.armors["head"] = "metrocop_helmet" -- TODO: make the helmet not fucking up my ass
     self:SyncArmor()
 
     if not data.bNoEquipment then

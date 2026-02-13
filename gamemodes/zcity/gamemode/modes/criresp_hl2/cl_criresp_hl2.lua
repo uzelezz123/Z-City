@@ -2,7 +2,7 @@ local MODE = MODE
 MODE.name = "criresp_hl2"
 local song
 local songfade = 0
-net.Receive("criresp_start", function()
+net.Receive("criresp_start_hl2", function()
 	surface.PlaySound("zbattle/criresp.mp3") 
 
 	timer.Simple(3, function()
@@ -18,16 +18,16 @@ end)
 
 local teams = {
 	[0] = {
-		objective = "Negotiations failed, eliminate the threat. 10-4",
-		name = "a SWAT Operator",
+		objective = "Suspend negotiations. All local Protection Team units: prepare to inoculate.",
+		name = "a Civil Protection Unit",
 		color1 = Color(68, 10, 255),
 		color2 = Color(68, 10, 255)
 	},
 	[1] = {
-		objective = "This is my fucking house, bitches, I can do what I want.",
-		name = "a Suspect",
-		color1 = Color(228, 49, 49),
-		color2 = Color(228, 49, 49)
+		objective = "For the resistance! For freedom! For humanity! Fight to the very end at your outpost.",
+		name = "a Lambda fighter",
+		color1 = Color(228, 115, 49),
+		color2 = Color(228, 115, 49)
 	},
 }
 
@@ -37,7 +37,7 @@ function MODE:RenderScreenspaceEffects()
 		 
 		if songfade <= 0.01 and IsValid( song ) then
 			song:Stop()
-			surface.PlaySound(lply:Team() == 0 and "zbattle/criresp/barricadedsuspectstart.mp3" or "snd_jack_hmcd_policesiren.wav")
+			surface.PlaySound(lply:Team() == 0 and "sound/am_music/suspense/bank(suspense).mp3" or "sound/ambient/alarms/citadel_alert_loop2.wav")
 		elseif IsValid( song ) then
 			songfade = Lerp( 0.01, songfade, 0 )
 			song:SetVolume(songfade)
@@ -48,13 +48,14 @@ function MODE:RenderScreenspaceEffects()
 	surface.SetDrawColor(0, 0, 0, 255 * fade)
 	surface.DrawRect(-1, -1, ScrW() + 1, ScrH() + 1)
 end
+
 local posadd = 0
 function MODE:HUDPaint()
 	if zb.ROUND_START + 90 > CurTime() then
 		posadd = Lerp(FrameTime() * 5,posadd or 0, zb.ROUND_START + 7.3 < CurTime() and 0 or -sw * 0.4) 
 		local color = Color(255*-math.sin(CurTime()*3),25,255*math.sin(CurTime()*3))
-		draw.SimpleText( "SWAT will arrive in: "..string.FormattedTime(zb.ROUND_START + 90 - CurTime(), "%02i:%02i"	), "ZB_HomicideMedium", sw * 0.02 + posadd, sh * 0.95, Color(0,0,0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		draw.SimpleText( "SWAT will arrive in: "..string.FormattedTime(zb.ROUND_START + 90 - CurTime(), "%02i:%02i"	), "ZB_HomicideMedium", (sw * 0.02) - 2 + posadd, (sh * 0.95) - 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText( "CPs will arrive in: "..string.FormattedTime(zb.ROUND_START + 90 - CurTime(), "%02i:%02i"	), "ZB_HomicideMedium", sw * 0.02 + posadd, sh * 0.95, Color(0,0,0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText( "CPs will arrive in: "..string.FormattedTime(zb.ROUND_START + 90 - CurTime(), "%02i:%02i"	), "ZB_HomicideMedium", (sw * 0.02) - 2 + posadd, (sh * 0.95) - 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		local fade = math.Clamp(zb.ROUND_START + 7.5 - CurTime(), 0, 1)
 		surface.SetDrawColor(0, 0, 0, 255 * fade)
 		surface.DrawRect(-1, -1, ScrW() + 1, ScrH() + 1)
@@ -64,7 +65,7 @@ function MODE:HUDPaint()
 		if not lply:Alive() and not lply:Team() == 0 then return end
 		local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(), 0, 1)
 		local team_ = lply:Team()
-		draw.SimpleText("Crisis Response", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0, 162, 255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText("Captial Malcompliance", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(255, 128, 0, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		local Rolename = teams[team_].name
 		local ColorRole = teams[team_].color1
 		ColorRole.a = 255 * fade
@@ -85,7 +86,7 @@ function MODE:HUDPaint()
 end
 
 local CreateEndMenu
-net.Receive("cri_roundend", function() CreateEndMenu(net.ReadBool()) end)
+net.Receive("cri_roundend_hl2", function() CreateEndMenu(net.ReadBool()) end)
 local colGray = Color(85, 85, 85, 255)
 local colRed = Color(130, 10, 10)
 local colRedUp = Color(160, 30, 30)
@@ -113,7 +114,7 @@ CreateEndMenu = function(whowin)
 
 	Dynamic = 0
 	hmcdEndMenu = vgui.Create("ZFrame")
-	surface.PlaySound( (whowin == 1) and "zbattle/criresp/failedSWAT.mp3" or "ambient/alarms/warningbell1.wav")
+	surface.PlaySound( (whowin == 1) and "npc/overwatch/radiovoice/failuretotreatoutbreak.wav" or "ambient/alarms/warningbell1.wav")
 	local sizeX, sizeY = ScrW() / 2.5, ScrH() / 1.2
 	local posX, posY = ScrW() / 1.3 - sizeX / 2, ScrH() / 2 - sizeY / 2
 	hmcdEndMenu:SetPos(posX, posY)

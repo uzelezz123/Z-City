@@ -53,7 +53,7 @@ end
 util.AddNetworkString("hs_start")
 function MODE:Intermission()
 	game.CleanUpMap()
-    
+    math.randomseed(os.time()) -- Potential bug reported by Seekers where they couldn't become a hider. Hopefully this will fix :)
     self:AssignTeams()
 	
 	for k, ply in player.Iterator() do

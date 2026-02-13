@@ -3,7 +3,7 @@ local function check(self, ent, ply)
 	if ( !IsValid( ent ) ) then return false end
 	if ( ent:IsPlayer() ) then return true end
     local pEnt = hg.RagdollOwner( ent )
-    if ( ent:IsRagdoll() ) and pEnt and pEnt:IsPlayer() and pEnt:Alive() and not pEnt:IsSuperAdmin() then return true end
+    if ( ent:IsRagdoll() ) and pEnt and pEnt:IsPlayer() and pEnt:Alive() then return true end
 end
 properties.Add( "notify", {
 	MenuLabel = "Notify", -- Name to display on the context menu

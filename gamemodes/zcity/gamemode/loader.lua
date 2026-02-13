@@ -1,3 +1,13 @@
+-- Unless defined otherwise, these modes are blacklisted on Harrison's as we don't know
+-- what they actually do
+local blacklist = {
+    ["smo"] = true, -- Russia vs Ukraine, not really needed.
+    ["scugarena"] = true,
+    ["scrappers"] = true,
+    ["homicide_fear"] = true,
+    ["pathowogen"] = true,
+}
+
 local function IncluderFunc(fileName)
 	if (fileName:find("sv_")) then
 		include(fileName)
@@ -64,6 +74,8 @@ local function LoadModes()
                 MODE.AfterBaseInheritance()
             end
         end
+
+        if blacklist[MODE.name] then continue end
 
         zb.modes[MODE.name] = MODE
         

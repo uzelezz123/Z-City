@@ -81,21 +81,6 @@ function MODE:Intermission()
 			else
 				pos = hg.tpPlayer(ctpos, ply, i, 0)
 			end
-
-			timer.Simple(0.1, function()
-                if not IsValid(ply) then return end
-                local bodygroups = {
-                    {0, 3}, 
-                    {1, 3}, 
-                    {2, 2},
-                    {3, 2}, 
-                    {4, 1}, 
-                    {5, 1} 
-                }
-                for _, bg in ipairs(bodygroups) do
-                    ply:SetBodygroup(bg[1], math.random(0, bg[2]))
-                end
-            end)
 		end
 
 		if ply:Team() == 0 then
@@ -105,16 +90,6 @@ function MODE:Intermission()
 			else
 				pos = hg.tpPlayer(tpos, ply, i, 0)
 			end
-
-			timer.Simple(0.1, function()
-                if not IsValid(ply) then return end
-                ply:SetBodygroup(2, 1) 
-				ply:SetBodygroup(0, 1)
-                local bodygroups = { 1, 3, 4, 5, 6, 7, 8 }
-                for _, bg in ipairs(bodygroups) do
-                    ply:SetBodygroup(bg, math.random(0, 1))
-                end
-            end)
 		end
 
 		ply:SetupTeam(ply:Team())
@@ -154,60 +129,35 @@ end
 
 function MODE:ShouldRoundEnd()
 	local endround, winner = zb:CheckWinner(self:CheckAlivePlayers())
-    
-    if self.CapPoints and #self.CapPoints > 0 then
-	    local needed = #self.CapPoints * 100
-	    local allPoints = 0
-	    for k, points in pairs(self.PointsProgress) do
-		    allPoints = allPoints + points[1]
-	    end
-	    if allPoints == needed or allPoints == -needed then 
-            return true 
-        end
-    end
-    
+	local needed = #self.CapPoints * 100
+	local allPoints = 0
+	for k,points in pairs(self.PointsProgress) do
+		allPoints = allPoints + points[1]
+	end
+	--print(allPoints,needed)
+	if allPoints == needed or allPoints == -needed and #self.CapPoints > 0 then return true end
 	return endround
 end
 
 function MODE:RoundStart()
 end
 
-local RandomAKs = {
-	"weapon_ak200",
-	"weapon_ak203",
-	"weapon_akm",
-	"weapon_ak74u",
-	"weapon_akmwreked"
-}
-
-local RandomARs = {
-	"weapon_ak200",
-	"weapon_ak203",
-	"weapon_akm",
-	"weapon_ak74u",
-	"weapon_hk416",
-	"weapon_m4a1",
-	"weapon_sg552"
-}
-
--- more accurate loadouts to the war currently
-
 local WagnerEquipment = {
 	["default"] = {
-		Chance = 70,
-		Primary = RandomAKs,
+		Primary = "weapon_ak74",
 		Secondary = "weapon_makarov",
-		Other = {"weapon_hands_sh","weapon_melee","weapon_hg_rgd_tpik","weapon_hg_rgd_tpik","weapon_hg_rgd_tpik","weapon_bandage_sh","weapon_medkit_sh","weapon_tourniquet"},
+		Other = {"weapon_hands_sh","weapon_melee","weapon_hg_rgd_tpik","weapon_bandage_sh","weapon_medkit_sh","weapon_tourniquet"},
 		Ammo = {},
 		Attachments = {
 			Primary = {
-				Allways = false,
+				Allways = true,
+				Scopes = {"holo6","optic11","holo12","holo2"},
+				Barell = {"supressor8"}
 			}
 		},
 		Armor = {"vest5","helmet1","headphones1"}
 	},
 	["machinegunner"] = {
-		Chance = 15,
 		Primary = "weapon_pkm",
 		Secondary = "weapon_makarov",
 		Other = {"weapon_hands_sh","weapon_melee","weapon_hg_rgd_tpik","weapon_bandage_sh","weapon_medkit_sh","weapon_tourniquet"},
@@ -221,7 +171,6 @@ local WagnerEquipment = {
 		Armor = {"vest5","helmet1","headphones1"}
 	},
 	["sniper1"] = {
-		Chance = 10,
 		Primary = "weapon_svd",
 		Secondary = "weapon_makarov",
 		Other = {"weapon_hands_sh","weapon_melee","weapon_hg_rgd_tpik","weapon_bandage_sh","weapon_medkit_sh"},
@@ -235,7 +184,6 @@ local WagnerEquipment = {
 		Armor = {"vest5","helmet1","headphones1"}
 	},
 	["sniper2"] = {
-		Chance = 5,
 		Primary = "weapon_asval",
 		Secondary = "weapon_makarov",
 		Other = {"weapon_hands_sh","weapon_melee","weapon_hg_rgd_tpik","weapon_bandage_sh","weapon_medkit_sh"},
@@ -250,23 +198,22 @@ local WagnerEquipment = {
 	},
 }
 
-local HoholEquipment = {
+local UkrEquipment = {
 	["default"] = {
-		Chance = 70,
-		Primary = RandomARs,
+		Primary = "weapon_m4a1",
 		Secondary = "weapon_glock17",
-		Other = {"weapon_hands_sh","weapon_sogknife","weapon_hg_grenade_tpik","weapon_hg_grenade_tpik","weapon_hg_grenade_tpik","weapon_bandage_sh","weapon_medkit_sh","weapon_tourniquet"},
+		Other = {"weapon_hands_sh","weapon_sogknife","weapon_hg_grenade_tpik","weapon_bandage_sh","weapon_medkit_sh","weapon_tourniquet"},
 		Ammo = {},
 		Attachments = {
 			Primary = {
 				Allways = true,
 				Scopes = {"holo17","holo14","holo11","holo4"},
+				Barell = {"supressor2"}
 			}
 		},
 		Armor = {"vest1","helmet1","headphones1"}
 	},
 	["machinegunner"] = {
-		Chance = 15,
 		Primary = "weapon_m249",
 		Secondary = "weapon_glock17",
 		Other = {"weapon_hands_sh","weapon_sogknife","weapon_hg_grenade_tpik","weapon_bandage_sh","weapon_medkit_sh","weapon_tourniquet"},
@@ -280,7 +227,6 @@ local HoholEquipment = {
 		Armor = {"vest1","helmet1","headphones1"}
 	},
 	["sniper1"] = {
-		Chance = 15,
 		Primary = "weapon_sr25",
 		Secondary = "weapon_glock17",
 		Other = {"weapon_hands_sh","weapon_sogknife","weapon_medkit_sh"},
@@ -295,52 +241,35 @@ local HoholEquipment = {
 	}
 }
 
-local function GiveEquip(ply, team)
-	local teamequip = (team == 1 and WagnerEquipment) or HoholEquipment
-	
-	-- Build weighted class selection based on Chance values
-	local rand = math.random(100)
-	local cumulative = 0
-	local classequip = teamequip["default"] -- Fallback
-	
-	for className, classData in pairs(teamequip) do
-		cumulative = cumulative + (classData.Chance or 0)
-		if rand <= cumulative then
-			classequip = classData
-			break
-		end
-	end
+local function GiveEquip(ply,team)
+	local teamequip = (team == 1 and WagnerEquipment) or UkrEquipment
+	local classequip = table.Random(teamequip)
 
 	local inv = ply:GetNetVar("Inventory")
 	inv["Weapons"]["hg_sling"] = true
-	ply:SetNetVar("Inventory", inv)
+	ply:SetNetVar("Inventory",inv)
 	
-	-- Handle random weapon selection if Primary is a table
-	local primaryWeapon = classequip.Primary
-	if type(primaryWeapon) == "table" then
-		primaryWeapon = table.Random(primaryWeapon)
-	end
-	
-	local Primary = ply:Give(primaryWeapon)
-	ply:GiveAmmo(Primary:GetMaxClip1() * 4, Primary:GetPrimaryAmmoType(), true)
+	local Primary = ply:Give(classequip.Primary)
+	ply:GiveAmmo(Primary:GetMaxClip1() * 4,Primary:GetPrimaryAmmoType(),true)
 	local atts = {}
 
-	local scopeorno = (classequip.Attachments.Primary.Allways and 1) or (classequip.Attachments.Primary.Scopes and math.random(0, 1)) or 0
+	local scopeorno = ( classequip.Attachments.Primary.Allways and 1 ) or (classequip.Attachments.Primary.Scopes and math.random(0,1)) or 0
 	if scopeorno > 0 then
-		hg.AddAttachmentForce(ply, Primary, classequip.Attachments.Primary.Scopes[math.random(#classequip.Attachments.Primary.Scopes)])		
+		hg.AddAttachmentForce(ply,Primary,classequip.Attachments.Primary.Scopes[math.random(#classequip.Attachments.Primary.Scopes)])		
 	end
 
-	local barrelorno = (classequip.Attachments.Primary.Allways and 1) or (classequip.Attachments.Primary.Barell and math.random(0, 1)) or 0
+	local barrelorno = ( classequip.Attachments.Primary.Allways and 1 ) or (classequip.Attachments.Primary.Barell and math.random(0,1)) or 0
 	if barrelorno > 0 and classequip.Attachments.Primary.Barell then
-		hg.AddAttachmentForce(ply, Primary, classequip.Attachments.Primary.Barell[math.random(#classequip.Attachments.Primary.Barell)])		
+		hg.AddAttachmentForce(ply,Primary,classequip.Attachments.Primary.Barell[math.random(#classequip.Attachments.Primary.Barell)])		
 	end
+
 
 	local Secondary = ply:Give(classequip.Secondary)
-	ply:GiveAmmo(Secondary:GetMaxClip1() * 4, Secondary:GetPrimaryAmmoType(), true)
+	ply:GiveAmmo(Secondary:GetMaxClip1() * 4,Secondary:GetPrimaryAmmoType(),true)
 			
 	hg.AddArmor(ply, classequip.Armor)
 
-	for k, v in ipairs(classequip.Other) do
+	for k,v in ipairs(classequip.Other) do
 		ply:Give(v)
 	end
 
@@ -350,7 +279,7 @@ local function GiveEquip(ply, team)
 	ply:Give("weapon_hands_sh")
 	ply:SelectWeapon("weapon_hands_sh")
 	
-	timer.Simple(0.2, function()
+	timer.Simple(0.2,function()
 		ply:SelectWeapon("weapon_hands_sh")
 	end)
 end
@@ -367,76 +296,34 @@ local function spawnswoplayer(ply)
 		if ply:Team() == 1 then
 			ply:SetPlayerClass("wagner")
 			zb.GiveRole(ply, "RF Armed Forces", Color(71,89,0))
-			
-			timer.Simple(0.1, function()
-                if not IsValid(ply) then return end
-            
-                local bodygroups = {
-                    {0, 3}, 
-                    {1, 3}, 
-                    {2, 2},
-                    {3, 2}, 
-                    {4, 1}, 
-                    {5, 1} 
-                }
-            
-                for _, bg in ipairs(bodygroups) do
-                    ply:SetBodygroup(bg[1], math.random(0, bg[2]))
-                end
-            end)
 		else
 			ply:SetPlayerClass("ukr")
 			zb.GiveRole(ply, "UA Armed Forces", Color(89,76,0))
-
-			timer.Simple(0.1, function()
-                if not IsValid(ply) then return end
-                ply:SetBodygroup(2, 1) 
-				ply:SetBodygroup(0, 1)
-                local bodygroups = { 1, 3, 4, 5, 6, 7, 8 }
-                for _, bg in ipairs(bodygroups) do
-                    ply:SetBodygroup(bg, math.random(0, 1))
-                end
-            end)
 		end
 
 	GiveEquip( ply, ply:Team() )
 
-	-- Set position AFTER setup is donme
-	timer.Simple(0.1, function()
-		if not IsValid(ply) then return end
-		
-		local spawnPos = nil
-		if ply:Team() == 1 and WAGNERPoints and #WAGNERPoints > 0 then
-			spawnPos = WAGNERPoints[math.random(#WAGNERPoints)].pos
-		elseif ply:Team() == 0 and AZOVPoints and #AZOVPoints > 0 then
-			spawnPos = AZOVPoints[math.random(#AZOVPoints)].pos
-		end
-		
-		if spawnPos then
-			ply:SetPos(spawnPos)
-			ply:SetVelocity(Vector(0, 0, 0))
-		end
-		
+	timer.Simple(0.1,function()
 		ply.noSound = false
 	end)
-	
+
 	ply:SetSuppressPickupNotices(false)
 end
 
 function MODE:GetPlySpawn(ply)
 	local plyTeam = ply:Team()
-	if plyTeam == 1 then
+	if ply:Team() == 1 then
 		if self.WAGNERPoints and #self.WAGNERPoints > 0 then
-			local point = self.WAGNERPoints[math.random(#self.WAGNERPoints)]
-			if point and point.pos then
-				ply:SetPos(point.pos)
+			ply:SetPos(self.WAGNERPoints[#self.WAGNERPoints].pos)
+			if #self.WAGNERPoints > 1 then 
+				table.remove(self.WAGNERPoints)
 			end
 		end
 	else
 		if self.AZOVPoints and #self.AZOVPoints > 0 then
-			local point = self.AZOVPoints[math.random(#self.AZOVPoints)]
-			if point and point.pos then
-				ply:SetPos(point.pos)
+			ply:SetPos(self.AZOVPoints[#self.AZOVPoints].pos)
+			if #self.AZOVPoints > 1 then 
+				table.remove(self.AZOVPoints)
 			end
 		end
 	end

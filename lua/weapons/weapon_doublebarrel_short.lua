@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Shotguns"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/tfa_ins2/w_doublebarrel_sawnoff.mdl"
+SWEP.WorldModel = "models/weapons/w_shot_m3super90.mdl"
 
 SWEP.WepSelectIcon2 = Material("entities/tfa_ins2_doublebarrel_sawnoff.png")
 SWEP.WepSelectIcon2box = true
@@ -32,9 +32,8 @@ SWEP.Primary.Force = 12
 SWEP.Primary.Sound = {"weapons/tfa_ins2/doublebarrel_sawnoff/doublebarrelsawn_fire.wav", 80, 100, 75}
 SWEP.Primary.Wait = 0
 SWEP.OpenBolt = true
-SWEP.WorldModelFake = "models/weapons/arccw/c_ur_dbs.mdl" -- МОДЕЛЬ ГОВНА, НАЙТИ НОРМАЛЬНЫЙ КАЛАШ
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
---uncomment for funny
+SWEP.WorldModelFake = "models/weapons/arccw/c_ur_dbs.mdl"
+
 SWEP.FakePos = Vector(-6, 1.75, 5)
 SWEP.FakeAng = Angle(0, 0, 2.5)
 SWEP.AttachmentPos = Vector(0,-0.2,0)
@@ -48,9 +47,7 @@ SWEP.CanEpicRun = true
 SWEP.EpicRunPos = Vector(2,10,2)
 
 SWEP.FakeEjectBrassATT = "2"
-//SWEP.MagIndex = 57
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():AddLayeredSequence(Entity(1):GetActiveWeapon():GetWM():LookupSequence("delta_foregrip"),1)
+
 local path = ")weapons/arccw_ur/dbs/"
 local common = ")/arccw_uc/common/"
 SWEP.FakeViewBobBone = "CAM_Homefield"

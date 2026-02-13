@@ -8,31 +8,28 @@ SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_p99.mdl"
+SWEP.WorldModel = "models/weapons/w_pist_fiveseven.mdl"
 SWEP.WorldModelFake = "models/weapons/zcity/c_p22.mdl"
-//SWEP.FakeScale = 1.2
-//SWEP.ZoomPos = Vector(0, -0.0027, 4.6866)
+
 SWEP.FakePos = Vector(-15, 2.005, 3.21)
 SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(-1.6,-0.1,0)
 SWEP.AttachmentAng = Angle(0,0,0)
-//SWEP.MagIndex = 53
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():AddLayeredSequence(Entity(1):GetActiveWeapon():GetWM():LookupSequence("delta_foregrip"),1)
+
 
 SWEP.DOZVUK = true
 
 SWEP.FakeReloadSounds = {
 	[0.4] = "zcitysnd/sound/weapons/m9/handling/m9_magout.wav",
-	--[0.34] = "weapons/ak74/ak74_magout_rattle.wav",
+
 	[0.70] = "zcitysnd/sound/weapons/m9/handling/m9_magin.wav",
 	[0.9] = "zcitysnd/sound/weapons/m9/handling/m9_maghit.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 
 SWEP.FakeEmptyReloadSounds = {
 	[0.4] = "zcitysnd/sound/weapons/m9/handling/m9_magout.wav",
-	--[0.34] = "weapons/ak74/ak74_magout_rattle.wav",
+
 	[0.70] = "zcitysnd/sound/weapons/m9/handling/m9_magin.wav",
 	[0.9] = "zcitysnd/sound/weapons/m9/handling/m9_maghit.wav",
 	[1.05] = "zcitysnd/sound/weapons/m9/handling/m9_boltrelease.wav",
@@ -103,8 +100,7 @@ SWEP.weight = 0.8
 SWEP.punchmul = 1.5
 SWEP.punchspeed = 3
 SWEP.CustomShell = "9x19"
---SWEP.EjectPos = Vector(0,5,5)
---SWEP.EjectAng = Angle(0,-90,0)
+
 
 SWEP.ScrappersSlot = "Secondary"
 

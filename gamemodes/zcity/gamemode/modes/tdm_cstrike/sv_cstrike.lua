@@ -99,7 +99,6 @@ function MODE:Intermission()
             ent.organism.fakePlayer = true
 
             zb.hostage = ent
-            zb.hostageindex = ent:EntIndex()
 
             timer.Simple(1, function()
                 hg.handcuff(ent)
@@ -193,8 +192,8 @@ function MODE:EndRound()
         
         if IsValid(zb.hostage) and not zb.hostage.organism.alive then
             local max, maxTeam = 0
-            if zb.HarmDoneDetailed[zb.hostageindex] then
-                for steamid, tbl in pairs(zb.HarmDone[zb.hostageindex]) do
+            if zb.HarmDoneDetailed[zb.hostage] then
+                for steamid, tbl in pairs(zb.HarmDone[zb.hostage]) do
                     if tbl.harm > max then
                         max = tbl.harm
                         maxTeam = tbl.teamAttacker

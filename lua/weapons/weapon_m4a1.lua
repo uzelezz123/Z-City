@@ -11,7 +11,7 @@ SWEP.Category = "Weapons - Assault Rifles"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/tfa_ins2/akpack/w_ak74.mdl"
+SWEP.WorldModel = "models/weapons/w_rif_m4a1.mdl"
 
 SWEP.WepSelectIcon2 = Material("vgui/hud/tfa_ins2_m4a1.png")
 SWEP.IconOverride = "entities/arc9_eft_m4a1.png"

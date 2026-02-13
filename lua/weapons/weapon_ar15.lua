@@ -4,11 +4,11 @@ SWEP.AdminOnly = false
 SWEP.PrintName = "AR-15"
 SWEP.Author = "ArmaLite"
 SWEP.Instructions = "An AR-15–style rifle is a lightweight semi-automatic rifle based on or similar to the Colt AR-15 design. The Colt model removed the selective fire feature of its predecessor, the original ArmaLite AR-15, itself a scaled-down derivative of the AR-10 design by Eugene Stoner. It is closely related to the military M16 rifle. The AR-15 is a good rifle for defending your possessions. Chambered in 5.56x45 mm"
-SWEP.Category = "Weapons - Assault Rifles"
+SWEP.Category = "Weapons - Carbines"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/tfa_ins2/akpack/w_ak74.mdl"
+SWEP.WorldModel = "models/weapons/w_rif_m4a1.mdl"
 SWEP.WorldModelFake = "models/weapons/arccw/c_ud_m16.mdl"
 SWEP.WepSelectIcon2 = Material("vgui/wep_jack_hmcd_assaultrifle")
 SWEP.IconOverride = "entities/m4a1.png"
@@ -26,23 +26,22 @@ SWEP.FakeReloadSounds = {
 	[0.29] = "weapons/arccw_ud/m16/grab.ogg",
 	[0.34] = "weapons/arccw_ud/m16/magout.ogg",
 	[0.38] = "weapons/ak74/ak74_magout_rattle.wav",
-	--[0.51] = "weapons/universal/uni_crawl_l_02.wav",
+
 	[0.64] = "weapons/arccw_ud/m16/grab.ogg",
 	[0.64] = "weapons/arccw_ud/m16/magin.ogg",
 	[0.81] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.99] = "weapons/universal/uni_crawl_l_04.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 
 SWEP.FakeEmptyReloadSounds = {
-	--[0.22] = "weapons/ak74/ak74_magrelease.wav",
+
 	[0.22] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.29] = "weapons/arccw_ud/m16/magout_empty.ogg",
 	[0.32] = "weapons/ak74/ak74_magout_rattle.wav",
 	[0.59] = "weapons/arccw_ud/m16/grab.ogg",
 	[0.62] = "weapons/arccw_ud/m16/magin.ogg",
-	--[0.75] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav",
+
 	[0.83] = "weapons/arccw_ud/m16/magtap.ogg",
 	[1.01] = "weapons/universal/uni_crawl_l_04.wav",
 }

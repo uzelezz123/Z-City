@@ -58,6 +58,8 @@ ValveBiped.Bip01_R_Foot 2.3848159313202
 2.3848159313202 20
 ]]--
 
+hg = hg or {}
+
 hg.cachedmodels = {}
 
 local function cacheModel(ragdoll)
@@ -78,26 +80,7 @@ end
 
 hg.cacheModel = cacheModel
 
-local IdealMassPlayer = {
-	["ValveBiped.Bip01_Pelvis"] = 12.775918006897,
-	["ValveBiped.Bip01_Spine1"] = 24.36336517334,
-	["ValveBiped.Bip01_Spine2"] = 24.36336517334,
-	["ValveBiped.Bip01_R_Clavicle"] = 3.4941370487213,
-	["ValveBiped.Bip01_L_Clavicle"] = 3.4941370487213,
-	["ValveBiped.Bip01_R_UpperArm"] = 3.4941370487213,
-	["ValveBiped.Bip01_L_UpperArm"] = 3.441034078598,
-	["ValveBiped.Bip01_L_Forearm"] = 1.7655730247498,
-	["ValveBiped.Bip01_L_Hand"] = 1.0779889822006,
-	["ValveBiped.Bip01_R_Forearm"] = 1.7567429542542,
-	["ValveBiped.Bip01_R_Hand"] = 1.0214320421219,
-	["ValveBiped.Bip01_R_Thigh"] = 10.212161064148,
-	["ValveBiped.Bip01_R_Calf"] = 4.9580898284912,
-	["ValveBiped.Bip01_Head1"] = 5.169750213623,
-	["ValveBiped.Bip01_L_Thigh"] = 10.213202476501,
-	["ValveBiped.Bip01_L_Calf"] = 4.9809679985046,
-	["ValveBiped.Bip01_L_Foot"] = 2.3848159313202,
-	["ValveBiped.Bip01_R_Foot"] = 2.3848159313202
-}
+local IdealMassPlayer = hg.IdealMassPlayer
 
 local fixbones = {
 	["ValveBiped.Bip01_Pelvis"] = true,
@@ -621,7 +604,7 @@ function hg.Fake(ply, huyragdoll, no_freemove, force)
 	end
 end
 
-local hg_ragdollcombat = ConVarExists("hg_ragdollcombat") and GetConVar("hg_ragdollcombat") or CreateConVar("hg_ragdollcombat", 0, FCVAR_REPLICATED, "ragdoll combat", 0, 1)
+local hg_ragdollcombat = ConVarExists("hg_ragdollcombat") and GetConVar("hg_ragdollcombat") or CreateConVar("hg_ragdollcombat", 0, FCVAR_REPLICATED, "Toggle ragdoll combat-like ragdoll mode (walking, running in ragdoll, etc.)", 0, 1)
 
 local veczero = Vector(0,0,0)
 function hg.SetFreemove(ply, set)

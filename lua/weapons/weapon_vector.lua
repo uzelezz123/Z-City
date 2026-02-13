@@ -8,10 +8,9 @@ SWEP.Category = "Weapons - Machine-Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_vectorsmg.mdl"
-SWEP.WorldModelFake = "models/weapons/tfa_ins2/c_krissv.mdl" -- МОДЕЛЬ ГОВНА, НАЙТИ НОРМАЛЬНЫЙ КАЛАШ
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
---uncomment for funny
+SWEP.WorldModel = "models/weapons/w_smg_ump45.mdl"
+SWEP.WorldModelFake = "models/weapons/tfa_ins2/c_krissv.mdl"
+
 SWEP.FakePos = Vector(-8.5, 3.825, 7.05)
 SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(0,-0.15,0.3)
@@ -24,9 +23,7 @@ SWEP.FakeEjectBrassATT = "2"
 SWEP.CanEpicRun = true
 SWEP.EpicRunPos = Vector(2,10,2)
 
-//SWEP.MagIndex = 57
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():AddLayeredSequence(Entity(1):GetActiveWeapon():GetWM():LookupSequence("delta_foregrip"),1)
+
 SWEP.FakeViewBobBone = "CAM_Homefield"
 SWEP.FakeReloadSounds = {
 	[0.22] = "weapons/universal/uni_crawl_l_03.wav",
@@ -35,15 +32,14 @@ SWEP.FakeReloadSounds = {
 	[0.51] = "weapons/universal/uni_crawl_l_02.wav",
 	[0.79] = "weapons/tfa_ins2/krissv/mp5k_magin.wav",
 	[0.85] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 SWEP.FakeEmptyReloadSounds = {
 	[0.22] = "weapons/arccw_ur/mp5/chback.ogg",
 	[0.28] = "weapons/arccw_ur/mp5/chlock.ogg",
 	[0.4] = "weapons/tfa_ins2/krissv/mp5k_magout.wav",
 	[0.72] = "weapons/tfa_ins2/krissv/mp5k_magin.wav",
-	--[0.75] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav",
+
 	[0.95] = "weapons/tfa_ins2/krissv/krisschargerelease.wav"
 }
 

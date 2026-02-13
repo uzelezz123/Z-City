@@ -8,16 +8,15 @@ SWEP.Category = "Weapons - Assault Rifles"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_asval.mdl"
-SWEP.WorldModelFake = "models/tasty/asval.mdl" -- Контент инсурги https://steamcommunity.com/sharedfiles/filedetails/?id=3437590840 
---uncomment for funny
---а еще надо настраивать заново zoompos
+SWEP.WorldModel = "models/weapons/w_snip_g3sg1.mdl"
+SWEP.WorldModelFake = "models/tasty/asval.mdl"
+
 SWEP.FakePos = Vector(-10.5, 3.92, 8.35)
 SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(1,0,0.5)
 SWEP.AttachmentAng = Angle(0,0,0)
-//SWEP.MagIndex = 53
-//MagazineSwap
+
+
 SWEP.FakeAttachment = "muzzle"
 --Entity(1):GetActiveWeapon():GetWM():SetSubMaterial(0,"NULL")
 --PrintAnims(Entity(1):GetActiveWeapon():GetWM())

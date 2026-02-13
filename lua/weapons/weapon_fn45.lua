@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_fnp45.mdl"
+SWEP.WorldModel = "models/weapons/w_pist_p228.mdl"
 SWEP.WorldModelFake = "models/weapons/c_ins2_pist_fnp45.mdl"
 
 SWEP.WepSelectIcon2 = Material("pwb/sprites/fnp45.png")
@@ -27,7 +27,7 @@ SWEP.AnimList = {
 }
 
 SWEP.CustomShell = "45acp"
-SWEP.EjectPos = Vector(12,3,0)
+SWEP.EjectPos = Vector(12,1,2)
 SWEP.EjectAng = Angle(0,0,0)
 
 SWEP.weight = 1

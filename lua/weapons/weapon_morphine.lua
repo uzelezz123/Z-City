@@ -30,10 +30,20 @@ SWEP.HolsterSnd = ""
 
 function SWEP:InitializeAdd()
 	self:SetHold(self.HoldType)
+
+	local owner = self:GetOwner()
+	if owner:IsNPC() then
+		self:SetHold("melee")
+		owner:SetHealth(math.Clamp(owner:Health() + (owner:GetMaxHealth() * 0.3), 0, owner:GetMaxHealth() * 2))
+		owner:EmitSound("snd_jack_hmcd_needleprick.wav", 75, math.random(95, 105))
+		self:Remove()
+	end
+
 	self.modeValues = {
 		[1] = 1,
 	}
 end
+
 SWEP.ofsV = Vector(0,8,-3)
 SWEP.ofsA = Angle(-90,-90,90)
 SWEP.modeValuesdef = {
@@ -65,9 +75,9 @@ if SERVER then
 		local owner = self:GetOwner()
 		local entOwner = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or owner
 
-		local injected = math.min(FrameTime() * 10, self.modeValues[1])
+		local injected = math.min(FrameTime() * 1, self.modeValues[1])
 		org.analgesiaAdd = math.min(org.analgesiaAdd + injected, 4)
-		self.modeValues[1] = math.max(self.modeValues[1] - FrameTime() * 1, 0)
+		self.modeValues[1] = math.max(self.modeValues[1] - injected, 0)
 
 		owner.injectedinto = owner.injectedinto or {}
 		owner.injectedinto[org.owner] = owner.injectedinto[org.owner] or 0

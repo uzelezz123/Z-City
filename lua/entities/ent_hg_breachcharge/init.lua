@@ -59,7 +59,7 @@ function ENT:Detonate()
 	else
 		ParticleEffect("pcf_jack_airsplode_small3", Pos, VectorRand():Angle())
 	end
-
+	util.ScreenShake( selfPos, 35, 200, 3, 1000 )
 	local Foom = EffectData()
 	Foom:SetOrigin(Pos)
 

@@ -1,5 +1,3 @@
---
-
 COMMANDS.sendtospawn = {
 	function(ply, args)
 		if not ply:IsAdmin() then return end
@@ -9,7 +7,6 @@ COMMANDS.sendtospawn = {
 				ply2:Spawn()
 				ply:ChatPrint( ply2:Name().. " | Sended to random spawn..." )
 			end
-			
 		end
 	end,
 	0
@@ -24,6 +21,7 @@ COMMANDS.give = {
 			if ply2:Alive() then
 				local ent = ply2:Give( wep )
                 if not IsValid(ent) then return end
+
                 ent:Use(ply2)
 				ply:ChatPrint( ply2:Name().. " | Weapon given" )
 			end
@@ -39,6 +37,9 @@ COMMANDS.respawn = {
 		for i, ply2 in pairs(player.GetListByName(plya)) do
 			ply2:Spawn()
             ApplyAppearance( ply2 )
+			local hands = ply2:Give("weapon_hands_sh")
+			ply2:SelectWeapon(hands)
+
 			ply:ChatPrint( ply2:Name().. " | Respawned" )
 		end
 	end,

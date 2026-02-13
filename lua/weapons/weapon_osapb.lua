@@ -7,7 +7,7 @@ SWEP.Instructions = "Lightweight, compact, break-action non-lethal handgun. It i
 SWEP.Category = "Weapons - Pistols"
 SWEP.ViewModel = ""
 
-SWEP.WorldModel = "models/weapons/krutoiskilet/osa.mdl"
+SWEP.WorldModel = "models/weapons/w_pist_p228.mdl"
 SWEP.WorldModelFake = "models/weapons/krutoiskilet/c_osa.mdl"
 SWEP.FakeScale = 1.15
 

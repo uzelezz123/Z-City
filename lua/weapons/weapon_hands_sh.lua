@@ -6,8 +6,8 @@ end
 
 SWEP.Category = "ZCity Other"
 SWEP.Instructions = "LMB - raise fists\nRELOAD - lower fists\n\nIn the raised state:\nLMB - strike\nRMB - block\n\nIn the lowered state: RMB - raise the object, RMB+R - check the pulse (when used on someone's head or hand)\n\nWhen holding the object: RELOAD - fix the object in air, E - spin the object in the air."
-SWEP.Spawnable = false
-SWEP.AdminOnly = true
+SWEP.Spawnable = true
+SWEP.AdminOnly = false
 SWEP.HoldType = "normal"
 SWEP.ViewModel = ""
 SWEP.WorldModel = "models/weapons/c_arms.mdl"
@@ -37,6 +37,11 @@ SWEP.offsetAng2 = Angle(10,0,90)
 SWEP.ModelScale2 = 1.5
 
 SWEP.blockinganim = 0
+
+local clawClasses = {
+	["furry"] = 0.5,
+	["headcrabzombie"] = 1.5
+}
 
 local function qerp(delta, a, b)
 	local qdelta = -(delta ^ 2) + (delta * 2)
@@ -79,7 +84,7 @@ if CLIENT then
 			self.worldModel = ClientsideModel(self.WorldModel)
 		end
 
-		if owner.PlayerClassName == "furry" and self.worldModel != "models/weapons/salat/anims/furry_fists.mdl" then
+		if clawClasses[owner.PlayerClassName] and self.worldModel != "models/weapons/salat/anims/furry_fists.mdl" then
 			self.worldModel:SetModel("models/weapons/salat/anims/furry_fists.mdl")
 		end
 
@@ -96,9 +101,6 @@ if CLIENT then
 			local posa, aimvec = hg.eye(owner)--hg.eyeTrace(owner)
 
 			local pos = posa + ang:Forward() * (-14) + ang:Up() * -9 * self.blockinganim
-			if owner.PlayerClassName == "sc_infiltrator" then
-				pos = posa + ang:Forward() * (-18) + ang:Up() * -5 -- этим кулакам никакой оффсет не поможет
-			end
 
 			local ang = owner:EyeAngles()
 
@@ -106,7 +108,7 @@ if CLIENT then
 
 			local pos, ang = self:ModelAnim(WorldModel, pos, ang)
 
-			if owner.PlayerClassName == "furry" then
+			if clawClasses[owner.PlayerClassName] then
 				pos = pos + ang:Forward() * 10
 			end
 
@@ -129,6 +131,7 @@ local addPos = Vector()
 //local velpunch = Vector()
 
 local vechuy = Vector(-12, 0, 0)
+local zombHandOffset = Vector(5, -2, -7)
 
 function SWEP:ModelAnim(model, pos, ang)
 	local owner = self:GetOwner()
@@ -209,6 +212,10 @@ function SWEP:ModelAnim(model, pos, ang)
 	local hang = (self.HoldAng or angle_zero)
 
 	local pos, ang = LocalToWorld(hpos + addPos, hang + addAng, pos + self.velocityAdd, eyeAng)
+	if owner.PlayerClassName == "headcrabzombie" then
+		self.HoldPos = zombHandOffset
+		ang.x = math.Clamp(ang.x, -60, 60)
+	end
 
 	return pos, ang
 end
@@ -328,9 +335,13 @@ local blockingL = Vector()
 local vecBlockingR = Vector(-2, 3, -2)
 local vecBlockingL = Vector(-2, -3, 4)
 
+local vecIdleR = Vector(0, -1, 2)
+local vecIdleL = Vector(0, 1, 0.5)
+
 local ang180, ang1, ang2 = Angle(0,180,0), Angle(-110,-90,0), Angle(-70,-90,0)
 function SWEP:SetHandPos(noset)
 	local ply = self:GetOwner()
+	if CLIENT and self.IsLocal and not self:IsLocal() and IsValid(ply) and ply.PlayerClassName == "headcrabzombie" and not IsValid(ply:GetNetVar("carryent")) then return end
 
 	if not IsValid(ply) or not IsValid(self.worldModel) then return end
 	if IsValid(ply) and (not ply.shouldTransmit or ply.NotSeen) then return end
@@ -392,7 +403,12 @@ function SWEP:SetHandPos(noset)
 		local posadd, _ = LocalToWorld(lastaddpos, angle_zero, vector_origin, ply:EyeAngles())
 		//local posadd = self:IsLocal() and self.lastAddPos and -(-self.lastAddPos) or -(-vector_origin)
 
-		self.blockingR = LerpFT(0.1, self.blockingR or vector_origin, (self:GetBlocking() and vecBlockingR or vector_origin))
+		local vecR = vector_origin
+		if ply.PlayerClassName == "headcrabzombie" then
+			vecR = vecIdleR
+		end
+
+		self.blockingR = LerpFT(0.1, self.blockingR or vecR, (self:GetBlocking() and vecBlockingR or vecR))
 		local blocking = -(-self.blockingR)
 		blocking:Rotate(ang)
 
@@ -427,8 +443,14 @@ function SWEP:SetHandPos(noset)
 
 		posadd:Rotate(Angle(0,0,0))
 
-		self.blockingL = LerpFT(0.1, self.blockingL or vector_origin, (self:GetBlocking() and vecBlockingL or vector_origin))
+		local vecL = vector_origin
+		if ply.PlayerClassName == "headcrabzombie" then
+			vecL = vecIdleL
+		end
+
+		self.blockingL = LerpFT(0.1, self.blockingL or vecL, (self:GetBlocking() and vecBlockingL or vecL))
 		local blocking = -(-self.blockingL)
+
 		blocking:Rotate(ang)
 
 		if self.lhandik then
@@ -509,7 +531,7 @@ end
 
 function SWEP:IsLocal()
 	if SERVER then return end
-	return not game.SinglePlayer() and self:GetOwner() == LocalPlayer()
+	return not game.SinglePlayer() and CLIENT and self:GetOwner() == LocalPlayer() and LocalPlayer() == GetViewEntity()
 end
 
 if SERVER then
@@ -694,11 +716,6 @@ function SWEP:Deploy()
 	return true
 end
 
--- function SWEP:Holster()
-	-- self:OnRemove()
-	-- return true
--- end
-
 function SWEP:CanPrimaryAttack()
 	return true
 end
@@ -724,47 +741,63 @@ function SWEP:CanPickup(ent)
 	return false
 end
 
+local trMins, trMaxs = Vector(-5, -5, -5), Vector(5, 5, 5)
+local trMinsClaws, trMaxsClaws = Vector(-8, -8, -8), Vector(8, 8, 8)
 function SWEP:SecondaryAttack()
-	if self:GetOwner():InVehicle() then return end
+	local owner = self:GetOwner()
+	if owner:InVehicle() then return end
 	if not IsFirstTimePredicted() then return end
-	if self:GetFists() and self:GetOwner().PlayerClassName == "sc_infiltrator" then
+	if self:GetFists() and owner.PlayerClassName == "sc_infiltrator" then
 		self:PrimaryAttack(true)
 	end
-	if self:GetFists() then return end
-	if self:GetOwner():GetNetVar("handcuffed",false) then return end
+
+	if self:GetFists() --[[and owner.PlayerClassName ~= "headcrabzombie"]] then return end
+	--[[if self:GetFists() and owner.PlayerClassName == "headcrabzombie" then
+		self:SetFists(false)
+	end--]]
+	if owner:GetNetVar("handcuffed",false) then return end
+
 	if SERVER then
 		self:SetCarrying()
-		local ply = self:GetOwner()
+		local ply = owner
 		local pos = hg.eye(ply)
-		local tr = util.QuickTrace(pos, self:GetOwner():GetAimVector() * self.ReachDistance, {self:GetOwner()})
+		local tr = util.QuickTrace(pos, owner:GetAimVector() * self.ReachDistance, {owner})
 
-		if ply.PlayerClassName == "furry" then
+		if clawClasses[ply.PlayerClassName] then
 			tr = util.TraceHull({
 				start = pos,
-				endpos = pos + self:GetOwner():GetAimVector() * self.ReachDistance,
-				filter = {self:GetOwner()},
-				mins = Vector(-5, -5, -5),
-				maxs = Vector(5, 5, 5),
+				endpos = pos + owner:GetAimVector() * self.ReachDistance,
+				filter = {ply, hg.GetCurrentCharacter(ply)},
+				mins = trMinsClaws,
+				maxs = trMaxsClaws,
+			})
+		else
+			tr = util.TraceHull({
+				start = pos,
+				endpos = pos + owner:GetAimVector() * self.ReachDistance,
+				filter = {ply, hg.GetCurrentCharacter(ply)},
+				mins = trMins,
+				maxs = trMaxs,
 			})
 		end
 
 		--if (IsValid(tr.Entity) or game.GetWorld() == tr.Entity) and self:CanPickup(tr.Entity) and not tr.Entity:IsPlayer() then
 		if (IsValid(tr.Entity)) and self:CanPickup(tr.Entity) and not tr.Entity:IsPlayer() then
-			local Dist = (select(1, hg.eye(self:GetOwner())) - tr.HitPos):Length()
+			local Dist = (select(1, hg.eye(owner)) - tr.HitPos):Length()
 			--if Dist < self.ReachDistance then
-				sound.Play("Flesh.ImpactSoft", self:GetOwner():GetShootPos(), 65, math.random(90, 110))
+				sound.Play("Flesh.ImpactSoft", owner:GetShootPos(), 65, math.random(90, 110))
 				self:SetCarrying(tr.Entity, tr.PhysicsBone, tr.HitPos, Dist)
 				tr.Entity.Touched = true
 				self:ApplyForce()
 			--end
 		elseif IsValid(tr.Entity) and tr.Entity:IsPlayer() then
-			local Dist = (select(1, hg.eye(self:GetOwner())) - tr.HitPos):Length()
+			local Dist = (select(1, hg.eye(owner)) - tr.HitPos):Length()
 			if Dist < self.ReachDistance then
-				sound.Play("Flesh.ImpactSoft", self:GetOwner():GetShootPos(), 65, math.random(90, 110))
-				self:GetOwner():SetVelocity(self:GetOwner():GetAimVector() * 20)
-				tr.Entity:SetVelocity((self:GetOwner():KeyDown(IN_SPEED) and 1 or -1) * self:GetOwner():GetAimVector() * 50)
+				sound.Play("Flesh.ImpactSoft", owner:GetShootPos(), 65, math.random(90, 110))
+				owner:SetVelocity(owner:GetAimVector() * 20)
+				tr.Entity:SetVelocity((owner:KeyDown(IN_SPEED) and 1 or -1) * owner:GetAimVector() * 50)
 				self:SetNextSecondaryFire(CurTime() + .25)
-				if self:GetOwner().organism.superfighter or self:GetOwner().PlayerClassName == "sc_infiltrator" or (self:GetOwner().PlayerClassName == "furry" and !(tr.Entity.PlayerClassName == "furry" or (tr.Entity.IsBerserk and tr.Entity:IsBerserk()))) or self:GetOwner():IsBerserk() then
+				if owner.organism.superfighter or owner.PlayerClassName == "sc_infiltrator" or (clawClasses[owner.PlayerClassName] and !(tr.Entity.PlayerClassName == "furry" or (tr.Entity.IsBerserk and tr.Entity:IsBerserk()))) or owner:IsBerserk() then
 					hg.LightStunPlayer(tr.Entity, 3)
 					timer.Simple(0,function()
 						local rag = hg.GetCurrentCharacter(tr.Entity)
@@ -972,11 +1005,12 @@ function SWEP:ApplyForce()
 
 				local tr = {}
 				tr.start = TargetPos
-				tr.endpos = TargetPos - vector_up * 16
-				tr.mask = MASK_SOLID_BRUSHONLY
+				tr.endpos = TargetPos - vector_up * 32
+				tr.mask = MASK_SOLID
+				tr.filter = {self.CarryEnt, self, ply}
 				local trace = util.TraceLine(tr)
-
-				if bone != "ValveBiped.Bip01_Spine2" or not trace.Hit then
+				
+				if bone != "ValveBiped.Bip01_Spine2" or !trace.Hit then
 					phys:ApplyForceCenter(ply:GetAimVector() * math.min(5000, phys:GetMass() * 800))
 					self:SetCarrying()
 				end
@@ -1180,39 +1214,51 @@ end
 	end
 end)]]
 
-local paw = Material("zbattle/paw_hmcd.png")
-local cqcicon = Material("vgui/inventory/perk_quick_reload")
-SWEP.changedName = false
-
 SWEP.blockSound = nil
 function SWEP:IsClient()
 	return CLIENT and self:GetOwner() == LocalPlayer()
 end
+
+local customClassInfo = {
+	["sc_infiltrator"] = {
+		PrintName = "CQC",
+		WepSelectIcon = Material("vgui/inventory/perk_quick_reload"),
+		handsDesc = "infiltrator",
+		Instructions = "beta test test beta"
+	},
+	["furry"] = {
+		PrintName = "Paws",
+		WepSelectIcon = Material("zbattle/paw_hmcd.png"),
+		handsDesc = "furry",
+		Instructions = "LMB - raise paws\nRELOAD - lower paws\n\nIn the raised state:\nLMB - strike\nRMB - block\n\n<color=91,121,229>As a bearer of a pathowogen infection, you have new abilities.\n\nIn lowered state, hold RMB to grab uninfected prey, then hold LMB to assimilate them.\n\nYou can press LMB to lick your fellow mates, doing so helps them alleviate their pain.\n\n:3<color=180,180,180>"
+	},
+	["headcrabzombie"] = {
+		PrintName = "Claws",
+		WepSelectIcon = Material("vgui/wep_jack_hmcd_zombhands"),
+		handsDesc = "zombie",
+		Instructions = "LMB - strike\nRMB - block/grab player\n\n<color=150,0,0>These are your zombified hands. They're no energy sword, but they still pack a wallop."
+	}
+}
 
 local blockvp = Angle(-1,-1,0.5)
 function SWEP:Think()
 	local owner = self:GetOwner()
 
 	self.handsDesc = "default"
-
-	if owner.PlayerClassName == "sc_infiltrator" and self.handsDesc != "infiltrator" then
-		self.PrintName = "CQC"
-		self.WepSelectIcon = cqcicon
-		self.handsDesc = "infiltrator"
-		self.InfoMarkup = nil
-	elseif owner.PlayerClassName == "furry" and self.handsDesc != "furry" then
-		self.PrintName = "Paws"
-		self.WepSelectIcon = paw
-		self.Instructions = "LMB - raise paws\nRELOAD - lower paws\n\nIn the raised state:\nLMB - strike\nRMB - block\n\n<color=91,121,229>As a bearer of a pathowogen infection, you have new abilities.\n\nIn lowered state, hold RMB to grab uninfected prey, then hold LMB to assimilate them.\n\nYou can press LMB to lick your fellow mates, doing so helps them alleviate their pain.\n\n:3<color=180,180,180>"
-		self.handsDesc = "furry"
+	local classInfo = customClassInfo[owner.PlayerClassName]
+	if classInfo and self.handsDesc != classInfo.handsDesc then
+		self.PrintName = classInfo.PrintName
+		self.WepSelectIcon = classInfo.WepSelectIcon
+		self.handsDesc = classInfo.handsDesc
+		if classInfo.Instructions and classInfo.Instructions ~= nil then
+			self.Instructions = classInfo.Instructions
+		end
 		self.InfoMarkup = nil
 	elseif self.handsDesc != "default" then
 		self.PrintName = "Hands"
 		self.handsDesc = "default"
 		self.InfoMarkup = nil
 	end
-
-	self.Secondary.Automatic = false//owner.PlayerClassName == "furry"
 
 	self.Checking = math.max(self.Checking - FrameTime(), 0)
 
@@ -1224,7 +1270,11 @@ function SWEP:Think()
 		return
 	end
 
-	if IsValid(owner) and owner:KeyDown(IN_ATTACK2) and not self:GetFists() then
+	if owner.PlayerClassName == "headcrabzombie" and not self:GetCarrying() then
+		self:SetFists(true)
+	end
+
+	if IsValid(owner) and owner:KeyDown(IN_ATTACK2) and (not self:GetFists() or owner.PlayerClassName == "headcrabzombie") then
 		if IsValid(self.CarryEnt) or game.GetWorld() == self.CarryEnt then self:ApplyForce() end
 	elseif self.CarryEnt then
 		if IsValid(self.CarryEnt) and self.CarryEnt.organism and self.CarryEnt.organism.alive then
@@ -1235,7 +1285,7 @@ function SWEP:Think()
 		self:SetCarrying()
 	end
 
-	if self:GetFists() and owner:KeyDown(IN_ATTACK2) and (self:GetNextSecondaryFire() < CurTime()) and owner.PlayerClassName ~= "sc_infiltrator" then
+	if self:GetFists() and owner:KeyDown(IN_ATTACK2) and (self:GetNextSecondaryFire() < CurTime()) and owner.PlayerClassName ~= "sc_infiltrator" and owner.PlayerClassName ~= "headcrabzombie" then
 		self:SetNextPrimaryFire(CurTime() + .5)
 		self:SetBlocking(true)
 	else
@@ -1279,7 +1329,7 @@ function SWEP:Think()
 		end
 
 		//if (self:GetNextDown() < Time) or owner:KeyDown(IN_SPEED) then
-		if owner:KeyDown(IN_SPEED) and (owner.PlayerClassName != "furry" or owner:KeyDown(IN_WALK)) then
+		if owner:KeyDown(IN_SPEED) and (owner.PlayerClassName != "furry" or owner:KeyDown(IN_WALK)) and owner.PlayerClassName ~= "headcrabzombie" then
 			self:SetNextDown(Time + 1)
 			self:SetFists(false)
 			self:SetBlocking(false)
@@ -1288,8 +1338,12 @@ function SWEP:Think()
 		HoldType = --[[owner:EyeAngles().p > 70 and "slam" or]] "normal"
 	end
 
-	if IsValid(self.CarryEnt) or self.CarryEnt then HoldType = "normal" end
-	if owner:KeyDown(IN_SPEED) and ((owner.PlayerClassName != "furry" or !owner:IsBerserk()) or owner:KeyDown(IN_WALK)) then HoldType = "normal" end
+	if IsValid(self.CarryEnt) or self.CarryEnt then
+		HoldType = "normal"
+	end
+	if owner:KeyDown(IN_SPEED) and ((owner.PlayerClassName != "furry" or !owner:IsBerserk()) or owner:KeyDown(IN_WALK)) then
+		HoldType = "normal"
+	end
 	if SERVER then self:SetHoldType(HoldType) end
 end
 
@@ -1321,7 +1375,7 @@ function SWEP:PrimaryAttack(forcespecial)
 		side = "fists_left"
 	end
 
-	if owner:KeyDown(IN_ATTACK2) and owner.PlayerClassName ~= "sc_infiltrator" then return end
+	if owner:KeyDown(IN_ATTACK2) and owner.PlayerClassName ~= "sc_infiltrator" and owner.PlayerClassName ~= "headcrabzombie" then return end
 	if owner:GetNetVar("handcuffed",false) then return end
 	local olddown = self:GetNextDown()
 	self:SetNextDown(CurTime() + 7)
@@ -1360,16 +1414,24 @@ function SWEP:PrimaryAttack(forcespecial)
 		end
 	end
 
-	if self.IsLocal and not self:IsLocal() then
-		owner:AddVCDSequenceToGestureSlot(GESTURE_SLOT_ATTACK_AND_RELOAD,owner:LookupSequence((special_attack or rand) and "range_fists_r" or "range_fists_l"),0,true)
+	if CLIENT and self.IsLocal and not self:IsLocal() or owner.PlayerClassName == "headcrabzombie" then
+		if CLIENT and self.IsLocal and not self:IsLocal() and owner.PlayerClassName == "headcrabzombie" then
+			owner:AnimRestartGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_GMOD_GESTURE_RANGE_ZOMBIE, true)
+		else
+			owner:AddVCDSequenceToGestureSlot(GESTURE_SLOT_ATTACK_AND_RELOAD,owner:LookupSequence((special_attack or rand) and "range_fists_r" or "range_fists_l"),0,true)
+		end
 	end
 
 	self:UpdateNextIdle()
 
-	self:SetNextPrimaryFire(CurTime() + .35 * math.Clamp((180 - owner.organism.stamina[1]) / 90,1,2) + (special_attack and 0.5 or owner.PlayerClassName == "furry" and 0.4 or 0))
-	self:SetNextSecondaryFire(CurTime() + .35 + (special_attack and 0.5 or owner.PlayerClassName == "furry" and 0.4 or 0))
+	self:SetNextPrimaryFire(CurTime() + .35 * math.Clamp((180 - owner.organism.stamina[1]) / 90,1,2) + (math.max(special_attack and 0.5 or 0, clawClasses[owner.PlayerClassName] or 0)))
+	self:SetNextSecondaryFire(CurTime() + .35 + (math.max(special_attack and 0.5 or 0, clawClasses[owner.PlayerClassName] or 0)))
 	self:SetLastShootTime(CurTime())
 
+	local snd, pitch = "weapons/slam/throw.wav", math.random(110, 120)
+	if owner.PlayerClassName == "headcrabzombie" then
+		snd, pitch = "npc/zombie/claw_miss"..math.random(2)..".wav", math.random(95, 110)
+	end
 	if owner.PlayerClassName == "furry" then
 		local Ent = WhomILookinAt(owner, .3, 45)
 		if IsValid(Ent) then
@@ -1388,13 +1450,13 @@ function SWEP:PrimaryAttack(forcespecial)
 				//self:SetFists(false)
 				return
 			else
-				if SERVER then sound.Play("weapons/slam/throw.wav", self:GetPos(), 65, math.random(110, 120)) end
+				if SERVER then sound.Play(snd, self:GetPos(), 65, pitch) end
 			end
 		else
-			if SERVER then sound.Play("weapons/slam/throw.wav", self:GetPos(), 65, math.random(110, 120)) end
+			if SERVER then sound.Play(snd, self:GetPos(), 65, pitch) end
 		end
 	else
-		if SERVER then sound.Play("weapons/slam/throw.wav", self:GetPos(), 65, math.random(110, 120)) end
+		if SERVER then sound.Play(snd, self:GetPos(), 65, pitch) end
 	end
 
 	if SERVER then
@@ -1404,7 +1466,7 @@ function SWEP:PrimaryAttack(forcespecial)
 	if special_attack then
 		self:DoBFSAnimation("fists_uppercut",1)
 	else
-		self:DoBFSAnimation(side,owner.PlayerClassName == "furry" and 1 or 0.5)
+		self:DoBFSAnimation(side, clawClasses[owner.PlayerClassName] and 1 or 0.5)
 	end
 end
 
@@ -1427,33 +1489,71 @@ function SWEP:AttackFront(special_attack, rand)
 	--self.PenetrationCopy = -(-self.Penetration) -- это как
 	owner:LagCompensation(true)
 	local Ent, HitPos, _, physbone, trace = WhomILookinAt(owner, .3, special_attack and 35 or 45)
+	if clawClasses[owner.PlayerClassName] then
+		local pos = hg.eye(owner)
+		trace = util.TraceHull({
+			start = pos,
+			endpos = pos + owner:GetAimVector() * self.ReachDistance,
+			filter = {owner, hg.GetCurrentCharacter(owner)},
+			mins = trMinsClaws,
+			maxs = trMaxsClaws,
+		})
+		Ent = trace.Entity
+		HitPos = trace.HitPos
+	else
+		local pos = hg.eye(owner)
+		trace = util.TraceHull({
+			start = pos,
+			endpos = pos + owner:GetAimVector() * self.ReachDistance,
+			filter = {owner, hg.GetCurrentCharacter(owner)},
+			mins = trMins,
+			maxs = trMaxs,
+		})
+		Ent = trace.Entity
+		HitPos = trace.HitPos
+	end
+
+	local isZomb = owner.PlayerClassName == "headcrabzombie"
 	local AimVec = owner:GetAimVector()
 	if IsValid(Ent) or (Ent and Ent.IsWorld and Ent:IsWorld()) then
 		local inv = owner:GetNetVar("Inventory",{})
 		local havekastet = inv["Weapons"] and inv["Weapons"]["hg_brassknuckles"]
 		local SelfForce, Mul = 150, 1 * (havekastet and 1.7 or 1)
 
-		if owner.PlayerClassName == "furry" and hgIsDoor(Ent) then
-			if (Ent.Clawed or 0) > math.random(25, 50) then
+		if clawClasses[owner.PlayerClassName] and hgIsDoor(Ent) then
+			if (Ent.Clawed or 0) > (isZomb and math.random(6, 12) or math.random(15, 30)) then
 				hgBlastThatDoor(Ent,self:GetOwner():GetAimVector() * 50 + self:GetOwner():GetVelocity())
 			else
-				sound.Play(table.Random(vent), HitPos, 90, math.random(90, 110), 1)
+				sound.Play(vent[math.random(#vent)], HitPos, 90, math.random(90, 110), 1)
+				sound.Play("physics/wood/wood_crate_impact_hard" .. math.random(4) .. ".wav", HitPos, 90, math.random(90, 110), 1)
 			end
 			Ent.Clawed = (Ent.Clawed or 0) + 1
 		elseif self:IsEntSoft(Ent) then
 			SelfForce = 25
 			if Ent:IsPlayer() and IsValid(Ent:GetActiveWeapon()) and Ent:GetActiveWeapon().GetBlocking and Ent:GetActiveWeapon():GetBlocking() and not RagdollOwner(Ent) then
-				sound.Play( owner.PlayerClassName == "furry" and "pwb/weapons/knife/hit"..math.random(1,4)..".wav" or "Flesh.ImpactSoft", HitPos, 65, math.random(90, 110))
+				local snd = "Flesh.ImpactSoft"
+				if isZomb then
+					snd = "npc/zombie/claw_strike"..math.random(3)..".wav"
+				elseif owner.PlayerClassName == "furry" then
+					snd = "pwb/weapons/knife/hit"..math.random(4)..".wav"
+				end
+				sound.Play(snd, HitPos, 65, math.random(90, 110))
 				if owner:IsBerserk() then
 					sound.Play("zbattle/berserk/unarmed" .. math.random(1, 9) .. ".wav", HitPos, 90, math.random(90, 110), 0.1 + owner.organism.berserk / 2)
 				end
 			else
-				sound.Play( owner.PlayerClassName == "furry" and "pwb/weapons/knife/hit"..math.random(1,4)..".wav" or "Flesh.ImpactHard", HitPos, 65, math.random(90, 110))
+				local snd = "Flesh.ImpactHard"
+				if isZomb then
+					snd = "npc/zombie/claw_strike"..math.random(3)..".wav"
+				elseif owner.PlayerClassName == "furry" then
+					snd = "pwb/weapons/knife/hit"..math.random(4)..".wav"
+				end
+				sound.Play(snd, HitPos, 65, math.random(90, 110))
 				if owner:IsBerserk() then
 					sound.Play("zbattle/berserk/unarmed" .. math.random(1, 9) .. ".wav", HitPos, 90, math.random(90, 110), 0.1 + owner.organism.berserk / 2)
 				end
 			end
-			if owner.PlayerClassName == "furry" then
+			if clawClasses[owner.PlayerClassName] then
 				util.Decal("Blood",HitPos + owner:EyeAngles():Forward() * -1,HitPos - owner:EyeAngles():Forward() * -1)
 				timer.Simple(0,function()
 					local effectdata2 = EffectData()
@@ -1465,11 +1565,21 @@ function SWEP:AttackFront(special_attack, rand)
 				end)
 			end
 		else
-			sound.Play(owner.PlayerClassName == "furry" and "pwb/weapons/knife/hitwall.wav" or "Flesh.ImpactSoft", HitPos, 65, math.random(90, 110))
+			local snd = "Flesh.ImpactSoft"
+			if isZomb then
+				snd = "npc/zombie/claw_strike"..math.random(3)..".wav"
+			elseif owner.PlayerClassName == "furry" then
+				snd = "pwb/weapons/knife/hitwall.wav"
+			end
+			sound.Play(snd, HitPos, 65, math.random(90, 110))
 			if owner:IsBerserk() then
-				sound.Play(table.Random(concrete), HitPos, 90, math.random(90, 110), 0.1 + owner.organism.berserk / 2)
+				sound.Play(concrete[math.random(#concrete)], HitPos, 90, math.random(90, 110), 0.1 + owner.organism.berserk / 2)
 				util.Decal("Rollermine.Crater",HitPos + owner:EyeAngles():Forward() * -1,HitPos - owner:EyeAngles():Forward() * -1, Ent)
 			end
+		end
+
+		if isZomb then
+			self.DamageMul = special_attack and 1.6 or 3
 		end
 
 		local DamageAmt = (math.random(3, 5) * (special_attack and 3 or 1)) * (self.DamageMul or 1)
@@ -1518,12 +1628,11 @@ function SWEP:AttackFront(special_attack, rand)
 		local Dam = DamageInfo()
 		Dam:SetAttacker(owner)
 		Dam:SetInflictor(self)
-		Dam:SetDamage(DamageAmt * Mul * 0.75 * (owner.PlayerClassName == "furry" and 5 or 1))
+		Dam:SetDamage(DamageAmt * Mul * 0.75 * (clawClasses[owner.PlayerClassName] and 5 or 1))
 		Dam:SetDamageForce(AimVec * Mul ^ 2)
-		Dam:SetDamageType((owner.PlayerClassName == "furry" or (Ent:GetClass() == "func_breakable_surf")) and DMG_SLASH or DMG_CLUB)
+		Dam:SetDamageType((clawClasses[owner.PlayerClassName] or (Ent:GetClass() == "func_breakable_surf")) and DMG_SLASH or DMG_CLUB)
 		Dam:SetDamagePosition(HitPos)
 		Ent:TakeDamageInfo(Dam)
-		
 
 		if glass and Ent:Health() <= 0 then
 			hg.organism.AddWoundManual(owner, math.Rand(50,75) * 0.5, vector_origin, AngleRand(), owner:LookupBone("ValveBiped.Bip01_"..(rand and "R" or "L").."_Hand"), CurTime())
@@ -1536,9 +1645,11 @@ function SWEP:AttackFront(special_attack, rand)
 		end
 
 		if IsValid(Phys) then
-			if Ent:IsPlayer() then Ent:SetVelocity(AimVec * SelfForce * 1.5 * (owner.organism.superfighter and 5 or 1) * (1 + owner.organism.berserk * 5)) end
-			Phys:ApplyForceOffset(AimVec * 5000 * Mul, HitPos)
-			owner:SetVelocity(AimVec * SelfForce * .8 * (owner.organism.superfighter and 2 or 1) * (1 + owner.organism.berserk / 10))
+			if Ent:IsPlayer() then
+				Ent:SetVelocity(AimVec * SelfForce * 1.5 * (owner.organism.superfighter and 2 or 1) * (isZomb and 4 or 1) * (1 + owner.organism.berserk * 5))
+			end
+			Phys:ApplyForceOffset(AimVec * 5000 * Mul * (isZomb and 3 or 1), HitPos)
+			owner:SetVelocity(AimVec * SelfForce * .8 * (owner.organism.superfighter and 2 or 1) * (isZomb and 2 or 1) * (1 + owner.organism.berserk / 10))
 		end
 	end
 
@@ -1621,8 +1732,11 @@ end
 
 function SWEP:Reload()
 	if not IsFirstTimePredicted() then return end
-	self:SetFists(false)
-	self:SetBlocking(false)
+
+	if self:GetOwner().PlayerClassName ~= "headcrabzombie" then
+		self:SetFists(false)
+		self:SetBlocking(false)
+	end
 
 	local ent = self:GetCarrying()
 
@@ -1807,7 +1921,12 @@ if CLIENT then
 			if not self.DoBFSAnimation then return end
 			self:DoBFSAnimation(anim,net.ReadFloat())
 			if anim == "fists_left" or anim == "fists_right" or anim == "fists_uppercut" then
-				self:GetOwner():AddVCDSequenceToGestureSlot(GESTURE_SLOT_ATTACK_AND_RELOAD,self:GetOwner():LookupSequence((anim == "fists_right" or anim == "fists_uppercut") and "range_fists_r" or "range_fists_l"),0,true)
+				local owner = self:GetOwner()
+				if CLIENT and self.IsLocal and not self:IsLocal() and owner.PlayerClassName == "headcrabzombie" then
+					owner:AnimRestartGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_GMOD_GESTURE_RANGE_ZOMBIE, true)
+				else
+					owner:AddVCDSequenceToGestureSlot(GESTURE_SLOT_ATTACK_AND_RELOAD,owner:LookupSequence((special_attack or rand) and "range_fists_r" or "range_fists_l"),0,true)
+				end
 			end
 		end
 	end)
@@ -1856,5 +1975,10 @@ function SWEP:Holster( wep )
 	local owner = self:GetOwner()
 
 	if owner:GetNetVar("handcuffed",false) then return false end
+
+	if owner.PlayerClassName == "headcrabzombie" then
+		return false
+	end
+
 	return true
 end

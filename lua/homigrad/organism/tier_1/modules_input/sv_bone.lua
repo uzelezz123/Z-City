@@ -212,7 +212,9 @@ local function spine(org, bone, dmg, dmgInfo, number, boneindex, dir, hit, ricoc
 
 	if org[name] >= hg.organism[name2] and org.isPly then
 		org.owner:EmitSound("bones/bone"..math.random(8)..".mp3", 75, 100, 1, CHAN_AUTO)
-		org.owner:Notify(huyasd[name], true, name, 2)
+		if org.owner:IsPlayer() then
+			org.owner:Notify(huyasd[name], true, name, 2)
+		end
 		org.painadd = org.painadd + 25
 	end
 	

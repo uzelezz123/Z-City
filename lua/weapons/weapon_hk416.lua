@@ -8,17 +8,13 @@ SWEP.Category = "Weapons - Assault Rifles"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_hk416.mdl"
-SWEP.WorldModelFake = "models/weapons/zcity/v_416c.mdl" -- Контент инсурги https://steamcommunity.com/sharedfiles/filedetails/?id=3437590840 
---uncomment for funny
---а еще надо настраивать заново zoompos
+SWEP.WorldModel = "models/weapons/w_rif_m4a1.mdl"
+SWEP.WorldModelFake = "models/weapons/zcity/v_416c.mdl"
+
 SWEP.FakePos = Vector(-1.5, 2.5, 6.5)
 SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(5,3.2,-22.05)
 SWEP.AttachmentAng = Angle(0,0,0)
-//SWEP.MagIndex = 53
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():SetSubMaterial(0,"NULL")
 
 SWEP.CanEpicRun = false
 SWEP.EpicRunPos = Vector(2,12,5)
@@ -51,15 +47,7 @@ if CLIENT then
 	SWEP.FakeReloadEvents = {
 		[0.25] = function( self, timeMul )
 			if self:Clip1() < 1 then
-				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.1 * timeMul)//, self.MagModel, {self.lmagpos3, self.lmagang3, isnumber(self.FakeMagDropBone) and self.FakeMagDropBone or self:GetWM():LookupBone(self.FakeMagDropBone or "Magazine") or self:GetWM():LookupBone("ValveBiped.Bip01_L_Hand"), self.lmagpos2, self.lmagang2}, function(self)
-				//	if IsValid(self) then
-				//		self:GetWM():ManipulateBoneScale(75, vector_full)
-				//		self:GetWM():ManipulateBoneScale(76, vector_full)
-				//		self:GetWM():ManipulateBoneScale(77, vector_full)
-				//	end
-				//end)
-			else
-				//self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.5 * timeMul, self.MagModel, {Vector(-2,-3,0), Angle(180,-0,90), 75, self.lmagpos, self.lmagang}, true)
+				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.1 * timeMul)
 			end
 		end,
 		[0.3] = function( self, timeMul )
@@ -68,22 +56,14 @@ if CLIENT then
 				self:GetWM():ManipulateBoneScale(71, vecPochtiZero)
 				self:GetWM():ManipulateBoneScale(72, vecPochtiZero)
 				self:GetWM():ManipulateBoneScale(73, vecPochtiZero)
-			else
-				//self:GetWM():ManipulateBoneScale(75, vecPochtiZero)
-				//self:GetWM():ManipulateBoneScale(76, vecPochtiZero)
-				//self:GetWM():ManipulateBoneScale(77, vecPochtiZero)
+
 			end 
 		end,
 		[0.4] = function( self, timeMul )
 			if self:Clip1() < 1 then
-				//self:GetOwner():PullLHTowards()
 				self:GetWM():ManipulateBoneScale(71, vector_full)
 				self:GetWM():ManipulateBoneScale(72, vector_full)
 				self:GetWM():ManipulateBoneScale(73, vector_full)
-			else
-				//self:GetWM():ManipulateBoneScale(75, vector_full)
-				//self:GetWM():ManipulateBoneScale(76, vector_full)
-				//self:GetWM():ManipulateBoneScale(77, vector_full)
 			end 
 		end,
 	}

@@ -42,7 +42,7 @@ function ENT:Think()
         end
     end
 
-    if SERVER and tr.Hit and tr.Entity:GetVelocity():LengthSqr() > 1 and self.Safety < CurTime() then
+    if SERVER and tr.Hit and (tr.Entity:GetVelocity():LengthSqr() > 1 or tr.Entity:IsPlayer()) and self.Safety < CurTime() then
         self:ActivateExplosive()
     end
 

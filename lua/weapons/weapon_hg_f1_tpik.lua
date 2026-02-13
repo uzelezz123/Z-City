@@ -4,13 +4,17 @@ SWEP.PrintName = "F1"
 SWEP.Instructions = 
 [[A famous soviet WWII offensive grenade. It's still widely exported and used to this day. It has a pyrotechnic delay of 3.2-4.2 seconds.
 
+Reload looking on surface will set tripwire
+
 LMB - High ready
 While high ready:
 RMB to remove spoon.
+Reload to insert pin back.
 
 RMB - Low ready
 While low ready:
 LMB to remove spoon.
+Reload to insert pin back.
 ]]--"тильда двуеточее три"
 SWEP.Category = "Weapons - Explosive"
 SWEP.Spawnable = true
@@ -114,12 +118,16 @@ SWEP.AnimList = {
 		self.IsLowThrow = true
 		self.ReadyToThrow = true
 	end,0.8},
+	["trapplace"] = {"pullbacklow", 1.8, false, false, function(self)
+		self.ReadyToTrap = true
+	end},
 	["idle"] = {"draw", 1, false,false,function(self)
 	end}
 }
 
 SWEP.HoldPos = Vector(2,0.2,-1.5)
 SWEP.HoldAng = Angle(0,0,0)
+SWEP.NoTrap = false
 
 SWEP.ViewBobCamBase = "ValveBiped.Bip01_R_UpperArm"
 SWEP.ViewBobCamBone = "ValveBiped.Bip01_R_Hand"
@@ -136,5 +144,9 @@ SWEP.ItemsBones = {
 }
 
 SWEP.spoon = "models/weapons/arc9/darsu_eft/skobas/rgd5_skoba.mdl"
+SWEP.SpoonSounds = {
+	[1] = {"snd_jack_spoonfling.ogg", 65},
+	[2] = {"m9/m9_fp.wav", 70, 200, true}
+}
 
 SWEP.CoolDown = 0

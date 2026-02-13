@@ -39,6 +39,7 @@ local colors = {
 }
 
 CLASS.NoGloves = true
+CLASS.CanEmitRNDSound = false
 function CLASS.FallDmgFunc(self, speed, tr)
     if speed > 1000 then
         hg.LightStunPlayer(self)
@@ -194,11 +195,11 @@ if SERVER then
 		"zcity/voice/slugcat_1/waw_4.mp3"
 	}
 
-	hook.Add("HG_ReplacePhrase", "ScugPhrases", function(ent, phrase, muffed, pitch)
-		if IsValid(ent) then
-			local wawer = string.match(ent:GetModel(), "scug")
+	hook.Add("HG_ReplacePhrase", "ScugPhrases", function(ply, phrase, muffed, pitch)
+		if IsValid(ply) then
+			local wawer = string.match(ply:GetModel(), "scug")
 			if wawer then
-				return ent, slugy_phrases[math.random(#slugy_phrases)], muffed, pitch
+				return ply, slugy_phrases[math.random(#slugy_phrases)], muffed, pitch
 			end
 		end
 	end)

@@ -878,14 +878,16 @@ local IsValid = IsValid
 	end
 --//
 --\\ DrawPlayerRagdoll
-	local hg_ragdollcombat = ConVarExists("hg_ragdollcombat") and GetConVar("hg_ragdollcombat") or CreateConVar("hg_ragdollcombat", 0, FCVAR_REPLICATED, "ragdoll combat", 0, 1)
+	local hg_ragdollcombat = ConVarExists("hg_ragdollcombat") and GetConVar("hg_ragdollcombat") or CreateConVar("hg_ragdollcombat", 0, FCVAR_REPLICATED, "Toggle ragdoll combat-like ragdoll mode (walking, running in ragdoll, etc.)", 0, 1)
 	
 	function hg.RagdollCombatInUse(ply)
 		return hg_ragdollcombat:GetBool() and IsValid(ply.FakeRagdoll)
 	end
 	
-	local hg_firstperson_ragdoll = ConVarExists("hg_firstperson_ragdoll") and GetConVar("hg_firstperson_ragdoll") or CreateConVar("hg_firstperson_ragdoll", 0, FCVAR_ARCHIVE, "first person ragdoll", 0, 1)
-	local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "gopro camera", 0, 1)
+	local hg_firstperson_ragdoll = ConVarExists("hg_firstperson_ragdoll") and GetConVar("hg_firstperson_ragdoll") or CreateConVar("hg_firstperson_ragdoll", "0", FCVAR_ARCHIVE, "Toggle first-person ragdoll camera view", 0, 1) --!! unused??
+	local hg_firstperson_death = ConVarExists("hg_firstperson_death") and GetConVar("hg_firstperson_death") or CreateClientConVar("hg_firstperson_death", "0", true, false, "Toggle first-person death camera view", 0, 1)
+	local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "Toggle GoPro-like camera view", 0, 1)
+	local hg_deathfadeout = CreateClientConVar("hg_deathfadeout", "1", true, true, "Toggle screen fade and sound mute on death", 0, 1)
 
 	local vector_full = Vector(1, 1, 1)
 	local vector_small = Vector(0.01, 0.01, 0.01)
@@ -941,12 +943,13 @@ local IsValid = IsValid
 
 		--local current = ent:GetManipulateBoneScale(lkp)
 		local fountains = GetNetVar("fountains") or {}
-		local wawanted = (GetViewEntity() != ply) and !fountains[ent] and !(!lply:Alive() and lply:GetNWEntity("spect") == ply and viewmode == 1) and vector_full or vector_small
+		local wawanted = (GetViewEntity() != ply) and !fountains[ent] and (!(!lply:Alive() and lply:GetNWEntity("spect") == ply and viewmode == 1) and !(hg_firstperson_death:GetBool() and follow == ent)) and vector_full or vector_small
 		--print(ent, wawanted, GetViewEntity(), ply, (GetViewEntity() != ply), !fountains[ent], !(!lply:Alive() and lply:GetNWEntity("spect") == ply and viewmode == 1))
 		--if !current:IsEqualTol(wawanted, 0.01) then
 			--ent:ManipulateBoneScale(lkp, wawanted)
 			local mat = ent:GetBoneMatrix(lkp)
-			if !hg_gopro:GetBool() and (ent == ply or (!hg_ragdollcombat:GetBool() or hg_firstperson_ragdoll:GetBool())) then
+			
+			if (!hg_gopro:GetBool() and (ent == ply or (!hg_ragdollcombat:GetBool() or hg_firstperson_ragdoll:GetBool()))) or (hg_firstperson_death:GetBool() and follow == ent) then
 				mat:SetScale(wawanted)
 			end
 			--angfuck[3] = -GetViewPunchAngles2()[2] - GetViewPunchAngles3()[2]
@@ -1505,8 +1508,9 @@ local IsValid = IsValid
 		hg.approach_vector = approach_vector
 	--//
 
-
+	local hg_movement_stamina_debuff = CreateConVar("hg_movement_stamina_debuff","0.3",{FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY},"Multiply movement debuff when having low stamina",0,1)
 	local vecZero = Vector()
+	local vomitVPAng = Angle(1,0,0)
 	hook.Add("SetupMove", "HG(StartCommand)", function(ply, mv, cmd)
 		--if CLIENT then return end
 		-- if(1)then return end
@@ -1628,7 +1632,7 @@ local IsValid = IsValid
 		if ply:GetNetVar("vomiting", 0) > CurTime() then
 			cmd:AddKey(IN_DUCK)
 			mv:AddKey(IN_DUCK)
-			if ply == lply then ViewPunch(Angle(1,0,0)) end
+			if ply == lply then ViewPunch(vomitVPAng) end
 		end
 
 		--\\Running
@@ -1818,7 +1822,9 @@ local IsValid = IsValid
 		local move = ply:GetRunSpeed() * 1.1
 		k = 1 * weightmul
 		k = k * math.Clamp(consmul, 0.7, 1)
-		k = k * math.Clamp((org.stamina and org.stamina[1] or 180) / 120, 0.3, 1)
+		k = k * math.Clamp((org.temperature and (1 - (org.temperature - 38) * 0.25) or 1), 0.5, 1)
+		k = k * math.Clamp((org.temperature and ((org.temperature - 35) * 0.25 + 1) or 1), 0.5, 1)
+		k = k * math.Clamp((org.stamina and org.stamina[1] or 180) / 120, hg_movement_stamina_debuff:GetFloat(), 1)
 		k = k * math.Clamp(5 / ((org.immobilization or 0) + 1), 0.25, 1)
 		k = k * math.Clamp((org.blood or 0) / 5000, 0, 1)
 		k = k * math.Clamp(10 / ((org.shock or 0) + 1), 0.25, 1)
@@ -1984,10 +1990,6 @@ local IsValid = IsValid
 		end
 
 		hook_Run("HG_PlayerFootstep_Notify", ply, pos, foot, sound, volume, rf)	--; Do not return anything from this _Notify hook
-		
-		local Hook = hook_Run("HG_PlayerFootstep", ply, pos, foot, sound, volume, rf)
-
-		if Hook then return Hook end
 
 		if CLIENT and ply == lply and ply.move then
 			footcl = (footcl == nil and -1 or footcl) + 1
@@ -2009,10 +2011,12 @@ local IsValid = IsValid
 		end
 
 		if SERVER then
-
 			if ply:GetNetVar("Armor", {})["torso"] then
 				EmitSound("arc9_eft_shared/weapon_generic_rifle_spin"..math.random(9)..".ogg", pos, ply:EntIndex(), CHAN_AUTO, changePitch(math.min(len / 100, 0.89)), 80)
 			end
+
+			local Hook = hook_Run("HG_PlayerFootstep", ply, pos, foot, sound, volume, rf)
+			if Hook then return Hook end
 
 			if !(ply:IsWalking() or ply:Crouching()) and ent == ply then
 				local snd
@@ -2058,6 +2062,78 @@ local IsValid = IsValid
 		if self.CockSound then util.PrecacheSound(self.CockSound) end
 		if self.ReloadSound then util.PrecacheSound(self.ReloadSound) end
 	end
+--//
+--\\ Tough npcs
+	local hg_toughnpcs = CreateConVar("hg_toughnpcs", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Toggle more health for npcs", 0, 1)
+	local npcToBuff = {
+		["npc_metropolice"] = 100,
+		["npc_combine_s"] = 150,
+		["npc_citizen"] = 100,
+		["npc_kleiner"] = 100,
+		["npc_magnusson"] = 100,
+		["npc_eli"] = 100,
+		["npc_odessa"] = 100,
+		["npc_breen"] = 100,
+		["npc_zombie"] = 120,
+		["npc_fastzombie"] = 90,
+		["npc_headcrab"] = 50,
+		["npc_headcrab_fast"] = 40,
+		["npc_headcrab_black"] = 70,
+		["npc_fastzombie_torso"] = 80,
+		["npc_zombie_torso"] = 110,
+		["npc_manhack"] = 50,
+		["npc_antlion_grub"] = 20,
+	}
+	hook.Add("OnEntityCreated", "toughnpcs", function(ent)
+		if SERVER and hg_toughnpcs:GetBool() and IsValid(ent) and ent:IsNPC() and npcToBuff[ent:GetClass()] then
+			timer.Simple(0.2, function()
+				if not IsValid(ent) then return end
+
+				ent:SetHealth(npcToBuff[ent:GetClass()])
+				ent:SetMaxHealth(npcToBuff[ent:GetClass()])
+				ent:SetPlaybackRate(2)
+				ent:SetKeyValue("m_flPlaybackSpeed", 2)
+
+				print(ent:Health())
+			end)
+		end
+	end)
+--//
+--\\ Lootable npcs
+	--[[ --!! TODO
+	local lootNPCs = {
+		["npc_combine_s"] = {
+			"weapon_hg_stunstick",
+			"weapon_medkit_sh",
+			"weapon_bandage_sh",
+			"weapon_handcuffs",
+			"weapon_walkie_talkie"
+		},
+		["npc_metropolice"] = {
+			"weapon_melee",
+			"weapon_hg_hl2nade_tpik",
+			"weapon_bandage_sh",
+			"weapon_handcuffs"
+		},
+		["npc_citizen"] = {
+			"weapon_smallconsumable",
+			"weapon_bandage_sh",
+			"weapon_painkillers"
+		}
+	}
+	hook.Add("CreateEntityRagdoll", "npcloot", function(ent, rag)
+		local loot = lootNPCs[ent:GetClass()]
+		if IsValid(ent) and IsValid(rag) and ent:IsNPC() and loot then
+			rag.armors = {}
+			rag.inventory = {}
+
+			rag.was_opened = true
+
+			rag.inventory.Weapons = loot or {}
+			rag:SetNetVar("Inventory", rag.inventory )
+		end
+	end)
+	]]
 --//
 --\\ timescale pitch change
 	local cheats = GetConVar( "sv_cheats" )
@@ -2115,10 +2191,14 @@ local IsValid = IsValid
 		end
 
 		if not flashlightwep then --custom flashlight
+			if IsValid(wep) and (wep.IsPistolHoldType and not wep:IsPistolHoldType() and ply.PlayerClassName ~= "Gordon") then return end
+
 			local inv = ply:GetNetVar("Inventory",{})
 			if inv and inv["Weapons"] and inv["Weapons"]["hg_flashlight"] and enabled and hg.CanUseLeftHand(ply) then
-				hg.GetCurrentCharacter(ply):EmitSound("items/flashlight1.wav",65)
-				ply:SetNetVar("flashlight",not ply:GetNetVar("flashlight"))
+				local flashvar = ply:GetNetVar("flashlight")
+
+				hg.GetCurrentCharacter(ply):EmitSound("items/flashlight1.wav", 65, flashvar and 110 or 130)
+				ply:SetNetVar("flashlight",not flashvar)
 				--return true
 				if IsValid(ply.flashlight) then ply.flashlight:Remove() end
 			else
@@ -2132,7 +2212,7 @@ local IsValid = IsValid
 	local adjust = {
 		["steering"] = {Vector(7,9,0),Angle(0,-80,0),Vector(-7,9,0),Angle(0,-100,180)},
 		["steeringwheel"] = {Vector(7.5,-3.5,0),Angle(180,-90,0),Vector(-7.5,-3.5,0),Angle(0,90,0)},
-		["steering_wheel"] = {Vector(7,0,-4),Angle(-90,-90,0),Vector(-7,0,-4),Angle(-90,90,0)},
+		["steering_wheel"] = {Vector(9,13,-1),Angle(0,-90,0),Vector(-9,13,-1),Angle(-180,90,0)},
 		["Rig_Buggy.Steer_Wheel"] = {Vector(8,-2.5,0),Angle(0,-90,0),Vector(-8,-2.5,0),Angle(180,90,0)},
 		["car.steeringwheel"] = {Vector(15,-10,0),Angle(0,180,0),Vector(15,10,0),Angle(180,0,0)},
 		["Airboat.Steer"] = {Vector(-11,-1.5,10),Angle(70,50,50),Vector(11,-1.5,10),Angle(70,50,50)},
@@ -2147,8 +2227,8 @@ local IsValid = IsValid
 	}
 
 	local modelAdjust = {
-		["models/left4dead/vehicles/apc_body.mdl"] = {Vector(11,-11,-1.5),Angle(0,-90,20),Vector(-11,-11,-1.5),Angle(180,90,-20)},
-		["models/left4dead/vehicles/nuke_car.mdl"] = {Vector(7,-12,-1),Angle(0,-90,0),Vector(-7,-12,-1),Angle(180,90,0)},
+		["models/left4dead/vehicles/apc_body_glide.mdl"] = {Vector(10.5,14,-1),Angle(0,-90,0),Vector(-10.5,14,-1),Angle(-180,90,0)},
+		["models/left4dead/vehicles/nuke_car_glide.mdl"] = {Vector(7,12,-1),Angle(0,-90,0),Vector(-7,12,-1),Angle(180,90,0)},
 		["models/gta5/vehicles/sanchez/chassis.mdl"] = {
 			Vector(15,17,-4.5),
 			Angle(-95,90,-90),
@@ -2481,7 +2561,7 @@ duplicator.Allow( "homigrad_base" )
 
 --\\ Custom running anim activity
 	hook.Add( "CalcMainActivity", "RunningAnim", function( Player, Velocity )
-		if (not Player:InVehicle()) and Player:IsOnGround() and Velocity:Length() > 250 and IsValid(Player:GetActiveWeapon()) and Player:GetActiveWeapon():GetClass() == "weapon_hands_sh" then
+		if (not Player:InVehicle()) and Player:IsOnGround() and Velocity:Length() > 250 and IsValid(Player:GetActiveWeapon()) and Player:GetActiveWeapon():GetHoldType() == "normal" then
 			local isFurry = Player.PlayerClassName == "furry"
 			local anim = ACT_HL2MP_RUN_FAST
 			if Player:IsOnFire() then
@@ -2495,6 +2575,7 @@ duplicator.Allow( "homigrad_base" )
 			else
 				anim = ACT_HL2MP_RUN_FAST
 			end
+
 			return anim, -1
 		end
 	end)
@@ -2556,7 +2637,7 @@ duplicator.Allow( "homigrad_base" )
 			amtflashed2 = 0
 		end)
 
-		hook.Add("RenderScreenspaceEffects","flasheseffect",function()
+		hook.Add("Post Post Processing","flasheseffect",function()
 			if !lply:Alive() then
 				if !next(hg.flashes) then
 					hg.flashes = {}
@@ -2620,27 +2701,6 @@ duplicator.Allow( "homigrad_base" )
 			PrintMessage(HUD_PRINTTALK, ply:Nick().." - zteam dev here!")
 		end
 	end)
---//
-
-
---\\ Shared maps with temperatures
-hg.TemperatureMaps = {
-	["gm_wintertown"] = true,
-	["cs_drugbust_winter"] = true,
-	["cs_office"] = true,
-	["gm_zabroshka_winter"] = true,
-	["mu_smallotown_v2_snow"] = true,
-	["ttt_cosy_winter"] = true,
-	["ttt_winterplant_v4"] = true,
-	["gm_everpine_mall"] = true,
-	["gm_boreas"] = true,
-	["gm_reservoir_a1"] = true,
-	["mu_riverside_snow"] = true,
-	["gm_fork_north"] = true,
-	["gm_fork_north_day"] = true,
-	["gm_ijm_boreas"] = true,
-	["gm_construct"] = true, -- test
-}
 --//
 
 --\\ Fireworks effects? why so many, we use only one lol
@@ -2715,7 +2775,7 @@ hg.TemperatureMaps = {
     game.AddParticles( "particles/gf2_firework_small_01.pcf" )
 --//
 --\\ Fun commands
-	local hg_thirdperson = ConVarExists("hg_thirdperson") and GetConVar("hg_thirdperson") or CreateConVar("hg_thirdperson", 0, FCVAR_REPLICATED, "thirdperson combat", 0, 1)
+	local hg_thirdperson = ConVarExists("hg_thirdperson") and GetConVar("hg_thirdperson") or CreateConVar("hg_thirdperson", 0, FCVAR_REPLICATED, "Toggle third-person camera view", 0, 1)
 --//
 --\\ Explosion Trace
 	function hg.ExplosionTrace(start,endpos,filter)
@@ -2816,4 +2876,134 @@ hg.TemperatureMaps = {
 	function table.IsEmpty( tab )
 		return next( tab ) == nil
 	end
+--//
+
+--\\ Custom Screen Shake
+if SERVER then
+	util.AddNetworkString("util.ScreenShake")
+end
+
+hg.OldScreenShake = hg.OldScreenShake or util.ScreenShake
+
+local ScreenShakers = {} -- Shake your a... don't :3
+--[[
+	ScreenShakers[#ScreenShakers + 1] = {
+		vPos = vPos,
+		nAmplitude = nAmplitude,
+		nFrequency = nFrequency,
+		nDuration = nDuration or 1,
+		nRadius = nRadius,
+		bAirshake = bAirshake,
+		tCreated = CurTime()
+	}
+--]]
+function util.ScreenShake(vPos, nAmplitude, nFrequency, nDuration, nRadius, bAirshake, crfFilter)
+	if SERVER then -- SERVER SIDE
+		vPos = vPos or Vector(0,0,0)
+		nRadius = nRadius or (nAmplitude * 100)
+		local tEnts = ents.FindInSphere(vPos, nRadius * nRadius)
+		--PrintTable(tEnts)
+		local crf = RecipientFilter()
+		--print(#tEnts)
+		for i = 1, #tEnts do
+			local eEnt = tEnts[i]
+			if !IsValid(eEnt) then continue end
+			if !eEnt:IsPlayer() then continue end
+			crf:AddPlayer(eEnt)
+		end
+		crf = crf or crfFilter
+		--print(crf)
+		net.Start("util.ScreenShake")
+			net.WriteVector(vPos)
+			net.WriteFloat(nAmplitude)
+			net.WriteFloat(nFrequency)
+			net.WriteFloat(nDuration or 1)
+			net.WriteFloat(nRadius)
+			net.WriteBool(bAirshake)
+		net.Send(crf)
+	elseif CLIENT then -- CLIENT SIDE
+		nRadius = nRadius or (nAmplitude * 100)
+		ScreenShakers[#ScreenShakers + 1] = {
+			vPos = vPos,
+			nAmplitude = nAmplitude,
+			nFrequency = nFrequency,
+			nDuration = nDuration or 1,
+			nRadius = nRadius,
+			bAirshake = bAirshake,
+			tCreated = CurTime()
+		}
+		hg.OldScreenShake(vPos, nAmplitude, nFrequency, nDuration, nRadius, bAirshake, crfFilter)
+	end
+end
+
+local plyMeta = FindMetaTable("Player")
+function plyMeta:ScreenShake(vPos, nAmplitude, nFrequency, nDuration, nRadius, bAirshake)
+	if SERVER then
+		local crfFilter = RecipientFilter()
+		crfFilter:AddPlayer(self)
+		util.ScreenShake(vPos, nAmplitude, nFrequency, nDuration, nRadius, bAirshake, crfFilter)
+	elseif CLIENT and self == lply then
+		util.ScreenShake(vPos, nAmplitude, nFrequency, nDuration, nRadius, bAirshake)
+	end
+end
+
+if CLIENT then
+	-- Clientside receive
+	net.Receive("util.ScreenShake",function()
+		local vPos = net.ReadVector()
+		local nAmplitude = net.ReadFloat()
+		local nFrequency = net.ReadFloat()
+		local nDuration = net.ReadFloat()
+		local nRadius = net.ReadFloat()
+		local bAirshake = net.ReadBool(bAirshake)
+
+		util.ScreenShake(vPos, nAmplitude, nFrequency, nDuration, nRadius, bAirshake)
+	end)
+
+	hook.Add("PostHGCalcView","util.ScreenShake",function(ply, view)
+		for i = 1, #ScreenShakers do
+			local shake = ScreenShakers[i]
+			if shake then
+				if !ply:IsOnGround() and !shake.bAirshake then continue end
+				local distance = shake.vPos:DistToSqr(ply:GetPos())
+				local mul = 1 - (distance / (shake.nRadius * shake.nRadius) / 2)
+				mul = math.max(mul, 0)
+				mul = Lerp(math.ease.InExpo(mul),0,1)
+
+				local timeMul = ((shake.tCreated + shake.nDuration) - CurTime()) / shake.nDuration
+				shake.vNormal = shake.vNormal or VectorRand(-1,1)
+				shake.vShake =  shake.vNormal * (math.Rand(0,2) * timeMul)
+				local vNoise = VectorRand(-0.2,0.2)
+				shake.vShake = shake.vShake + vNoise
+				if !shake.gFrequency or shake.gFrequency < CurTime() then
+					shake.gFrequency = CurTime() + (100 - shake.nFrequency) / 100
+					shake.vNormal = VectorRand(-1,1)
+				end
+
+				shake.finalShake = LerpVectorFT(0.3, shake.finalShake or Vector(0,0,0), shake.vShake)
+				local vShake = shake.finalShake
+				vShake = vShake * shake.nAmplitude / 5
+				vShake = vShake * mul
+				vShake = vShake * timeMul
+				vShake.z = vShake.z * 0.5
+				vShake.x = math.max(vShake.x, 0)
+
+				local angles = view.angles
+				view.origin = view.origin
+					+ angles:Forward() * vShake.x
+					+ angles:Right() * vShake.y
+					+ angles:Up() * vShake.z
+
+				angles[1] = angles[1] + vShake.z
+				--angles[2] = angles[2] + vShake.x
+				angles[3] = angles[3] + vShake.y
+
+				if timeMul <= 0 then
+					table.remove(ScreenShakers, i)
+				end
+			end
+		end
+		return view
+	end)
+end
 --//

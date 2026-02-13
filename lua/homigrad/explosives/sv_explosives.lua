@@ -129,7 +129,7 @@ local ExpTypes = {
 			Ent.ShrapnelDone = true
 		end)
 
-        util.ScreenShake(SelfPos,99999,99999,1,3000)
+        util.ScreenShake(SelfPos,100,900,1,5000)
 
         coroutine.resume(co)
 
@@ -237,7 +237,7 @@ local ExpTypes = {
 			Ent.ShrapnelDone = true
 		end)
 
-        util.ScreenShake(SelfPos,99999,99999,1,3000)
+         util.ScreenShake(SelfPos,100,900,1,5000)
 
         coroutine.resume(co)
 
@@ -316,7 +316,7 @@ local ExpTypes = {
 		end
 
 		if not IsValid(Ent) then return end
-		util.ScreenShake(SelfPos,99999,99999,1,3000)
+		 util.ScreenShake(SelfPos,100,900,1,2000)
 		SafeRemoveEntity(Ent)
     end,
 }

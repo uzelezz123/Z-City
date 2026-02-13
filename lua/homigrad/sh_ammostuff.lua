@@ -1074,7 +1074,7 @@ hg.ammotypes = {
 			Damage = 120,
 			Force = 120,
 			Penetration = 8,
-			Shell = "20x70slug",
+			Shell = "20/70",
 			Spread = Vector(0, 0, 0),
 			Speed = 420,
 			AirResistMul = 0.00025,
@@ -1112,7 +1112,7 @@ hg.ammotypes = {
 			Force = 6,
 			Penetration = 6,
 			NumBullet = 8,
-			Shell = "20/70flechette",
+			Shell = "20/70",
 			Speed = 520,
 			AirResistMul = 0.00025,
 			Diameter = 20/6,
@@ -2402,35 +2402,35 @@ hg.ammotypes = {
 			TracerSpeed = 25000
 		},
 	},
-	["metallicball"] = {
-		name = "Metallic Ball",
+	["20mm"] = {
+		name = "20mm",
 		dmgtype = DMG_BULLET,
 		tracer = TRACER_LINE,
 		plydmg = 0,
 		npcdmg = 0,
 		force = 230,
-		maxcarry = 30,
+		maxcarry = 20,
 		minsplash = 8,
 		maxsplash = 10,
 		TracerSetings = {
-			TracerBody = Material("particle/fire"),
-			TracerTail = Material("effects/laser_tracer"),
-			TracerHeadSize = 5,
-			TracerLength = 45,
-			TracerWidth = 2.5,
-			TracerColor = Color(90, 90, 90),
-			TracerTPoint1 = 0.4,
+			TracerBody = Material("effects/scotchmuzzleflashw"),
+			TracerTail = Material("effects/fas_bullet"),
+			TracerHeadSize = 80,
+			TracerLength = 128,
+			TracerWidth = 32,
+			TracerColor = Color(120, 120, 120),
+			TracerTPoint1 = 0.8,
 			TracerTPoint2 = 1,
-			TracerSpeed = 15000
+			TracerSpeed = 6000
 		},
 		BulletSettings = {
-			Damage = 70,
-			Force = 70,
-			Penetration = 8,
+			Damage = 100,
+			Force = 120,
+			Penetration = 1,
 			Shell = "",
-			Speed = 450,
-			Diameter = 19,
-			Mass = 28,
+			Speed = 170,
+			Diameter = 20,
+			Mass = 50,
 			Icon = matShotgunAmmo
 		}
 	},
@@ -2768,7 +2768,7 @@ local ammoents = {
 		Count = 1
 	},
 	["nails"] = {
-		Material = "models/hmcd_nails",
+		Material = "models/fello/f_matchboxtex", -- "models/hmcd_nails"
 		Scale = 1,
 		Count = 3,
 	},
@@ -2805,11 +2805,10 @@ local ammoents = {
 	[".40sw"] = {
 		Model = "models/zcity/ammo/ammo_1143x23_hydro.mdl"
 	},
-	["metallicball"] = {
-		Model = "models/hunter/misc/sphere025x025.mdl",
-		Material = "models/mat_jack_dullscratchedmetal",
-		Scale = 0.25,
-		Count = 1
+	["20mm"] = {
+		Material = "models/props_c17/paper01",
+		Scale = 0.8,
+		Count = 4,
 	},
 	["tranquilizerdarts"] = {
 		Material = "models/hmcd_ammobox_9",

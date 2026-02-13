@@ -8,36 +8,32 @@ SWEP.Category = "Weapons - Shotguns"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/pwb/weapons/w_m590a1.mdl"
+SWEP.WorldModel = "models/weapons/w_shot_m3super90.mdl"
 SWEP.WorldModelFake = "models/weapons/zcity/c_m590.mdl"
-//SWEP.FakeScale = 1.5
-//PrintAnims(Entity(1):GetActiveWeapon():GetWM())
---PrintTable(Entity(1):GetActiveWeapon():GetWM():GetAttachments())
---uncomment for funny
+
+
 SWEP.FakePos = Vector(-6, 2, 7.5)
 SWEP.FakeAng = Angle(0, 0, 0)
-//SWEP.MagIndex = 41
+
 SWEP.FakeAttachment = "muzzle"
 SWEP.AttachmentPos = Vector(2,0,0)
 SWEP.AttachmentAng = Angle(0,0,0)
-//SWEP.MagIndex = 6
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():AddLayeredSequence(Entity(1):GetActiveWeapon():GetWM():LookupSequence("delta_foregrip"),1)
+
 SWEP.FakeReloadSounds = {
 	[0.25] = "weapons/ak74/ak74_magout.wav",
 	[0.34] = "weapons/ak74/ak74_magout_rattle.wav",
 	[0.85] = "weapons/ak74/ak74_magin.wav",
 	[0.95] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 
 SWEP.FakeEmptyReloadSounds = {
-	--[0.22] = "weapons/ak74/ak74_magrelease.wav",
+
 	[0.25] = "weapons/ak74/ak74_magout.wav",
 	[0.34] = "weapons/ak74/ak74_magout_rattle.wav",
 	[0.65] = "weapons/ak74/ak74_magin.wav",
 	[0.75] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav",
+
 	[0.91] = "weapons/ak74/ak74_boltback.wav",
 	[0.96] = "weapons/ak74/ak74_boltrelease.wav",
 }
@@ -49,7 +45,7 @@ SWEP.FakeViewBobBone = "ValveBiped.Bip01_L_Hand"
 SWEP.FakeViewBobBaseBone = "ValveBiped.Bip01_L_UpperArm"
 SWEP.ViewPunchDiv = 30
 
---SWEP.ReloadHold = nil
+
 SWEP.FakeVPShouldUseHand = false
 
 SWEP.WepSelectIcon2 = Material("pwb/sprites/m590a1.png")
@@ -60,8 +56,7 @@ SWEP.LocalMuzzleAng = Angle(0.2,-0.0,0)
 SWEP.WeaponEyeAngles = Angle(-0.7,0.1,0)
 
 SWEP.CustomShell = "12x70"
---SWEP.EjectPos = Vector(-0,8,4)
---SWEP.EjectAng = Angle(0,-90,0)
+
 SWEP.ReloadSound = "weapons/remington_870/870_shell_in_1.wav"
 SWEP.CockSound = "pwb2/weapons/ithaca37stakeout/pump.wav"
 SWEP.weight = 4
@@ -113,12 +108,7 @@ SWEP.holsteredBone = "ValveBiped.Bip01_Spine2"
 SWEP.holsteredPos = Vector(4, 8, -6)
 SWEP.holsteredAng = Angle(210, 0, 180)
 
---local to head
---SWEP.RHPos = Vector(1,-5,3.4)
---SWEP.RHAng = Angle(0,-15,90)
-----local to rh
---SWEP.LHPos = Vector(18,-0.8,-3.6)
---SWEP.LHAng = Angle(-100,-180,0)
+
 
 SWEP.AnimList = {
 	["idle"] = "base_idle",
@@ -298,8 +288,7 @@ local function reloadFunc(self)
 			reloadFunc(self)
 			return
 		end
-		--self:GetOwner():ChatPrint(tostring(self.drawBullet))
-		--self:PlaySnd(self.CockSound or "weapons/shotgun/shotgun_cock.wav",true,CHAN_AUTO)
+
 		if !self.drawBullet then
 			cock(self,1)
 			self:PlayAnim(self.AnimList["finish_empty"] or "sgreload_finish_empty", 1, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true) 

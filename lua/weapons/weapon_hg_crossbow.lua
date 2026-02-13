@@ -8,18 +8,15 @@ SWEP.Category = "Weapons - Other"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/zcity/weapons/w_crossbow.mdl"
---models/weapons/c_crossbow.mdl
-SWEP.WorldModelFake = "models/weapons/c_crossbow.mdl" // МОДЕЛЬКИ ЧУТЬ ПОПОЗЖЕ ЗАЛЬЮ
-//SWEP.FakeScale = 1.5
+SWEP.WorldModel = "models/weapons/w_crossbow.mdl"
+SWEP.WorldModelFake = "models/weapons/c_crossbow.mdl"
+
 SWEP.FakePos = Vector(-11, 8.2, 7.5)
 SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(0.5,-1.2,-6.5)
 SWEP.AttachmentAng = Angle(0,0,0)
---SWEP.MagIndex = 46
-//MagazineSwap
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
---PrintTable(Entity(1):GetActiveWeapon():GetWM():GetAttachments())
+
+
 SWEP.FakeVPShouldUseHand = true
 
 SWEP.CantFireFromCollision = true // 2 спусковых крючка все дела
@@ -135,6 +132,7 @@ SWEP.Penetration = 40
 
 SWEP.weight = 3
 
+SWEP.RestPosition = Vector(21, -1, 2)
 
 function SWEP:Shoot(override)
 	if not self:CanPrimaryAttack() then return false end
@@ -167,7 +165,7 @@ function SWEP:Shoot(override)
 		bullet.Dir = ang:Forward()
 		bullet.Speed = 310
 			-- bullet.Force = ammotype.Force or primary.Force
-		bullet.Damage = 1000
+		bullet.Damage = 500
 		bullet.Force = 80
 			-- bullet.Size = 0.5
 			-- bullet.Spread = ammotype.Spread or self.Primary.Spread or 0

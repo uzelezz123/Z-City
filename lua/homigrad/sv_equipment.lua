@@ -264,7 +264,7 @@ local function protec(org, bone, dmg, dmgInfo, placement, armor, scale, scalepro
 	dmgInfo:SetDamageType(DMG_CLUB)
 	dmgInfo:SetDamageForce(dmgInfo:GetDamageForce() * 0.4)
 	dmgInfo:ScaleDamage(0.2)
-	
+
 	return 0.9
 end
 
@@ -369,12 +369,12 @@ hg.organism.input_list.mask1 = function(org, bone, dmg, dmgInfo, ...)
 end
 
 hg.organism.input_list.mask3 = function(org, bone, dmg, dmgInfo, ...)
-	local protect = protec(org, bone, dmg, dmgInfo, "face", "mask3", 1, 1, true, ...)
+	local protect = protec(org, bone, dmg, dmgInfo, "face", "mask3", 0.95, 0.92, true, ...)
 	return protect
 end
 
 hg.organism.input_list.vest5 = function(org, bone, dmg, dmgInfo, ...)
-	local protect = protec(org, bone, dmg, dmgInfo, "torso", "vest5", 0.8, 0.6, false, ...)
+	local protect = protec(org, bone, dmg, dmgInfo, "torso", "vest5", 0.8, 0.5, false, ...)
 	return protect
 end
 hg.organism.input_list.vest6 = function(org, bone, dmg, dmgInfo, ...)
@@ -383,7 +383,7 @@ hg.organism.input_list.vest6 = function(org, bone, dmg, dmgInfo, ...)
 end
 
 hg.organism.input_list.vest7 = function(org, bone, dmg, dmgInfo, ...)
-	local protect = protec(org, bone, dmg, dmgInfo, "torso", "vest7", 0.7, 0.4, false, ...)
+	local protect = protec(org, bone, dmg, dmgInfo, "torso", "vest7", 0.8, 0.5, false, ...)
 	return protect
 end
 
@@ -521,8 +521,8 @@ hg.organism.input_list.protovisor = function(org, bone, dmg, dmgInfo, ...)
 	return protect
 end
 
-hook.Add("HG_ReplacePhrase", "MaskMuffed", function(ent, phrase, muffed, pitch)
-	if IsValid(ent) and ent.armors and ent.armors["face"] == "mask2" then
-		return ent, phrase, true, pitch
+hook.Add("HG_ReplacePhrase", "MaskMuffed", function(ply, phrase, muffed, pitch)
+	if IsValid(ply) and ply.armors and ply.armors["face"] == "mask2" then
+		return ply, phrase, true, pitch
 	end
 end)

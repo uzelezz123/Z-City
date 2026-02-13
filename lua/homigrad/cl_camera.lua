@@ -192,6 +192,11 @@ function HGAddView(ply, origin, angles, velLen)
 			ply.MovementInertiaAddView.p = 0
 		end
 	end
+
+	local ply_override, origin_override, angles_override = hook.Run("HGAddView", ply, origin, angles)
+	if origin_override ~= nil then
+		origin, angles = origin_override, angles_override
+	end
 	
 	return origin, angles
 end
@@ -211,8 +216,8 @@ local CalcView
 local oldVechicleAng = Angle(0,0,0)
 local viewOverride
 
-local hg_thirdperson = ConVarExists("hg_thirdperson") and GetConVar("hg_thirdperson") or CreateConVar("hg_thirdperson", 0, FCVAR_REPLICATED, "ragdoll combat", 0, 1)
-local hg_legacycam = ConVarExists("hg_legacycam") and GetConVar("hg_legacycam") or CreateConVar("hg_legacycam", 0, FCVAR_REPLICATED, "ragdoll combat", 0, 1)
+local hg_thirdperson = ConVarExists("hg_thirdperson") and GetConVar("hg_thirdperson") or CreateConVar("hg_thirdperson", 0, FCVAR_REPLICATED, "Toggle third-person camera view", 0, 1)
+local hg_legacycam = ConVarExists("hg_legacycam") and GetConVar("hg_legacycam") or CreateConVar("hg_legacycam", 0, FCVAR_REPLICATED, "Toggle legacy first-person camera view if hg_thirdperson is enabled", 0, 1)
 local lerpasad = 0
 
 hook.Remove("CalcView", "wac_air_calcview")
@@ -239,8 +244,8 @@ end)
 surface.CreateFont(
 	"BODYCAMFONT",
 	{
-		font = "Arial",
-		size = 42,
+		font = "Bahnschrift",
+		size = ScreenScale(16),
 		italic = true,
 		weight = 1500
 	}
@@ -251,7 +256,7 @@ hook.Add("HUDPaint", "HUDPaint_DrawABox", function() -- этот код стар
 	if lply:Alive() and hg_gopro:GetBool() then
 		local specPly = lply
 		if not specPly:IsValid() then return end
-		local Text = "GoPro #" .. math.Round(util.SharedRandom(specPly:GetName(),1000,9999,specPly:EntIndex()),0)
+		local Text = "GoPro #" .. math.Round(util.SharedRandom(specPly:SteamID(),1000,9999,1),0)
 		draw.DrawText(Text, "BODYCAMFONT", ScrW() * 0.905 + 2, ScrH() * 0.035 + 2, Color(0, 0, 0), TEXT_ALIGN_CENTER)
 		draw.DrawText(Text, "BODYCAMFONT", ScrW() * 0.905, ScrH() * 0.035, Color(255, 255, 255), TEXT_ALIGN_CENTER)
 		draw.RoundedBox(0, ScrW() * 0.85, ScrH() * 0.085, 50, 28, Color(0, 173, 255))
@@ -268,30 +273,18 @@ end)
 
 function SpecCam(ply, vec, ang, fov, znear, zfar)
 	if !ply:Alive() then return end
-	local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
+	--local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
 	local eye = ply:GetAttachment(ply:LookupAttachment("eyes"))
-	local org = eye.Pos
+	--local org = eye.Pos
 	local ang1 = eye.Ang + Angle(5, 2, 0)
-	local org1 = eye.Pos + eye.Ang:Up() * 6 + eye.Ang:Forward() * -1 + eye.Ang:Right() * 6.5
-	if ply:GetNWBool("fake") == true and IsValid(ply:GetNWEntity("DeathRagdoll")) then
-		local attach = ply:GetNWEntity("DeathRagdoll"):GetAttachment(1)
-		local view = {
-			origin = attach.Pos + attach.Ang:Up() * 4 + attach.Ang:Forward() * -5 + attach.Ang:Right() * 6.5,
-			angles = attach.Ang + Angle(-10, 5, 0),
-			fov = 88,
-			drawviewer = true,
-			znear = 0.1
-		}
-
-		return view
-	end
+	local org1 = eye.Pos + eye.Ang:Up() * 6 + eye.Ang:Forward() * -3 + eye.Ang:Right() * 6.5
 
 	local view = {
 		origin = org1,
 		angles = ang1,
 		fov = 110,
 		drawviewer = true,
-		znear = 0.1
+		znear = 0.7
 	}
 
 	return view
@@ -510,6 +503,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		vpang[3] = 0
 		view.angles:Add(-vpang)
 		view.angles[3] = view.angles[3] + GetViewPunchAngles4()[3]
+		hook_Run("PostHGCalcView", ply, view)
 		return view
 	end
 	
@@ -665,13 +659,13 @@ end)
 
 local hg_norenderoverride = ConVarExists("hg_norenderoverride") and GetConVar("hg_norenderoverride") or CreateClientConVar("hg_norenderoverride", 0, true, false, "if you have lags you can try turning that on", 0, 1)
 local mapswithfog = { -- Надо от сервер сайда сделать...
-	["gm_freespace_09_super_extended_night"] = 5500,
-	["gm_white_forest_countryside"] = 6000,
-	["gm_york_remaster"] = 9500,
-	["gm_city_of_silence"] = 1500,
-	--["gm_construct"] = 8000,
-	["gm_fork"] = 9500,
-	["rp_zapolye_v2"] = 7500
+	--["gm_freespace_09_super_extended_night"] = 5500,
+	--["gm_white_forest_countryside"] = 6000,
+	--["gm_york_remaster"] = 9500,
+	--["gm_city_of_silence"] = 1500,
+	----["gm_construct"] = 8000,
+	--["gm_fork"] = 9500,
+	--["rp_zapolye_v2"] = 7500
 }
 --GlobalRenderOverideTickOFF = true
 local zfar = mapswithfog[game.GetMap()] or 0

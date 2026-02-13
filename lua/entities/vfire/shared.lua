@@ -925,6 +925,13 @@ if SERVER then
 	hg = hg or {}
 	hg.particles = hg.particles or {}
 
+	vfireallowspreadon = {
+		[MAT_GRASS] = true,
+		[MAT_WOOD] = true,
+		[MAT_TILE] = true,
+		[MAT_PLASTIC] = true,
+	}
+
 	function ENT:SpreadThink(ran)
 		-- Attempt to spread
 		if vFireEnableSpread then
@@ -989,7 +996,7 @@ if SERVER then
 					local pos = self:GetPos() + offset
 					local tr = util.QuickTrace(pos, dir)
 					local ent = tr.Entity
-					if tr.Hit and (tr.Fraction > 0 or IsValid(ent)) then
+					if tr.Hit and vfireallowspreadon[tr.MatType] and (tr.Fraction > 0 or IsValid(ent)) then
 
 						if vFireIsVFireEnt(ent) then return end
 
@@ -1237,7 +1244,7 @@ if CLIENT then
 		if self.LOD then return end
 
 
-		if vFireEnableLights and not potato then
+		if true and not potato then
 			-- Load information onto our light calls table
 			local entIndex = self:EntIndex()
 			lightCalls[state][entIndex] = {
@@ -1271,11 +1278,7 @@ if CLIENT then
 	end)
 
 	-- We need to cache our r_maxdlights ConVar for the sake of performance
-	local maxLightsConVar = GetConVar("r_maxdlights")
-	local maxLights = maxLightsConVar:GetInt()
-	cvars.AddChangeCallback("r_maxdlights", function()
-		maxLights = maxLightsConVar:GetInt()
-	end)
+	local maxLights = 100
 
 	-- Draw our light calls so that priority is given to larger fires
 	hook.Add("Think", "_vFireLightCallbacks", function()

@@ -8,11 +8,10 @@ SWEP.Category = "Weapons - Assault Rifles"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/akpack/w_aks74u.mdl"
+SWEP.WorldModel = "models/weapons/w_rif_ak47.mdl"
 SWEP.ZoomPos = Vector(0, -0.0517, 5.1843)
-SWEP.WorldModelFake = "models/weapons/arccw/c_ur_ak.mdl" -- МОДЕЛЬ ГОВНА, НАЙТИ НОРМАЛЬНЫЙ КАЛАШ
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
---uncomment for funny
+SWEP.WorldModelFake = "models/weapons/arccw/c_ur_ak.mdl"
+
 SWEP.FakePos = Vector(-11, 2.42, 6.25)
 SWEP.FakeAng = Angle(0.5, 0.6, 5.5)
 SWEP.AttachmentPos = Vector(-4.5,2.4,-19.3)
@@ -24,29 +23,26 @@ SWEP.GunCamPos = Vector(4,-15,-6)
 SWEP.GunCamAng = Angle(190,-5,-100)
 
 SWEP.FakeEjectBrassATT = "2"
-//SWEP.MagIndex = 57
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():AddLayeredSequence(Entity(1):GetActiveWeapon():GetWM():LookupSequence("delta_foregrip"),1)
+
 SWEP.FakeViewBobBone = "CAM_Homefield"
 SWEP.FakeReloadSounds = {
 	[0.22] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.34] = "weapons/ak74/ak74_magout.wav",
 	[0.38] = "weapons/ak74/ak74_magout_rattle.wav",
-	--[0.51] = "weapons/universal/uni_crawl_l_02.wav",
+
 	[0.62] = "weapons/ak74/ak74_magin.wav",
 	[0.81] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.99] = "weapons/universal/uni_crawl_l_04.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 
 SWEP.FakeEmptyReloadSounds = {
-	--[0.22] = "weapons/ak74/ak74_magrelease.wav",
+
 	[0.22] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.34] = "weapons/ak74/ak74_magout.wav",
 	[0.4] = "weapons/ak74/ak74_magout_rattle.wav",
 	[0.62] = "weapons/ak74/ak74_magin.wav",
-	--[0.75] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav",
+
 	[0.83] = "weapons/ak74/ak74_boltback.wav",
 	[0.86] = "weapons/ak74/ak74_boltrelease.wav",
 	[1.01] = "weapons/universal/uni_crawl_l_04.wav",
@@ -136,8 +132,7 @@ SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "5.45x39 mm"
 
 SWEP.CustomShell = "545x39"
---SWEP.EjectPos = Vector(1,5,3.5)
---SWEP.EjectAng = Angle(0,-90,0)
+
 
 SWEP.ScrappersSlot = "Primary"
 SWEP.Primary.Cone = 0
@@ -210,12 +205,8 @@ SWEP.availableAttachments = {
 	barrel = {
 		[1] = {"supressor1", Vector(0,0,0), {}},
 		[2] = {"supressor8", Vector(0,0,0), {}},
-		["mount"] = Vector(-2.5,0.55,0.25),
+		["mount"] = Vector(-2.5,1,0.45),
 		["mountAngle"] = Angle(0,-1.5,0)
-	},
-	grip = {
-		["mount"] = Vector(-14.2,-0.1,-9),
-		["mountType"] = "ak74u"
 	},
 }
 

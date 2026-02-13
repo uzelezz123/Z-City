@@ -97,6 +97,12 @@ end
 
 function SWEP:Initialize()
 	self:SetHold(self.HoldType)
+
+	if self:GetOwner():IsNPC() then
+		self.HoldType = "melee"
+		self:SetHold(self.HoldType)
+	end
+
 	hg.weapons2[self] = true
 	self.count = 1
 end
@@ -139,17 +145,24 @@ function SWEP:SetHold(value)
 	self.holdtype = value
 end
 
+local veczero = Vector(0, 0, 0)
 function SWEP:PrimaryAttack()
 	if CLIENT then return end
 	local time = CurTime()
 	local ent = ents.Create("ent_throwable")
+
 	local ply = self:GetOwner()
-	ent:SetPos(select(1, hg.eye(ply,60,hg.GetCurrentCharacter(ply))) - ply:GetAimVector() * 2)
-	ent:SetAngles(ply:EyeAngles() + Angle(0,0,0))
+	if not ply:IsNPC() then
+		ent:SetPos(select(1, hg.eye(ply,60,hg.GetCurrentCharacter(ply))) - ply:GetAimVector() * 2)
+	else
+		ent:SetPos(ply:EyePos() + ply:EyeAngles():Forward() * 2)
+	end
+
+	ent:SetAngles(ply:EyeAngles())
 	ent:Spawn()
 	ent.wep = self:GetClass()
 	ent.owner = ply
-	ent.localshit = Vector(0,0,0)
+	ent.localshit = veczero
 	ent.poisoned2 = self.poisoned2
 	
 	if self.bombowner then
@@ -164,12 +177,23 @@ function SWEP:PrimaryAttack()
 	local phys = ent:GetPhysicsObject()
 	if IsValid(phys) then
 		phys:SetVelocity(ply:GetAimVector() * ent.MaxSpeed)
-		phys:AddAngleVelocity(Vector(0,0,-ent.MaxSpeed) )
+		phys:AddAngleVelocity(Vector(0,0, -ent.MaxSpeed) )
 	end
 	ply:EmitSound("weapons/slam/throw.wav",50,math.random(95,105))
-	ply:SelectWeapon("weapon_hands_sh")
-	self:Remove()
+
+	if not ply:IsNPC() then
+		ply:SelectWeapon("weapon_hands_sh")
+		self:Remove()
+	end
 end
 
 function SWEP:SecondaryAttack()
+end
+
+function SWEP:CanBePickedUpByNPCs()
+	return true -- why not lol
+end
+
+function SWEP:GetNPCRestTimes()
+	return 0.5, 1
 end

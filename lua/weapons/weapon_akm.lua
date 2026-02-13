@@ -8,10 +8,9 @@ SWEP.Category = "Weapons - Assault Rifles"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/akpack/w_akm.mdl"
-SWEP.WorldModelFake = "models/weapons/arccw/c_ur_ak.mdl" -- МОДЕЛЬ ГОВНА, НАЙТИ НОРМАЛЬНЫЙ КАЛАШ
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
---uncomment for funny
+SWEP.WorldModel = "models/weapons/w_rif_ak47.mdl"
+SWEP.WorldModelFake = "models/weapons/arccw/c_ur_ak.mdl"
+
 SWEP.FakePos = Vector(-12, 2.52, 5.5)
 SWEP.FakeAng = Angle(-1, 0.25, 5.5)
 SWEP.AttachmentPos = Vector(3,3,-26.8)
@@ -20,30 +19,27 @@ SWEP.FakeAttachment = "1"
 SWEP.FakeBodyGroups = "01010080102"
 
 SWEP.FakeEjectBrassATT = "2"
-//SWEP.MagIndex = 57
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():AddLayeredSequence(Entity(1):GetActiveWeapon():GetWM():LookupSequence("delta_foregrip"),1)
+
 SWEP.FakeViewBobBone = "CAM_Homefield"
 
 SWEP.FakeReloadSounds = {
 	[0.22] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.34] = "weapons/newakm/akmm_magout.wav",
 	[0.38] = "weapons/newakm/akmm_magout_rattle.wav",
-	--[0.51] = "weapons/universal/uni_crawl_l_02.wav",
+
 	[0.62] = "weapons/newakm/akmm_magin.wav",
 	[0.81] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.99] = "weapons/universal/uni_crawl_l_04.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 
 SWEP.FakeEmptyReloadSounds = {
-	--[0.22] = "weapons/ak74/ak74_magrelease.wav",
+
 	[0.22] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.34] = "weapons/newakm/akmm_magout.wav",
 	[0.4] = "weapons/newakm/akmm_magout_rattle.wav",
 	[0.62] = "weapons/newakm/akmm_magin.wav",
-	--[0.75] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav",
+
 	[0.83] = "weapons/newakm/akmm_boltback.wav",
 	[0.86] = "weapons/newakm/akmm_boltrelease.wav",
 	[1.01] = "weapons/universal/uni_crawl_l_04.wav",
@@ -114,27 +110,12 @@ if CLIENT then
 		end
 	}
 end
-	--self:InsertAmmo(self:GetMaxClip1() - self:Clip1() + (self.drawBullet ~= nil and not self.OpenBolt and 1 or 0))
-	--SWEP.FakeReloadEvents = {
-	--	[0.62] = function( self, timeMul )
-	--		self:InsertAmmo( self:GetMaxClip1() - self:Clip1() + (self.drawBullet ~= nil and not self.OpenBolt and 1 or 0) )
-	--	end
-	--}
---end
-
---SWEP.CustomAmmoInsertEvent = true
 
 function SWEP:ModelCreated(model)
 	model:ManipulateBoneScale(57, vector_origin)
 	model:ManipulateBoneScale(58, vector_origin)
 	model:SetBodyGroups(self.FakeBodyGroups)
 end
-
-
-
---function SWEP:PostFireBullet() --- Funny
-	--self:PlayAnim("fire", 1, false)
---end
 
 SWEP.GunCamPos = Vector(4,-15,-6)
 SWEP.GunCamAng = Angle(190,-5,-100)
@@ -163,8 +144,7 @@ SWEP.Primary.SoundEmpty = {"weapons/newakm/akmm_empty.wav", 75, 100, 105, CHAN_W
 
 SWEP.DistSound = "weapons/newakm/akmm_dist.wav"
 
---SWEP.EjectPos = Vector(1,4,3.5)
---SWEP.EjectAng = Angle(0,-90,0)
+
 
 SWEP.WepSelectIcon2 = Material("pwb/sprites/akm.png")
 SWEP.IconOverride = "entities/arc9_eft_akm.png"

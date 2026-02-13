@@ -114,6 +114,7 @@ if SERVER then
 		if wep.init and ((ply:GetUseEntity() ~= wep or not ply:KeyPressed(IN_USE)) and not ply.force_pickup) then return false end
 		if wep.init and wep.IsSpawned and ((ply.cooldown_grab or 0) > CurTime()) and not ply.force_pickup then return false end
 		if wep.PickupFunc and (wep:PickupFunc(ply) == true) then return false end
+
 		if ( ply:HasWeapon( wep:GetClass() ) ) then
 			if wep:Clip1() > 0 and ishgweapon(wep) then
 				local ammo = wep:Clip1()
@@ -183,61 +184,3 @@ else
 	concommand.Add("hg_listammo", function() PrintTable(game.GetAmmoTypes()) end)
 	concommand.Add("hg_weaponInv_table", function() PrintTable(weaponInv) end)
 end
---[[
-	1	=	AR2
-	2	=	AR2AltFire
-	3	=	Pistol
-	4	=	SMG1
-	5	=	357
-	6	=	XBowBolt
-	7	=	Buckshot
-	8	=	RPG_Round
-	9	=	SMG1_Grenade
-	10	=	Grenade
-	11	=	slam
-	12	=	AlyxGun
-	13	=	SniperRound
-	14	=	SniperPenetratedRound
-	15	=	Thumper
-	16	=	Gravity
-	17	=	Battery
-	18	=	GaussEnergy
-	19	=	CombineCannon
-	20	=	AirboatGun
-	21	=	StriderMinigun
-	22	=	HelicopterGun
-	23	=	9mmRound
-	24	=	357Round
-	25	=	BuckshotHL1
-	26	=	XBowBoltHL1
-	27	=	MP5_Grenade
-	28	=	RPG_Rocket
-	29	=	Uranium
-	30	=	GrenadeHL1
-	31	=	Hornet
-	32	=	Snark
-	33	=	TripMine
-	34	=	Satchel
-	35	=	12mmRound
-	36	=	StriderMinigunDirect
-	37	=	CombineHeavyCannon
-	38	=	40mm Grenade
-	39	=	arccw_go_nade_knife
-	40	=	arccw_go_taser
-	41	=	Arrow
-	42	=	Black Powder Metallic Cartridge
-	43	=	Black Powder Paper Cartridge
-	44	=	Heavy Rifle Round
-	45	=	Light Rifle Round
-	46	=	Light Rifle Round-Armor Piercing
-	47	=	Light Rifle Round-Ballistic Tip
-	48	=	Light Rifle Round-Tracer
-	49	=	Magnum Pistol Round
-	50	=	Magnum Rifle Round
-	51	=	Medium Rifle Round
-	52	=	Mini Rocket
-	53	=	Pistol Round
-	54	=	Plinking Round
-	55	=	Shotgun Round
-	56	=	Small Shotgun Round
-]]

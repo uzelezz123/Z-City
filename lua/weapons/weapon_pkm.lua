@@ -61,16 +61,16 @@ SWEP.HolsterSnd = {"homigrad/weapons/hmg_holster.mp3", 55, 100, 110}
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/pwb2/weapons/w_pkm.mdl"
-SWEP.WorldModelFake = "models/weapons/c_mach_pkm.mdl" -- увеличить модельку где-то в 1.5
-//SWEP.FakeScale = 1.5
+SWEP.WorldModel = "models/weapons/w_mach_m249para.mdl"
+SWEP.WorldModelFake = "models/weapons/c_mach_pkm.mdl"
+
 SWEP.FakeAttachment = "1"
 SWEP.FakePos = Vector(-5, 2.85, 6.7)
 SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(1,0,0)
 SWEP.AttachmentAng = Angle(0,0,90)
-//MagazineSwap
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
+
+
 
 SWEP.FakeVPShouldUseHand = true
 SWEP.AnimList = {
@@ -163,6 +163,8 @@ SWEP.lengthSub = 15
 SWEP.DistSound = "m249/m249_dist.wav"
 SWEP.bipodAvailable = true
 SWEP.bipodsub = 15
+
+SWEP.RestPosition = Vector(22, -1, 4)
 
 SWEP.RecoilMul = 0.3
 

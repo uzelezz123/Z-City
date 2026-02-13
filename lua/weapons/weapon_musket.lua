@@ -1,9 +1,9 @@
 SWEP.Base = "weapon_m4super"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
-SWEP.PrintName = "Musket"
-SWEP.Author = "N/A"
-SWEP.Instructions = "A musket is a muzzle-loaded long gun that appeared as a smoothbore weapon in the early 16th century."
+SWEP.PrintName = "Long Land Pattern" -- "Brown Bess"
+SWEP.Author = "Various Great Britain manufacturers"
+SWEP.Instructions = "A musket is a muzzle-loaded long gun that appeared as a smoothbore weapon in the early 16th century, using black powder and 20mm caliber"
 SWEP.Category = "Weapons - Sniper Rifles"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
@@ -23,11 +23,11 @@ SWEP.UseCustomWorldModel = false
 SWEP.Primary.ClipSize = 1
 SWEP.Primary.DefaultClip = 1
 SWEP.Primary.Automatic = false
-SWEP.Primary.Ammo = "Metallic Ball"
+SWEP.Primary.Ammo = "20mm"
 SWEP.Primary.Cone = 0
-SWEP.Primary.Spread = Vector(0.001, 0.001, 0.001)
-SWEP.Primary.Damage = 85
-SWEP.Primary.Force = 85
+SWEP.Primary.Spread = Vector(0.0075, 0.0075, 0.0075)
+SWEP.Primary.Damage = 100
+SWEP.Primary.Force = 120
 SWEP.NumBullet = 3
 SWEP.Primary.Sound = {"weapons/awoi/musket_5_fire.wav", 65, 80, 85}
 SWEP.SupressedSound = {"weapons/awoi/musket_5_fire.wav", 65, 80, 85}
@@ -71,9 +71,9 @@ SWEP.ZoomPos = Vector(-26, 0.7351, 1.3413)
 SWEP.RHandPos = Vector(-8, -2, 6)
 SWEP.LHandPos = Vector(6, -3, 1)
 SWEP.AimHands = Vector(-10, 1.8, -6.1)
-SWEP.SprayRand = {Angle(0.02, -0.02, 0), Angle(-0.02, 0.02, 0)}
-SWEP.Ergonomics = 0.4
-SWEP.Penetration = 100
+SWEP.SprayRand = {Angle(-0.6, -0.4, 0), Angle(-0.6, 0.4, 0)}
+SWEP.Ergonomics = 0.6
+SWEP.Penetration = 1
 SWEP.ZoomFOV = 20
 SWEP.WorldPos = Vector(9.5, -0.4, -3)
 SWEP.WorldAng = Angle(0, 180, 0)
@@ -105,24 +105,32 @@ SWEP.holsteredAng = Angle(320, 0, 0)
 SWEP.attPos = Vector(0.5,-3.5,75)
 SWEP.attAng = Angle(-0.1,.4,0)
 
-SWEP.bipodAvailable = false
+SWEP.bipodAvailable = true
+SWEP.RestPosition = Vector(15, -1, 5)
 
 --local to head
-SWEP.RHPos = Vector(3,-3.8,3)
+SWEP.RHPos = Vector(2,-3.8,3)
 SWEP.RHAng = Angle(-8,-30,65)
 
 --local to rh
-SWEP.LHPos = Vector(17,0,-3.5)
-SWEP.LHAng = Angle(-90,-0,-180)
-
-local finger1 = Angle(10, -20, 0)
-local finger2 = Angle(-0, 90, 0)
-local finger3 = Angle(0, -25, 0)
-local finger4 = Angle(0, -10, 0)
+SWEP.LHPos = Vector(13,0,-3.5)
+SWEP.LHAng = Angle(-70,-0,-180)
 
 function SWEP:AnimHoldPost(model)
-	if self.reload then return end
-
+	if self.reload then
+		self:BoneSet("l_finger0", Vector(0, 0, 0), Angle(30, 30, 0))
+		self:BoneSet("l_finger02", Vector(0, 0, 0), Angle(30, 30, 50))
+		self:BoneSet("l_finger01", Vector(0, 0, 0), Angle(-15, 40, 0))
+		self:BoneSet("l_finger1", Vector(0, 0, 0), Angle(-10, -20, 0))
+		self:BoneSet("l_finger11", Vector(0, 0, 0), Angle(-10, -10, 0))
+		self:BoneSet("l_finger2", Vector(0, 0, 0), Angle(-5, -10, 0))
+		self:BoneSet("l_finger21", Vector(0, 0, 0), Angle(0, -10, 0))
+	else
+		self:BoneSet("l_finger0", Vector(0, 0, 0), Angle(10, 20, 0))
+		self:BoneSet("l_finger02", Vector(0, 0, 0), Angle(10, 30, 50))
+	end
+	self:BoneSet("r_finger1", Vector(0, 0, 0), Angle(-20, -20, 0))
+	self:BoneSet("r_finger11", Vector(0, 0, 0), Angle(-20, -20, 0))
 end
 
 function SWEP:PrimaryShootPost()
@@ -130,50 +138,57 @@ function SWEP:PrimaryShootPost()
 	local eff = EffectData()
 	eff:SetOrigin(att.Pos + att.Ang:Up() * -82 + att.Ang:Forward() * -2)
 	eff:SetNormal(att.Ang:Forward())
-	eff:SetScale(2)
+	eff:SetScale(3)
 	util.Effect("eff_jack_rockettrust", eff)
 end
 
+--// Cycle anim.. Old and janky, but we still use it because we don't have good musket viewmodels..
 local anims = {
 	Vector(0,0,0),
-	Vector(1,0,1),
-	Vector(2,1,2),
-	Vector(3,2,0),
-	Vector(4,3,0),
-	Vector(4,4,-1),
+	Vector(2,0,0),
+	Vector(3,1,-1),
+	Vector(2,0,0),
+	Vector(0,0,0),
 }
 
-local fingang = Angle(-10, -25, 0)
-function SWEP:AnimationPost()
-	self:BoneSet("l_finger0", vector_origin, fingang)
-
-	local animpos = math.Clamp(self:GetAnimPos_Draw(CurTime()),0,1)
+function SWEP:AnimationPostPost()
+	local wep = self:GetWeaponEntity()
+	local animpos = math.Clamp(self:GetAnimPos_Draw(CurTime()), 0, 1)
 	local sin = 1 - animpos
+
 	if sin >= 0.5 then
 		sin = 1 - sin
 	else
 		sin = sin * 1
 	end
+
 	if sin > 0 then
-		sin = sin * 2
+		sin = sin * 1
 		sin = math.ease.InOutSine(sin)
 
 		local lohsin = math.floor(sin * (#anims))
 		local lerp = sin * (#anims) - lohsin
 		
-		self.inanim = true
-		self.RHPosOffset = Lerp(lerp,anims[math.Clamp(lohsin,1,#anims)],anims[math.Clamp(lohsin+1,1,#anims)])
+		self.RHPosOffset = Lerp(lerp, anims[math.Clamp(lohsin, 1, #anims)], anims[math.Clamp(lohsin + 1, 1, #anims)])
+		self.RHPos[1] = 2 - sin * -2
+		self.RHPos[2] = -4 - sin * -4
+
+		self:BoneSet("r_finger0", Vector(0, 0, 0), Angle(45, 5, 20) * sin * 2.2)
 	else
-		self.inanim = nil
 		self.RHPosOffset[1] = 0
 		self.RHPosOffset[2] = 0
 		self.RHPosOffset[3] = 0
 	end
 end
 
--- RELOAD ANIM AKM
+function SWEP:DrawPost()
+end
+
+-- RELOAD ANIM MUSKET
 SWEP.ReloadAnimLH = {
-	Vector(0,0,0),
+	Vector(-2,20,-30),
+	Vector(-2,20,-30),
+	Vector(-2,10,-10),
 	Vector(-2,0,6),
 	Vector(-2,0,6),
 	Vector(-1,-2,7),
@@ -209,24 +224,23 @@ SWEP.ReloadAnimLHAng = {
 }
 
 SWEP.ReloadAnimRHAng = {
-	Angle(0,0,0),
+	Angle(0,0,0)
 }
 
 SWEP.ReloadAnimWepAng = {
 	Angle(0,10,50),
-	Angle(0,25,45),
-	Angle(0,25,45),
-	Angle(5,25,45),
+	Angle(30,5,5),
+	Angle(40,5,5),
+	Angle(55,25,45),
+	Angle(55,25,45),
+	Angle(40,25,45),
 	Angle(3,25,45),
-	Angle(0,25,45),
-	Angle(0,25,45),
 	Angle(5,25,45),
 	Angle(3,25,45),
 	Angle(0,0,0)
 }
 
 -- Inspect Assault
-
 SWEP.InspectAnimWepAng = {
 	Angle(0,0,0),
 	Angle(4,4,15),

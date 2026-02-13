@@ -8,19 +8,15 @@ SWEP.Category = "Weapons - Assault Rifles"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/arccw/w_irifle.mdl"
-SWEP.WorldModelFake = "models/weapons/arccw/c_irifle.mdl" -- Контент инсурги https://steamcommunity.com/sharedfiles/filedetails/?id=3437590840 
---uncomment for funny
---а еще надо настраивать заново zoompos
+SWEP.WorldModel = "models/weapons/w_irifle.mdl"
+SWEP.WorldModelFake = "models/weapons/arccw/c_irifle.mdl"
+
 SWEP.FakePos = Vector(26, -5.9, 8.8)
 SWEP.FakeAng = Angle(0, 180, 0)
 SWEP.AttachmentPos = Vector(0,0,0)
 SWEP.AttachmentAng = Angle(0,0,0)
 SWEP.FakeEjectBrassATT = "punch"
-//SWEP.MagIndex = 53
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():SetSubMaterial(0,"NULL")
---PrintTable(Entity(1):GetActiveWeapon():GetWM():GetAttachments())
+
 SWEP.FakeReloadSounds = {
 	[0.17] = "weapons/hmcd_ar2/ar2_rotate.wav",
 	[0.35] = "weapons/hmcd_ar2/ar2_magout.wav",
@@ -46,10 +42,10 @@ SWEP.FakeViewBobBaseBone = "ValveBiped.Bip01_R_UpperArm"
 SWEP.ViewPunchDiv = 50
 
 SWEP.internalholo = Vector(15, 0, 0)
-SWEP.holo = Material("holosights/dot.png")
+SWEP.holo = Material("effects/sun_textures/birthshock")
 SWEP.colorholo = Color(79, 255, 255)
-SWEP.internalholosize = 0.5
-SWEP.holo_size = 0.25
+SWEP.internalholosize = 0.8
+SWEP.holo_size = 0.5
 
 if CLIENT then
 	SWEP.FakeReloadEvents = {
@@ -58,20 +54,15 @@ if CLIENT then
 				hg.CreateMag( self, Vector(0,0,-15) )
 				self:GetWM():ManipulateBoneScale(1, vecPochtiZero)
 				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 0.8 * timeMul)
-			else
-				//self:GetWM():ManipulateBoneScale(75, vecPochtiZero)
-				//self:GetWM():ManipulateBoneScale(76, vecPochtiZero)
-				//self:GetWM():ManipulateBoneScale(77, vecPochtiZero)
+
 			end 
 		end,
 		[0.6] = function( self, timeMul )
 			if self:Clip1() < 1 then
-				//self:GetOwner():PullLHTowards()
+
 				self:GetWM():ManipulateBoneScale(1, vector_full)
 			else
-				//self:GetWM():ManipulateBoneScale(75, vector_full)
-				//self:GetWM():ManipulateBoneScale(76, vector_full)
-				//self:GetWM():ManipulateBoneScale(77, vector_full)
+
 			end 
 			self.AnimList["idle"] = "idle"
 			self.AnimList["reload"] = "reload"

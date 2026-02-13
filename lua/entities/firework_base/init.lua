@@ -154,7 +154,7 @@ function ENT:Detonate()
 				self:FireLuaBullets(bullet, true)
 			end
 		end
-		util.ScreenShake(SelfPos,99999,99999,1,3000)
+		util.ScreenShake(SelfPos,100,200,1,1000)
 	end)
 
 	timer.Simple(.06, function()

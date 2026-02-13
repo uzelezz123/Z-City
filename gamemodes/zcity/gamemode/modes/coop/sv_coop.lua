@@ -7,8 +7,8 @@ MODE.ROUND_TIME = 9000
 hg.NextMap = ""
 
 
-local coop_rts = CreateConVar("zb_coop_rts", "1", FCVAR_PROTECTED, "apeh twix", 0, 1)
-local coop_rts_cmb = CreateConVar("zb_coop_rts_cmb", "1", FCVAR_PROTECTED, "hepa xiwt", 0, 1)
+local coop_rts = CreateConVar("zb_coop_rts", "0", FCVAR_PROTECTED, "Toggle NPC rebel possess in Half-Life 2 CO-OP mode", 0, 1)
+local coop_rts_cmb = CreateConVar("zb_coop_rts_cmb", "0", FCVAR_PROTECTED, "Toggle NPC combine possess in Half-Life 2 CO-OP mode if zb_coop_rts is enabled", 0, 1)
 
 MODE.LootSpawn = false
 
@@ -183,7 +183,7 @@ end
 function MODE:ZB_OnEntCreated( ent )
 end
 
-local mapchange = CreateConVar("zb_coop_autochangelevel", "1", FCVAR_PROTECTED, "", 0, 1)
+local mapchange = CreateConVar("zb_coop_autochangelevel", "1", FCVAR_PROTECTED, "Toggle auto changelevel in Half-Life 2 CO-OP mode", 0, 1)
 
 function MODE:ShouldRoundEnd()
 

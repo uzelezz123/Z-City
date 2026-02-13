@@ -49,15 +49,15 @@ SWEP.ReloadSoundes = {
 
 SWEP.FakeReloadSounds = {
 	[0.35] = "zcitysnd/sound/weapons/m9/handling/m9_magout.wav",
-	--[0.34] = "weapons/ak74/ak74_magout_rattle.wav",
+
 	[0.70] = "zcitysnd/sound/weapons/m9/handling/m9_magin.wav",
 	[0.9] = "zcitysnd/sound/weapons/m9/handling/m9_maghit.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 
 SWEP.FakeEmptyReloadSounds = {
 	[0.35] = "zcitysnd/sound/weapons/m9/handling/m9_magout.wav",
-	--[0.34] = "weapons/ak74/ak74_magout_rattle.wav",
+
 	[0.70] = "zcitysnd/sound/weapons/m9/handling/m9_magin.wav",
 	[0.9] = "zcitysnd/sound/weapons/m9/handling/m9_maghit.wav",
 	[1.05] = "zcitysnd/sound/weapons/m9/handling/m9_boltrelease.wav",

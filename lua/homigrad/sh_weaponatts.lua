@@ -2,7 +2,7 @@ hg.attachments = {}
 hg.attachments.sight = {
 	["empty"] = {"sight", "", Angle(0, 0, 0), {}},
 	["holo0"] = {
-		"sight", --встроенный
+		"sight", -- integrated
 		"",
 		Angle(0, 0, 0),
 		{}
@@ -842,7 +842,6 @@ hg.attachments.sight = {
 		transformFunction = function(self,model,vecadd,ang) -- in transformfunction
 		end,
 	},
-	--models/escape from tarkov/static/weapons/npz pag-17.mdl
 	["ironsight1"] = {
 		"sight",
 		"models/weapons/arc9_eft_shared/atts/ironsight/eft_rearsight_mbus.mdl",
@@ -944,8 +943,8 @@ hg.attachments.mount = {
 
 hg.attachments.barrel = {
 	["empty"] = {"barrel", "", Angle(0, 0, 0), {}},
-	["supressor0"] = {
-		"barrel", --встроенный
+	["supressor0"] = { -- with 0 key attachment can't be seen in menus, removed, etc.
+		"barrel", -- integrated
 		"",
 		Angle(0, 0, 0),
 		{}
@@ -1086,7 +1085,7 @@ hg.attachments.grip = {
 		bBonemerge = true,
 		norenderWhenDrop = true,
 	},
-	["grip_akm0"] = {
+	["grip_akm0"] = { -- with 0 key attachment can't be seen in menus, removed, etc.
 		"grip",
 		"models/weapons/upgrades/a_standard_akm.mdl",
 		Angle(0, 0, -90),
@@ -1104,48 +1103,32 @@ hg.attachments.grip = {
 		bBonemerge = true,
 		norenderWhenDrop = true,
 	},
-	["grip_ak74u0"] = {
-		"grip",
-		"models/weapons/upgrades/a_standard_aks74u.mdl",
-		Angle(0, 0, -90),
-		{},
-		offset = Vector(0, 0, 0),
-		holdtype = "ar2",
-		mountType = "ak74u",
-		recoilReduction = 1,
-		PhysModel = "models/hunter/plates/plate025.mdl",
-		PhysPos = Vector(1, 0, 0),
-		PhysAng = Angle(180, 180, 90),
-		LHandPos = Vector(0,0,0),
-		LHandAng = Angle(0,0,0),
-		ShouldtUseLHand = true,
-		bBonemerge = true,
-		norenderWhenDrop = true,
-	},
-	["grip1_ak74u0"] = {//0 в ключе значит нельзя увидеть/поставить/снять и т.д.
+	["grip_akdong"] = {
 		"grip",
 		"models/weapons/upgrades/a_woodgrips_aks74u.mdl",
 		Angle(0, 0, -90),
-		{},
+		{
+			[0] = "null"
+		},
 		offset = Vector(0, 0, 0),
 		holdtype = "ar2",
-		mountType = "ak74u",
-		recoilReduction = 0.5,
+		mountType = "ak74",
+		recoilReduction = 0.6,
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(1, 0, 0),
 		PhysAng = Angle(180, 180, 90),
-		LHandPos = Vector(3.5,-7.4,-2.5),
-		LHandAng = Angle(-15,-15,0),
+		LHandPos = Vector(-0.8,1.5,-3.6),
+		LHandAng = Angle(-30,-10,15),
 		ShouldtUseLHand = false,
-		bBonemerge = true,
+		bBonemerge = false,
 		norenderWhenDrop = true,
 		hold = "grip_hold",
 	},
 }
 
 hg.attachments.underbarrel = {
-	["lasertaser0"] = {
-		"underbarrel", --встроенный
+	["lasertaser0"] = { -- with 0 key attachment can't be seen in menus, removed, etc.
+		"underbarrel", -- integrated
 		(CLIENT and "models/hunter/plates/plate.mdl") or "",
 		Angle(0, -8, 0),
 		{
@@ -1282,8 +1265,8 @@ hg.attachments.underbarrel = {
 		valid = true,
 	},
 
-	["laserrpg"] = {
-		"underbarrel", --встроенный
+	["laserrpg0"] = {
+		"underbarrel", -- integrated
 		(CLIENT and "models/hunter/plates/plate.mdl") or "",
 		Angle(0, 0, 0),
 		{
@@ -1314,7 +1297,7 @@ hg.attachments.magwell = {
 	},
 }
 hg.attachments.agsmag = {
-	["agsmag"] = {
+	["agsmag0"] = {
 		"agsmag",
 		"models/escape from tarkov/static/weapons/magazine.mdl",
 		Angle(180, 180, 90),
@@ -1363,6 +1346,7 @@ local attNames = {
 	["mag1"] = "Rounded mag Glock18 32 Bullets",
 	["grip2"] = "ASh-12 Vertical Grip",
 	["grip3"] = "Magpul AFG Tactical Grip",
+	["grip_akdong"] = "AK-74 Dong Grip",
 	["holo5"] = "\"ОКП-7\"",
 	["holo5fur"] = "\"ОКП-7\" Furry",
 	["holo6"] = "\"ОКП-7\" Dovetail",
@@ -1379,6 +1363,7 @@ local attNames = {
 	["holo14"] = "EOTech \"XPS3-0\"",
 	["optic9"] = "Trijicon \"ACOG TA01NSN 4x32\"",
 	["optic12"] = "Sight for kar98k",
+	["optic13"] = "PAG-17 optical sight",
 	["holo15"] = "SIG Sauer \"ROMEO4\"",
 	["supressor7"] = "SIG Sauer \"SRD762-QD\" 7.62x51",
 	["holo16"] = "Trijicon \"RMR\"",
@@ -1413,7 +1398,7 @@ local attachmentsIcons = {
 	["optic7"] = "entities/eft_attachments/scopes/bravo4.png",
 	["optic8"] = "entities/eft_attachments/scopes/hamr.png",
 	["grip2"] = "entities/eft_attachments/foregrips/ash12.png",
-	["grip3"] = "entities/eft_attachments/foregrips/afg.png",
+	["grip_akdong"] = "entities/ak74hg.png",
 	["holo5"] = "entities/eft_attachments/scopes/okp7.png",
 	["holo5fur"] = "entities/eft_attachments/scopes/okp7.png",
 	["holo6"] = "entities/eft_attachments/scopes/s_okp.png",
@@ -1430,6 +1415,7 @@ local attachmentsIcons = {
 	["optic9"] = "entities/eft_attachments/scopes/ta01nsn.png",
 	["optic11"] = "entities/eft_attachments/scopes/s_pso1m2.png",
 	["optic12"] = "entities/eft_attachments/scopes/30mmvudu.png",
+	["optic13"] = "entities/ent_jack_gmod_ezarmor_pvs14nvm.png",
 	["holo15"] = "entities/eft_attachments/scopes/romeo4.png",
 	["holo16"] = "entities/eft_attachments/scopes/rmr.png",
 	["supressor8"] = "entities/eft_attachments/muzzles/hybridslinecer.png",

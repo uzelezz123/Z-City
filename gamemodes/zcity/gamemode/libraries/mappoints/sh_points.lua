@@ -36,7 +36,7 @@ if CLIENT then
         zb.ClPoints[pointGroup] = net.ReadTable()
     end)
 
-    local showpointnames = CreateConVar( "zb_drawpoints_names", "1", FCVAR_PROTECTED, "draw points", 0, 1 )
+    local showpointnames = CreateConVar( "zb_drawpoints_names", "1", FCVAR_PROTECTED, "Draw point names if zb_drawpoints enabled", 0, 1 )
 
     function zb.DrawPoints()
         if not LocalPlayer():IsAdmin() then return end
@@ -82,7 +82,7 @@ if CLIENT then
         end
     end
 
-    local drawpoints = CreateConVar( "zb_drawpoints", "0", FCVAR_PROTECTED, "draw points", 0, 1 )
+    local drawpoints = CreateConVar( "zb_drawpoints", "0", FCVAR_PROTECTED, "Draw map points if player is admin", 0, 1 )
     cvars.AddChangeCallback("zb_drawpoints", function(convar_name, value_old, value_new)
         if tobool(value_new) then 
             hook.Add("PostDrawOpaqueRenderables", "RenderPoints", zb.DrawPoints)

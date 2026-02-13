@@ -34,7 +34,7 @@ function ENT:TakeByPlayer(activator)
 		activator.inventory["Weapons"]["hg_flashlight"] = true
 		activator:SetNetVar("Inventory",activator.inventory)
 		activator:SetNetVar("flashlight",self:GetNetVar("enabled"))
-		self:EmitSound("physics/metal/weapon_impact_soft" .. math.random(3) .. ".wav", 75, math.random(90, 110), 1, CHAN_ITEM)
+		self:EmitSound("physics/metal/weapon_impact_soft" .. math.random(3) .. ".wav", 65, math.random(90, 110), 1, CHAN_ITEM)
 		self:Remove()
 	end
 end

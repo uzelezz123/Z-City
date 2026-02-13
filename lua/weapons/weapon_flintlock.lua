@@ -1,11 +1,11 @@
 SWEP.Base = "homigrad_base"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
-SWEP.PrintName = "Flintlock Pistol"
+SWEP.PrintName = "Heavy Dragoon Pistol"
 SWEP.Author = "N/A"
-SWEP.Instructions = "An very old pistol."
+SWEP.Instructions = "This is a muzzle-loaded flintlock pistol that appeared as self-defense weapon and as a military arm in the early 16th century, using black powder and 20mm caliber."
 SWEP.Category = "Weapons - Pistols"
-SWEP.Slot = 2
+SWEP.Slot = 1
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
 SWEP.WorldModel = "models/weapons/esw/w_english_dragoon_pistol.mdl"
@@ -33,15 +33,16 @@ SWEP.Primary.ClipSize = 1
 SWEP.Primary.DefaultClip = 1
 SWEP.NumBullet = 1
 SWEP.Primary.Automatic = false
-SWEP.Primary.Ammo = "Metallic Ball"
+SWEP.Primary.Ammo = "20mm"
 SWEP.Primary.Cone = 0
 SWEP.Primary.Damage = 65
 SWEP.Primary.Sound = {"weapons/awoi/musket_3_fire.wav", 75, 60, 70}
 SWEP.SupressedSound = {"weapons/awoi/musket_3_fire.wav", 65, 90, 100}
 SWEP.Primary.SoundEmpty = {"zcitysnd/sound/weapons/m1911/handling/m1911_empty.wav", 75, 95, 100, CHAN_WEAPON, 2}
-SWEP.Primary.Force = 40
-SWEP.Primary.Wait = 0.2
-SWEP.Primary.Spread = Vector(0.02, 0.02, 0.02)
+SWEP.Primary.Force = 80
+SWEP.Primary.Wait = PISTOLS_WAIT
+SWEP.Primary.Spread = Vector(0.012, 0.012, 0.012)
+
 SWEP.ReloadTime = 5
 SWEP.ReloadSound = "weapons/awoi/pistol_reload.wav"
 SWEP.DeploySnd = {"homigrad/weapons/draw_pistol.mp3", 55, 100, 110}
@@ -50,9 +51,10 @@ SWEP.HoldType = "revolver"
 SWEP.ZoomPos = Vector(-26, 0.6896, 0.7799)
 SWEP.RHandPos = Vector(0, -0.5, -1)
 SWEP.LHandPos = false
-SWEP.Ergonomics = 0.9
-SWEP.Penetration = 11
-SWEP.SprayRand = {Angle(-0.4, -0.2, 0), Angle(-0.5, 0.2, 0)}
+SWEP.Ergonomics = 0.85
+SWEP.Penetration = 1
+SWEP.SprayRand = {Angle(-0.7, -0.5, 0), Angle(-0.7, 0.5, 0)}
+
 SWEP.AnimShootMul = 4
 SWEP.AnimShootHandMul = 2
 SWEP.WorldPos = Vector(10, -0.5, -3.5)
@@ -83,14 +85,7 @@ SWEP.RHAng = Angle(0,-5,90)
 SWEP.LHPos = Vector(-1.2,-1.4,-2.5)
 SWEP.LHAng = Angle(5,9,-100)
 
-local finger1 = Angle(-25,10,25)
-local finger2 = Angle(0,25,0)
-local finger3 = Angle(31,1,-25)
-local finger4 = Angle(-10,-5,-5)
-local finger5 = Angle(0,-65,-15)
-local finger6 = Angle(2,-2,-22)
-
-local vector_zero = Vector(0,0,0)
+SWEP.ShootAnimMul = 7
 
 if CLIENT then
 	function SWEP:ReloadStart()
@@ -107,49 +102,35 @@ function SWEP:PrimaryShootPost()
 	local eff = EffectData()
 	eff:SetOrigin(att.Pos + att.Ang:Up() * -4 + att.Ang:Forward() * -1)
 	eff:SetNormal(att.Ang:Forward())
-	eff:SetScale(1)
+	eff:SetScale(2)
 	util.Effect("eff_jack_rockettrust", eff)
 end
 
 function SWEP:AnimHoldPost()
-	--self:BoneSet("r_finger0", vector_zero, finger6)
-	--self:BoneSet("l_finger0", vector_zero, finger1)
-    --self:BoneSet("l_finger02", vector_zero, finger2)
-	--self:BoneSet("l_finger1", vector_zero, finger3)
-	--self:BoneSet("r_finger1", vector_zero, finger4)
-	--self:BoneSet("r_finger11", vector_zero, finger5)
 end
-
-SWEP.ShootAnimMul = 7
-
-local vector_one = Vector(1,1,1)
 
 function SWEP:DrawPost()
-	local wep = self:GetWeaponEntity()
-	if CLIENT and IsValid(wep) then
-		self.shooanim = LerpFT(0.4,self.shooanim or 0,self:Clip1() > 0 and 0 or 3)
-		wep:ManipulateBonePosition(4,Vector(0 ,0 ,-1*self.shooanim ),false)
-		wep:ManipulateBoneScale(2,self:Clip1() > 0 and vector_one or vector_zero)
-	end
 end
 
--- RELOAD ANIM AKM
+-- RELOAD ANIM MUSKET
 SWEP.ReloadAnimLH = {
-	Vector(0,0,0),
-	Vector(16,1,0),
-	Vector(16,1,0),
-	Vector(14,-2,0),
-	Vector(12,-2,0),
-	Vector(12,-2,0),
-	Vector(11,-2,0),
-	Vector(12,2,0),
-	Vector(14,2,0),
-	Vector(14,2,0),
-	Vector(13,-2,0),
-	Vector(12,-2,0),
-	Vector(10,-2,0),
-	Vector(8,-2,0),
-	Vector(4,-1,0),
+	Vector(-20,10,-15),
+	Vector(-20,10,-15),
+	Vector(-10,10,-10),
+	Vector(4,0,0),
+	Vector(4,0,0),
+	Vector(3,-2,0),
+	Vector(3,-2,0),
+	Vector(3,-2,0),
+	Vector(2,-2,0),
+	Vector(15,0,0),
+	Vector(25,0,0),
+	Vector(25,0,-1),
+	Vector(25,-2,-1),
+	Vector(15,-2,-2),
+	Vector(15,-2,-2),
+	Vector(10,-2,-1),
+	Vector(5,0,-1),
 	Vector(0,0,0),
 }
 
@@ -159,36 +140,35 @@ SWEP.ReloadAnimRH = {
 
 SWEP.ReloadAnimLHAng = {
 	Angle(0,0,0),
+	Angle(0,-15,20),
+	Angle(0,-15,30),
+	Angle(0,-25,50),
+	Angle(0,-35,60),
+	Angle(0,-35,40),
 	Angle(0,-25,60),
-	Angle(0,-25,60),
-	Angle(0,-25,90),
-	Angle(0,-25,90),
-	Angle(0,-25,90),
-	Angle(0,-25,90),
-	Angle(0,-25,60),
-	Angle(0,-25,60),
+	Angle(0,-25,40),
+	Angle(0,-15,20),
 	Angle(0,0,0)
 }
 
 SWEP.ReloadAnimRHAng = {
-	Angle(0,0,0),
+	Angle(0,0,0)
 }
 
 SWEP.ReloadAnimWepAng = {
 	Angle(0,10,50),
-	Angle(0,25,45),
-	Angle(0,25,45),
-	Angle(5,25,45),
+	Angle(30,5,5),
+	Angle(40,5,5),
+	Angle(55,25,45),
+	Angle(55,25,45),
+	Angle(40,25,45),
 	Angle(3,25,45),
-	Angle(0,25,45),
-	Angle(0,25,45),
 	Angle(5,25,45),
 	Angle(3,25,45),
 	Angle(0,0,0)
 }
 
 -- Inspect Assault
-
 SWEP.InspectAnimWepAng = {
 	Angle(0,0,0),
 	Angle(4,4,15),

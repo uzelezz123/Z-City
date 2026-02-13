@@ -100,7 +100,7 @@ function SWEP:ChangeGunPos(dtime)
 	
 	local should = true and not (fakeRagdoll and not (inuse))
 
-	self.lerped_positioning = Lerp(hg.lerpFrameTime2(0.1, dtime), self.lerped_positioning or 0, should and (ent != owner and 0.8 or 1) or 0.3)
+	self.lerped_positioning = Lerp(hg.lerpFrameTime2(0.1, dtime), self.lerped_positioning or 0, should and 1 or 0.3)
 	self.lerped_angle = Lerp(hg.lerpFrameTime2(0.1, dtime), self.lerped_angle or 0, should and 1 or (hg.KeyDown(owner, IN_ATTACK2) and 1 or 0))
 
 	self.weaponAng[1] = 0
@@ -603,6 +603,21 @@ function SWEP:WorldModel_Transform(bNoApply, bNoAdditional, model)
 		self.last_transform = SysTime()
 
 		local should = hg.ShouldTPIK(owner) and not (ent ~= owner and not (inuse))
+		if not should and not IsValid(owner.FakeRagdoll) then
+			if IsValid(model) then
+				-- local ownAngs = owner:EyeAngles()
+				-- model:SetRenderAngles(ownAngs)
+				-- model:SetRenderOrigin(owner:EyePos() + ownAngs:Forward() * 15 + owner:GetUp() * -10)
+
+				model:SetModel(self.WorldModel)
+				model:AddEffects(EF_BONEMERGE)
+				model:SetParent(owner)
+				model:Remove()
+				model = nil
+			end
+
+			return
+		end
 		
 		-- if not should then ent:SetupBones() end
 		
@@ -671,6 +686,7 @@ function SWEP:WorldModel_Transform(bNoApply, bNoAdditional, model)
 		model:SetRenderAngles(newAng)
 		model:SetPos(newPos)
 		model:SetAngles(newAng)
+		self:DrawShadow(true)
 	else
 		local pos, ang = self:GetPos(), self:GetAngles()
 
@@ -682,6 +698,7 @@ function SWEP:WorldModel_Transform(bNoApply, bNoAdditional, model)
 		model:SetRenderAngles(ang)
 		model:SetPos(pos)
 		model:SetAngles(ang)
+		self:DrawShadow(false)
 	end
 end
 

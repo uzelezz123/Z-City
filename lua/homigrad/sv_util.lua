@@ -1,7 +1,7 @@
 local getBloodColor = FindMetaTable( "Entity" ).GetBloodColor
 local isBulletDamage = FindMetaTable( "CTakeDamageInfo" ).IsBulletDamage
 
-local hg_legacycam = ConVarExists("hg_legacycam") and GetConVar("hg_legacycam") or CreateConVar("hg_legacycam", 0, FCVAR_REPLICATED, "ragdoll combat", 0, 1)
+local hg_legacycam = ConVarExists("hg_legacycam") and GetConVar("hg_legacycam") or CreateConVar("hg_legacycam", 0, FCVAR_REPLICATED, "Toggle legacy first-person view camera", 0, 1)
 
 local host_timescale = game.GetTimeScale
 
@@ -356,7 +356,7 @@ net.Receive("LookAway",function(len,ply)
 	net.Send(rf)
 end)
 
-local hg = hg or {}
+hg = hg or {}
 -- С помощью этой функции можно пугать неписей.. Либо наоборот приманивать туда куда надо, мгс5 режим можно устроить
 function hg.EmitAISound(pos, vol, dur, typ) -- https://developer.valvesoftware.com/wiki/Ai_sound
 	local snd = ents.Create("ai_sound")
@@ -387,7 +387,7 @@ hook.Add("KeyRelease", "huy-hg2", function(ply, key)
 	net.SendPVS(ply:GetPos())
 end)
 
-local realismMode = CreateConVar( "hg_fullrealismmode", "1", FCVAR_SERVER_CAN_EXECUTE, "huy", 0, 1 )
+local realismMode = CreateConVar( "hg_fullrealismmode", "1", FCVAR_SERVER_CAN_EXECUTE, "Toggle first-person camera view", 0, 1 )
 
 cvars.AddChangeCallback("hg_fullrealismmode", function(convar_name, value_old, value_new)
 	SetGlobalBool("FullRealismMode",realismMode:GetBool())
@@ -465,6 +465,7 @@ hook.Add("PostEntityFireBullets","bulletsuppression",function(ent,bullet)
 	local tr = bullet.Trace
 	local dmg = bullet.Damage
 	if ent == Entity(0) then return end
+	if !IsValid(ent) then return end
 	for i,ply in player.Iterator() do--five pebbles
 		if (IsValid(ent:GetOwner()) and ply == ent:GetOwner()) or ent == ply then continue end
 		if !ply:Alive() then continue end
@@ -485,14 +486,15 @@ hook.Add("PostEntityFireBullets","bulletsuppression",function(ent,bullet)
 
 		if dist > 120 then continue end
 
-		if shooterdist < 500 and !IsLookingAt(ent:GetOwner(),eyePos) then continue end
+		if shooterdist < 200 and !IsLookingAt(ent:GetOwner(),eyePos) then continue end
 
 		if ent:GetOwner():IsPlayer() then
 			hg.DynaMusic:AddPanic(ent:GetOwner(),0.5)
 		end
 
 		if !org.otrub then
-			ent:AddNaturalAdrenaline(0.05 * dmg / math.max(dist / 2,10) / 1)
+			--print(1 * dmg / math.max(dist / 2,10) / 1)
+			ply:AddNaturalAdrenaline(0.05 * dmg / math.max(dist / 2,10) / 1)
 			org.fearadd = org.fearadd + 0.2
 		end
 	end
@@ -692,41 +694,61 @@ function hgWreckBuildings(blaster, pos, power, range, ignoreVisChecks) -- taken 
 	local masMassToLoosen = 30 * power
 	local allProps = ents.FindInSphere(pos, maxRange)
 
-	for k, prop in pairs(allProps) do
-		if not (table.HasValue(WreckBlacklist, prop:GetClass()) or hook.Run("hg_CanDestroyProp", prop, blaster, pos, power, range, ignore) == false or prop.ExplProof == true) then
-			local physObj = prop:GetPhysicsObject()
-			local propPos = prop:LocalToWorld(prop:OBBCenter())
-			local DistFrac = 1 - propPos:Distance(pos) / maxRange
-			local myDestroyThreshold = DistFrac * maxMassToDestroy
-			local myLoosenThreshold = DistFrac * masMassToLoosen
+	local co = coroutine.create(function()
 
-			if DistFrac >= .85 then
-				myDestroyThreshold = myDestroyThreshold * 7
-				myLoosenThreshold = myLoosenThreshold * 7
-			end
+		local LastProcess = SysTime()
 
-			if (prop ~= blaster) and physObj:IsValid() then
-				local mass, proceed = physObj:GetMass(), ignoreVisChecks
+		for k, prop in ipairs(allProps) do
+			LastProcess = SysTime()
+			if not (table.HasValue(WreckBlacklist, prop:GetClass()) or hook.Run("hg_CanDestroyProp", prop, blaster, pos, power, range, ignore) == false or prop.ExplProof == true) then
+				local physObj = prop:GetPhysicsObject()
+				local propPos = prop:LocalToWorld(prop:OBBCenter())
+				local DistFrac = 1 - propPos:Distance(pos) / maxRange
+				local myDestroyThreshold = DistFrac * maxMassToDestroy
+				local myLoosenThreshold = DistFrac * masMassToLoosen
 
-				if not proceed then
-					local tr = util.QuickTrace(pos, propPos - pos, blaster)
-					proceed = IsValid(tr.Entity) and (tr.Entity == prop)
+				if DistFrac >= .85 then
+					myDestroyThreshold = myDestroyThreshold * 7
+					myLoosenThreshold = myLoosenThreshold * 7
 				end
 
-				if proceed then
-					if mass <= myDestroyThreshold then
-						SafeRemoveEntity(prop)
-					elseif mass <= myLoosenThreshold then
-						physObj:EnableMotion(true)
-						constraint.RemoveAll(prop)
-						physObj:ApplyForceOffset((propPos - pos):GetNormalized() * 1000 * DistFrac * power * mass, propPos + VectorRand() * 10)
-					else
-						physObj:ApplyForceOffset((propPos - pos):GetNormalized() * 200 * DistFrac * origPower * mass, propPos + VectorRand() * 10)
+				if (prop ~= blaster) and physObj:IsValid() then
+					local mass, proceed = physObj:GetMass(), ignoreVisChecks
+
+					if not proceed then
+						local tr = util.QuickTrace(pos, propPos - pos, blaster)
+						proceed = IsValid(tr.Entity) and (tr.Entity == prop)
+					end
+
+					if proceed then
+						if mass <= myDestroyThreshold then
+							SafeRemoveEntity(prop)
+						elseif mass <= myLoosenThreshold then
+							physObj:EnableMotion(true)
+							constraint.RemoveAll(prop)
+							physObj:ApplyForceOffset((propPos - pos):GetNormalized() * 200 * DistFrac * power * mass, propPos + VectorRand() * 10)
+						else
+							physObj:ApplyForceOffset((propPos - pos):GetNormalized() * 200 * DistFrac * origPower * mass, propPos + VectorRand() * 10)
+						end
 					end
 				end
 			end
+
+			LastProcess = SysTime() - LastProcess
+
+			if LastProcess > 0.001 then
+				coroutine.yield()
+			end
 		end
-	end
+	end)
+	local index = blaster:EntIndex()
+	timer.Create("ProcessCheck_" .. index, 0, 0, function()
+		if coroutine.status( co ) == "dead" then
+			timer.Remove("ProcessCheck_" .. index)
+		end
+		--print("Yes yelid", coroutine.status( co ))
+		coroutine.resume(co)
+	end)
 end
 
 function hgIsDoor(ent)
@@ -1051,7 +1073,7 @@ if util.IsBinaryModuleInstalled("eightbit") then
 	require("eightbit")
 
 	if eightbit.SetDamp1 then
-		eightbit.SetDamp1(0.96)
+		eightbit.SetDamp1(0.85)
 	end
 
 	if eightbit.SetProotCutoff then
@@ -1272,7 +1294,7 @@ local reasons = {
 local plymeta = FindMetaTable("Player")
 
 local flags = bit.bor(FCVAR_REPLICATED, FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_NEVER_AS_STRING)
-local hg_sync = CreateConVar("hg_sync", 0, flags, "Enable death sync", 0, 1)
+local hg_sync = CreateConVar("hg_sync", 0, flags, "Toggle death synchronized (kick player on death)", 0, 1)
 
 function plymeta:SyncDeath()
 	local SyncLastMessage = table.Random(reasons)
@@ -1490,9 +1512,9 @@ hook.Add( "KeyPress", "snowballs_pickup", function( ply, key )
 end )
 
 local warmingEnts = {
-	["env_sprite"] = 1,
-	["env_fire"] = 2,
-	["vfire"] = 15,
+	["env_sprite"] = 0.1,
+	["env_fire"] = 0.5,
+	["vfire"] = function(ent) return ent:GetFireState() end,
 }
 
 hg.MapTemps = {
@@ -1517,10 +1539,17 @@ function hg.TranslateToBodyTemp(temp, org)
 	return math.Remap(temp, -20, 20, 27, org and org.needed_temp or 36.7) -- math.Remap doesn't clamp
 end
 
+local hg_temperaturesystem = CreateConVar("hg_temperaturesystem", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Toggle temperature system", 0, 1)
+local sf2_get_temp = StormFox2 and StormFox2.Temperature and StormFox2.Temperature.Get or nil
+
+hook.Add("StormFox2.PostEntityScan","load-stormfox-support",function()
+	sf2_get_temp = StormFox2 and StormFox2.Temperature and StormFox2.Temperature.Get or nil
+end)
+
 hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- переделал систему температуры
 	if not owner:IsPlayer() or not owner:Alive() then return end
 	if owner.GetPlayerClass and owner:GetPlayerClass() and owner:GetPlayerClass().NoFreeze then return end
-
+	if !hg_temperaturesystem:GetBool() then return end
 	if (owner.CheckTemp or 0) > CurTime() then return end
 	owner.CheckTemp = CurTime() + 0.5--optimization update
 
@@ -1531,25 +1560,26 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 		start = ent:GetPos() + vector_up * 15,
 		endpos = ent:GetPos() + vector_up * 999999,
 		mask = MASK_SOLID_BRUSHONLY
-	} ).HitSky and hg.TemperatureMaps[game.GetMap()]
+	} ).HitSky and !owner:InVehicle()
 
 	org.temperature = org.temperature or 36.7
 
 	local currentPulse = org.pulse or 70
 	local pulseHeat = 0
-	local temp = hg.MapTemps[game.GetMap()] or -10
+	local temp = sf2_get_temp and sf2_get_temp() or hg.MapTemps[game.GetMap()] or 20
 
 	if currentPulse > 80 then
 		local pulseMultiplier = math.min((currentPulse - 70) / 100, 1.2)
 		pulseHeat = timeValue / 50 * pulseMultiplier * 0.2
-	end
+	end -- unused
 
 	local warming = org.stamina.sub > 0 and 0.5 or 0
 	local ownerpos = owner:GetPos()
-	for i, ent in ipairs(ents.FindInSphere(ownerpos, 200)) do
-		if warmingEnts[ent:GetClass()] then
+	for i, ent in ipairs(ents.FindInSphere(ownerpos, 300)) do
+		local warmingent = warmingEnts[ent:GetClass()]
+		if warmingent and !ent:GetNoDraw() then
 			--org.temperature = org.temperature + timeValue * (warmingEnts[ent:GetClass()] / 50 * (1 - ent:GetPos():Distance(owner:GetPos()) / 200))
-			warming = warming + 0.5
+			warming = warming + (isfunction(warmingent) and warmingent(ent) or warmingent)
 		end
 	end
 
@@ -1562,13 +1592,17 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 
 	local changeRate = timeValue / 30 -- 1 degree every 1 minute
 
-	local temp = (IsVisibleSkyBox and temp or math.max(10, temp)) + warming * 5
-
+	local temp = (IsVisibleSkyBox and temp or 20) + warming * 5
+	
 	local isFreezing = temp < 0
 	local isHeating = temp > 30
-
+	
 	if temp < -20 then
-		changeRate = changeRate * 2
+		changeRate = changeRate * math.abs(temp) * 0.1
+	end
+
+	if temp > 25 then
+		changeRate = changeRate * math.Clamp(((org.heatbuff - 30) / 60), 1, 2)
 	end
 
 	org.tempchanging = changeRate
@@ -1576,11 +1610,15 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 	if org.heatbuff > 0 then
 		temp = math.max(20, temp)
 	end
-	
+
+	if org.heatbuff < 30 and org.temperature < 30 then -- bro is NOT warming up
+		temp = math.min(-20, temp)
+	end
+
 	org.temperature = math.Approach(org.temperature, hg.TranslateToBodyTemp(temp, org), org.tempchanging)
 
 	-- При холоде
-	if owner:Alive() and not org.otrub and isFreezing and org.temperature < 36 then
+	if owner:Alive() and not org.otrub and org.temperature < 36 then
 		org.FreezeSndCD = org.FreezeSndCD or CurTime() + math.random(5, 15)
 		
 		if org.FreezeSndCD < CurTime() then
@@ -1591,13 +1629,13 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 	end
 	
 	org.FreezeDMGCd = org.FreezeDMGCd or CurTime()
-	if isFreezing and org.temperature < 35 and org.FreezeDMGCd < CurTime() then
+	if org.temperature < 35 and org.FreezeDMGCd < CurTime() then
 		org.painadd = org.painadd + math.Rand(0, 1) * ((35 - org.temperature) / 35 * 4 + 1)
 		org.FreezeDMGCd = CurTime() + 0.5
 	end
 
 	-- При жаре
-	if owner:Alive() and isHeating and org.temperature > 40 then
+	if owner:Alive() and org.temperature > 40 then
 		org.VomitCD = org.VomitCD or CurTime() + math.random(35, 75)
 		
 		if org.VomitCD < CurTime() then
@@ -1611,7 +1649,7 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 	end
 
 	org.HeatDMGCd = org.HeatDMGCd or CurTime()
-	if isHeating and org.temperature > 38 and org.HeatDMGCd < CurTime() and not org.otrub then
+	if org.temperature > 38 and org.HeatDMGCd < CurTime() and not org.otrub then
 		org.painadd = org.painadd + math.Rand(0.5, 1) * ((org.temperature - 38) / 38 * 6 + 1)
 		org.HeatDMGCd = CurTime() + 0.5
 	end
@@ -1681,7 +1719,7 @@ hook.Add("SetupMove", "bm_force_foosteps", function(ply, mv)
 	end
 end)
 
-local hg_fallonsideland = CreateConVar("hg_fallonsideland", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED},"Enable fall from side landing")
+local hg_fallonsideland = CreateConVar("hg_fallonsideland", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED},"Toggle fall from side landing (if player land direction != player eye direction)")
 hook.Add("Move", "CP_detectland", function(ply)
 	if !hg_fallonsideland:GetBool() then return end
 	local vel = ply:GetVelocity()

@@ -44,7 +44,7 @@ hg.Appearance.GenerateRandomName = GenerateRandomName
 local access = {
     --["STEAM_0:1:163575696"] = true -- distac our custom model creator
 }
-local hg_appearance_access_for_all = ConVarExists("hg_appearance_access_for_all") and GetConVar("hg_appearance_access_for_all") or CreateConVar("hg_appearance_access_for_all", 1, {FCVAR_REPLICATED,FCVAR_NEVER_AS_STRING,FCVAR_ARCHIVE}, "Enable free items in appearance", 0, 1)
+local hg_appearance_access_for_all = ConVarExists("hg_appearance_access_for_all") and GetConVar("hg_appearance_access_for_all") or CreateConVar("hg_appearance_access_for_all", 1, {FCVAR_REPLICATED,FCVAR_NEVER_AS_STRING,FCVAR_ARCHIVE}, "Toggle free items in appearance for everyone", 0, 1)
 if SERVER then
     cvars.AddChangeCallback("hg_appearance_access_for_all", function(convar_name, value_old, value_new)
         SetGlobalBool("hg_appearance_access_for_all",hg_appearance_access_for_all:GetBool())
@@ -474,6 +474,18 @@ function plymeta:GetSubMaterialSlots()
     return slots
 end
 
-function plymeta:GetFacemapSlot()
+function plymeta:GetSubMaterialIdByName(strName)
+    local mats = self:GetMaterials()
 
+    local id = false
+
+    for i = 1, #mats do
+        if mats[i] == strName then id = i-1 break end
+    end
+
+    return id
 end
+
+-- function plymeta:GetFacemapSlot()
+
+-- end

@@ -81,164 +81,6 @@ local upDir = Vector(0, 0, 1)
 local fwdDir = Vector(0, 2.5, 0)
 local rightDir = Vector(2.5, 0, 0)
 
-local function MegaDSP(ply)
-		local trDist = 3000
-		local view = render.GetViewSetup()
-		local viewent = GetViewEntity()
-		local filter = {hg.GetCurrentCharacter(ply),ply,viewent}
-		local trUp = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + upDir * trDist,
-			filter = filter
-		})
-		local trUpFwdL = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (upDir + fwdDir - rightDir) * trDist,
-			filter = filter
-		})
-		local trUpFwd = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (upDir + fwdDir + rightDir / 2) * trDist,
-			filter = filter
-		})
-		local trUpFwdR = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (upDir + fwdDir + rightDir) * trDist,
-			filter = filter
-		})
-		local trUpBackL = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (upDir - fwdDir - rightDir) * trDist,
-			filter = filter
-		})
-		local trUpBack = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (upDir - fwdDir + rightDir / 2) * trDist,
-			filter = filter
-		})
-		local trUpBackR = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (upDir - fwdDir + rightDir) * trDist,
-			filter = filter
-		})
-		local trRight = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (upDir + rightDir) * trDist,
-			filter = filter
-		})
-		local trLeft = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (upDir - rightDir) * trDist,
-			filter = filter
-		})
-	
-		local trDown = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin - upDir * trDist,
-			filter = filter
-		})
-		local trDownFwdL = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (-upDir + fwdDir - rightDir) * trDist,
-			filter = filter
-		})
-		local trDownFwd = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (-upDir + fwdDir + rightDir / 2) * trDist,
-			filter = filter
-		})
-		local trDownFwdR = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (-upDir + fwdDir + rightDir) * trDist,
-			filter = filter
-		})
-		local trDownBackL = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (-upDir - fwdDir - rightDir) * trDist,
-			filter = filter
-		})
-		local trDownBack = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (-upDir - fwdDir + rightDir / 2) * trDist,
-			filter = filter
-		})
-		local trDownBackR = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (-upDir - fwdDir + rightDir) * trDist,
-			filter = filter
-		})
-		local trDownRight = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (-upDir + rightDir) * trDist,
-			filter = filter
-		})
-		local trDownLeft = util.TraceLine({
-			start = view.origin,
-			endpos = view.origin + (-upDir - rightDir) * trDist,
-			filter = filter
-		})
-	
-		local avgUpDist = 0
-		local avgDownDist = 0
-		local avgDist
-		local upTraces = {trUp, trUpFwdL, trUpFwd, trUpFwdR, trUpBackL, trUpBack, trUpBackR, trRight, trLeft}
-		local downTraces = {trDown, trDownFwdL, trDownFwd, trDownFwdR, trDownBackL, trDownBack, trDownBackR, trDownRight, trDownLeft}
-		local shouldCompute = true
-	
-		for _, tr in ipairs(upTraces) do
-			-- debugoverlay.Line(view.origin, tr.HitPos, 0.1)
-			if not tr.Hit or tr.HitSky then
-				shouldCompute = false
-				break
-			end
-		end
-		for _, tr in ipairs(downTraces) do
-			-- debugoverlay.Line(view.origin, tr.HitPos, 0.1)
-			if not tr.Hit or tr.HitSky then
-				shouldCompute = false
-				break
-			end
-		end
-	
-		if shouldCompute then
-			for _, tr in ipairs(upTraces) do
-				avgUpDist = avgUpDist + (tr.Hit and (tr.HitPos - view.origin):LengthSqr() or 0)
-			end
-			avgUpDist = avgUpDist / #upTraces
-	
-			for _, tr in ipairs(downTraces) do
-				avgDownDist = avgDownDist + (tr.Hit and (tr.HitPos - view.origin):LengthSqr() or 0)
-			end
-			avgDownDist = avgDownDist / #downTraces
-			
-			avgDist = avgUpDist > avgDownDist and avgUpDist or avgDownDist
-		else
-			avgDist = 10 ^ 8
-		end
-	
-		-- Do not set to 0 for no effect; it causes DSP allocation error.
-		--print(avgDist)
-		if avgDist > 50000000 then
-			RunConsoleCommand("dsp_player", 0)
-			RunConsoleCommand("room_type", 1)
-		elseif avgDist > 5000000 then
-			RunConsoleCommand("dsp_player", 105)
-			RunConsoleCommand("room_type", 1)
-		elseif avgDist > 500000 then
-			RunConsoleCommand("dsp_player", 3)
-			RunConsoleCommand("room_type", 1)
-		elseif avgDist > 50000 then
-			RunConsoleCommand("dsp_player", 2)
-			RunConsoleCommand("room_type", 1)
-		elseif avgDist > 5000 then
-			RunConsoleCommand("dsp_player", 104)
-			RunConsoleCommand("room_type", 1)
-		elseif avgDist <= 5000 then
-			RunConsoleCommand("dsp_player", 102)
-			RunConsoleCommand("room_type", 1)
-		end
-end
-
 local function plyCommand(ply,cmd)
 	local time = CurTime()
 	ply.cmdtimer = ply.cmdtimer or time
@@ -289,8 +131,6 @@ hook.Add("Player_Death", "adsadsadhuy!!", function(ply)
 		plyCommand(lply,"soundfade 100 99999")
 	end
 end)
-
-local auto_dsp_convar = ConVarExists("hg_auto_dsp") and GetConVar("hg_auto_dsp") or CreateClientConVar("hg_auto_dsp","1",true,false,"Enable auto D.S.P. (Reverb, echo etc.)",0,1)
 
 local alivestart = CurTime()
 hg.screens = hg.screens or {}
@@ -597,11 +437,8 @@ hook.Add("RenderScreenspaceEffects", "organism-effects", function()
 	else
 		plyCommand(lply,"soundfade "..tinnitusSoundFactor2.." 25")
 
-		if ((disorientation and disorientation > 3) or (brain and brain > 0.2)) and lply:Alive() then
+		if ((disorientation and disorientation > 3) or (brain and brain > 0.2) or lply.PlayerClassName == "headcrabzombie" or lply:GetNetVar("headcrab")) and lply:Alive() then
 			lply:SetDSP(130)
-		end
-		if auto_dsp_convar:GetBool() then
-			MegaDSP(lply)
 		else
 			lply:SetDSP(0)
 		end
@@ -618,13 +455,17 @@ hook.Add("RenderScreenspaceEffects", "organism-effects", function()
 	DrawSharpen(k1 * 2, k1 * 1)
 	local lowpulse = math.max((70 - pulse) / 70, 0) + math.max(3000 * ((math.cos(CurTime()/2) + 1) / 2 * 0.1 + 1) - (blood * adrenK - 300),0) / 400
 
+	if (lply.PlayerClassName == "headcrabzombie" or lply:GetNetVar("headcrab")) and lply:Alive() then
+		disorientation = disorientation + 100
+	end
+
 	local amount = 1 - math.Clamp(lowpulse + disorientation / 4 + k2 * 2,0,1)
 
 	disorientationLerp = LerpFT(disorientation > disorientationLerp and 1 or 0.01, disorientationLerp, disorientation)
 
 	if (disorientationLerp > 1) and lply:Alive() or brain > 0 then
 		local add2 = disorientationLerp - 1
-		if not brain_motionblur then DrawMotionBlur(0.15 - math.Clamp(add2 / 1, 0, 0.1), add2 * 2, 0.001) end
+		if not brain_motionblur and lply.PlayerClassName ~= "headcrabzombie" then DrawMotionBlur(0.15 - math.Clamp(add2 / 1, 0, 0.1), add2 * 2, 0.001) end
 		if disorientationLerp > 2 then
 			local add = (disorientationLerp - 2) * 2
 			local time = CurTime() * 3
@@ -860,6 +701,14 @@ local checkpulsebones = {
 }
 local hg_blood_fps = ConVarExists("hg_blood_fps") and GetConVar("hg_blood_fps") or CreateClientConVar("hg_blood_fps", 24, true, nil, "fps to draw blood", 12, 165)
 
+local pitchAddClasses = {
+	["furry"] = 20,
+	["headcrabzombie"] = -60
+}
+local muffedClasses = {
+	["headcrabzombie"] = true
+}
+
 hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, ent, time)
 	--local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 	--print(ply,ent,ply.organism.owner,ply.new_organism.owner)
@@ -877,8 +726,8 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 	if org and org.pulse and org.o2 and org.o2[1] then
 		local pulse = org.heartbeat
 		ent.pulsethink = ent.pulsethink or 0
-		local speed = math.Clamp(org.heartbeat / 60, 1, 120) * 0.5 * (org.o2[1] < 8 and 0 or 1)
-		ent.pulsethink = ent.pulsethink + (org.heartbeat > 1 and 1 or 0) * (org.holdingbreath and 0 or 1) * FrameTime() * 4 * (speed)
+		local speed = math.Clamp(org.heartbeat / 60, 1, 120) * (0.4 / math.max(org.o2.curregen, 0.3)) * 0.5 * (org.o2[1] < 8 and 0 or 1)
+		ent.pulsethink = ent.pulsethink + (org.heartbeat > 1 and 1 or 0) * (org.holdingbreath and 0 or 1) * FrameTime() * 4 * (speed) * (org.lungsfunction and 1 or 0)
 
 		local torso = ent:LookupBone("ValveBiped.Bip01_Spine2")
 		--local chest = ent:LookupBone("ValveBiped.Bip01_Spine1")
@@ -886,7 +735,7 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 		if torso then
 			if ent:GetPos():Distance(lply:GetPos()) > 450 then return end
 			local sin = (math.sin(ent.pulsethink) + 1) * 0.5 * ((org.alive and !ent.headexploded) and 1 or 0)
-			local amt = 0.02 * sin * pulse / 70
+			local amt = 0.05 * sin * math.max(org.pulse / 70, 0.5)
 			
 			local size = 1 + amt
 			vecTorso[1] = size
@@ -907,7 +756,17 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 				if ent.armors then
 					muffed = ent.armors["face"] == "mask2" or ent.PlayerClassName == "Combine"
 				end
-				ent:EmitSound("snds_jack_hmcd_breathing/" .. (ThatPlyIsFemale(ent) and "f" or "m") .. math.random(4) .. ".wav", min(heartbeat * 1.0 / ( muffed and 2.5 or 4), 45), math.random(95, 105) + (ply.PlayerClassName and ply.PlayerClassName == "furry" and 20 or 0), 0.5 * (((org.stamina and org.stamina[1] and org.stamina[1] < 160) or org.heartbeat > 140) and 1 or 0.05), CHAN_AUTO, 0, muffed and 16 or 0)
+
+				if ply.PlayerClassName and muffedClasses[ply.PlayerClassName] then
+					muffed = muffedClasses[ply.PlayerClassName]
+				end
+
+				local pitchadd = 0
+				if ply.PlayerClassName and pitchAddClasses[ply.PlayerClassName] then
+					pitchadd = pitchAddClasses[ply.PlayerClassName]
+				end
+
+				ent:EmitSound("snds_jack_hmcd_breathing/" .. (ThatPlyIsFemale(ent) and "f" or "m") .. math.random(4) .. ".wav", min(heartbeat * 1.0 / ( muffed and 2.5 or 4), 45), math.random(95, 105) + pitchadd, 0.5 * (((org.stamina and org.stamina[1] and org.stamina[1] < 160) or org.heartbeat > 140) and 1 or 0.05), CHAN_AUTO, 0, muffed and 16 or 0)
 			elseif org.breathed and sin >= 0.1 then
 				org.breathed = false
 			end

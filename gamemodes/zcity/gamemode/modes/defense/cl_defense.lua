@@ -305,7 +305,7 @@ local currentMusic
 local fadeDuration = 2  
 local fadeInterval = 0.1  
 
-local musicConvar = CreateConVar("cl_wavemusic", "1", FCVAR_ARCHIVE, "Enable or disable wave music during waves.")
+local musicConvar = CreateConVar("cl_wavemusic", "1", FCVAR_ARCHIVE, "Toggle music during enemy waves.")
 
 local function FadeOutMusic(music, duration, interval)
     if not IsValid(music) then return end

@@ -142,6 +142,9 @@ hg.ConVars = hg.ConVars or {}
 	end
 
 	hook.Add("PostCleanupMap","fuckclientsidemodels",hg.ClearClientsideModels)
+	hook.Add("PostCleanupMap","remove_this_stupid_clside_ragdolls",function()
+		for k,v in ipairs(ents.FindByClass('class C_ClientRagdoll')) do v:Remove() end
+	end)
 --//
 
 --\\ Fake status info for scare mode
@@ -471,7 +474,7 @@ players : 1 humans, 0 bots (20 max)
 --//
 
 --\\ custom sens
-	local hg_zoomsensitivity = ConVarExists("hg_zoomsensitivity") and GetConVar("hg_zoomsensitivity") or CreateConVar("hg_zoomsensitivity", 1, FCVAR_ARCHIVE, "aiming zoom sensitifity multiplier", 0, 3)
+	local hg_zoomsensitivity = ConVarExists("hg_zoomsensitivity") and GetConVar("hg_zoomsensitivity") or CreateConVar("hg_zoomsensitivity", 1, FCVAR_ARCHIVE, "Multiply aiming zoom sensivity", 0, 3)
 
 	hook.Add("AdjustMouseSensitivity", "AdjustRunSensivityHUY", function(defaultSensitivity)
 		if not lply:Alive() then return end--kakoy sencivity NOOB
@@ -872,11 +875,7 @@ players : 1 humans, 0 bots (20 max)
 		local function AddTinnitus(time, needSound)
 			lply = LocalPlayer()
 			lply.tinnitus = CurTime() + time * 4
-			lply:SetDSP(32) -- 36
-			if needSound then -- not used anyway :3
-				//lply:EmitSound("earringing_end.wav")
-				//zcitysnd/real_sonar/tinnitus1.mp3
-			end
+			lply:SetDSP(32)
 		end
 
 		local plymeta = FindMetaTable("Player")
@@ -891,4 +890,10 @@ players : 1 humans, 0 bots (20 max)
 			AddTinnitus(time,bool)
 		end)
 	end
+--//
+
+--\\ Remove CLIENT side hit particles
+	hook.Add("ScalePlayerDamage","remove_cl_hit_particles",function()
+		return !game.SinglePlayer() -- i hate singleplayer in gmod. WHY I SHOULD DO THIS STUPID IDIOTIC SHIT, i hate it.
+	end)
 --//

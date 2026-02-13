@@ -1,4 +1,4 @@
-local hg_allow_homigrad = ConVarExists("hg_allow_homigrad") and GetConVar("hg_allow_homigrad") or CreateConVar("hg_allow_homigrad",0,FCVAR_SERVER_CAN_EXECUTE,"allow homigrad draging entites",0,1)
+local hg_allow_homigrad = ConVarExists("hg_allow_homigrad") and GetConVar("hg_allow_homigrad") or CreateConVar("hg_allow_homigrad",0,FCVAR_SERVER_CAN_EXECUTE,"Allow homigrad-like entity drag for administrators in spectator mode",0,1)
 
 hook.Add("Player Think","ShadowControlAdmin",function(ply, time)
 	if !hg_allow_homigrad:GetBool() then return end

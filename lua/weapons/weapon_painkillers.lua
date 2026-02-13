@@ -27,6 +27,15 @@ SWEP.modeNames = {
 
 function SWEP:InitializeAdd()
 	self:SetHold(self.HoldType)
+
+	local owner = self:GetOwner()
+	if owner:IsNPC() then
+		self:SetHold("melee")
+		owner:SetHealth(math.Clamp(owner:Health() + (owner:GetMaxHealth() * 0.2), 0, owner:GetMaxHealth() * 2))
+		owner:EmitSound("snd_jack_hmcd_pillsuse.wav", 75, math.random(95, 105))
+		self:Remove()
+	end
+
 	self.modeValues = {
 		[1] = 1
 	}
@@ -53,7 +62,6 @@ function SWEP:Animation()
 end
 
 if SERVER then
-	local rndsounds = {"snd_jack_hmcd_pillsuse.wav"}
 	function SWEP:Heal(ent, mode)
 		local org = ent.organism
 		if not org then return end
@@ -62,7 +70,7 @@ if SERVER then
 		self:SetBodygroup(1, 1)
 		local owner = self:GetOwner()
 		local entOwner = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or owner
-		entOwner:EmitSound(table.Random(rndsounds), 60, math.random(95, 105))
+		entOwner:EmitSound("snd_jack_hmcd_pillsuse.wav", 60, math.random(95, 105))
 		org.analgesiaAdd = math.min(org.analgesiaAdd + self.modeValues[1] * 0.4, 4)
 		self.modeValues[1] = 0
 		if self.modeValues[1] == 0 then

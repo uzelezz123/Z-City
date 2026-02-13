@@ -6,11 +6,9 @@ SWEP.Instructions =
 
 LMB - High ready
 While high ready:
-RMB to remove spoon.
 
 RMB - Low ready
 While low ready:
-LMB to remove spoon.
 ]]--"тильда двуеточее три"
 SWEP.Category = "Weapons - Explosive"
 SWEP.Spawnable = true
@@ -49,6 +47,7 @@ SWEP.Slot = 4
 SWEP.SlotPos = 4
 
 SWEP.ENT = "ent_hg_molotov"
+SWEP.NoSpoon = true
 
 if CLIENT then
 	function SWEP:OnRemove()
@@ -193,6 +192,7 @@ SWEP.AnimsEvents = {
 
 SWEP.HoldPos = Vector(2,0.2,-1.5)
 SWEP.HoldAng = Angle(0,0,0)
+SWEP.NoTrap = true
 
 SWEP.ViewBobCamBase = "ValveBiped.Bip01_R_UpperArm"
 SWEP.ViewBobCamBone = "ValveBiped.Bip01_R_Hand"

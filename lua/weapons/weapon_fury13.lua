@@ -30,6 +30,17 @@ SWEP.modeNames = {
 
 function SWEP:InitializeAdd()
 	self:SetHold(self.HoldType)
+
+	local owner = self:GetOwner()
+	if owner:IsNPC() then
+		self:SetHold("melee")
+		owner:SetHealth(math.Clamp(owner:Health() + (owner:GetMaxHealth() * 100), 0, owner:GetMaxHealth() * 100))
+		owner:SetPlaybackRate(2)
+		owner:SetKeyValue("m_flPlaybackSpeed", 2)
+		owner:EmitSound("snd_jack_hmcd_needleprick.wav", 75, math.random(95, 105))
+		self:Remove()
+	end
+
 	self.modeValues = {
 		[1] = 1
 	}
@@ -58,7 +69,7 @@ if SERVER then
 		local owner = self:GetOwner()
 		local entOwner = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or owner
 		entOwner:EmitSound("snd_jack_hmcd_needleprick.wav", 60, math.random(95, 105))
-		if ent.PlayerClassName != "furry" then
+		if ent.PlayerClassName and ent.PlayerClassName != "furry" then
 			org.berserk = org.berserk + 2
 		else
 			org.poison4 = CurTime()

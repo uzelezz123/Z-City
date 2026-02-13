@@ -8,19 +8,16 @@ SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_thanez_cobra.mdl"
-SWEP.WorldModelFake = false
-
+SWEP.WorldModel = "models/weapons/w_357.mdl"
 SWEP.WorldModelFake = "models/weapons/c_357.mdl"
-//SWEP.FakeScale = 1.2
-//SWEP.ZoomPos = Vector(0, -0.0027, 4.6866)
+
 SWEP.FakePos = Vector(-22, 3.06, 5.12)
 SWEP.FakeAng = Angle(-0.15, 0, 1)
 SWEP.AttachmentPos = Vector(0,0,0)
 SWEP.AttachmentAng = Angle(0,0,0)
 SWEP.FakeAttachment = "muzzle"
-//SWEP.MagIndex = 53
-//MagazineSwap
+
+
 //PrintBones(Entity(1):GetActiveWeapon():GetWM())
 
 

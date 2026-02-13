@@ -4,13 +4,17 @@ SWEP.PrintName = "Type-59 Grenade"
 SWEP.Instructions = 
 [[This is a cheap Chinese clone of an old Soviet RGD-5 offensive hand grenade. It has a lethality radius of 3 meters and casualty radius of 9 meters. It has a pyrotechnic delay of 3.5-4.4 seconds.
 
+Reload looking on surface will set tripwire
+
 LMB - High ready
 While high ready:
 RMB to remove spoon.
+Reload to insert pin back.
 
 RMB - Low ready
 While low ready:
 LMB to remove spoon.
+Reload to insert pin back.
 ]]--"тильда двуеточее три"
 SWEP.Category = "Weapons - Explosive"
 SWEP.Spawnable = true
@@ -113,12 +117,16 @@ SWEP.AnimList = {
 		self.IsLowThrow = true
 		self.ReadyToThrow = true
 	end,0.8},
+	["trapplace"] = {"pullbacklow", 1.8, false, false, function(self)
+		self.ReadyToTrap = true
+	end},
 	["idle"] = {"draw", 1, false,false,function(self)
 	end}
 }
 
 SWEP.HoldPos = Vector(2,0.2,-1.5)
 SWEP.HoldAng = Angle(0,0,0)
+SWEP.NoTrap = false
 
 SWEP.ViewBobCamBase = "ValveBiped.Bip01_R_UpperArm"
 SWEP.ViewBobCamBone = "ValveBiped.Bip01_R_Hand"
@@ -138,7 +146,8 @@ SWEP.ItemsBones = {
 SWEP.spoon = "models/weapons/arc9/darsu_eft/skobas/rgd5_skoba.mdl"
 
 SWEP.SpoonSounds = {
-	[1] = {"snd_jack_spoonfling.ogg",65}
+	[1] = {"snd_jack_spoonfling.ogg", 65},
+	[2] = {"m9/m9_fp.wav", 70, 200, true}
 }
 
 SWEP.CoolDown = 0

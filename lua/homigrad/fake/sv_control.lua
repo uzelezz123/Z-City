@@ -142,10 +142,8 @@ local models_female = {
 	["models/player/group03/police_fem.mdl"] = true
 }
 local hook_Run = hook.Run
-local hg_shadow_enable = ConVarExists("hg_shadow_enable") and GetConVar("hg_shadow_enable") or CreateConVar("hg_shadow_enable", 0, FCVAR_SERVER_CAN_EXECUTE, "exact shadown control 1/0", 0, 1)
-local hg_cshs_fake = ConVarExists("hg_cshs_fake") and GetConVar("hg_cshs_fake") or CreateConVar("hg_cshs_fake", 0, FCVAR_NONE, "fake from cshs", 0, 1)
 local vector_zero = Vector(0,0,0)
-
+local vector_usehull = Vector(3,3,3)
 --[[
 	ValveBiped.Bip01_L_Thigh
 	ValveBiped.Bip01_L_Calf
@@ -589,16 +587,35 @@ hook.Add("Think", "Fake", function()
 				local wepinreload = wep and wep.reload
 				phys = ragdoll:GetPhysicsObjectNum(realPhysNum(ragdoll, 5))
 				if (ragdoll.cooldownLH or 0) < time and not IsValid(ragdoll.ConsLH) and not wepinreload then
-					
+
+					--\\ Find Use Entity in ragdoll
+						local usetrace = util_TraceHull({
+							start = phys:GetPos(),
+							endpos = phys:GetPos(),
+							maxs = vector_usehull,
+							mins = -vector_usehull,
+							filter = {ragdoll, game.GetWorld()},
+							mask = MASK_SOLID
+						})
+
+						local useent = (IsValid(usetrace.Entity) and usetrace.Entity) or false
+						if useent and not useent:IsVehicle() then useent:Use(ply) end
+						local wep = useent and useent:IsWeapon() and useent or false
+						ply.force_pickup = true
+						if IsValid(wep) and hook.Run("PlayerCanPickupWeapon", ply, wep) then ply:PickupWeapon(wep) end
+						ply.force_pickup = nil
+					--//
+
 					local trace
 					for i = 1,3 do
 						if trace and trace.Hit and not trace.HitSky then continue end
 						tr.start = phys:GetPos()
 						tr.endpos = phys:GetPos() + phys:GetAngles():Right() * 6 + phys:GetAngles():Up() * (i - 2) * 3
 						tr.filter = ragdoll
+						tr.mask = MASK_SOLID
 						trace = util_TraceLine(tr)
 					end
-					
+
 					if IsValid(choking) or (trace.Hit and not trace.HitSky) then
 						ent = IsValid(choking) and choking or trace.Entity
 						ragdoll.staminaLeftModifyer = 1.5 - trace.HitNormal.z
@@ -628,13 +645,6 @@ hook.Add("Think", "Fake", function()
 								ragdoll:ManipulateBoneAngles(ragdoll:LookupBone("ValveBiped.Bip01_L_Finger" .. tostring(i) .. "1"), Angle(0, -45, 0))
 							end
 						end
-
-						local useent = (IsValid(ent) and ent.Use and ent) or false 
-						if useent and not useent:IsVehicle() then useent:Use(ply) end
-						local wep = ent:IsWeapon() and ent or false
-						ply.force_pickup = true
-						if IsValid(wep) and hook.Run("PlayerCanPickupWeapon", ply, wep) then ply:PickupWeapon(wep) end
-						ply.force_pickup = nil
 					end
 				end
 			else
@@ -666,6 +676,24 @@ hook.Add("Think", "Fake", function()
 
 				if (ragdoll.cooldownRH or 0) < time and not IsValid(ragdoll.ConsRH) then
 					
+					--\\ Find Use Entity in ragdoll
+						local usetrace = util_TraceHull({
+							start = phys:GetPos(),
+							endpos = phys:GetPos(),
+							maxs = vector_usehull,
+							mins = -vector_usehull,
+							filter = {ragdoll, game.GetWorld()},
+							mask = MASK_SOLID
+						})
+
+						local useent = (IsValid(usetrace.Entity) and usetrace.Entity) or false
+						if useent and not useent:IsVehicle() then useent:Use(ply) end
+						local wep = useent and useent:IsWeapon() and useent or false
+						ply.force_pickup = true
+						if IsValid(wep) and hook.Run("PlayerCanPickupWeapon", ply, wep) then ply:PickupWeapon(wep) end
+						ply.force_pickup = nil
+					--//
+
 					local trace
 					for i = 1,3 do
 						if trace and trace.Hit and not trace.HitSky then continue end
@@ -704,14 +732,6 @@ hook.Add("Think", "Fake", function()
 								ragdoll:ManipulateBoneAngles(ragdoll:LookupBone("ValveBiped.Bip01_R_Finger" .. tostring(i) .. "1"), Angle(0, -45, 0))
 							end
 						end
-
-						local useent = (IsValid(ent) and ent.Use and ent) or false 
-						if useent and not useent:IsVehicle() then useent:Use(ply) end
-
-						local wep = ent:IsWeapon() and ent or false
-						ply.force_pickup = true
-						if IsValid(wep) and hook.Run("PlayerCanPickupWeapon", ply, wep) then ply:PickupWeapon(wep) end
-						ply.force_pickup = nil
 					end
 				end
 			else

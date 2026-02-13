@@ -8,18 +8,14 @@ SWEP.Category = "Weapons - Sniper Rifles"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_sr25_gleb.mdl"
+SWEP.WorldModel = "models/weapons/w_rif_m4a1.mdl"
 --models/weapons/v_sr25_eft.mdl
-SWEP.WorldModelFake = "models/weapons/zcity/c_sr25_eft.mdl" -- Контент инсурги https://steamcommunity.com/sharedfiles/filedetails/?id=3437590840 
---uncomment for funny
---а еще надо настраивать заново zoompos
+SWEP.WorldModelFake = "models/weapons/zcity/c_sr25_eft.mdl"
+
 SWEP.FakePos = Vector(-7, 1.8, 6.2)
 SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(3.5,-0.2,-0.05)
 SWEP.AttachmentAng = Angle(0,0,0)
-//SWEP.MagIndex = 53
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():SetSubMaterial(0,"NULL")
 
 SWEP.FakeReloadSounds = {
 	[0.25] = "weapons/m4a1/m4a1_magrelease.wav",
@@ -51,36 +47,21 @@ if CLIENT then
 	SWEP.FakeReloadEvents = {
 		[0.25] = function( self, timeMul )
 			if self:Clip1() < 1 then
-				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.1 * timeMul)//, self.MagModel, {self.lmagpos3, self.lmagang3, isnumber(self.FakeMagDropBone) and self.FakeMagDropBone or self:GetWM():LookupBone(self.FakeMagDropBone or "Magazine") or self:GetWM():LookupBone("ValveBiped.Bip01_L_Hand"), self.lmagpos2, self.lmagang2}, function(self)
-				//	if IsValid(self) then
-				//		self:GetWM():ManipulateBoneScale(75, vector_full)
-				//		self:GetWM():ManipulateBoneScale(76, vector_full)
-				//		self:GetWM():ManipulateBoneScale(77, vector_full)
-				//	end
-				//end)
-			else
-				//self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.5 * timeMul, self.MagModel, {Vector(-2,-3,0), Angle(180,-0,90), 75, self.lmagpos, self.lmagang}, true)
+				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.1 * timeMul)
 			end
 		end,
 		[0.3] = function( self, timeMul )
 			if self:Clip1() < 1 then
 				hg.CreateMag( self, Vector(0,0,-50), "111111")
 				self:GetWM():ManipulateBoneScale(56, vecPochtiZero)
-			else
-				//self:GetWM():ManipulateBoneScale(75, vecPochtiZero)
-				//self:GetWM():ManipulateBoneScale(76, vecPochtiZero)
-				//self:GetWM():ManipulateBoneScale(77, vecPochtiZero)
+
 			end 
 		end,
 		[0.4] = function( self, timeMul )
 			if self:Clip1() < 1 then
-				//self:GetOwner():PullLHTowards()
+
 				self:GetWM():ManipulateBoneScale(56, vector_full)
-			else
-				//self:GetWM():ManipulateBoneScale(75, vector_full)
-				//self:GetWM():ManipulateBoneScale(76, vector_full)
-				//self:GetWM():ManipulateBoneScale(77, vector_full)
-			end 
+			end
 		end,
 	}
 end
@@ -221,8 +202,7 @@ SWEP.StartAtt = {"ironsight1"}
 
 
 SWEP.lengthSub = 15
---SWEP.Supressor = false
---SWEP.SetSupressor = true
+
 
 --local to head
 SWEP.RHPos = Vector(2,-6.5,3.5)

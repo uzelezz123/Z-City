@@ -7,7 +7,7 @@ SWEP.Instructions = "Non-lethal gas pistol chambered in .45 Rubber"
 SWEP.Category = "Weapons - Pistols"
 SWEP.ViewModel = ""
 
-SWEP.WorldModel = "models/weapons/tfa_ins2/w_pm.mdl"
+SWEP.WorldModel = "models/weapons/w_pist_p228.mdl"
 SWEP.WorldModelFake = "models/weapons/zcity/v_makarov.mdl"
 SWEP.FakeScale = 1.15
 

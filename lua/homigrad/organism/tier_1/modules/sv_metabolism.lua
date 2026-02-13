@@ -1,4 +1,5 @@
 --
+local hg_hungersystem = CreateConVar("hg_hungersystem", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Enables/disabled hunger system", 0, 1)
 local max, min, Round, Lerp, halfValue2 = math.max, math.min, math.Round, Lerp, util.halfValue2
 --local Organism = hg.organism
 hg.organism.module.metabolism = {}
@@ -11,7 +12,7 @@ end
 
 local colorRed = Color(125,25,25)
 module[2] = function(owner, org, timeValue)
-    if org.satiety <= 0 and engine.ActiveGamemode() == "sandbox" then 
+    if org.satiety <= 0 and hg_hungersystem:GetBool() then 
         org.hungry = min(max(org.hungry + timeValue * 0.01, 0),100)
         //if org.isPly and not org.otrub and org.hungry > 25 and org.hungry < 45 then org.owner:Notify(table.Random(pharse),60,"hungry",6) end
         org.hungryDmgCd = org.hungryDmgCd or 0

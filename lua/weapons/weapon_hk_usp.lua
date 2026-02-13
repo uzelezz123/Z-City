@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_usp_9mm.mdl"
+SWEP.WorldModel = "models/weapons/w_pist_usp.mdl"
 SWEP.WorldModelFake = "models/weapons/tfa_ins2/c_usp_match.mdl"
 
 SWEP.FakePos = Vector(-17, 2., 3.22)
@@ -16,8 +16,8 @@ SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(0,0,-0.2)
 SWEP.AttachmentAng = Angle(0,0,90)
 SWEP.MagIndex = 53
-//MagazineSwap
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
+
+
 SWEP.FakeVPShouldUseHand = true
 SWEP.AnimList = {
 	["idle"] = "base_idle",

@@ -10,6 +10,7 @@ local combines = {
     "npc_hunter",
     "npc_strider",
     "npc_turret_floor",
+	"npc_combine_camera",
     "npc_manhack",
     "npc_cscanner",
     "npc_clawscanner"
@@ -117,6 +118,7 @@ local helmet_list = {
 
 local face_list = {
     "mask1",
+	"mask3",
     "nightvision1",
     "",
     "",
@@ -209,12 +211,11 @@ local function giveSubClassLoadout(ply, subClass)
     local randFace = face_list[math.random(#face_list)]
     local randHelmet = helmet_list[math.random(#helmet_list)]
 
-    if randVest ~= "" then ply.armors["torso"] = randVest end
-    if randHelmet ~= "" then ply.armors["head"] = randHelmet end
-    if randFace ~= "" then ply.armors["face"] = randFace end
+    if randVest ~= "" then hg.AddArmor(ply, randVest) end
+    if randHelmet ~= "" then hg.AddArmor(ply, randHelmet) end
+    if randFace ~= "" then hg.AddArmor(ply, randFace) end
 
     ply:SyncArmor()
-
 
     ply:Give("weapon_melee")
     ply:Give("weapon_walkie_talkie")
@@ -256,8 +257,9 @@ function CLASS.On(self, data)
 
     self.subClass = nil
 
-    zb.GiveRole(self, "Rebel", Color(0, 173, 43))
-
+    if zb and zb.GiveRole then
+        zb.GiveRole(self, "Rebel", Color(0, 173, 43))
+    end
 
     self:SetBodygroup(10, 1)                  
     self:SetBodygroup(8, math.random(0,15))   

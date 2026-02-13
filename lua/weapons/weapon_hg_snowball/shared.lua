@@ -65,6 +65,8 @@ SWEP.AnimList = {
 	["idle"] = {"idle01", 1, true,false},
 	["special"] = {"squeeze", 1, false,false}
 }
+
+SWEP.NoTrap = true
 SWEP.HoldPos = Vector(-10,-2,0)
 SWEP.HoldAng = Angle(-3,0,5)
 SWEP.ViewBobCamBase = "ValveBiped.Bip01_R_UpperArm"

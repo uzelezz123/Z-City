@@ -3,6 +3,7 @@
 local maxLength = GetConVar("zchat_maxmessagelength")
 
 local NoDrop = CreateClientConVar("zchat_dropcharacters", 1, true, false, "Play the character dropping animation when erasing text", 0, 1)
+local ShowTextBoxInactive = CreateClientConVar("zchat_showtextboxinactive", 1, true, false, "Showing your text in textbox while chat is turned off", 0, 1)
 
 local function CallbackBind(self, callback)
 	return function(_, ...)
@@ -172,6 +173,17 @@ function PANEL:Paint(w, h)
 		end
 	end
 
+	if ShowTextBoxInactive:GetBool() and !hg.chat:GetActive() and self.prevText != "" then
+		DisableClipping(true)
+		surface.SetAlphaMultiplier(1)
+			surface.SetTextColor(150, 150, 150, 55)
+			surface.SetTextPos(0, 0)
+			surface.SetFont("zChatFont")
+			surface.DrawText(self.prevText)
+		surface.SetAlphaMultiplier(0)
+		DisableClipping(false)
+	end
+
 	BaseClass.Paint(self, w, h)
 end
 
@@ -286,7 +298,7 @@ function PANEL:Paint(w, h)
 	end
 end
 
-function PANEL:SetActive(bActive)
+function PANEL:SetActive(bActive, bRemovePrev)
 	if (bActive) then
 		self:SetAlpha(255)
 		self:MakePopup()
@@ -300,8 +312,10 @@ function PANEL:SetActive(bActive)
 		self:SetMouseInputEnabled(false)
 		self:SetKeyboardInputEnabled(false)
 
-		self.entry:SetText("")
-		self.entry.prevText = ""
+		if bRemovePrev then
+			self.entry:SetText("")
+			self.entry.prevText = ""
+		end
 
 		gui.EnableScreenClicker(false)
 
@@ -352,7 +366,7 @@ function PANEL:OnMessageSent()
 		net.SendToServer()
 	end
 
-	self:SetActive(false)
+	self:SetActive(false, true)
 end
 
 function PANEL:AddLine(elements)

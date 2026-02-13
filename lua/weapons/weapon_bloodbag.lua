@@ -10,22 +10,9 @@ SWEP.HoldType = "slam"
 SWEP.ViewModel = ""
 SWEP.WorldModel = "models/zcity/other/bloodbag.mdl"
 if CLIENT then
-	SWEP.WepSelectIcon2 = Material("zcity/hud/wepicons/bloodbag.png")
 	SWEP.WepSelectIcon = Material("zcity/hud/wepicons/bloodbag.png")
 	SWEP.IconOverride = "zcity/hud/wepicons/bloodbag.png"
 	SWEP.BounceWeaponIcon = false
-
-	function SWEP:DrawWeaponSelection( x, y, wide, tall, alpha )
-
-
-		surface.SetDrawColor( 255, 255, 255, alpha )
-		surface.SetMaterial( self.WepSelectIcon2 )
-	
-		surface.DrawTexturedRect( x, y,  wide , wide/2)
-	
-		self:PrintWeaponInfo( x + wide + 20, y + tall * 0.95, alpha )
-	
-	end
 end
 SWEP.AutoSwitchTo = false
 SWEP.AutoSwitchFrom = false
@@ -47,6 +34,15 @@ end
 
 function SWEP:InitializeAdd()
 	self:SetHold(self.HoldType)
+
+	local owner = self:GetOwner()
+	if owner:IsNPC() then
+		self:SetHold("melee")
+		owner:SetHealth(math.Clamp(owner:Health() + (owner:GetMaxHealth() * 0.15), 0, owner:GetMaxHealth() * 2))
+		owner:EmitSound("zcity/healing/bloodbag_spear_0.wav", 75, math.random(95, 105))
+		self:Remove()
+	end
+
 	self.modeValues = {
 		[1] = 0
 	}
@@ -212,15 +208,22 @@ if SERVER then
 else
 	function SWEP:Animation()
 		self:SetHold(self.HoldType)
-		if (self:GetOwner().zmanipstart ~= nil and not self:GetOwner().organism.larmamputated) then return end
-		local aimvec = self:GetOwner():GetAimVector()
-		self:BoneSet("r_upperarm", vector_origin, Angle(10, -65 - 20 * aimvec[3], 10))
+		local owner = self:GetOwner()
+
+		if owner.zmanipstart ~= nil and not owner.organism.larmamputated then return end
+
+		local aimvec = owner:GetAimVector()
+		if not aimvec then return end
+		local ducking = owner:IsFlagSet(FL_ANIMDUCKING)
+
+		self:BoneSet("r_upperarm", vector_origin, Angle(10, -65 - 20 * aimvec[3] * (ducking and 3 or 1), 10))
 	end
 
 	function SWEP:Think()
 		local ent = hg.eyeTrace(self:GetOwner()).Entity
-		local ent = IsValid(ent) and ent.organism and ent or self:GetOwner()
-		self.modeNames[1] = self:GetNetVar("modeValues", {})[1] == 0 and "Blood | Recipent: "..ent.organism.bloodtype or "Blood | in: "..self:GetNetVar("type","o-").." | recipent: "..ent.organism.bloodtype
+		ent = IsValid(ent) and ent.organism and ent or self:GetOwner()
+		local mode = self:GetNetVar("mode",2)
+		self.modeNames[1] = self:GetNetVar("modeValues", {})[1] == 0 and self.modeNames2[mode] .. " | Recipent: " .. ent.organism.bloodtype or self.modeNames2[mode] .. " | in: "..self:GetNetVar("type","o-").." | recipent: "..ent.organism.bloodtype
 	end
 
 	function SWEP:AfterDrawModel(wm,nodraw)

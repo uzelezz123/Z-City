@@ -1,6 +1,4 @@
--- "addons\\homigrad-weapons\\lua\\weapons\\weapon_remington870.lua"
--- Retrieved by https://github.com/lewisclark/glua-steal
---ents.Reg(nil,"weapon_m4super")
+-- каряк сделан барой.. пулл реквест до того как стал известен
 SWEP.Base = "weapon_m4super"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
@@ -11,15 +9,13 @@ SWEP.Category = "Weapons - Sniper Rifles"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/tfa_ins2/w_k98.mdl" --"models/weapons/zcity/gleb/w_kar98k.mdl"
+SWEP.WorldModel = "models/weapons/w_snip_awp.mdl"
 SWEP.WorldModelFake = "models/weapons/tfa_ins2/c_k98.mdl"
 SWEP.FakeScale = 0.9
-//PrintAnims(Entity(1):GetActiveWeapon():GetWM())
---PrintTable(Entity(1):GetActiveWeapon():GetWM():GetAttachments())
---uncomment for funny
+
 SWEP.FakePos = Vector(-7, 3.6, 5.1)
 SWEP.FakeAng = Angle(0, 0, 0)
-//SWEP.MagIndex = 41
+
 SWEP.FakeAttachment = "1"
 SWEP.AttachmentPos = Vector(-8.5,0,0)
 SWEP.AttachmentAng = Angle(0,0,0)
@@ -33,7 +29,7 @@ SWEP.FakeViewBobBone = "ValveBiped.Bip01_L_Hand"
 SWEP.FakeViewBobBaseBone = "ValveBiped.Bip01_L_UpperArm"
 SWEP.ViewPunchDiv = 30
 
---SWEP.ReloadHold = nil
+
 SWEP.FakeVPShouldUseHand = false
 
 SWEP.WepSelectIcon2 = Material("vgui/wep_jack_hmcd_rifle")
@@ -44,8 +40,7 @@ SWEP.LocalMuzzleAng = Angle(0.4,-0.0,0)
 SWEP.WeaponEyeAngles = Angle(-0.7,0.1,0)
 
 SWEP.CustomShell = "762x51"
---SWEP.EjectPos = Vector(-0,8,4)
---SWEP.EjectAng = Angle(0,-90,0)
+
 SWEP.ReloadSound = "weapons/tfa_ins2/k98/m40a1_boltlatch.wav"
 SWEP.CockSound = "weapons/tfa_ins2/k98/m40a1_boltlatch.wav"
 SWEP.DistSound = "mosin/mosin_dist.wav"
@@ -96,12 +91,7 @@ SWEP.holsteredBone = "ValveBiped.Bip01_Spine2"
 SWEP.holsteredPos = Vector(0, 8, -8)
 SWEP.holsteredAng = Angle(210, 0, 180)
 
---local to head
---SWEP.RHPos = Vector(1,-5,3.4)
---SWEP.RHAng = Angle(0,-15,90)
-----local to rh
---SWEP.LHPos = Vector(18,-0.8,-3.6)
---SWEP.LHAng = Angle(-100,-180,0)
+
 
 SWEP.AnimList = {
 	["idle"] = "base_idle",
@@ -139,6 +129,7 @@ SWEP.AnimsEvents = {
 			self:EmitSound("weapons/tfa_ins2/k98/m40a1_boltback.wav", 45, math_random(95, 105))
 		end,
 		[0.3] = function(self)
+			self:RejectShell(self.ShellEject)
 			self:EmitSound("weapons/tfa_ins2/k98/m40a1_boltforward.wav", 45, math_random(95, 105))
 		end,
 		[0.5] = function(self)
@@ -190,7 +181,7 @@ end
 
 local function cock(self,time)
 	if SERVER then
-		self:Draw(true)
+		self:Draw(true, true)
 	end
 
 	if self:Clip1() == 0 then
@@ -206,7 +197,7 @@ local function cock(self,time)
 	net.Broadcast()
 
 	self.Primary.Next = CurTime() + self.AnimDraw + self.Primary.Wait
-	--if CLIENT then self:PlaySnd(self.CockSound or "snd_jack_hmcd_boltcycle.wav",true,CHAN_AUTO) end
+	
 
 	local ply = self:GetOwner()
 
@@ -241,8 +232,7 @@ local function reloadFunc(self)
 			reloadFunc(self)
 			return
 		end
-		--self:GetOwner():ChatPrint(tostring(self.drawBullet))
-		--self:PlaySnd(self.CockSound or "weapons/shotgun/shotgun_cock.wav",true,CHAN_AUTO)
+
 		if !self.drawBullet then
 			cock(self,1)
 			self:PlayAnim(self.AnimList["finish_empty"] or "base_Fire_end", 1, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true) 

@@ -55,8 +55,10 @@ function SWEP:GetNPCRestTimes()
 end
 
 function SWEP:GetCapabilities()
-
 	return bit.bor( CAP_WEAPON_RANGE_ATTACK1, CAP_MOVE_SHOOT )
+end
 
+function SWEP:CanBePickedUpByNPCs()
+	return true
 end
 --lua_run local npc = ents.Create("npc_metropolice") npc:Give("weapon_mp7") npc:Spawn() npc:Activate()

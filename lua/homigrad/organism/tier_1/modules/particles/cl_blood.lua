@@ -245,7 +245,7 @@ bloodparticles_hook[2] = function(mul)
 
 				local pulldown = (-vector_up * (grav / 600)):Cross(-result.HitNormal:Angle():Right())
 				nextpos:Add(pulldown)
-				part.lerpedmove = LerpVector(1, part.lerpedmove or part[3] * mul, nextpos * mul * 1)
+				part.lerpedmove = LerpVector(1, part.lerpedmove or part[3] * mul, nextpos * mul * 2)
 				
 				if part.lerpedmove:LengthSqr() < 0.1 * mul then
 					decalBlood(result.HitPos, result.HitNormal, result, part.artery, part.owner)

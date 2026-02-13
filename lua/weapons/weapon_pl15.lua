@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_pist_px4.mdl"
+SWEP.WorldModel = "models/weapons/w_pist_glock18.mdl"
 SWEP.WorldModelFake = "models/weapons/arc9/darsu_eft/c_pl15.mdl"
 SWEP.FakeScale = 1.07
 SWEP.FakePos = Vector(-17.5, 4.5, 6.5)
@@ -77,7 +77,7 @@ SWEP.AnimList = {
 	["reload"] = "reload",
 	["reload_empty"] = "reload_empty",
 }
---SWEP.ReloadHold = nil
+
 SWEP.FakeVPShouldUseHand = false
 
 SWEP.FakeViewBobBone = "Camera_animated"

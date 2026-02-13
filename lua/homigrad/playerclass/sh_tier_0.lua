@@ -46,5 +46,11 @@ end)
 
 hook.Add("PostDrawAppearance", "PlayerClass", function(ent,ply) end)
 
+if CLIENT then
+	hook.Add("Player Think", "ClassPlyThink", function(ply, time, dtime)
+		ply:PlayerClassEvent("Think", time, dtime)
+	end)
+end
+
 --hook.Add("HGReloading", "PlayerClass", function(wep) wep:GetOwner():PlayerClassEvent("HGReloading", wep) end)
 --hook.Add("PlayerFootstep", "PlayerClass", function(ply, pos, foot, sound, volume, rf) ply:PlayerClassEvent("PlayerFootstep", ply, pos, foot, sound, volume, rf) end)

@@ -8,19 +8,15 @@ SWEP.Category = "Weapons - Sniper Rifles"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/tfa_ins2/w_svd.mdl"
-SWEP.WorldModelFake = "models/weapons/zcity/c_nam_svd.mdl" -- Контент инсурги https://steamcommunity.com/sharedfiles/filedetails/?id=3437590840 
---uncomment for funny
---а еще надо настраивать заново zoompos
+SWEP.WorldModel = "models/weapons/w_snip_g3sg1.mdl"
+SWEP.WorldModelFake = "models/weapons/zcity/c_nam_svd.mdl"
+
 SWEP.FakePos = Vector(-9, 2.02, 5.25)
 SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(0.5,0.1,0.3)
 SWEP.AttachmentAng = Angle(0,0,0)
-//SWEP.MagIndex = 53
-//MagazineSwap
 
 
---Entity(1):GetActiveWeapon():GetWM():SetSubMaterial(0,"NULL")
 
 SWEP.FakeReloadSounds = {
 	[0.32] = "weapons/tfa_nam_svd/svd_magout.wav",
@@ -55,36 +51,21 @@ if CLIENT then
 	SWEP.FakeReloadEvents = {
 		[0.35] = function( self, timeMul )
 			if self:Clip1() < 1 then
-				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.1 * timeMul)//, self.MagModel, {self.lmagpos3, self.lmagang3, isnumber(self.FakeMagDropBone) and self.FakeMagDropBone or self:GetWM():LookupBone(self.FakeMagDropBone or "Magazine") or self:GetWM():LookupBone("ValveBiped.Bip01_L_Hand"), self.lmagpos2, self.lmagang2}, function(self)
-				//	if IsValid(self) then
-				//		self:GetWM():ManipulateBoneScale(75, vector_full)
-				//		self:GetWM():ManipulateBoneScale(76, vector_full)
-				//		self:GetWM():ManipulateBoneScale(77, vector_full)
-				//	end
-				//end)
-			else
-				//self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.5 * timeMul, self.MagModel, {Vector(-2,-3,0), Angle(180,-0,90), 75, self.lmagpos, self.lmagang}, true)
+				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.1 * timeMul)
 			end
 		end,
 		[0.36] = function( self, timeMul )
 			if self:Clip1() < 1 then
 				hg.CreateMag( self, Vector(0,0,-50), "111111")
 				self:GetWM():ManipulateBoneScale(67, vecPochtiZero)
-			else
-				//self:GetWM():ManipulateBoneScale(75, vecPochtiZero)
-				//self:GetWM():ManipulateBoneScale(76, vecPochtiZero)
-				//self:GetWM():ManipulateBoneScale(77, vecPochtiZero)
+
 			end 
 		end,
 		[0.6] = function( self, timeMul )
 			if self:Clip1() < 1 then
-				//self:GetOwner():PullLHTowards()
+
 				self:GetWM():ManipulateBoneScale(67, vector_full)
-			else
-				//self:GetWM():ManipulateBoneScale(75, vector_full)
-				//self:GetWM():ManipulateBoneScale(76, vector_full)
-				//self:GetWM():ManipulateBoneScale(77, vector_full)
-			end 
+			end
 		end,
 	}
 end
@@ -102,8 +83,7 @@ SWEP.IconOverride = "entities/tfa_ins2_svd.png"
 SWEP.weight = 4
 SWEP.weaponInvCategory = 1
 SWEP.CustomShell = "762x54"
---SWEP.EjectPos = Vector(0,5,5)
---SWEP.EjectAng = Angle(-5,180,0)
+
 SWEP.AutomaticDraw = true
 SWEP.UseCustomWorldModel = false
 SWEP.Primary.ClipSize = 10
@@ -161,7 +141,7 @@ SWEP.Primary.Wait = 0.15
 SWEP.NumBullet = 1
 SWEP.AnimShootMul = 1
 SWEP.AnimShootHandMul = 1
-SWEP.ReloadTime = 6.7
+SWEP.ReloadTime = 4.8
 SWEP.ReloadSoundes = {
 	"none",
 	"none",
@@ -207,8 +187,7 @@ local vecZero = Vector(0, 0, 0)
 SWEP.DistSound = "weapons/tfa_ins2/sks/sks_dist.wav"
 
 SWEP.lengthSub = 15
---SWEP.Supressor = false
---SWEP.SetSupressor = true
+
 
 --local to head
 SWEP.RHPos = Vector(3,-6.5,4)

@@ -242,12 +242,12 @@ end
 function ENT:OnRemove()
     self:ClearWeapons()
 end
-
+local hg_glide_only_closest_seat = CreateConVar("hg_glide_only_closest_seat","1",{FCVAR_ARCHIVE,FCVAR_NOTIFY},"Allows enter only on closest seat",0,1)
 function ENT:Use( activator )
     if not IsValid( activator ) then return end
     if not activator:IsPlayer() then return end
-
-    if not IsValid( self:GetDriver() ) then
+    
+    if !hg_glide_only_closest_seat:GetBool() and not IsValid( self:GetDriver() ) and !activator:KeyDown(IN_WALK) then
         local seat = self:GetFreeSeat()
 
         if seat then

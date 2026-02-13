@@ -325,9 +325,9 @@ function SWEP:IsLocal2()
 	return CLIENT and self:GetOwner() == LocalPlayer() and LocalPlayer() == GetViewEntity()
 end
 
-local hg_quietshots = GetConVar("hg_quietshots") or CreateClientConVar("hg_quietshots", "0", true, false, "quieter gun sounds", 0, 1)
-local hg_gunshotvolume = GetConVar("hg_gunshotvolume") or CreateClientConVar("hg_gunshotvolume", "1", true, false, "volume of gun sounds", 0, 1)
-local hg_oldsights = CreateConVar("hg_oldsights", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "No camera wobble when aiming")
+local hg_quietshots = GetConVar("hg_quietshots") or CreateClientConVar("hg_quietshots", "0", true, false, "Toggle quieter gun sounds", 0, 1)
+local hg_gunshotvolume = GetConVar("hg_gunshotvolume") or CreateClientConVar("hg_gunshotvolume", "1", true, false, "Modify volume of gun sounds", 0, 1)
+local hg_oldsights = CreateConVar("hg_oldsights", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Disable camera wobble when aiming")
 
 if CLIENT then
 	EmitSound = hg.EmitSound
@@ -465,10 +465,14 @@ end
 
 function SWEP:Shoot(override)
 	self:PrimaryShootPre()
-	if self:GetOwner():IsNPC() then self.drawBullet = true end
+
+	local owner = self:GetOwner()
+	if owner:IsNPC() then self.drawBullet = true end
+
 	if !override and !self:CanPrimaryAttack() then return false end
 	if !override and !self:CanUse() then return false end
-	if CLIENT and self:GetOwner() != LocalPlayer() and !override then return false end
+	if CLIENT and owner != LocalPlayer() and !override then return false end
+
 	local primary = self.Primary
 	if override then self.drawBullet = true end
 	
@@ -480,8 +484,8 @@ function SWEP:Shoot(override)
 		return false
 	end
 	
-	if !override and IsValid(self:GetOwner()) and !self:GetOwner():IsNPC() and primary.Next > CurTime() then return false end
-	if !override and IsValid(self:GetOwner()) and !self:GetOwner():IsNPC() and (primary.NextFire or 0) > CurTime() then return false end
+	if !override and IsValid(owner) and !owner:IsNPC() and primary.Next > CurTime() then return false end
+	if !override and IsValid(owner) and !owner:IsNPC() and (primary.NextFire or 0) > CurTime() then return false end
 	
 	primary.Next = CurTime() + primary.Wait * 1.1
 	primary.RealAutomatic = primary.RealAutomatic or weapons_Get(self:GetClass()).Primary.Automatic
@@ -512,7 +516,7 @@ end
 function SWEP:PrimaryShootPost()
 end
 
-function SWEP:Draw(server,overide)
+function SWEP:Draw(server, overide)
 	if self.drawBullet == false then
 		if SERVER and server and not overide then self:RejectShell(self.ShellEject) end
 		if CLIENT and not server and not overide then self:RejectShell(self.ShellEject) end
@@ -585,6 +589,13 @@ if SERVER then
 		net.WritePlayer(ply)
 		net.Send(ply)
 	end)
+
+	hg_shoot_tinnitus = ConVarExists("hg_shoot_tinnitus") and GetConVar("hg_shoot_tinnitus") or CreateConVar("hg_shoot_tinnitus","0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Toggle shooting tinnitus")
+	SetGlobalBool("hg_shoot_tinnitus",hg_shoot_tinnitus:GetBool())
+
+	cvars.AddChangeCallback("hg_shoot_tinnitus", function(convar_name, value_old, value_new)
+		SetGlobalBool("hg_shoot_tinnitus",hg_shoot_tinnitus:GetBool())
+	end)
 else
 	net.Receive("resettinnitus", function(len, ply)
 		local ply = net.ReadPlayer() or ply
@@ -593,7 +604,7 @@ else
 
 	hook.Add("Player Think", "TinnitusPadaet", function(ply, ent)
 		if (ply.TinnitusFactor or 0) > 0 then
-			ply.TinnitusFactor = math.min(math.max((ply.TinnitusFactor or 0) - 0.5, 0),102)
+			ply.TinnitusFactor = math.min(math.max((ply.TinnitusFactor or 0) - 0.5, 0),300)
 		end
 	end)
 end
@@ -609,8 +620,10 @@ function SWEP:EmitShoot()
 	local ply = self:GetOwner()
 	ply = IsValid(ply) and ply or self
 
+	local hadEarProtection = IsValid(lply) and lply.armors and lply.armors["ears"] == "headphones1"
+
 	if CLIENT then
-		if IsValid(lply) and lply.armors and lply.armors["ears"] == "headphones1" then
+		if hadEarProtection then
 			vol = vol / 2
 		end
 	end
@@ -634,7 +647,7 @@ function SWEP:EmitShoot()
 		end
 	end
 
-	if not self.Supressor and !self.NoWINCHESTERFIRE then
+	if !self.Supressor and !self.NoWINCHESTERFIRE then
 		self:PlaySnd("rifle_win1892/win1892_fire_01.wav", nil, nil, vol * (1 - insideVal / 16), math.Clamp(1 / self.Primary.Force / (self.NumBullet or 1) * 100 * 50,90,150), 55555, true)
 
 		self:PlaySnd("zcitysnd/sound/weapons/firearms/hndg_colt1911/colt_1911_fire1.wav", nil, nil, vol * (insideVal / 16), 150, 51256, true)
@@ -642,13 +655,21 @@ function SWEP:EmitShoot()
 
 		self:PlaySnd("weapons/shoot/shot1.wav", nil, nil, vol * 1, 150, 52256, true)
 	end
-	
-	if (self.Primary.SoundFP or self.Supressor and self.SupressedSoundFP) and (GetViewEntity() == ply or GetViewEntity():GetPos():Distance( self:GetPos() ) < 150) then
+	local nearDist = (GetViewEntity() == ply or GetViewEntity():GetPos():Distance( self:GetPos() ) < 150)
+
+	if GetGlobalBool("hg_shoot_tinnitus", false) and nearDist and !self.Supressor and !hadEarProtection then
+		lply.TinnitusFactor = (lply.TinnitusFactor or 0) + ( (self.Primary.Force * (self.NumBullet or 1) ) / 3) + insideVal
+		if lply.TinnitusFactor > 32 then
+			lply:AddTinnitus(lply.TinnitusFactor / 100)
+		end
+	end
+
+	if (self.Primary.SoundFP or self.Supressor and self.SupressedSoundFP) and nearDist then
 		self:PlaySnd((self.Supressor and self.SupressedSoundFP) or self.Primary.SoundFP, nil, nil, vol, nil, 55533, not self.Supressor)
 	else
 		self:PlaySnd(self.Supressor and (self.SupressedSound or (self:IsPistolHoldType() and "homigrad/weapons/pistols/sil.wav" or "m4a1/m4a1_suppressed_fp.wav")) or self.Primary.Sound, nil, nil, vol, nil, 55533, not self.Supressor)
 	end
-	if not self.Supressor then
+	if !self.Supressor then
 		self:PlaySndDist(self.DistSound, nil, nil, nil, nil, 55511, not self.Supressor)
 	end
 end
@@ -1283,6 +1304,7 @@ function SWEP:CoreStep()
 	if self:IsClient() then self:Step_SprayVel(dtime) end
 	self.dtimethink = SysTime()
 	//self:ThinkAtt()
+	if self.ThinkAdd then self:ThinkAdd() end
 
 	--self:Animation()
 
@@ -1467,10 +1489,10 @@ hg.postureFunctions2 = {
 SWEP.AdditionalPosPreLerp = Vector(0,0,0)
 SWEP.AdditionalAngPreLerp = Angle(0,0,0)
 
-SWEP.vecSuicidePist = Vector(-7,-7,4)
-SWEP.angSuicidePist = Angle(40,100,80)
-SWEP.vecSuicidePist2 = Vector(-6,-4,9)
-SWEP.angSuicidePist2 = Angle(60,100,80)
+SWEP.vecSuicidePist = Vector(-6,-4,2)
+SWEP.angSuicidePist = Angle(20,110,-10)
+SWEP.vecSuicidePist2 = Vector(-5,-5,3)
+SWEP.angSuicidePist2 = Angle(32,105,20)
 SWEP.vecSuicideRifle = Vector(2,-19,-1)
 SWEP.angSuicideRifle = Angle(15,100,90)
 SWEP.vecSuicideRifle2 = Vector(12, -20, 0)
@@ -1698,7 +1720,7 @@ function SWEP:GetAdditionalValues()
 	local walk = math.Clamp(self.walkinglerp / 100,0,1)
 	
 	self.huytime = self.huytime + walk * dtime * 8 * (ply:OnGround() and 1 or 0.1)
-	--if 
+
 	--ply.oldposture = ply.posture
 	if self:IsSprinting() then
 		--ply.posture = 1
@@ -1726,7 +1748,8 @@ function SWEP:GetAdditionalValues()
 	self.AdditionalAngPreLerp[1] = self.AdditionalAngPreLerp[1] - y * 2 * lena
 	self.AdditionalAngPreLerp[3] = self.AdditionalAngPreLerp[3] - y * 3 * lena
 
-	if CLIENT and self:IsLocal() and owner:IsOnGround() then
+	--// Sprint anim
+	if CLIENT and self:IsLocal() and owner:IsOnGround() and not self.reload then
 		local runMul = vellen / owner:GetRunSpeed()
 		if runMul >= 0.32 then
 			if not self:IsPistolHoldType() and not self.CanEpicRun then
@@ -1760,7 +1783,7 @@ function SWEP:GetAdditionalValues()
 	local suiciding = false--ply.suiciding
 	local huypitch = ((ply.suiciding and !IsValid(ply.FakeRagdoll)) or huya or (self:IsSprinting() or ((ply.posture == 4 or ply.posture == 3) and not self:IsZoom())))
 
-	self.pitch = Lerp(hg.lerpFrameTime(0.001,dtime), self.pitch, ply:GetNWFloat("InLegKick",0) > CurTime() and 0.5 or suiciding and 1 or huypitch and 0.65 or 0)
+	self.pitch = Lerp(hg.lerpFrameTime(0.001,dtime), self.pitch, ply:GetNWFloat("InLegKick",0) > CurTime() and 0.5 or suiciding and 1 or huypitch and 0.65 or self.reload and 0.75 or 0)
 	
 	if not huypitch then
 		local torso = ply:LookupBone("ValveBiped.Bip01_Spine1")
@@ -1962,7 +1985,7 @@ function SWEP:SetHandPos(noset)
 			hg.bone_apply_matrix(ent, rh, rhmat)
 			--ent:SetBoneMatrix(rh, rhmat)
 			
-			if GetViewEntity() == self:GetOwner() then hg.set_holdrh(ent, self.hold_type or (self:IsPistolHoldType() and "pistol_hold2" or "ak_hold")) end
+			hg.set_holdrh(ent, self.hold_type or (self:IsPistolHoldType() and "pistol_hold2" or "ak_hold"))
 		end
 		
 		if (( hg.CanUseLeftHand(ply) and self.lhandik )) and self.attachments and vec2 and addvec2 and ang2 then
@@ -1984,7 +2007,7 @@ function SWEP:SetHandPos(noset)
 			local hold = self.hold_type or (self:IsPistolHoldType() and "pistol_hold2" or "ak_hold")
 			hold = self.attachments.grip and #self.attachments.grip ~= 0 and hg.attachments.grip[self.attachments.grip[1]].hold or hold
 			
-			if GetViewEntity() == self:GetOwner() then hg.set_hold(ent, hold) end
+			hg.set_hold(ent, hold)
 		end
 	else
 		local wpn = self
@@ -2069,7 +2092,7 @@ function SWEP:SetHandPos(noset)
 				local hold = self.hold_type or (self:IsPistolHoldType() and "pistol_hold2" or "ak_hold")
 				hold = self.attachments.grip and #self.attachments.grip ~= 0 and hg.attachments.grip[self.attachments.grip[1]].hold or hold
 
-				if GetViewEntity() == self:GetOwner() then hg.set_hold(ent, hold) end
+				hg.set_hold(ent, hold)
 			end
 		end
 	end

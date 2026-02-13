@@ -3,7 +3,7 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
-local vecZero = Vector(0,0,0)
+local vecZero, vec30 = Vector(0,0,0), Vector(0,0,30)
 function ENT:Initialize()
 	self:SetModel(self.PhysModel or self.Model)
 	self:PhysicsInit(SOLID_VPHYSICS)
@@ -12,7 +12,7 @@ function ENT:Initialize()
 	self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 	self:SetUseType(SIMPLE_USE)
 	self:DrawShadow(false)
-	self:SetPos(self:GetPos() + Vector(0,0,30))
+	self:SetPos(self:GetPos() + vec30)
 
 	if self.material and !istable(self.material) then
 		self.mat = self.material
@@ -25,7 +25,7 @@ function ENT:Initialize()
 	end
 
 	if self.skins then
-		self.skin = table.Random(self.skins)
+		self.skin = self.skins[math.random(#self.skins)]
 		self:SetSkin(self.skin)
 	end
 
@@ -35,11 +35,9 @@ function ENT:Initialize()
 		phys:Wake()
 		phys:EnableMotion(true)
 	end
-
 end
 
 function ENT:OnRemove()
-
 end
 
 function ENT:Use(activator)
@@ -74,10 +72,9 @@ function ENT:ReciveData(ply,equipment)
 	self:SetSkin(self.skin)
 end
 
-hook.Add("ItemTransfered","TransferMats",function(ply, ragdoll)
-	local armors = ragdoll:GetNetVar("Armor",{})
+hook.Add("ItemsTransfered","TransferMats",function(ply, ragdoll)
+	local armors = ply:GetNetVar("Armor",{})
 	for k,v in pairs(armors) do
-
 		ragdoll:SetNWString("ArmorMaterials" .. v, ply:GetNWString("ArmorMaterials" .. v))
 		ply:SetNWString("ArmorMaterials" .. v, nil)
 

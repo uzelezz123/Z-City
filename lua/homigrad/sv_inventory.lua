@@ -231,6 +231,8 @@ function hg.TransferItems(ply,ragdoll)
 		ply:SetNetVar("Inventory",{})
 		ply.inventory = ply:GetNetVar("Inventory",{})
 
+        hook.Run("ItemsTransfered",ply,ragdoll)
+
 		ragdoll:SetNetVar("Armor",ply.armors)
 		ragdoll.armors = ragdoll:GetNetVar("Armor",{})
 		ragdoll:SetNetVar("HideArmorRender", ply:GetNetVar("HideArmorRender", false))
@@ -239,8 +241,6 @@ function hg.TransferItems(ply,ragdoll)
 		ply.armors = ply:GetNetVar("Armor",{})
 		
 		hg.SyncWeapons()
-
-        hook.Run("ItemTransfered",ply,ragdoll)
 	end
 end
 
@@ -415,7 +415,7 @@ function playerMeta:GetLookTrace()
     return util.TraceLine(tr)
 end
 
-hook.Add("Player Think","loot-fellows",function(ply)
+hook.Add("Player Think", "loot-fellows",function(ply)
     if not ply:Alive() then return end
     ply.keypressed = ply.keypressed or false
     --if not ply:GetLookTrace() then return end
@@ -428,6 +428,11 @@ hook.Add("Player Think","loot-fellows",function(ply)
         if not trace then return end
         local ent = trace.Entity
         ent = IsValid(hg.RagdollOwner(ent)) and hg.RagdollOwner(ent) or ent
+		local _ply, _ent, canloot = hook.Run("ZB_CanLootInventory", ply, ent, canloot)
+		if canloot ~= nil and canloot == false then
+			ply.keypressed = true
+			return
+		end
     
         hook.Run("ZB_InventoryChecked", ply, ent)
         

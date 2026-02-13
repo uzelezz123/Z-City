@@ -4,9 +4,11 @@ AddCSLuaFile()
 
 ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
-ENT.PrintName = "Fire match"
+ENT.PrintName = "Fire Match"
+ENT.Category = "ZCity Other"
 ENT.Spawnable = true
 ENT.Model = "models/weapons/gleb/matchhead.mdl"
+ENT.IconOverride = "vgui/wep_jack_hmcd_matchbox"
 
 ENT.PhysicsSounds = true
 
@@ -17,6 +19,14 @@ function ENT:SetupDataTables()
 		self:SetFireLeft( 1 )
 	end
 end
+
+local ignitable = { -- Very sorry for this silly table, but i don't want allow to ignite all wooden entity
+    ["models/gibs/wood_gib01b.mdl"] = true,
+    ["models/gibs/wood_gib01a.mdl"] = true,
+    ["models/gibs/wood_gib01c.mdl"] = true,
+    ["models/gibs/wood_gib01d.mdl"] = true,
+    ["models/gibs/wood_gib01e.mdl"] = true
+}
 
 function ENT:Initialize()
     self:SetModel(self.Model)
@@ -38,6 +48,11 @@ function ENT:Initialize()
         self:AddCallback("PhysicsCollide",function(ent1, data)
             if ent1:GetFireLeft() <= 0 then return end
             local pos = ent1:GetPos()
+            local ent = data.HitEntity
+            --print(IsValid(ent), ignitable[ent:GetModel()], ent:GetModel())
+            if IsValid(ent) and ignitable[ent:GetModel()] then
+                ent:Ignite()
+            end
 
             for _,v in ipairs(hg.gasolinePath) do
                 if v[1]:Distance(pos) > 30 or v[2] ~= false then continue end
@@ -62,10 +77,17 @@ function ENT:Initialize()
 end
 
 function ENT:Use(ply)
-	if self:IsPlayerHolding() then return end
+	if self:IsPlayerHolding() or (self.UseCD or 0) > CurTime() then
+		ply:DropObject(self)
+
+		self.UseCD = CurTime() + 0.3
+		return
+	end
 
 	ply:PickupObject(self)
 	self.owner = ply
+
+	self.UseCD = CurTime() + 0.6
 end
 
 
@@ -116,6 +138,9 @@ function ENT:Think()
 
     if CLIENT and (not self.ColorCD or self.ColorCD < CurTime()) then
         color_b:SetLightness(self:GetFireLeft())
+		if color_b:GetLightness() <= 0.1 then
+			self:SetMaterial("models/props_foliage/tree_deciduous_01a_trunk")
+		end
         self:SetColor(color_b)
         self.ColorCD = CurTime() + 0.1
 

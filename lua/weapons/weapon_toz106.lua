@@ -3,12 +3,12 @@ SWEP.Spawnable = true
 SWEP.AdminOnly = false
 SWEP.PrintName = "TOZ-106"
 SWEP.Author = "Tulsky Oruzheiny Zavod"
-SWEP.Instructions = "Bolt-action shotgun"
+SWEP.Instructions = "Bolt-action shotgun chambered in 20/70"
 SWEP.Category = "Weapons - Shotguns"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/tfa_ins2/w_svd.mdl"
+SWEP.WorldModel = "models/weapons/w_shot_m3super90.mdl"
 SWEP.WorldModelFake = "models/weapons/arc9/darsu_eft/c_toz106.mdl"
 SWEP.FakeAttachment = "1"
 SWEP.FakeBodyGroups = "110011111"
@@ -47,6 +47,11 @@ SWEP.AnimsEvents = {
 			self:EmitSound("weapons/tfa_ins2/k98/m40a1_boltback.wav", 45, math_random(110, 115))
 		end,
 		[0.3] = function(self)
+			if !self.noeject then
+				self:RejectShell(self.ShellEject)
+			else
+				self.noeject = false
+			end
 			self:EmitSound("weapons/tfa_ins2/k98/m40a1_boltforward.wav", 45, math_random(110, 115))
 		end,
 		[0.5] = function(self)
@@ -70,36 +75,21 @@ if CLIENT then
 	SWEP.FakeReloadEvents = {
 		[0.35] = function( self, timeMul )
 			if self:Clip1() < 1 then
-				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.1 * timeMul)//, self.MagModel, {self.lmagpos3, self.lmagang3, isnumber(self.FakeMagDropBone) and self.FakeMagDropBone or self:GetWM():LookupBone(self.FakeMagDropBone or "Magazine") or self:GetWM():LookupBone("ValveBiped.Bip01_L_Hand"), self.lmagpos2, self.lmagang2}, function(self)
-				//	if IsValid(self) then
-				//		self:GetWM():ManipulateBoneScale(75, vector_full)
-				//		self:GetWM():ManipulateBoneScale(76, vector_full)
-				//		self:GetWM():ManipulateBoneScale(77, vector_full)
-				//	end
-				//end)
-			else
-				//self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.5 * timeMul, self.MagModel, {Vector(-2,-3,0), Angle(180,-0,90), 75, self.lmagpos, self.lmagang}, true)
+				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.1 * timeMul)
 			end
 		end,
 		[0.36] = function( self, timeMul )
 			if self:Clip1() < 1 then
 				hg.CreateMag( self, Vector(0,0,-50), "111111")
 				self:GetWM():ManipulateBoneScale(67, vecPochtiZero)
-			else
-				//self:GetWM():ManipulateBoneScale(75, vecPochtiZero)
-				//self:GetWM():ManipulateBoneScale(76, vecPochtiZero)
-				//self:GetWM():ManipulateBoneScale(77, vecPochtiZero)
+
 			end 
 		end,
 		[0.6] = function( self, timeMul )
 			if self:Clip1() < 1 then
-				//self:GetOwner():PullLHTowards()
+
 				self:GetWM():ManipulateBoneScale(67, vector_full)
-			else
-				//self:GetWM():ManipulateBoneScale(75, vector_full)
-				//self:GetWM():ManipulateBoneScale(76, vector_full)
-				//self:GetWM():ManipulateBoneScale(77, vector_full)
-			end 
+			end
 		end,
 	}
 end
@@ -118,8 +108,8 @@ SWEP.IconOverride = "entities/arc9_eft_toz106.png"
 SWEP.weight = 2
 SWEP.weaponInvCategory = 1
 SWEP.CustomShell = "20/70"
---SWEP.EjectPos = Vector(0,5,5)
---SWEP.EjectAng = Angle(-5,180,0)
+
+SWEP.EjectAng = Angle(-45,0,0)
 SWEP.AutomaticDraw = false
 SWEP.UseCustomWorldModel = false
 SWEP.Primary.ClipSize = 3
@@ -151,7 +141,6 @@ SWEP.availableAttachments = {
 		},
 	},
 }
-
 
 SWEP.addSprayMul = 1
 SWEP.cameraShakeMul = 1
@@ -220,8 +209,7 @@ SWEP.ViewPunchDiv = 90
 SWEP.DistSound = "weapons/tfa_ins2/sks/sks_dist.wav"
 
 SWEP.lengthSub = 15
---SWEP.Supressor = false
---SWEP.SetSupressor = true
+
 
 --local to head
 SWEP.RHPos = Vector(3,-6.5,4)
@@ -248,7 +236,7 @@ end
 
 local function cock(self,time)
 	if SERVER then
-		self:Draw(true)
+		self:Draw(true, true)
 	end
 
 	if self:Clip1() == 0 then
@@ -264,7 +252,6 @@ local function cock(self,time)
 	net.Broadcast()
 
 	self.Primary.Next = CurTime() + self.AnimDraw + self.Primary.Wait
-	--if CLIENT then self:PlaySnd(self.CockSound or "snd_jack_hmcd_boltcycle.wav",true,CHAN_AUTO) end
 
 	local ply = self:GetOwner()
 
@@ -275,9 +262,10 @@ end
 SWEP.GunCamPos = Vector(6,-12,-5)
 SWEP.GunCamAng = Angle(190,-5,-95)
 
-SWEP.FakeEjectBrassATT = "2"
+SWEP.FakeEjectBrassATT = "4"
 
 function SWEP:Reload(time)
+	--PrintTable(self:GetWM():GetAttachments())
 	--print(self:GetNetVar("shootgunReload",0))
 	local ply = self:GetOwner()
 	--if ply.organism and (ply.organism.larmamputated or ply.organism.rarmamputated) then return end
@@ -324,7 +312,15 @@ function SWEP:ReloadEnd()
 	self:InsertAmmo(self:GetMaxClip1() - self:Clip1() + (self.drawBullet ~= nil and not self.OpenBolt and 1 or 0))
 	--end
 	self.ReloadNext = CurTime() + self.ReloadCooldown --я хуй знает чо это
-	self:Draw()
+	if CLIENT and self.drawBullet == nil then
+		self.noeject = true
+	end
+	if SERVER and self.drawBullet == nil then
+		self:SetNetVar("shootgunReload",CurTime() + 1.3)
+		self:PlayAnim(self.AnimList["cycle"] or "cycle", 1.5, false, nil, false, true)
+	end
+
+	self:Draw(nil,true)
 end
 
 function SWEP:CanPrimaryAttack()
@@ -332,11 +328,6 @@ function SWEP:CanPrimaryAttack()
 end
 
 function SWEP:DrawPost()
-	local wep = self:GetWeaponEntity()
-	if CLIENT and IsValid(wep) then
-		self.shooanim = LerpFT(0.4,self.shooanim or 0,(self:Clip1() < 1 and not self.reload) and 2.3 or self.ReloadSlideOffset)
-		--wep:ManipulateBonePosition(70,Vector(-1.8*self.shooanim , 0,0 ),false)
-	end
 end
 
 function SWEP:ModelCreated(model)

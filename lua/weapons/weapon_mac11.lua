@@ -8,40 +8,39 @@ SWEP.Category = "Weapons - Machine-Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/pwb2/weapons/w_mac11.mdl"
+SWEP.WorldModel = "models/weapons/w_smg_mac10.mdl"
 SWEP.WorldModelFake = "models/weapons/tfa/zmirli/c_mac10.mdl"
-//SWEP.FakeScale = 1.2
-//SWEP.ZoomPos = Vector(0, -0.0027, 4.6866)
+
 SWEP.FakePos = Vector(-9, 3.15, 9.09)
 SWEP.FakeAng = Angle(0, 0, 3.8)
 SWEP.AttachmentPos = Vector(0.5,-0.05,-0.45)
 SWEP.AttachmentAng = Angle(0,0,90)
-//SWEP.MagIndex = 53
-//MagazineSwap
+
+
 SWEP.FakeAttachment = "1"
---Entity(1):GetActiveWeapon():GetWM():AddLayeredSequence(Entity(1):GetActiveWeapon():GetWM():LookupSequence("delta_foregrip"),1)
+
 
 SWEP.FakeReloadSounds = {
 	[0.22] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.4] = "weapons/zmirli/mac10/mac10_magout.wav",
-	--[0.34] = "weapons/ak74/ak74_magout_rattle.wav",
+
 	[0.65] = "weapons/universal/uni_crawl_l_02.wav",
 	[0.82] = "weapons/zmirli/mac10/mac10_magin.wav",
 	[0.94] = "weapons/universal/uni_crawl_l_04.wav",
 	--[0.9] = "zcitysnd/sound/weapons/m9/handling/m9_maghit.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 SWEP.FakeEmptyReloadSounds = {
 	[0.16] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.25] = "weapons/zmirli/mac10/mac10_magout.wav",
-	--[0.34] = "weapons/ak74/ak74_magout_rattle.wav",
+
 	[0.42] = "weapons/universal/uni_crawl_l_02.wav",
 	[0.65] = "weapons/zmirli/mac10/mac10_magin.wav",
 	[0.72] = "weapons/universal/uni_crawl_l_05.wav",
 	[0.84] = "weapons/tfa_ins2/mp7/boltback.wav",
 	[1.02] = "weapons/universal/uni_crawl_l_04.wav",
 	--[0.9] = "zcitysnd/sound/weapons/m9/handling/m9_maghit.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 SWEP.MagModel = "models/weapons/zcity/w_glockextmag.mdl"
 local vector_full = Vector(1,1,1)

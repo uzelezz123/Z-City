@@ -183,7 +183,7 @@ end
 function SWEP:CreateFake() end
 
 local function ExplodeTheItem(self,ent)
-	if not IsValid(ent) then self:Remove() end
+	if not IsValid(ent) then self:Remove() return end
 
 	local ent = ent
 
@@ -273,7 +273,7 @@ local function ExplodeTheItem(self,ent)
 
 			hgWreckBuildings(ent, EntPos, BlastDamage / 400, BlastDis/8, false)
 			hgBlastDoors(ent, EntPos, BlastDamage / 400, BlastDis/8, false)
-			util.ScreenShake( EntPos, 35, 35, 1, 5000 )
+			util.ScreenShake( EntPos, 45, 225, 2.5, 3000 )
 
 			if FireEnts[ent:GetModel()] then
 				local Tr = util.QuickTrace(EntPos, -vector_up*500, {EntPos})
@@ -368,7 +368,7 @@ function SWEP:SecondaryAttack(calledFrom)
 
 			local bomb = ents.Create("prop_physics")
 			bomb:SetModel("models/props_junk/cardboard_jox004a.mdl")
-			bomb:SetPos(Tr.HitPos)
+			bomb:SetPos(Tr.HitPos + Tr.HitNormal * 4)
 			bomb:SetModelScale(0.4)
 			bomb:Spawn()
 			bomb:Activate()

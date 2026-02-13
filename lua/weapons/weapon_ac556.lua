@@ -5,13 +5,12 @@ SWEP.PrintName = "Ruger AC-556"
 SWEP.Author = "Ruger Inc."
 SWEP.Instructions = "The AC-556 is a selective-fire rifle based on the Mini-14, chambered in 5.56x45 mm"
 SWEP.Category = "Weapons - Assault Rifles"
-SWEP.Slot = 2  ---Vector( 20.33, -2.78, -0.6 )
+SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
 SWEP.WorldModel = "models/weapons/tfa_ins2/akpack/w_ak74.mdl"
-SWEP.WorldModelFake = "models/weapons/arccw/c_ud_mini14.mdl" -- МОДЕЛЬ ГОВНА, НАЙТИ НОРМАЛЬНЫЙ КАЛАШ
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
---uncomment for funny
+SWEP.WorldModelFake = "models/weapons/arccw/c_ud_mini14.mdl"
+
 SWEP.FakePos = Vector(-12, 4.30, 7.15)
 SWEP.FakeAng = Angle(-0.2, 0, 0)
 SWEP.AttachmentPos = Vector(3.8,2.1,-27.8)
@@ -24,31 +23,28 @@ SWEP.GunCamPos = Vector(4,-15,-6)
 SWEP.GunCamAng = Angle(190,-5,-100)
 
 SWEP.FakeEjectBrassATT = "2"
-//SWEP.MagIndex = 57
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():AddLayeredSequence(Entity(1):GetActiveWeapon():GetWM():LookupSequence("delta_foregrip"),1)
+
 SWEP.FakeReloadSounds = {
 	[0.22] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.29] = "weapons/arccw_ud/m16/grab.ogg",
 	[0.34] = "weapons/arccw_ud/m16/magout.ogg",
 	[0.38] = "weapons/ak74/ak74_magout_rattle.wav",
-	--[0.51] = "weapons/universal/uni_crawl_l_02.wav",
+
 	[0.64] = "weapons/arccw_ud/m16/grab.ogg",
 	[0.64] = "weapons/arccw_ud/m16/magin.ogg",
 	[0.81] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.99] = "weapons/universal/uni_crawl_l_04.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 
 SWEP.FakeEmptyReloadSounds = {
-	--[0.22] = "weapons/ak74/ak74_magrelease.wav",
+
 	[0.22] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.29] = "weapons/arccw_ud/m16/magout_empty.ogg",
 	[0.32] = "weapons/ak74/ak74_magout_rattle.wav",
 	[0.59] = "weapons/arccw_ud/m16/grab.ogg",
 	[0.62] = "weapons/arccw_ud/m16/magin.ogg",
-	--[0.75] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav",
+
 	[0.85] = "weapons/arccw_ud/mini14/chamber.ogg",
 	[1.01] = "weapons/universal/uni_crawl_l_04.wav",
 }
@@ -140,8 +136,7 @@ SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "5.56x45 mm"
 
 SWEP.CustomShell = "556x45"
---SWEP.EjectPos = Vector(1,5,3.5)
---SWEP.EjectAng = Angle(0,-90,0)
+
 
 SWEP.ScrappersSlot = "Primary"
 SWEP.Primary.Cone = 0

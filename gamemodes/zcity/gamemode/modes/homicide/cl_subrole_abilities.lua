@@ -105,7 +105,7 @@ hook.Add("InputMouseApply", "HMCD_SubRole_Abilities", function(cmd, mouse_x, mou
 	-- end
 end)
 ]]
-hook.Add("AdjustMouseSensitivity", "HMCD_SubRole_Abilities", function(sensitivity)
+hook.Add("hg_AdjustMouseSensitivity", "HMCD_SubRole_Abilities", function(sensitivity)
 	if(LocalPlayer().BeingVictimOfNeckBreak)then
 		return 0.1
 	end

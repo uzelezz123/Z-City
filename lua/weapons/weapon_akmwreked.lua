@@ -8,19 +8,18 @@ SWEP.Category = "Weapons - Assault Rifles"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_akm_bw.mdl"
-SWEP.WorldModelFake = "models/weapons/tfa_ins2/c_akm_bw.mdl" -- Контент инсурги https://steamcommunity.com/sharedfiles/filedetails/?id=3437590840 
---uncomment for funny
---а еще надо настраивать заново zoompos
+SWEP.WorldModel = "models/weapons/w_rif_ak47.mdl"
+SWEP.WorldModelFake = "models/weapons/tfa_ins2/c_akm_bw.mdl"
+
 SWEP.FakePos = Vector(-7.5, 2.9, 5.95)
 SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(-2,2.2,-26.9)
 SWEP.AttachmentAng = Angle(0,0,0)
-//SWEP.MagIndex = 53
-//MagazineSwap
+
+
 SWEP.FakeAttachment = "1"
 --Entity(1):GetActiveWeapon():GetWM():SetSubMaterial(0,"NULL")
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
+
 SWEP.FakeEjectBrassATT = "2"
 SWEP.FakeReloadSounds = {
 	[0.25] = "weapons/tfa_ins2/akm_bw/magout.wav",
@@ -40,36 +39,21 @@ if CLIENT then
 	SWEP.FakeReloadEvents = {
 		[0.25] = function( self, timeMul )
 			if self:Clip1() < 1 then
-				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.1 * timeMul)//, self.MagModel, {self.lmagpos3, self.lmagang3, isnumber(self.FakeMagDropBone) and self.FakeMagDropBone or self:GetWM():LookupBone(self.FakeMagDropBone or "Magazine") or self:GetWM():LookupBone("ValveBiped.Bip01_L_Hand"), self.lmagpos2, self.lmagang2}, function(self)
-				//	if IsValid(self) then
-				//		self:GetWM():ManipulateBoneScale(75, vector_full)
-				//		self:GetWM():ManipulateBoneScale(76, vector_full)
-				//		self:GetWM():ManipulateBoneScale(77, vector_full)
-				//	end
-				//end)
-			else
-				//self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.5 * timeMul, self.MagModel, {Vector(-2,-3,0), Angle(180,-0,90), 75, self.lmagpos, self.lmagang}, true)
+				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.1 * timeMul)
 			end
 		end,
 		[0.3] = function( self, timeMul )
 			if self:Clip1() < 1 then
 				hg.CreateMag( self, Vector(0,0,-50) )
 				self:GetWM():ManipulateBoneScale(40, vecPochtiZero)
-			else
-				//self:GetWM():ManipulateBoneScale(75, vecPochtiZero)
-				//self:GetWM():ManipulateBoneScale(76, vecPochtiZero)
-				//self:GetWM():ManipulateBoneScale(77, vecPochtiZero)
+
 			end 
 		end,
 		[0.4] = function( self, timeMul )
 			if self:Clip1() < 1 then
-				//self:GetOwner():PullLHTowards()
+
 				self:GetWM():ManipulateBoneScale(40, vector_full)
-			else
-				//self:GetWM():ManipulateBoneScale(75, vector_full)
-				//self:GetWM():ManipulateBoneScale(76, vector_full)
-				//self:GetWM():ManipulateBoneScale(77, vector_full)
-			end 
+			end
 		end,
 	}
 end
@@ -166,8 +150,7 @@ SWEP.handsAng = Angle(6, 2, 0)
 SWEP.AimHands = Vector(-4, 0.5, -4)
 SWEP.DistSound = "weapons/tfa_ins2/akp/ak47/ak47_dist.wav"
 
---SWEP.EjectPos = Vector(1,5,3.5)
---SWEP.EjectAng = Angle(0,-90,0)
+
 
 SWEP.weight = 3
 

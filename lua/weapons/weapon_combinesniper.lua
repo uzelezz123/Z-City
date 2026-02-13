@@ -96,6 +96,8 @@ SWEP.WeaponEyeAngles = Angle(0,0,0)
 
 SWEP.CanSuicide = false
 
+SWEP.RestPosition = Vector(10, -1, 4)
+
 --local to head
 SWEP.RHPos = Vector(3,-10,5)
 SWEP.RHAng = Angle(0,-5,90)

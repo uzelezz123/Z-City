@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/fc5/weapons/handguns/d50.mdl"
+SWEP.WorldModel = "models/weapons/w_pist_deagle.mdl"
 SWEP.WorldModelFake = "models/weapons/arccw/c_ud_deagle.mdl"
 SWEP.FakeAttachment = "1"
 SWEP.FakePos = Vector(-16, 2.55, 6)
@@ -16,7 +16,7 @@ SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(0.05,-0.3,0)
 SWEP.AttachmentAng = Angle(90,0,0)
 SWEP.FakeMagDropBone = 48
-//MagazineSwap
+
 --PrintAnims(Entity(1):GetActiveWeapon():GetWM())
 SWEP.FakeVPShouldUseHand = true
 SWEP.AnimList = {
@@ -48,7 +48,7 @@ local skins = {
 	0,1,3
 }
 function SWEP:InitializePost()
-	local Skin = table.Random(skins)
+	local Skin = skins[math.random(#skins)]
 	if math.random(0,100) > 99 then
 		Skin = math.random(0,1) == 1 and 4 or 2 
 	end

@@ -1,4 +1,4 @@
-local hg_furcity = ConVarExists("hg_furcity") and GetConVar("hg_furcity") or CreateConVar("hg_furcity", 0, bit.bor(FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_LUA_SERVER), "enable furcity", 0, 1)
+local hg_furcity = ConVarExists("hg_furcity") and GetConVar("hg_furcity") or CreateConVar("hg_furcity", 0, bit.bor(FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_LUA_SERVER), "Toggle phrase furryfier :3", 0, 1)
 
 hg.fur = {
 	" rawr~",
@@ -86,7 +86,7 @@ function hg.FurrifyPhrase(msg)
 end
 
 if CLIENT then
-	local hg_old_notificate = ConVarExists("hg_old_notificate") and GetConVar("hg_old_notificate") or CreateConVar("hg_old_notificate",0,{FCVAR_USERINFO,FCVAR_ARCHIVE},"enable old notifications (chatprints)",0,1)
+	local hg_old_notificate = ConVarExists("hg_old_notificate") and GetConVar("hg_old_notificate") or CreateConVar("hg_old_notificate",0,{FCVAR_USERINFO,FCVAR_ARCHIVE},"Toggle old notifications (chatprints)",0,1)
 
 	surface.CreateFont("BerserkFont", {
 		font = "Who asks Satan",
@@ -181,11 +181,11 @@ if CLIENT then
 	local PLAYER = FindMetaTable("Player")
 
 	function PLAYER:Notify(...)
-		return CreateNotification(self, ...)
+		return CreateNotification(...)
 	end
 
 	function PLAYER:NotifyBerserk(...)
-		return CreateNotificationBerserk(self, ...)
+		return CreateNotificationBerserk(...)
 	end
 
 	net.Receive("HGNotificate",function()

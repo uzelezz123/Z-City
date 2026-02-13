@@ -1,4 +1,4 @@
-﻿if SERVER then AddCSLuaFile() end
+if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_tpik_base"
 SWEP.PrintName = "M67"
 SWEP.Instructions = 
@@ -7,10 +7,12 @@ SWEP.Instructions =
 LMB - High ready
 While high ready:
 RMB to remove spoon.
+Reload to insert pin back.
 
 RMB - Low ready
 While low ready:
 LMB to remove spoon.
+Reload to insert pin back.
 ]]--"тильда двуеточее три"
 SWEP.Category = "Weapons - Explosive"
 SWEP.Spawnable = true
@@ -142,7 +144,13 @@ SWEP.AnimList = {
 		self.IsLowThrow = true
 		self.ReadyToThrow = true
 	end,0.8},
-	["idle"] = {"draw", 1, false,false,function(self)
+	["revers_pullbackhigh"] = {"pullbackhigh", 2, false, true, function(self) 
+		self:SetShowPin(true)
+	end,0.9},
+	["revers_pullbacklow"] = {"pullbacklow", 2, false, true, function(self) 
+		self:SetShowPin(true)
+	end,0.9},
+	["idle"] = {"draw", 1, false, false, function(self)
 	end}
 }
 
@@ -154,6 +162,7 @@ SWEP.ViewBobCamBone = "ValveBiped.Bip01_R_Hand"
 SWEP.ViewPunchDiv = 120
 
 SWEP.CallbackTimeAdjust = 0.1
+SWEP.NoTrap = true
 
 function SWEP:Deploy( wep )
 	self:PlayAnim("deploy")
@@ -173,6 +182,18 @@ function SWEP:Holster( wep )
 			end
 			self:Throw(0, self.SpoonTime or CurTime(),nil,Vector(0,0,0),Angle(0,0,0))
 			self:Remove()
+		end
+
+		if self:GetNWBool("PlacedTrap", false) then
+			self.count = self.count - 1
+			self.Trap = nil
+			self:ResetTrap()
+			if self.count < 1 then
+				if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
+					self:GetOwner():SelectWeapon("weapon_hands_sh")
+				end
+				self:Remove()
+			end
 		end
 
 		return true
@@ -231,8 +252,11 @@ function SWEP:Throw(mul, time, nosound, throwPosAdjust, throwAngAdjust)
 	local entOwner = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or IsValid(owner) and owner
 	throwPosAdjust = throwPosAdjust or Vector(0,0,5)
 	throwAngAdjust = throwAngAdjust or Angle(0,0,0)
+	--throwPosAdjust[2] = throwPosAdjust[2] + 2
+	local _,_,headm = self:GetEyeTrace()
+	local eyepos = headm:GetTranslation() or false
 	local ang = IsValid(entOwner) and owner:EyeAngles() or self:GetAngles()
-	local hand = IsValid(entOwner) and owner:EyePos() + ang:Forward() * throwPosAdjust[1] + ang:Right() * throwPosAdjust[2] + ang:Up() * throwPosAdjust[3] or self:GetPos()
+	local hand = eyepos and eyepos + ang:Forward() * throwPosAdjust[1] + ang:Right() * (throwPosAdjust[2] + 2) + ang:Up() * throwPosAdjust[3] or self:GetPos()
 
 	if IsValid(entOwner) then
 		ent:SetOwner(entOwner or game.GetWorld())
@@ -323,20 +347,25 @@ function SWEP:KeyDown(key_enum)
 end
 
 if CLIENT then
+	local colWhite = Color(255, 255, 255, 155)
+	local lerpthing = 0
 	function SWEP:DrawHUD()
-		--PrintBones(self:GetWM())
-		--if GetViewEntity() ~= LocalPlayer() then return end
-		--if LocalPlayer():InVehicle() then return end
-       --local tr = self:GetEyeTrace()
-       --local toScreen = tr.HitPos:ToScreen()
+		if GetViewEntity() ~= lply then return end
+		if lply:InVehicle() then return end
+		if hg.GetCurrentCharacter(lply):IsRagdoll() then return end
 
-       --surface.SetDrawColor(255,255,255,155)
-       --surface.DrawRect(toScreen.x-2.5, toScreen.y-2.5, 5, 5)
+		local tr = self:GetEyeTrace()
+		local toScreen = tr.HitPos:ToScreen()
+
+		lerpthing = Lerp(0.1, lerpthing, (hg.eyeTrace(lply).Hit and not lply:IsSprinting() and not self.NoTrap) and 1 or 0)
+		colWhite.a = 255 * lerpthing
+		surface.SetDrawColor(colWhite)
+		surface.DrawRect(toScreen.x-2.5, toScreen.y-2.5, 5, 5)
 	end
 end
 
 function SWEP:SecondaryAttack()
-	if self.ReadyToThrow or self.CoolDown > CurTime() then return end
+	if self.ReadyToThrow or self.CoolDown > CurTime() or self:GetNWBool("PlacedTrap", false) then return end
 
 	local owner = self:GetOwner()
 	if not hg.CanUseLeftHand(owner) or not hg.CanUseRightHand(owner) then return end
@@ -344,6 +373,10 @@ function SWEP:SecondaryAttack()
 	self.CoolDown = CurTime() + 2
 	self:PlayAnim("pullbacklow")
 	self.Thrower = self:GetOwner()
+
+	self.TrappingRN = false
+	self.ReadyToTrap = false
+	self:SetNWBool("PlacedTrap", false)
 end
 
 function SWEP:InitAdd()
@@ -400,6 +433,11 @@ function SWEP:ThinkAdd()
 	self:SetHold(self.HoldType)
 	self.lastOwner = self:GetOwner()
 	if not SERVER then return end
+	if IsValid(self.Trap) then return end
+	--print(self.ReadyToTrap)
+	if self.ReadyToTrap then
+		self:PlaceTrap()
+	end
 
 	if not self.timeToBoom then
 		local ent = scripted_ents.GetStored(self.ENT)--scripted_ents.Get("ent_"..string.sub(self:GetClass(),8))
@@ -452,13 +490,20 @@ function SWEP:CreateSpoon(entownr)
 		entasd:SetAngles(hand:GetAngles())
 		entasd:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 		entasd:Spawn()
-		
 
-		entownr:EmitSound("weapons/m67/m67_spooneject.wav",65)
+		entownr:EmitSound("weapons/m67/m67_spooneject.wav", 65)
 
 		if self.SpoonSounds then
 			for k,v in ipairs(self.SpoonSounds) do
-				self:GetOwner():EmitSound(v[1],v[2])
+				self:GetOwner():EmitSound(v[1], v[2], v[3])
+
+				if v[4] then
+					local effectData = EffectData()
+					effectData:SetOrigin(entasd:GetPos())
+					effectData:SetScale(0.04)
+					effectData:SetEntity(entasd)
+					util.Effect("eff_jack_genericboom", effectData, true, true)
+				end
 			end
 		end
 
@@ -475,7 +520,15 @@ function SWEP:CreateSpoon(entownr)
 
 		if self.SpoonSounds then
 			for k,v in ipairs(self.SpoonSounds) do
-				self:GetOwner():EmitSound(v[1],v[2])
+				self:GetOwner():EmitSound(v[1], v[2], v[3])
+
+				if v[4] then
+					local effectData = EffectData()
+					effectData:SetOrigin(entasd:GetPos())
+					effectData:SetScale(0.04)
+					effectData:SetEntity(entasd)
+					util.Effect("eff_jack_genericboom", effectData, true, true)
+				end
 			end
 		end
 
@@ -488,7 +541,7 @@ end
 SWEP.CoolDown = 0
 
 function SWEP:PrimaryAttack()
-	if self.ReadyToThrow or self.CoolDown > CurTime() then return end
+	if self.ReadyToThrow or self.CoolDown > CurTime() or self:GetNWBool("PlacedTrap", false) then return end
 
 	local owner = self:GetOwner()
 	if not hg.CanUseLeftHand(owner) or not hg.CanUseRightHand(owner) then return end
@@ -496,7 +549,198 @@ function SWEP:PrimaryAttack()
 	self.CoolDown = CurTime() + 2
 	self:PlayAnim("pullbackhigh")
 	self.Thrower = self:GetOwner()
+
+	self.TrappingRN = false
+	self.ReadyToTrap = false
+	self:SetNWBool("PlacedTrap", false)
+end
+
+function SWEP:OwnerChanged()
+	if SERVER and self:GetNWBool("PlacedTrap", false) then
+		self.count = self.count - 1
+		self.Trap = nil
+		self:ResetTrap()
+		if self.count < 1 then
+			if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
+				self:GetOwner():SelectWeapon("weapon_hands_sh")
+			end
+			self:Remove()
+		end
+	end
+end
+
+--// Booby trap stuff
+SWEP.lpos = Vector(2,0,0)
+SWEP.lang = Angle(0,0,0)
+
+function SWEP:ResetTrap()
+	self:PlayAnim("deploy")
+	self.ReadyToThrow = false
+	self.TrappingRN = false
+	self.ReadyToTrap = false
+	self:SetNWBool("PlacedTrap", false)
+end
+
+function SWEP:PlaceTrap()
+	if self.NoTrap then return end
+
+	local time = CurTime()
+	if CLIENT then return end
+
+	local ply = self:GetOwner()
+	if hg.GetCurrentCharacter(ply):IsRagdoll() then return end
+
+	local entownr
+	if IsValid(ply) then
+		entownr = hg.GetCurrentCharacter(ply)
+	end
+	
+	if ply:IsSprinting() then
+		self:ResetTrap()
+	return end
+
+	if not hg.eyeTrace(ply).Hit then
+		self:ResetTrap()
+	return end
+
+	if not self.startedattack and entownr == ply and not self:GetNWBool("PlacedTrap", false) then
+		local tr = hg.eyeTrace(ply)
+		local ent = ents.Create(self.ENT)
+		local pos,ang = LocalToWorld(self.lpos, self.lang, tr.HitPos, tr.HitNormal:Angle())
+		ent:SetPos(pos)
+		ent:SetAngles(ang)
+		ent:Spawn()
+		ent.owner = self.lastOwner
+		ent.owner2 = self.lastOwner
+		ent:SetOwner(self.lastOwner)
+		
+		ent.cons2 = constraint.Weld(ent,tr.Entity,0,tr.PhysicsBone or 0, 200, true, false)
+		
+		self.Trap = ent
+		
+		self:SetNWBool("PlacedTrap", true)
+	elseif IsValid(self.Trap) then
+		local tr = hg.eyeTrace(ply)
+
+		local tr2 = {}
+		tr2.start = self.Trap:GetPos()
+		tr2.endpos = tr.HitPos
+		tr2.filter = self.Trap
+		local trace = util.TraceLine(tr2)
+
+		if trace.Hit then return end
+		
+		local len = tr.HitPos:Distance(self.Trap:GetPos())
+		if len < 200 and len > 10 then
+			self.Trap.ent = tr.Entity
+			self.Trap.lpos = tr.Entity:WorldToLocal(tr.HitPos)
+			self.Trap.origlen = tr.HitPos:Distance(self.Trap:GetPos())
+			local cons = constraint.CreateKeyframeRope(
+				tr.HitPos, 0.05, "cable/cable2", nil,
+				self.Trap.ent, self.Trap.lpos, tr.PhysicsBone, self.Trap,
+				vector_origin, 0,
+				{
+					["Slack"] = 50,
+					["Collide with world"] = false,
+				}
+			)
+
+			local ent2 = ents.Create("prop_physics")
+			ent2:SetModel("models/hunter/plates/plate.mdl")
+			
+			ent2:SetMoveType(MOVETYPE_NONE)
+			ent2:SetSolid(SOLID_VPHYSICS)
+			ent2:Spawn()
+			local size = 1
+			local pos = self.Trap:GetPos()
+			--local dir = (tr.HitPos - pos):GetNormalized() * 1
+			ent2:PhysicsInitConvex({
+				Vector( tr.HitPos[1], tr.HitPos[2], tr.HitPos[3] ),
+				Vector( tr.HitPos[1], tr.HitPos[2], tr.HitPos[3] + size ),
+				Vector( tr.HitPos[1] + size, tr.HitPos[2], tr.HitPos[3] ),
+				Vector( tr.HitPos[1] + size, tr.HitPos[2], tr.HitPos[3] + size ),
+				Vector( pos[1], pos[2], pos[3] ),
+				Vector( pos[1], pos[2], pos[3] + size ),
+				Vector( pos[1] + size, pos[2], pos[3] ),
+				Vector( pos[1] + size, pos[2], pos[3] + size ),
+			})			
+			ent2:EnableCustomCollisions(true)
+
+			local phys = ent2:GetPhysicsObject()
+			if IsValid(phys) then
+				phys:SetMass(1)
+			end
+
+			ent2.Trap = self.Trap
+			ent2:SetNoDraw(true)
+			ent2:AddCallback("PhysicsCollide",function()
+				if IsValid(ent2.Trap) and ent2.Trap.Arm then
+					ent2.Trap:Arm(CurTime() - ent2.Trap.timeToBoom + 1, vector_origin)
+				end
+			end)
+
+			--[[ broken
+			constraint.NoCollide(self.Trap, ent2, 0, 0, false)
+			constraint.NoCollide(self.Trap.ent, ent2, 0, 0, false)
+			constraint.NoCollide(self.Trap, self.Trap.ent, 0, 0, false)
+
+			constraint.Weld(self.Trap, ent2, 0, 0, 0, true, false)
+			constraint.Weld(self.Trap.ent, ent2, 0, 0, 0, true, false)
+			]]
+
+			self.Trap.ent2 = ent2
+			self.Trap.cons = cons
+
+			--ply:SelectWeapon("weapon_hands_sh")
+
+			self.count = self.count - 1
+			self.Trap = nil
+			self:ResetTrap()
+			self:PlayAnim("deploy")
+			if self.count < 1 then
+				if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
+					self:GetOwner():SelectWeapon("weapon_hands_sh")
+				end
+				self:Remove()
+			end
+		end
+	else
+		self:PlayAnim("deploy")
+	end
+
+	--self:PlayAnim("deploy")
+	self.TrappingRN = false
+	self.ReadyToTrap = false
+end
+
+function SWEP:ResetThrow()
+	if self.SpoonTime then return end
+	self.ReadyToThrow = false
+	self:PlayAnim(self.IsLowThrow and "revers_pullbacklow" or "revers_pullbackhigh")
+	self.IsLowThrow = false
 end
 
 function SWEP:Reload()
+	if CLIENT then return end
+	if (self.ReloadCD and self.ReloadCD > CurTime()) then return end
+	if self.ReadyToThrow then
+		self:ResetThrow()
+		self.ReloadCD = CurTime() + 1
+		return
+	end
+	if self.NoTrap or (self.TrappingRN or false) then return end
+
+	local ply = self:GetOwner()
+	if hg.GetCurrentCharacter(ply):IsRagdoll() then return end
+
+	if ply:IsSprinting() then return end
+	if not hg.eyeTrace(ply).Hit then return end
+
+	if self:GetNWBool("PlacedTrap", false) then
+		self.ReloadCD = CurTime() + 1
+		self:PlaceTrap()
+	else
+		self.TrappingRN = true
+		self:PlayAnim("trapplace")
+	end
 end

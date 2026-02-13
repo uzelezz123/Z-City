@@ -16,8 +16,7 @@ SWEP.IconOverride = "entities/tfa_ins2_sks.png"
 SWEP.weight = 4
 SWEP.weaponInvCategory = 1
 SWEP.CustomShell = "762x39"
---SWEP.EjectPos = Vector(0,5,5)
---SWEP.EjectAng = Angle(-5,180,0)
+
 SWEP.AutomaticDraw = true
 SWEP.UseCustomWorldModel = false
 SWEP.Primary.ClipSize = 10
@@ -152,8 +151,7 @@ SWEP.FOVScoped = 40
 SWEP.DistSound = "weapons/tfa_ins2/sks/sks_dist.wav"
 
 SWEP.lengthSub = 15
---SWEP.Supressor = false
---SWEP.SetSupressor = true
+
 
 --local to head
 SWEP.RHPos = Vector(1,-5,3.5)

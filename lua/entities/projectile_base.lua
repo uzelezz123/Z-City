@@ -19,11 +19,11 @@ ENT.BlastDamage = 80
 ENT.BlastDis = 30
 
 
-ENT.ThrustEffect = "eff_jack_rockettrust"        
-ENT.TrailEffect = "eff_jack_rockettrail"         
-ENT.ExplosionEffect = "pcf_jack_airsplode_medium" 
-ENT.WaterExplosionEffect = "eff_jack_genericboom" 
-ENT.ShrapnelEffect = "eff_jack_hmcd_shrapnel"    
+ENT.ThrustEffect = "eff_jack_rockettrust"
+ENT.TrailEffect = "eff_jack_rockettrail"
+ENT.ExplosionEffect = "pcf_jack_airsplode_medium"
+ENT.WaterExplosionEffect = "eff_jack_genericboom"
+ENT.ShrapnelEffect = "eff_jack_hmcd_shrapnel"
 
 game.AddParticles("particles/pcfs_jack_muzzleflashes.pcf")
 game.AddParticles("particles/pcfs_jack_explosions_small3.pcf")
@@ -276,7 +276,7 @@ if SERVER then
 			end)
 		end
 
-        util.ScreenShake(SelfPos,99999,99999,1,3000)
+        util.ScreenShake(SelfPos,100,200,1,3000)
 
 		coroutine.resume(co)
 		local index = self:EntIndex()

@@ -302,7 +302,7 @@ if CLIENT then
 	hook.Add("radialOptions", "4", function()
 		local organism = lply.organism or {}
 
-		if lply:Alive() and not organism.otrub then
+		if lply:Alive() and not organism.otrub and lply.PlayerClassName ~= "Gordon" then
 			--hg.radialOptions[#hg.radialOptions + 1] = {randomPhrase, (LocalPlayer().PlayerClassName == "Slugcat" and "Wáaaaǎa\nWāaaàaâ") or (LocalPlayer().PlayerClassName == "Gordon" and "...") or "Say something"}
 			hg.radialOptions[#hg.radialOptions + 1] = {
 				[1] = function(mouseClick)

@@ -80,14 +80,6 @@ end
 
 CLASS.NoGloves = true
 local col1 = Color(121, 97, 217)
-if CLIENT then
-	surface.CreateFont("ZB_ProotOSChat", {
-		font = "Ari-W9500",
-		size = ScreenScale(4),
-		extended = true,
-		weight = 400,
-	})
-end
 
 function CLASS.On(self, data)
 	if SERVER then

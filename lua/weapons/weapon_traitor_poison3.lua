@@ -65,6 +65,15 @@ function SWEP:DrawWorldModel()
 	WorldModel:DrawModel()
 end
 
+function SWEP:Initialize()
+	self:SetHold(self.HoldType)
+
+	if self:GetOwner():IsNPC() then -- why not lol
+		self.HoldType = "melee"
+		self:SetHold(self.HoldType)
+	end
+end
+
 function SWEP:SetHold(value)
 	self:SetWeaponHoldType(value)
 	self:SetHoldType(value)
@@ -72,7 +81,6 @@ function SWEP:SetHold(value)
 end
 
 function SWEP:Think()
-	self:SetHold(self.HoldType)
 end
 
 SWEP.traceLen = 5
@@ -96,10 +104,10 @@ end
 function SWEP:DoPoison(tr)
     local owner = self:GetOwner()
 
-    owner:EmitSound("physics/metal/soda_can_impact_hard2.wav",40)
-	
+    owner:EmitSound("physics/metal/soda_can_impact_hard2.wav", owner:IsNPC() and 75 or 40)
+
 	local ent = ents.Create("ent_hg_cyanide_canister")
-	ent:SetPos(tr.HitPos)
+	ent:SetPos(owner:IsNPC() and owner:EyePos() or tr.HitPos)
 	ent:Spawn()
 
     self:Remove()
@@ -135,17 +143,21 @@ end
 function SWEP:SecondaryAttack()
 end
 
-function SWEP:Initialize()
-	self:SetHold(self.HoldType)
-end
-
 function SWEP:PrimaryAttack()
 	if SERVER then
-        local tr = self:GetEyeTrace()
+        local tr = self:GetOwner():IsNPC() and false or self:GetEyeTrace()
 
         self:DoPoison(tr)
 	end
 end
 
 function SWEP:Reload()
+end
+
+function SWEP:CanBePickedUpByNPCs()
+	return true -- why not lol
+end
+
+function SWEP:GetNPCRestTimes()
+	return 0.1, 0.1
 end

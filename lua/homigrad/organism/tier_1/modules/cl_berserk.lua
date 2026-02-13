@@ -4,14 +4,6 @@ hg.berserkStartTime = hg.berserkStartTime or 0
 hg.berserkStartTime2 = hg.berserkStartTime2 or 0
 hg.berserkStation = hg.berserkStation or nil
 
-surface.CreateFont("BerserkChatFont", {
-	font = "Who asks Satan",
-	size = ScreenScale(4),
-	extended = true,
-	weight = 400,
-	antialias = true,
-})
-
 local tab = {
 	[ "$pp_colour_addr" ] = 0,
 	[ "$pp_colour_addg" ] = 0,

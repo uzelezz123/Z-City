@@ -68,7 +68,6 @@ local function GetPhysBoneNum(ent,string)
 	return ent:TranslateBoneToPhysBone(ent:LookupBone(string))
 end
 
-local hg_shadow_enable = ConVarExists("hg_shadow_enable") and GetConVar("hg_shadow_enable") or CreateConVar("hg_shadow_enable", 0, FCVAR_SERVER_CAN_EXECUTE, "exact shadown control 1/0", 0, 1)
 function SWEP:CreateFake(ragdoll)
 	if IsValid(self:GetNWEntity("fakeGun")) then return end
 	if not IsValid(ragdoll) then return end
@@ -100,7 +99,6 @@ function SWEP:CreateFake(ragdoll)
 	ent.dontPickup = true
 	ent.fakeOwner = self
 	ragdoll:DeleteOnRemove(ent)
-	if hg_shadow_enable:GetBool() then ent:MakePhysicsObjectAShadow(true, true) end
 	ragdoll.fakeGun = ent
 	if IsValid(ragdoll.ConsRH) then ragdoll.ConsRH:Remove() end
 	self:SetFakeGun(ent)

@@ -92,6 +92,15 @@ end
 
 function SWEP:InitializeAdd()
 	self:SetHold(self.HoldType)
+
+	local owner = self:GetOwner()
+	if owner:IsNPC() then
+		self:SetHold("melee")
+		owner:SetHealth(math.Clamp(owner:Health() + (owner:GetMaxHealth() * 0.15), 0, owner:GetMaxHealth() * 2))
+		owner:EmitSound("snd_jack_hmcd_eat"..math.random(4)..".wav", 75, math.random(95, 105))
+		self:Remove()
+	end
+
 	local sharedrand = math.Round(util.SharedRandom("rand"..self:EntIndex()..math.floor(CurTime()),1,#self.FoodModels))
 	local model = self.FoodModels[sharedrand]
 	self:SetModel( model )

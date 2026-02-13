@@ -7,8 +7,6 @@ SWEP.Instructions = "Glock is a brand of polymer-framed, short recoil-operated, 
 SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
-SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/tfa_ins2/w_glock_p80.mdl"
 
 SWEP.FakeBodyGroups = "2108"
 SWEP.FakeBodyGroupsPresets = {

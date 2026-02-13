@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Machineguns"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/w_mach_ins2_m249.mdl"
+SWEP.WorldModel = "models/weapons/w_mach_m249para.mdl"
 SWEP.WorldModelFake = "models/c_mach_ins2_m249.mdl"
 SWEP.FakeAttachment = "1"
 SWEP.FakeScale = 1
@@ -18,10 +18,10 @@ SWEP.AttachmentPos = Vector(-0,0.7,0.2)
 SWEP.AttachmentAng = Angle(0,0,0)
 
 SWEP.FakeEjectBrassATT = "2"
-//SWEP.MagIndex = 53
-//MagazineSwap
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
---PrintTable(Entity(1):GetActiveWeapon():GetWM():GetBodyGroups())
+
+
+
+
 SWEP.FakeVPShouldUseHand = true
 SWEP.AnimList = {
 	["idle"] = "base_idle",

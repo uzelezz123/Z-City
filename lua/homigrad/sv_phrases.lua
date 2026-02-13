@@ -339,9 +339,9 @@ net.Receive("hg_phrase", function(len, ply)
 	local pitch = nil
 
 	-- overrides
-	local override_ent, override_phrase, override_muffed, override_pitch = hook.Run("HG_ReplacePhrase", ent, phrase, muffed, pitch)
-	if override_ent ~= nil then
-		ent, phrase, muffed, pitch = override_ent, override_phrase, override_muffed, override_pitch
+	local override_ply, override_phrase, override_muffed, override_pitch = hook.Run("HG_ReplacePhrase", ply, phrase, muffed, pitch) -- pitch means pitched effect, not exact sound pitch
+	if override_ply ~= nil then
+		phrase, muffed, pitch = override_phrase, override_muffed, override_pitch
 	end
 
 
@@ -398,26 +398,6 @@ end)
 local femaleCount = 10
 local maleCount = 14
 local clr = Color(204,48,0)
-
-local fur_pain = {
-	"zbattle/furry/exp5.wav",
-	"zbattle/furry/exp6.wav",
-	"zbattle/furry/exp7.wav",
-	"zbattle/furry/exp8.wav",
-	"zbattle/furry/exp9.wav",
-	"zbattle/furry/exp10.wav",
-	"zbattle/furry/exp11.wav",
-	"zbattle/furry/exp12.wav",
-	"zbattle/furry/exp13.wav",
-	"zbattle/furry/exp14.wav",
-	"zbattle/furry/exp15.wav",
-	"zbattle/furry/exp16.wav",
-	"zbattle/furry/exp17.wav",
-	"zbattle/furry/death1.wav",
-	"zbattle/furry/death3.wav",
-	"zbattle/furry/death4.wav",
-	"zbattle/furry/death5.wav",
-}
 
 hook.Add("PreHomigradDamage","BurnScream", function( ent, dmgInfo )
 	local ply = ent:IsRagdoll() and hg.RagdollOwner(ent) or ent

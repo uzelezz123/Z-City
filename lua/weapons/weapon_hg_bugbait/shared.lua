@@ -19,14 +19,17 @@ SWEP.AutoSwitchFrom = false
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 SWEP.WorldModel = "models/mmod/weapons/w_bugbait.mdl"
-local av,aa,av2,aa2 = Vector(2,4,0),Angle(-40,0,0),Vector(0,4,-6),Angle(40,0,0)
+local av,aa,av2,aa2 = Vector(0,0,0),Angle(0,0,0),Vector(0,0,0),Angle(0,0,0)
 SWEP.AnimList = {
 	["deploy"] = { "draw", 0.6, false, false },
     ["attack"] = { "throw", 0.6, false, false, function(self)
 		if CLIENT then return end
-		self:Throw(1200, self.SpoonTime or CurTime(),nil,av,aa)
+		self:Throw(900, self.SpoonTime or CurTime(),nil,Vector(2,4,0),Angle(-40,0,0))
 		self.InThrowing = false
 		self.ReadyToThrow = false
+		self.IsLowThrow = false
+		self.SpoonTime = false
+		self.Spoon = true
 		timer.Simple(0.6, function()
 			if not IsValid(self) then return end
 			self:PlayAnim("deploy")
@@ -35,7 +38,7 @@ SWEP.AnimList = {
 	end, 0.65 },
 	["attack2"] = { "throw", 0.6, false, false, function(self)
 		if CLIENT then return end
-		self:Throw(600, self.SpoonTime or CurTime(),nil,av2,aa2)
+		self:Throw(600, self.SpoonTime or CurTime(),nil,Vector(-2,4,0),Angle(40,0,0))
 		self.InThrowing = false
 		self.ReadyToThrow = false
 		self.IsLowThrow = false
@@ -61,6 +64,8 @@ SWEP.AnimList = {
 	["idle"] = {"idle01", 1, true,false},
 	["special"] = {"squeeze", 1, false,false}
 }
+
+SWEP.NoTrap = true
 SWEP.HoldPos = Vector(-10,-2,0)
 SWEP.HoldAng = Angle(-3,0,5)
 SWEP.ViewBobCamBase = "ValveBiped.Bip01_R_UpperArm"

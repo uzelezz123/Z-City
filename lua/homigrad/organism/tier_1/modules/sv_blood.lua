@@ -100,7 +100,7 @@ module[2] = function(owner, org, mulTime)
 		org.o2[1] = math.max(org.o2[1] - mulTime * 5,0)
 	end
 
-	org.consciousness = math.min(org.consciousness, math.max(org.blood / 3000, 1))
+	org.consciousness = math.min(org.consciousness, math.min(org.blood / 3000, 1) * math.Clamp(((org.temperature < 30 and org.temperature - 30 or 0) * 0.25 + 1), 0.25, 1))
 
 	local beatsPerSecond = max(min(60 / math.max(org.pulse,2) / (org.bleed / 15), 7), 0.3)
 	time = CurTime()

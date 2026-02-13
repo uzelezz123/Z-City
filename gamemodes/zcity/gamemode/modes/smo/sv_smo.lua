@@ -274,7 +274,7 @@ local function GiveEquip(ply,team)
 	end
 
 	local walkietalkie = ply:Give("weapon_walkie_talkie")
-	walkietalkie.Frequency = (team == 1 and 1) or 5
+	walkietalkie.Frequency = (team == 1 and math.Round(math.Rand(88,95),1) ) or math.Round(math.Rand(100,108),1)
 
 	ply:Give("weapon_hands_sh")
 	ply:SelectWeapon("weapon_hands_sh")

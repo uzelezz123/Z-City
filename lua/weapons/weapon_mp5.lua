@@ -8,10 +8,9 @@ SWEP.Category = "Weapons - Machine-Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_mp5_sef.mdl"
-SWEP.WorldModelFake = "models/weapons/arccw/c_ur_mp5.mdl" -- МОДЕЛЬ ГОВНА, НАЙТИ НОРМАЛЬНЫЙ КАЛАШ
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
---uncomment for funny
+SWEP.WorldModel = "models/weapons/w_smg_mp5.mdl"
+SWEP.WorldModelFake = "models/weapons/arccw/c_ur_mp5.mdl"
+
 SWEP.FakePos = Vector(-12, 2.5, 6.8)
 SWEP.FakeAng = Angle(0.5, -0.4, 5)
 SWEP.AttachmentPos = Vector(1.5,0.4,0)
@@ -24,9 +23,7 @@ SWEP.FakeEjectBrassATT = "2"
 SWEP.CanEpicRun = true
 SWEP.EpicRunPos = Vector(2,10,2)
 
-//SWEP.MagIndex = 57
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():AddLayeredSequence(Entity(1):GetActiveWeapon():GetWM():LookupSequence("delta_foregrip"),1)
+
 SWEP.FakeViewBobBone = "CAM_Homefield"
 SWEP.FakeReloadSounds = {
 	[0.22] = "weapons/universal/uni_crawl_l_03.wav",
@@ -35,7 +32,7 @@ SWEP.FakeReloadSounds = {
 	[0.51] = "weapons/universal/uni_crawl_l_02.wav",
 	[0.62] = "weapons/arccw_ur/mp5/magin.ogg",
 	[0.85] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 
 SWEP.FakeEmptyReloadSounds = {
@@ -43,8 +40,7 @@ SWEP.FakeEmptyReloadSounds = {
 	[0.28] = "weapons/arccw_ur/mp5/chlock.ogg",
 	[0.4] = "weapons/arccw_ur/mp5/magout.ogg",
 	[0.62] = "weapons/arccw_ur/mp5/magin.ogg",
-	--[0.75] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav",
+
 	[0.85] = "weapons/arccw_ur/mp5/chamber.ogg"
 }
 
@@ -128,9 +124,7 @@ function SWEP:ModelCreated(model)
 	end
 end
 
---function SWEP:PostFireBullet() --- Funny
-	--self:PlayAnim("fire", 1, false)
---end
+
 
 SWEP.GunCamPos = Vector(4,-15,-6)
 SWEP.GunCamAng = Angle(190,-5,-100)

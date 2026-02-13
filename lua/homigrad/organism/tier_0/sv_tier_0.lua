@@ -77,17 +77,11 @@ hook.Add("Think", "homigrad-organism", function()
 	end
 end)
 
+local lastcall = SysTime()
 hook.Add("Org Think Call", "homigrad-organism", function(owner, org)
-	time = CurTime()
-
-	if not start then
-		start = SysTime()
-		return
-	end
-
-	local mulTime = SysTime() - start
-	
-	hook_Run("Org Think", owner, org, mulTime)
+	if (SysTime() - lastcall) < tickrate then return end
+	lastcall = SysTime()
+	hook_Run("Org Think", owner, org, 0.00001)
 end)
 
 

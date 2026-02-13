@@ -1,4 +1,4 @@
-
+do return end
 -- TOOL.Category = "ZBattle"
 -- TOOL.Name = "Loot Editor"
 

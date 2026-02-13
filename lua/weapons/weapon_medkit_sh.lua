@@ -34,6 +34,15 @@ SWEP.ofsV = Vector(-2,-10,8)
 SWEP.ofsA = Angle(90,-90,90)
 function SWEP:InitializeAdd()
 	self:SetHold(self.HoldType)
+
+	local owner = self:GetOwner()
+	if owner:IsNPC() then
+		self:SetHold("melee")
+		owner:SetHealth(math.Clamp(owner:Health() + (owner:GetMaxHealth() * 0.7), 0, owner:GetMaxHealth() * 2))
+		owner:EmitSound("snd_jack_hmcd_bandage.wav", 75, math.random(95, 105))
+		self:Remove()
+	end
+
 	self.modeValues = {
 		[1] = 80,
 		[2] = 1,
@@ -54,10 +63,16 @@ SWEP.ShouldDeleteOnFullUse = true
 
 local lang1, lang2 = Angle(0, -10, 0), Angle(0, 10, 0)
 function SWEP:Animation()
-	if (self:GetOwner().zmanipstart ~= nil and not self:GetOwner().organism.larmamputated) then return end
-	local aimvec = self:GetOwner():GetAimVector()
+	local owner = self:GetOwner()
+	if (owner.zmanipstart ~= nil and not owner.organism.larmamputated) then return end
+
+	local aimvec = owner:GetAimVector()
+	if not aimvec then return end
+
 	local hold = self:GetHolding()
-    self:BoneSet("r_upperarm", vector_origin, Angle(30 - hold / 5, -30 + hold / 2 + 20 * aimvec[3], 5 - hold / 4))
+	local ducking = owner:IsFlagSet(FL_ANIMDUCKING)
+
+    self:BoneSet("r_upperarm", vector_origin, Angle(30 - hold / 5, -30 + hold / 2 + 20 * aimvec[3] * (ducking and -3 or -1), 5 - hold / 4))
     self:BoneSet("r_forearm", vector_origin, Angle(hold / 25, -hold / 2.5, 35 -hold / 1.4))
 
     self:BoneSet("l_upperarm", vector_origin, lang1)

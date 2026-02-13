@@ -8,16 +8,16 @@ SWEP.Category = "Weapons - Machineguns"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/pwb2/weapons/w_m60.mdl"
-SWEP.WorldModelFake = "models/weapons/zcity/v_mm60.mdl" -- увеличить модельку где-то в 1.5
-//SWEP.FakeScale = 1.5
+SWEP.WorldModel = "models/weapons/w_mach_m249para.mdl"
+SWEP.WorldModelFake = "models/weapons/zcity/v_mm60.mdl"
+
 SWEP.FakePos = Vector(-12, 2.32, 7.3)
 SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(0,-1,-6.5)
 SWEP.AttachmentAng = Angle(0,0,0)
 SWEP.MagIndex = 53
-//MagazineSwap
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
+
+
 SWEP.FakeVPShouldUseHand = true
 SWEP.AnimList = {
 	["idle"] = "base_idle",

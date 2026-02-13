@@ -6,7 +6,7 @@ hg.PluvTown.Active = false
 
 local PLUGIN = hg.PluvTown
 
-CreateConVar("zb_pluvtown", 0, {FCVAR_REPLICATED, FCVAR_ARCHIVE})
+CreateConVar("zb_pluvtown", 0, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Toggle pluvtown mode :3", 0, 1)
 
 if SERVER then
     cvars.AddChangeCallback("zb_pluvtown", function(name, old, new)

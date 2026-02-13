@@ -88,10 +88,12 @@ function CLASS.Off(self)
 	self:SetNWString("PlayerRole", nil)
     self.organism.CantCheckPulse = nil
     self.leader = nil
+	hook.Remove("OnEntityCreated", "relation_shipdo"..self:EntIndex())
 end
 
 
 CLASS.NoFreeze = true
+CLASS.CanEmitRNDSound = false
 
 local function giveSubClassLoadout(ply, subclass)
     local config = combine_subclasses[subclass] or combine_subclasses["default"]
@@ -223,9 +225,9 @@ if SERVER then
 		mtcop_phrases[k] = "npc/metropolice/vo/" .. v
 	end
 
-	hook.Add("HG_ReplacePhrase", "metropolice_phrase", function(ent, phrase, muffed, pitch)
-		if IsValid(ent) and ent.PlayerClassName == "Metrocop" then
-			return ent, mtcop_phrases[math.random(#mtcop_phrases)], muffed, pitch
+	hook.Add("HG_ReplacePhrase", "metropolice_phrase", function(ply, phrase, muffed, pitch)
+		if IsValid(ply) and ply.PlayerClassName == "Metrocop" then
+			return ply, mtcop_phrases[math.random(#mtcop_phrases)], muffed, pitch
 		end
 	end)
 end

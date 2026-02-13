@@ -295,6 +295,14 @@ SWEP.modeNames = {
 }
 
 function SWEP:InitializeAdd()
+	local owner = self:GetOwner()
+	if owner:IsNPC() then
+		self:SetHold("melee")
+		owner:SetHealth(math.Clamp(owner:Health() + (owner:GetMaxHealth() * 0.15), 0, owner:GetMaxHealth() * 2))
+		owner:EmitSound("snd_jack_hmcd_bandage.wav", 75, math.random(95, 105))
+		self:Remove()
+	end
+
 	self.ModelScale = 0.9
 end
 
@@ -308,6 +316,7 @@ end
 
 function SWEP:Initialize()
 	self:SetHold(self.HoldType)
+
 	self.modeValues = {
 		[1] = 40,
 	}
@@ -1068,4 +1077,12 @@ function SWEP:Deploy()
 	end
 
 	return true
+end
+
+function SWEP:CanBePickedUpByNPCs()
+	return true
+end
+
+function SWEP:GetNPCRestTimes()
+	return 0.1, 0.1
 end

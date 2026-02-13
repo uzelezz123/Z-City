@@ -404,7 +404,7 @@ MODE.Types.wildwest = {
 					"weapon_doublebarrel_short"
 				}
 
-				local weapon = v:Give(table.Random(guns), true)
+				local weapon = v:Give(guns[math.random(#guns)], true)
 				weapon:SetClip1(weapon:GetMaxClip1())
 			end
 
@@ -625,8 +625,6 @@ local modes = {
 	"wildwest",
 	"gunfreezone",
 }
-
-local setmode = ConVarExists("homicide_setmode") and GetConVar("homicide_setmode") or CreateConVar( "homicide_setmode", "random", FCVAR_NONE, "sets hmcd mode" )
 
 util.AddNetworkString("HMCD_RoundStart")
 
@@ -1010,12 +1008,15 @@ function MODE:SpawnForce(teamtype, count)
     return spawned
 end
 
+local function tbl_Random(tbl) -- when you can't even say
+	return tbl[math.random(#tbl)] -- my name
+end
 function MODE:EquipSWAT(ply, index)
     ply:SetPlayerClass("swat")
     
     local classes = {
-        [1] = function() return table.Random({"weapon_m4a1", "weapon_hk416"}) end, --;; Team Leader
-        [2] = function() ply:Give("weapon_ram") return table.Random({"weapon_remington870", "weapon_m590a1"}) end, --;; Breacher
+        [1] = function() return tbl_Random({"weapon_m4a1", "weapon_hk416"}) end, --;; Team Leader
+        [2] = function() ply:Give("weapon_ram") return tbl_Random({"weapon_remington870", "weapon_m590a1"}) end, --;; Breacher
         [3] = function() return "weapon_mp5" end, --;; Pointman
         [4] = function() return "weapon_sr25" end, --;; Marksman
         [5] = function()
@@ -1044,7 +1045,7 @@ function MODE:EquipSWAT(ply, index)
 	local gun = ply:Give("weapon_taser")
 	ply:GiveAmmo(gun:GetMaxClip1() * 3, gun:GetPrimaryAmmoType(),true)
 
-	hg.AddArmor(ply, {"helmet6", "vest8", table.Random({"mask1", "mask2", "nightvision1"})})
+	hg.AddArmor(ply, {"helmet6", "vest8", tbl_Random({"mask1", "mask2", "nightvision1"})})
 
     local inv = ply:GetNetVar("Inventory") or {}
     inv["Weapons"] = inv["Weapons"] or {}

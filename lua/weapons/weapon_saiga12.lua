@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Shotguns"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/pwb/weapons/w_saiga_12.mdl"
+SWEP.WorldModel = "models/weapons/w_rif_m4a1.mdl"
 SWEP.WorldModelFake = "models/weapons/arc9_fas/shotguns/saiga.mdl"
 //PrintAnims(Entity(1):GetActiveWeapon():GetWM())
 --uncomment for funny
@@ -22,25 +22,23 @@ SWEP.MagIndex = 41
 SWEP.FakeScale = 0.79
 
 //SWEP.ZoomPos = Vector(-5, -0.2, 10)
-//SWEP.MagIndex = 6
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():AddLayeredSequence(Entity(1):GetActiveWeapon():GetWM():LookupSequence("delta_foregrip"),1)
+
 SWEP.FakeViewBobBone = "CAM_Homefield"
 SWEP.FakeReloadSounds = {
 	[0.35] = "weapons/ak74/ak74_magout.wav",
 	[0.4] = "weapons/ak74/ak74_magout_rattle.wav",
 	[0.85] = "weapons/ak74/ak74_magin.wav",
 	[0.95] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 
 SWEP.FakeEmptyReloadSounds = {
-	--[0.22] = "weapons/ak74/ak74_magrelease.wav",
+
 	[0.33] = "weapons/ak74/ak74_magout.wav",
 	[0.37] = "weapons/ak74/ak74_magout_rattle.wav",
 	[0.65] = "weapons/ak74/ak74_magin.wav",
 	[0.75] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav",
+
 	[0.97] = "weapons/ak74/ak74_boltback.wav",
 	[1.0] = "weapons/ak74/ak74_boltrelease.wav",
 }
@@ -57,7 +55,7 @@ SWEP.AnimList = {
 	["reload"] = "reload",
 	["reload_empty"] = "reload_empty",
 }
---SWEP.ReloadHold = nil
+
 SWEP.FakeVPShouldUseHand = false
 
 SWEP.WepSelectIcon2 = Material("pwb/sprites/saiga_12.png")

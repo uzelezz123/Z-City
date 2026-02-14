@@ -2990,7 +2990,7 @@ if CLIENT then
 
 					return 0
 				end,
-				"Drop Ammo"
+				"Выбросить патроны"
 			}
 		end
 	end)
@@ -3005,7 +3005,7 @@ if SERVER then
         local count = net.ReadFloat()
         local pos = ply:EyePos()+ply:EyeAngles():Forward()*15
         if ply:GetAmmoCount(ammotype)-count < 0 then ply:ChatPrint(((math.random(1,100) == 100 or 1) and "I need mor booolets!!!" ) or "You don't have enogh ammo") return end
-        if count < 1 then ply:ChatPrint("You can't drop zero ammo") return end
+        if count < 1 then ply:ChatPrint("Нельзя выбросить 0 патронов") return end
 			--if not ammolistent[ammotype] then ply:ChatPrint("Invalid entitytype...") return end
 			--print(game.GetAmmoName(ammotype))
 		

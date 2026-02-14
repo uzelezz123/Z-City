@@ -64,33 +64,33 @@ else
 end
 
 hg.postures = {
-    [0] = "Regular hold",
-    [1] = "Hipfire",
-    [2] = "Left shoulder",
-    [3] = "High ready",
-    [4] = "Low ready",
-    [5] = "Point shooting",
-    [6] = "Shooting from cover",
-    [7] = {"Gangsta",isPistolOnly = true},
-    [8] = {"One-handed",isPistolOnly = true},
-	[9] = "Somalian",
+    [0] = "Стандартный хват",
+    [1] = "От бедра",
+    [2] = "С левого плеча",
+    [3] = "High ready (вверх)",
+    [4] = "Low ready (вниз)",
+    [5] = "Интуитивная стрельба",
+    [6] = "Из-за укрытия",
+    [7] = {"По-гангстерски", isPistolOnly = true},
+    [8] = {"Одной рукой", isPistolOnly = true},
+	[9] = "По-сомалийски",
 }
 
 if CLIENT then
 	local printed
 
 	concommand.Add("hg_change_posture", function(ply, cmd, args)
-		if not args[1] and not isnumber(args[1]) and not printed then print([[Change your gun posture:
-0 - regular hold
-1 - hipfire
-2 - left shoulder
-3 - high ready
-4 - low ready
-5 - point shooting
-6 - shooting from cover
-7 - gangsta shooting
-8 - one-handed shooting
-9 - somalian shooting
+		if not args[1] and not isnumber(args[1]) and not printed then print([[Изменить положение оружия:
+0 — стандартный хват
+1 — от бедра
+2 — с левого плеча
+3 — high ready (вверх)
+4 — low ready (вниз)
+5 — интуитивная стрельба
+6 — стрельба из-за укрытия
+7 — стрельба по-гангстерски
+8 — стрельба одной рукой
+9 — стрельба по-сомалийски
 ]]) printed = true end
 		local pos = math.Round(args[1] or -1)
 		net.Start("change_posture")
@@ -169,7 +169,7 @@ if CLIENT then
 
 				return 0
 			end,
-			[2] = "Attachments Menu"
+			[2] = "Меню обвесов"
 		}
 
         if !IsValid(wep) or !ishgweapon(wep) then
@@ -206,19 +206,19 @@ if CLIENT then
 
                     return -1
                 end,
-                [2] = "Change Posture\n(MOUSE2 to select)" 
+                [2] = "Сменить стиль\n(MOUSE2 чтобы выбрать)" 
             },
             [2] = {
                 [1] = function()
                     RunConsoleCommand("hg_change_posture", 0)
                 end,
-                [2] = "Reset Posture"
+                [2] = "Убрать стиль"
             },
 			[3] = attmenu,
         }
 
         if wep.GetDrum then
-            local tbl3 = {function() RunConsoleCommand("hg_rolldrum") end, "Roll Drum"}
+            local tbl3 = {function() RunConsoleCommand("hg_rolldrum") end, "Крутануть барабан"}
             tbl[#tbl + 1] = tbl3
         
             --if wep:Clip1() > 0 then return end
@@ -228,14 +228,14 @@ if CLIENT then
             
             local drum1 = {}
             for i = 1, #drum do
-                drum1[i] = "Slot №"..tostring(i)
+                drum1[i] = "Слот №"..tostring(i)
             end
         
             local tbl4 = {
                 function(mouseClick, val)
                     RunConsoleCommand("hg_insertbullet", val)
                 end,
-                "Load one bullet",
+                "Зарядить одну пульку",
                 true,
                 drum1
             }
@@ -248,7 +248,7 @@ if CLIENT then
                 [1] = function()
                     RunConsoleCommand("hg_inspect")
                 end,
-                [2] = "Inspect" 
+                [2] = "Осмотреть" 
             }
         end
 
@@ -257,7 +257,7 @@ if CLIENT then
                 [1] = function()
                     RunConsoleCommand("hg_unload_ammo", 0)
                 end,
-                [2] = "Unload" 
+                [2] = "Разрядить" 
             }
         elseif (wep:Clip1() == 0 or wep.AllwaysChangeAmmo) and wep.AmmoTypes and not wep.reload then
             local ammotypes = {}
@@ -270,7 +270,7 @@ if CLIENT then
                 function(mouseClick, chosen)
                     RunConsoleCommand("hg_change_ammotype", chosen) 
                 end,
-                "Change Ammo Type",
+                "Сменить тип патрон",
                 true,
                 ammotypes
             }
@@ -282,7 +282,7 @@ if CLIENT then
                 [1] = function()
                     RunConsoleCommand("hmcd_togglelaser")
                 end,
-                [2] = "Toggle Laser" 
+                [2] = "Включить лазер" 
             }
 		end
 
@@ -292,7 +292,7 @@ if CLIENT then
 
                 return -1
             end,
-            [2] = "Weapon Manipulations Menu"
+            [2] = "Меню Оружия"
         }
     end)
 end

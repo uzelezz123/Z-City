@@ -189,7 +189,7 @@ hook.Add("radialOptions","tape_shard",function()
 	local have_shard = ply:HasWeapon("weapon_hg_glassshard")
 
 	if have_tape and have_shard then
-		local tbl = {tapeShard, "Tape glass shard"}
+		local tbl = {tapeShard, "Обмотать осколок стекла"}
 		hg.radialOptions[#hg.radialOptions + 1] = tbl
 	end
 end)

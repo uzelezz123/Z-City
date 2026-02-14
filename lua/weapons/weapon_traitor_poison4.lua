@@ -1,7 +1,7 @@
 if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_base"
-SWEP.PrintName = "Curare vial"
-SWEP.Instructions = "Curare only becomes active when it contaminates a wound or is introduced directly to the bloodstream; it is not active when ingested orally. This poison causes weakness of the skeletal muscles and, when administered in a sufficient dose, eventual death by asphyxiation due to paralysis of the diaphragm."
+SWEP.PrintName = "Флакон с кураре"
+SWEP.Instructions = "Кураре становится активным только при попадании в рану или непосредственно в кровоток; яд не действует при приеме внутрь. Этот токсин вызывает расслабление и слабость скелетных мышц, а при введении достаточной дозы приводит к смерти от удушья (асфиксии) в результате паралича диафрагмы."
 SWEP.Category = "ZCity Other"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
@@ -234,7 +234,7 @@ if SERVER then
 		else -- prank
 			if (not org.poison4notificate) and ((org.poison4 + 20) < CurTime()) then
 				org.poison4notificate = true
-				org.owner:Notify("I'm doing.. Something.. Wrong...", true, "poison4", 3)
+				org.owner:Notify("Я делаю.. Что-то.. Не так...", true, "poison4", 3)
 				org.owner:EmitSound( ( ThatPlyIsFemale(org.owner) and "vo/npc/female01/moan0"..math.random(5)..".wav" ) or "vo/npc/male01/moan0"..math.random(5)..".wav")
 				org.o2.regen = 0
 				--hg.organism.AmputateLimb(org, "larm") -- жестокие видеоигры

@@ -1,7 +1,7 @@
 if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_bandage_sh"
-SWEP.PrintName = "Medkit"
-SWEP.Instructions = "A small bag containing medical supplies. Has bandages, painkillers, tourniquets and internal bleeding medicine. A necessary thing in hiking, military conditions and just a necessary thing in everyday life. RMB to apply on others, R to change use mode."
+SWEP.PrintName = "Аптечка"
+SWEP.Instructions = "Небольшая сумка с медикаментами. Содержит бинты, обезболивающее, жгуты и лекарство от внутреннего кровотечения. Незаменимая вещь в походе, в боевых условиях и просто в быту.\n\nПКМ — использовать на других, R — сменить режим использования."
 SWEP.Category = "ZCity Medicine"
 SWEP.Spawnable = true
 SWEP.Primary.Wait = 1

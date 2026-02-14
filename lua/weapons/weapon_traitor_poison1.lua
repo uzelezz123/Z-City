@@ -1,7 +1,7 @@
 if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_base"
-SWEP.PrintName = "Tetrodotoxin syringe"
-SWEP.Instructions = "Tetrodotoxin is a strong poison that was found by a japanese scientist in 1906. Death occurs from paralysis of the respiratory muscles. Can only be injected in the spinal nerves."
+SWEP.PrintName = "Шприц с тетродотоксином"
+SWEP.Instructions = "Тетродотоксин — сильный яд, открытый японским ученым в 1906 году. Смерть наступает в результате паралича дыхательной мускулатуры. Инъекция возможна только в позвоночник."
 SWEP.Category = "ZCity Other"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
@@ -149,7 +149,7 @@ if SERVER then
 		local curtime =  CurTime()
 		if (not org.poison1notificate) and ((org.poison1 + 20) < curtime) then
 			org.poison1notificate = true
-			org.owner:Notify("I can't... properly breathe...", true, "poison1", 3)
+			org.owner:Notify("Я не могу... нормально дышать...", true, "poison1", 3)
 			org.owner:EmitSound( ( ThatPlyIsFemale(org.owner) and "vo/npc/female01/moan0"..math.random(5)..".wav" ) or "vo/npc/male01/moan0"..math.random(5)..".wav")
 		end
 

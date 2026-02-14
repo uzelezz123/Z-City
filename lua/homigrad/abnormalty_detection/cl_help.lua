@@ -5,223 +5,223 @@
 ABNORMALTIESHELP = ABNORMALTIESHELP or {}
 ABNORMALTIESHELP.Stats={
 	[1] = {
-		Name = "Introduction",
+		Name = "Введение",
 		Desc = [[
-		DO NOT USE THIS STOP
-		STOP
-It seems like you've found something strange.
-Something you should NEVER use until you know what you are doing, and you do not know.
-If, however, you like some spicy feelings, then.
-This book is about commencing rituals and doing other wicked things.
+		НЕ ИСПОЛЬЗУЙ ЭТО СТОП
+		СТОП
+Кажется, вы нашли нечто странное.
+Нечто, что вы НИКОГДА не должны использовать, пока не поймете, что делаете, а вы не понимаете.
+Если же вы, однако, любите острые ощущения, тогда.
+Эта книга о проведении ритуалов и других нечестивых делах.
 
-1. Zones
-Thaumaturgical zones are special zones, which occur in place of usage of thaumaturgical phrases.
-Zones can overlap.
-Zones allow for rituals to take place within.
-Zones have special attributes which you may not be able to know just by glance, so keep track of everything.
-Zones can grow after the usage of thaumaturgical phrases within it.
-Growth of thaumaturgical zone is directly affected by the complexity of the thaumaturgical phrase being spoken.
+1. Зоны
+Тауматургические зоны — это особые зоны, которые возникают в местах использования тауматургических фраз.
+Зоны могут перекрываться.
+Зоны позволяют проводить ритуалы внутри них.
+Зоны обладают особыми атрибутами, которые вы не сможете узнать просто так, поэтому следите за всем.
+Зоны могут расти после использования тауматургических фраз внутри них.
+Рост тауматургической зоны напрямую зависит от сложности произносимой тауматургической фразы.
 
-2. Phrases
-To chant something useful, you need to put meaning into words.
-Every letter of alphabet corresponds to some changes in thaumaturgical table.
-You need to create a phrase, that will contain only one thaumaturgical meaning in order to interact with the thaumaturgical zones. This phrase will be added to the zone you're currently standing in.
+2. Фразы
+Чтобы произнести что-то полезное, нужно вложить смысл в слова.
+Каждая буква алфавита соответствует некоторым изменениям в тауматургической таблице.
+Вам нужно создать фразу, которая будет содержать только одно тауматургическое значение, чтобы взаимодействовать с тауматургическими зонами. Эта фраза будет добавлена в зону, в которой вы сейчас находитесь.
 
-3. Letters
-Thaumaturgical phrases consists of some symbols and thaumaturgical letters.
-They will change after map cleanup. This can be delayed by 10 minutes every time by spelling a proper thaumaturgical phrase with these letters.
+3. Буквы
+Тауматургические фразы состоят из некоторых символов и тауматургических букв.
+Они будут меняться после очистки карты. Это можно отсрочить на 10 минут каждый раз, произнося правильную тауматургическую фразу с этими буквами.
 
-4. Chanting your first phrase
-Try to chant something like "resources of the body" 10 times.
-After you chanted it 10 times, some thoughts will appear in your head and point you in the direction you're going.
+4. Произнесение вашей первой фразы
+Попробуйте десять раз произнести что-то вроде "ресурсы тела".
+После того как вы произнесете это 10 раз, в вашей голове появятся мысли, которые укажут вам направление.
 
-Example:
+Пример:
 <...>
 - ноте бено мемо ммммт
-~ I'm getting somewhere...
-~ sacrifice - 2
-~ ritual - 5
-~ But there's still something I need to exclude...
+~ Я приближаюсь...
+~ жертвоприношение - 2
+~ ритуал - 5
+~ Но мне все еще нужно что-то исключить...
 
-So, let's for example get rid of sacrifice
+Итак, давайте, например, избавимся от жертвоприношения
 <...>
 - ноте бено мемо ммммтч
-~ I'm getting somewhere...
-~ sacrifice - 1
-~ ritual - 6
-~ But there's still something I need to exclude...
+~ Я приближаюсь...
+~ жертвоприношение - 1
+~ ритуал - 6
+~ Но мне все еще нужно что-то исключить...
 
-See, I added letter "ч" and gained 1 ritual and lost 1 sacrifice, let's add one more then
+Видите, я добавил букву "ч" и получил 1 ритуал, потеряв 1 жертвоприношение, давайте добавим еще одну тогда
 <...>
 - ноте бено мемо ммммтчч
-~ I'm getting somewhere...
-~ ritual - 7
-~ This is it... I found it!
-~ Now, it's just a matter of chanting it over and over again in one spot...
+~ Я приближаюсь...
+~ ритуал - 7
+~ Вот оно... Я нашел это!
+~ Теперь осталось только повторять это снова и снова в одном месте...
 
-First thaumaturgical phrase done!
+Первая тауматургическая фраза сделана!
 
-5. Resources
-Blood:
-To collect blood, you need to have someone bleeding within the zone.
-Additional blood will be given if you'll draw some kind of symbol.
-Note, that zone's starting radius is small and it's growth is slow, so you should avoid wasting blood outside of the zone.
-There is also an Abnormal version of this resource, it is stored inside of you instead of in the zone.
+5. Ресурсы
+Кровь:
+Чтобы собрать кровь, вам нужно, чтобы кто-то истекал кровью в пределах зоны.
+Дополнительная кровь будет получена, если вы нарисуете какой-либо символ.
+Обратите внимание, что начальный радиус зоны мал, а ее рост медленный, поэтому вам следует избегать потери крови за пределами зоны.
+Существует также Аномальная версия этого ресурса, она хранится внутри вас, а не в зоне.
 
-Equalizers:
-Take damage.
-Note, this resource is stored on you instead of in the zone.
+Эквалайзеры:
+Получите урон.
+Обратите внимание, этот ресурс хранится у вас, а не в зоне.
 
-6. Rituals
-Continue on the NEXT page.
+6. Ритуалы
+Продолжение на СЛЕДУЮЩЕЙ странице.
 ]]
 	},
 	[2] = {
-		Name = "Rituals 1",
-		Desc = [[Life force]]
+		Name = "Ритуалы 1",
+		Desc = [[Жизненная сила]]
 	},
 	[3] = {
-		Name = "Heal",
+		Name = "Исцеление",
 		Desc = [[
-You will need:
-	sacrifice 10, help 20
-	Blood 2500
-How to activate:
-	Chant <help 1, sacrifice 1 ...> with the total of 5 words in quick succession (You have 10 seconds)
-What it does?:
-	Almost fully heals one player closest to the center of the thaumaturgical zone.
-	Chanting player will be prioritised 2 times the other players in zone.
-	Be sure to remove other unwanted player before commencing.
-	Significantly lowers abnormal effects for 2 minutes each time it's called (stacks).
-	Does not cure any mental abnormalties.]]
+Вам понадобится:
+	жертвоприношение 10, помощь 20
+	Кровь 2500
+Как активировать:
+	Прочитайте <помощь 1, жертвоприношение 1 ...> общим числом 5 слов в быстрой последовательности (у вас есть 10 секунд)
+Что это делает?:
+	Почти полностью исцеляет одного игрока, ближайшего к центру тауматургической зоны.
+	Игрок, произносящий заклинание, будет иметь в 2 раза больший приоритет по сравнению с другими игроками в зоне.
+	Убедитесь, что удалили других нежелательных игроков перед началом.
+	Значительно снижает аномальные эффекты на 2 минуты каждый раз при вызове (суммируется).
+	Не лечит никакие ментальные аномалии.]]
 	},
 	[4] = {
-		Name = "Ressurection",
+		Name = "Воскрешение",
 		Desc = [[
-You will need:
-	sacrifice 50, help 30, ritual 10
-	Blood 3500
-How to activate:
-	Chant <ritual 5> 5 times in quick succession (You have 10 seconds)
-What it does?:
-	Ressurects one body closest to the center of the thaumaturgical zone.
-	Be sure to remove other unwanted bodies before commencing.
-	Ressurection, sometimes, yield unforseen consequences.
-	Besides these consequences, ressurected human can have their heart stopped randomly at first.]]
+Вам понадобится:
+	жертвоприношение 50, помощь 30, ритуал 10
+	Кровь 3500
+Как активировать:
+	Прочитайте <ритуал 5> 5 раз в быстрой последовательности (у вас есть 10 секунд)
+Что это делает?:
+	Воскрешает одно тело, ближайшее к центру тауматургической зоны.
+	Убедитесь, что удалили другие нежелательные тела перед началом.
+	Воскрешение иногда приводит к непредвиденным последствиям.
+	Помимо этих последствий, воскрешенный человек поначалу может испытывать случайные остановки сердца.]]
 	},
 	[5] = {
-		Name = "Rituals 2",
-		Desc = [[Invisibility, interaction and etc.]]
+		Name = "Ритуалы 2",
+		Desc = [[Невидимость, взаимодействие и т.д.]]
 	},
 	[6] = {
-		Name = "Cogito Evasion (Invisibility)",
+		Name = "Когито-уклонение (Невидимость)",
 		Desc = [[
-Even if they can see me, they can't aknowledge me.
-You will need:
-	shield 10, help 20, 
-	Equalizers 50
-How to activate:
-	Chant <shield 10> 5 times in quick succession (You have 10 seconds)
-What it does?:
-	Grants total cogito evasion (invisibility) until contact with any other cogito handler or after passage of 45 seconds (does not stack).
-	Chanting player will be prioritised 2 times the other players in zone.
+Даже если они видят меня, они не могут меня осознать.
+Вам понадобится:
+	защита 10, помощь 20, 
+	Эквалайзеры 50
+Как активировать:
+	Прочитайте <защита 10> 5 раз в быстрой последовательности (у вас есть 10 секунд)
+Что это делает?:
+	Предоставляет полное когито-уклонение (невидимость) до контакта с любым другим оператором когито или по прошествии 45 секунд (не суммируется).
+	Игрок, произносящий заклинание, будет иметь в 2 раза больший приоритет по сравнению с другими игроками в зоне.
 ]]
 	},
 	[7] = {
-		Name = "Cogito Broadcast",
+		Name = "Когито-вещание",
 		Desc = [[
-Even if they I can see them, I can't aknowledge them, except if I use the same techniques as them.
-You will need:
-	help 20, ritual 10
-	Equalizers 15
-How to activate:
-	Chant <help 5> 5 times in quick succession (You have 10 seconds)
-What it does?:
-	Makes contact with every cogito handler.
-	Disables invisibility and other things for everyone.
-	Chanting player will be prioritised 2 times the other players in zone.
-	As a side effect, everything you say will be broadcasted to everyone for approximately 10 seconds (does not stack).
+Даже если я могу их видеть, я не могу их осознать, если только не использую те же методы, что и они.
+Вам понадобится:
+	помощь 20, ритуал 10
+	Эквалайзеры 15
+Как активировать:
+	Прочитайте <помощь 5> 5 раз в быстрой последовательности (у вас есть 10 секунд)
+Что это делает?:
+	Устанавливает контакт со всеми операторами когито.
+	Отключает невидимость и прочие эффекты для всех.
+	Игрок, произносящий заклинание, будет иметь в 2 раза больший приоритет по сравнению с другими игроками в зоне.
+	В качестве побочного эффекта все, что вы говорите, будет транслироваться всем примерно в течение 10 секунд (не суммируется).
 ]]
 	},
 	[8] = {
 		Requirement = true,
 		Name = "???",
 		Desc = [[
-		DO NOT USE THIS STOP
-(the rest of the text is unreadable)
-(I might need to do something in order to be able to read this)
+		НЕ ИСПОЛЬЗУЙ ЭТО СТОП
+(остальной текст нечитаем)
+(Возможно, мне нужно что-то сделать, чтобы суметь прочитать это)
 ]]
 	},
 	[9] = {
 		Requirement = true,
 		Name = "???",
 		Desc = [[
-(text is unreadable)
-(I might need to ignore all warnings to be able to read this)
+(текст нечитаем)
+(Возможно, мне нужно проигнорировать все предупреждения, чтобы суметь прочитать это)
 ]]
 	},
 	[10] = {
 		Requirement = true,
 		Name = "???",
 		Desc = [[
-(this page is torn and covered in blood, text is unreadable)
-(I might need to go insane to be able to read this)
+(эта страница порвана и покрыта кровью, текст нечитаем)
+(Возможно, мне нужно сойти с ума, чтобы суметь прочитать это)
 ]]
 	},
 	[11] = {
-		Name = "Rituals 3",
-		Desc = [[Composite rituals and hard rituals]]
+		Name = "Ритуалы 3",
+		Desc = [[Составные ритуалы и сложные ритуалы]]
 	},
 	[12] = {
-		Name = "Thaumaturgical Arm Conjurement",
+		Name = "Призыв тауматургической руки",
 		Desc = [[
-It seems that purity of the blood matters the most in rituals and not the amount.
-By utilizing Magic-infused weaponry I will be able to extract the purest blood.
-You will need:
-	ritual 20, harm 10, sacrifice 10
-	Equalizers 5
-	Blood 250
-	Spare melee weapon
-How to activate:
-	Place melee weapon inside of the zone,
-	Chant pattern <ritual 2, sacrifice 2 ...> with the total of 5 words in quick succession (You have 10 seconds)
-What it does?:
-	Converts placed melee weapon into Thaumaturgic Arm.
-	Weapon will allow you to draw Abnormal blood from yourself or from any other human.
+Кажется, чистота крови важнее всего в ритуалах, а не ее количество.
+Используя магическое оружие, я смогу извлечь чистейшую кровь.
+Вам понадобится:
+	ритуал 20, вред 10, жертвоприношение 10
+	Эквалайзеры 5
+	Кровь 250
+	Запасное оружие ближнего боя
+Как активировать:
+	Поместите оружие ближнего боя в зону,
+	Прочитайте паттерн <ритуал 2, жертвоприношение 2 ...> общим числом 5 слов в быстрой последовательности (у вас есть 10 секунд)
+Что это делает?:
+	Превращает помещенное оружие ближнего боя в Тауматургическую Руку.
+	Это оружие позволит вам извлекать Аномальную кровь из себя или из любого другого человека.
 ]]
 	},
 	[13] = {
 		Requirement = true,
 		Name = "???",
 		Desc = [[
-		WIP NOT WORKING
-(text is unreadable)
-(I might need to exaggerate in positive direction to be able to read this)
+		В РАЗРАБОТКЕ НЕ РАБОТАЕТ
+(текст нечитаем)
+(Возможно, мне нужно преувеличивать в позитивном направлении, чтобы суметь прочитать это)
 ]]
 	},
 	[14] = {
 		Requirement = true,
 		Name = "???",
 		Desc = [[
-		WIP NOT WORKING
-(text is unreadable)
-(I might need to exaggerate in negative direction to be able to read this)
+		В РАЗРАБОТКЕ НЕ РАБОТАЕТ
+(текст нечитаем)
+(Возможно, мне нужно преувеличивать в негативном направлении, чтобы суметь прочитать это)
 ]]
 	},
 	[15] = {
 		Requirement = true,
 		Name = "???",
 		Desc = [[
-(text is unreadable)
-(I might need to exaggerate in positive direction to be able to read this)
+(текст нечитаем)
+(Возможно, мне нужно преувеличивать в позитивном направлении, чтобы суметь прочитать это)
 ]]
 	},
 	[16] = {
 		Requirement = true,
 		Name = "???",
 		Desc = [[
-(text is unreadable)
-(I might need to exaggerate in negative direction to be able to read this)
+(текст нечитаем)
+(Возможно, мне нужно преувеличивать в негативном направлении, чтобы суметь прочитать это)
 ]]
 	},
 }

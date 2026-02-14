@@ -1,7 +1,7 @@
 if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_bandage_sh"
-SWEP.PrintName = "Naloxone"
-SWEP.Instructions = "A medicine designed to deal with opiate overdose. RMB to inject into someone else."
+SWEP.PrintName = "Налоксон"
+SWEP.Instructions = "Препарат, предназначенный для нейтрализации последствий опиоидной передозировки.\n\nНажмите ПКМ, чтобы ввести его другому человеку."
 SWEP.Category = "ZCity Medicine"
 SWEP.Spawnable = true
 SWEP.Primary.Wait = 1

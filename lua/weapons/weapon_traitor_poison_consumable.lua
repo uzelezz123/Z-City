@@ -8,8 +8,8 @@
 
 if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_base"
-SWEP.PrintName = "Cyanide Capsule"
-SWEP.InstructionsBasic = "Potassium cyanide powder in a capsule\nToxic (time to incapacitation ~90 seconds from 140mg)\nSugary drinks will decompose KCN upon consumption\nNOT to be mixed with food or applied to bandages, you don't want to kill anyone with it do you?"	--; TODO Mansion tea cup
+SWEP.PrintName = "Капсула с цианидом"
+SWEP.InstructionsBasic = "Порошок цианистого калия в капсуле.\nТоксично (время до выведения из строя ~90 секунд при дозе 140 мг).\nСладкие напитки разлагают KCN при употреблении.\nНЕ смешивать с едой и не наносить на бинты. Вы ведь не хотите никого этим убить, верно?"	--; TODO Mansion tea cup
 SWEP.Instructions = SWEP.InstructionsBasic
 SWEP.Category = "ZCity Other"
 SWEP.Spawnable = true
@@ -67,10 +67,10 @@ end
 
 function SWEP:MarkupUpdate()
 	if(self:GetUsesLeft() == 0)then
-		self.Instructions = self.InstructionsBasic .. "\n\nIt's empty."
+		self.Instructions = self.InstructionsBasic .. "\n\nОна пустая."
 		self.InfoMarkup = nil
 	else
-		self.Instructions = self.InstructionsBasic .. "\n\n" .. self:GetUsesLeft() * 140 .. " mg left"
+		self.Instructions = self.InstructionsBasic .. "\n\n" .. self:GetUsesLeft() * 140 .. " мг осталось"
 		self.InfoMarkup = nil
 	end
 end
@@ -164,7 +164,7 @@ function SWEP:DoPoison(ent)
 
 	ent.ConsumePoisoned_KCN = (ent.ConsumePoisoned_KCN or 0) + 1
 	
-	owner:ChatPrint((ent.PrintName or "Item").." was poisoned!")
+	owner:ChatPrint((ent.PrintName or "Предмет").." отравлен!")
 
 	self:SetUsesLeft(math.max(self:GetUsesLeft(0) - 1, 0))
 end
@@ -209,7 +209,7 @@ function SWEP:PrimaryAttack()
 	if self:GetNextPrimaryFire() > CurTime() then return end
 	if SERVER then
 		if(self:GetUsesLeft() == 0)then
-			self:GetOwner():ChatPrint("The capsule is empty.")
+			self:GetOwner():ChatPrint("Капсула пуста.")
 			self:SetNextPrimaryFire(CurTime() + 0.8)
 
 			return

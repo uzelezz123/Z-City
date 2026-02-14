@@ -5,7 +5,7 @@ local function RagdollOwner(ent)
 end
 
 SWEP.Category = "ZCity Other"
-SWEP.Instructions = "LMB - raise fists\nRELOAD - lower fists\n\nIn the raised state:\nLMB - strike\nRMB - block\n\nIn the lowered state: RMB - raise the object, RMB+R - check the pulse (when used on someone's head or hand)\n\nWhen holding the object: RELOAD - fix the object in air, E - spin the object in the air."
+SWEP.Instructions = "ЛКМ — поднять кулаки\nRELOAD — опустить кулаки\n\nВ поднятом состоянии:\nЛКМ — удар\nПКМ — блок\n\nВ опущенном состоянии: ПКМ — поднять предмет, ПКМ+R — проверить пульс (наведите на голову или руку)\n\nКогда держите предмет: RELOAD — зафиксировать предмет в воздухе, E — вращать предмет."
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
 SWEP.HoldType = "normal"
@@ -539,7 +539,7 @@ if SERVER then
 	SWEP.AutoSwitchTo = false
 	SWEP.AutoSwitchFrom = false
 else
-	SWEP.PrintName = "Hands"
+	SWEP.PrintName = "Руки"
 	SWEP.Slot = 0
 	SWEP.SlotPos = 1
 	SWEP.DrawAmmo = false
@@ -1227,16 +1227,16 @@ local customClassInfo = {
 		Instructions = "beta test test beta"
 	},
 	["furry"] = {
-		PrintName = "Paws",
+		PrintName = "Лапы",
 		WepSelectIcon = Material("zbattle/paw_hmcd.png"),
-		handsDesc = "furry",
-		Instructions = "LMB - raise paws\nRELOAD - lower paws\n\nIn the raised state:\nLMB - strike\nRMB - block\n\n<color=91,121,229>As a bearer of a pathowogen infection, you have new abilities.\n\nIn lowered state, hold RMB to grab uninfected prey, then hold LMB to assimilate them.\n\nYou can press LMB to lick your fellow mates, doing so helps them alleviate their pain.\n\n:3<color=180,180,180>"
+		handsDesc = "фурри",
+		Instructions = "ЛКМ — поднять лапы\nRELOAD — опустить лапы\n\nВ поднятом состоянии:\nЛКМ — удар\nПКМ — блок\n\n<color=91,121,229>Как носитель инфекции «патовогена», у вас появились новые способности.\n\nВ опущенном состоянии: удерживайте ПКМ, чтобы схватить незараженную добычу, а затем удерживайте ЛКМ, чтобы ассимилировать её.\n\nВы можете нажать ЛКМ, чтобы лизнуть своих сородичей — это помогает им унять боль.\n\n:3<color=180,180,180>"
 	},
 	["headcrabzombie"] = {
-		PrintName = "Claws",
+		PrintName = "Когти",
 		WepSelectIcon = Material("vgui/wep_jack_hmcd_zombhands"),
-		handsDesc = "zombie",
-		Instructions = "LMB - strike\nRMB - block/grab player\n\n<color=150,0,0>These are your zombified hands. They're no energy sword, but they still pack a wallop."
+		handsDesc = "зомби",
+		Instructions = "ЛКМ — удар\nПКМ — блок / схватить игрока\n\n<color=150,0,0>Это ваши зомбированные руки. Это вам не энергетический меч, но бьют они всё равно будь здоров."
 	}
 }
 
@@ -1255,7 +1255,7 @@ function SWEP:Think()
 		end
 		self.InfoMarkup = nil
 	elseif self.handsDesc != "default" then
-		self.PrintName = "Hands"
+		self.PrintName = "Руки"
 		self.handsDesc = "default"
 		self.InfoMarkup = nil
 	end

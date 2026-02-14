@@ -91,7 +91,7 @@ hook.Add("radialOptions", "CMB_Airstrike", function()
 				net.Start("ZB_RequestAirStrike") 
 				net.SendToServer()
 			end,
-			"Request Airstrike"
+			"Запросить авиаудар"
 		}
 		hg.radialOptions[#hg.radialOptions + 1] = tbl
     end

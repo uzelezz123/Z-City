@@ -177,7 +177,7 @@ hook.Add("radialOptions","spear",function()
     local organism = ply.organism or {}
 
     if not organism.otrub and ply:HasWeapon("weapon_hg_spear") and ply:HasWeapon("weapon_ducttape") and ply:HasWeapon("weapon_pocketknife") then
-        local tbl = {tape, "Tape a knife to a spear"}
+        local tbl = {tape, "Примотать нож к копью"}
         hg.radialOptions[#hg.radialOptions + 1] = tbl
     end
 end)

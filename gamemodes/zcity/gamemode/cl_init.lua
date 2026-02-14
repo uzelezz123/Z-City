@@ -328,42 +328,48 @@ surface.CreateFont("ZB_InterfaceSmall", {
     font = font(),
     size = ScreenScale(6),
     weight = 400,
-    antialias = true
+    antialias = true,
+	extended = true
 })
 
 surface.CreateFont("ZB_InterfaceMedium", {
     font = font(),
     size = ScreenScale(10),
     weight = 400,
-    antialias = true
+    antialias = true,
+	extended = true
 })
 
 surface.CreateFont("ZB_ScrappersMedium", {
     font = font(),
     size = ScreenScale(10),
     weight = 400,
-    antialias = true
+    antialias = true,
+	extended = true
 })
 
 surface.CreateFont("ZB_InterfaceMediumLarge", {
     font = font(),
     size = 35,
     weight = 400,
-    antialias = true
+    antialias = true,
+	extended = true
 })
 
 surface.CreateFont("ZB_InterfaceLarge", {
     font = font(),
     size = ScreenScale(20),
     weight = 400,
-    antialias = true
+    antialias = true,
+	extended = true
 })
 
 surface.CreateFont("ZB_InterfaceHumongous", {
     font = font(),
     size = 200,
     weight = 400,
-    antialias = true
+    antialias = true,
+	extended = true
 })
 
 hg.playerInfo = hg.playerInfo or {}

@@ -1,7 +1,7 @@
 if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_bandage_sh"
-SWEP.PrintName = "Bloodbag"
-SWEP.Instructions = "A plastic bag containing neccesary instruments to acknowledge blood and transfuse it. Can be used to help with large blood loss."
+SWEP.PrintName = "Пакет с кровью"
+SWEP.Instructions = "Пластиковый пакет, содержащий необходимые инструменты для определения группы крови и её переливания. Используется для восполнения запасов крови при больших кровопотерях."
 SWEP.Category = "ZCity Medicine"
 SWEP.Spawnable = true
 SWEP.Primary.Wait = 1

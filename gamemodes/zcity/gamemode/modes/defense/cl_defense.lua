@@ -296,7 +296,7 @@ hook.Add("radialOptions", "CommanderSupportOptions", function()
     local organism = ply.organism or {}
 
     if ply:GetNWString("PlayerRole") == "Commander" and not organism.otrub then
-        local tbl = {createSupportMenu, "Request support"}
+        local tbl = {createSupportMenu, "Запросить поддержку"}
         hg.radialOptions[#hg.radialOptions + 1] = tbl
     end
 end)
@@ -402,42 +402,48 @@ local function CreateVoteFonts()
         size = 32,
         weight = 700,
         antialias = true,
-        shadow = true
+        shadow = true,
+	    extended = true
     })
     
     surface.CreateFont("Defense_Subtitle", {
         font = "Roboto",
         size = 22,
         weight = 500,
-        antialias = true
+        antialias = true,
+	    extended = true
     })
     
     surface.CreateFont("Defense_Button", {
         font = "Roboto",
         size = 24,
         weight = 600,
-        antialias = true
+        antialias = true,
+	    extended = true
     })
     
     surface.CreateFont("Defense_Description", {
         font = "Roboto",
         size = 18,
         weight = 400,
-        antialias = true
+        antialias = true,
+	    extended = true
     })
     
     surface.CreateFont("Defense_SmallText", {
         font = "Roboto",
         size = 16,
         weight = 400,
-        antialias = true
+        antialias = true,
+	    extended = true
     })
     
     surface.CreateFont("Defense_Stats", {
         font = "Roboto",
         size = 16,
         weight = 500,
-        antialias = true
+        antialias = true,
+	    extended = true
     })
     
     surface.CreateFont("Defense_Timer", {
@@ -445,7 +451,8 @@ local function CreateVoteFonts()
         size = 26,
         weight = 700,
         antialias = true,
-        shadow = true
+        shadow = true,
+	    extended = true
     })
 end
 

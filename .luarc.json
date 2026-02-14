@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
+  "runtime": {
+    "version": "LuaJIT",
+    "unicodeName": true,
+    "nonstandardSymbol": ["continue", "!", "!=", "&&", "||", "//", "/**/"],
+    "special": {
+      "include": "dofile",
+      "IncludeCS": "dofile"
+    }
+  },
+  "workspace": {
+    "checkThirdParty": false,
+    "library": ["/home/sekta/glua-api-snippets/library"]
+  },
+  "diagnostics.disable": ["duplicate-set-field"]
+}

@@ -16,21 +16,24 @@ surface.CreateFont("Defense_AdminTitle", {
     size = 24,
     weight = 700,
     antialias = true,
-    shadow = true
+    shadow = true,
+	extended = true
 })
 
 surface.CreateFont("Defense_AdminText", {
     font = "Roboto",
     size = 18,
     weight = 500,
-    antialias = true
+    antialias = true,
+	extended = true
 })
 
 surface.CreateFont("Defense_AdminInfo", {
     font = "Roboto",
     size = 16,
     weight = 400,
-    antialias = true
+    antialias = true,
+	extended = true
 })
 
 local function DrawBackgroundBlur(panel)

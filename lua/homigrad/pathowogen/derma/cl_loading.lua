@@ -503,8 +503,8 @@ hook.Add("RenderScreenspaceEffects", "furload", function()
 
 		local alpha = hg.furload.haveanicedayalpha
 
-		draw.SimpleText("Have a very :3 day!", "ZB_ProotOSMedium", sw * 0.5 + 2, sh * 0.8 + 2, ColorAlpha(color_black, 255 * alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText("Have a very :3 day!", "ZB_ProotOSMedium", sw * 0.5, sh * 0.8, ColorAlpha(bluewhite, 255 * alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText("Желаю мур-р-рчательного дня! :3", "ZB_ProotOSMedium", sw * 0.5 + 2, sh * 0.8 + 2, ColorAlpha(color_black, 255 * alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText("Желаю мур-р-рчательного дня! :3", "ZB_ProotOSMedium", sw * 0.5, sh * 0.8, ColorAlpha(bluewhite, 255 * alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 end)
 

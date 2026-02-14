@@ -158,14 +158,16 @@ surface.CreateFont("TraitorPanelTitle", {
 	font = "coolvetica",
 	size = 22,
 	weight = 500,
-	antialias = true
+	antialias = true,
+	extended = true
 })
 
 surface.CreateFont("TraitorPanelText", {
 	font = "coolvetica",
 	size = 19,
 	weight = 500,
-	antialias = true
+	antialias = true,
+	extended = true
 })
 
 surface.CreateFont("TraitorPanelWords", {
@@ -173,7 +175,8 @@ surface.CreateFont("TraitorPanelWords", {
 	size = 24,
 	weight = 700,
 	antialias = true,
-	italic = false
+	italic = false,
+	extended = true
 })
 
 

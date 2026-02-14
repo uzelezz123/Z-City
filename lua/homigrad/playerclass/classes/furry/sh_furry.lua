@@ -30,13 +30,13 @@ end
 local sw, sh = CLIENT and ScrW() or nil, CLIENT and ScrH() or nil
 
 local oneofus = {
-	"One of us! One of us!",
-	"A new one!",
-	"We are unstoppable!",
-	"A new meaning to life itself!",
-	"Assimilation complete!",
-	"Turning into tigers, turning into wolves...",
-	"A new purpose in life!"
+	"Один из нас! Один из нас!",
+	"Ещё один!",
+	"Нас не остановить!",
+	"Новый смысл самой жизни!",
+	"Ассимиляция завершена!",
+	"Становимся тиграми, становимся волками...",
+	"Новое предназначение в жизни!"
 }
 
 local function Randomize(self)
@@ -662,7 +662,7 @@ if CLIENT then
 
 	hook.Add("radialOptions", "scanprey", function()
 		if LocalPlayer():Alive() and LocalPlayer().PlayerClassName == "furry" then
-			hg.radialOptions[#hg.radialOptions + 1] = {scanForPrey, "Scan"}
+			hg.radialOptions[#hg.radialOptions + 1] = {scanForPrey, "Сканировать"}
 		end
 	end)
 

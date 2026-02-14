@@ -853,11 +853,11 @@ if CLIENT then
 			
 			if ammoLongCheck > 4 then
 				local text = (
-					(clip > clipsize - (self.OpenBolt and 0 or 1) - 1) and "Full" or 
-					(clip <= clipsize and clip > clipsize/1.5 ) and "~ Full" or 
-					(clip <= clipsize/1.5 and clip > clipsize/3.5) and "~ Half" or 
-					(clip <= clipsize/3.5 and clip != 0 ) and "~ Almost Empty" or 
-					(clip == 0 and "Empty")
+					(clip > clipsize - (self.OpenBolt and 0 or 1) - 1) and "Полный" or
+					(clip <= clipsize and clip > clipsize/1.5 ) and "~ Полный" or
+					(clip <= clipsize/1.5 and clip > clipsize/3.5) and "~ Половина" or
+					(clip <= clipsize/3.5 and clip != 0 ) and "~ Почти пуст" or
+					(clip == 0 and "Пуст")
 				)
 				coloruse.r = 0
 				coloruse.g = 0

@@ -414,7 +414,7 @@ if CLIENT then
 	
 		if not organism.otrub and table.Count(tbl) > 0 then
 			hg.radialOptions = hg.radialOptions or {}
-			local newEntry = {equipmentMenu, "Equipment"}
+			local newEntry = {equipmentMenu, "Экипировка"}
 			hg.radialOptions[#hg.radialOptions + 1] = newEntry
 		end
 	end)
@@ -606,7 +606,7 @@ if CLIENT then
 		if ply:Alive() and not organism.otrub then
 			local tbl = {function(mouseClick)
 				RunConsoleCommand("hg_enable_nvg")
-			end, ply:GetNWBool("NVG_Enabled", false) and "Disable NVG" or "Enable NVG"}
+			end, ply:GetNWBool("NVG_Enabled", false) and "Вырубить ПНВ" or "Врубить ПНВ"}
 			hg.radialOptions[#hg.radialOptions + 1] = tbl
 		end
 	end)

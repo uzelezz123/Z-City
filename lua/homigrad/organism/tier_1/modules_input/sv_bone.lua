@@ -29,44 +29,44 @@ local function damageBone(org, bone, dmg, dmgInfo, key, boneindex, dir, hit, ric
 end
 
 local huyasd = {
-	["spine1"] = "I don't feel anything below my hips.",
-	["spine2"] = "I cant't feel or move anything below my torso.",
-	["spine3"] = "I can't move at all. I can barely even breathe.",
-	["skull"] = "My head is aching.",
+	["spine1"] = "Я ничего не чувствую ниже бёдер.",
+	["spine2"] = "Я ничего не чувствую и не могу пошевелить ничем ниже торса.",
+	["spine3"] = "Я совсем не могу пошевелиться. Едва могу дышать.",
+	["skull"] = "Голова раскалывается.",
 }
 
 local broke_arm = {
-	"AAAAH OH GOD, IT'S BROKEN! MY ARM! IT'S BROKEN!",
-	"FUCK MY FUCKING ARM IS BROKEN!",
-	"NONONO MY ARM IS BENT ALL WRONG!",
-	"IT'S.. MY ARM.. SNAPPED- I HEARD IT SNAP!",
-	"MY ARM IS NOT SUPPOSED TO BEND IN HALF!",
+	"ААААХ, О БОЖЕ, ОНА СЛОМАНА! МОЯ РУКА! ОНА СЛОМАНА!",
+	"БЛЯТЬ, МОЯ ЕБАНАЯ РУКА СЛОМАНА!",
+	"НЕНЕНЕТ, МОЯ РУКА ВЫГНУТА СОВСЕМ НЕПРАВИЛЬНО!",
+	"ЭТО... МОЯ РУКА... ХРУСТНУЛА! Я СЛЫШАЛ ХРУСТ!",
+	"МОЯ РУКА НЕ ДОЛЖНА СГИБАТЬСЯ ПОПОЛАМ!",
 }
 
 local dislocated_arm = {
-	"MY ARM- GOD, IT'S POPPED OUT OF THE SOCKET!",
-	"FUCK- THE SHOULDER'S JUST- HANGING LOOSE!",
-	"MY ARM..! IT'S DISLOCATED! I CAN SEE THE BULGE WHERE IT'S WRONG!",
-	"THE ARM'S JUST- DEAD WEIGHT- IT'S NOT ATTACHED RIGHT!",
-	"SHIT! I CAN FEEL THE BONE OUT OF PLACE!",
+	"МОЯ РУКА... БОЖЕ, ОНА ВЫСКОЧИЛА ИЗ СУСТАВА!",
+	"БЛЯТЬ... ПЛЕЧО ПРОСТО... БОЛТАЕТСЯ!",
+	"МОЯ РУКА..! ОНА ВЫВИХНУТА! Я ВИЖУ ВЫПУКЛОСТЬ В НЕПРАВИЛЬНОМ МЕСТЕ!",
+	"РУКА ПРОСТО... КАК МЕРТВЫЙ ГРУЗ... ОНА НЕПРАВИЛЬНО ДЕРЖИТСЯ!",
+	"ДЕРЬМО! Я ЧУВСТВУЮ, ЧТО КОСТЬ НЕ НА МЕСТЕ!",
 }
 
 local broke_leg = {
-	"MY LEG- FUCK, IT'S BROKEN- I HEARD THE SNAP!",
-	"FUCK! THE SHIN'S SNAPPED CLEAN THROUGH!",
-	"THE KNEE'S WRONG- THE WHOLE LEG'S TWISTED WRONG!",
-	"MY LEG..! IT'S JUST- HANGING BY MUSCLE AND SKIN!",
-	"THE PAIN'S SHOOTING UP TO MY HIP- FUCK, IT'S BAD!",
-	"I CAN'T MOVE MY FOOT- THE ANKLE'S BROKEN TOO!",
+	"МОЯ НОГА... БЛЯТЬ, ОНА СЛОМАНА... Я СЛЫШАЛ ХРУСТ!",
+	"БЛЯТЬ! ГОЛЕНЬ СЛОМАНА НАЧИСТО!",
+	"КОЛЕНО НЕ НА МЕСТЕ... ВСЯ НОГА ВЫВЕРНУТА!",
+	"МОЯ НОГА..! ОНА ПРОСТО... ВИСИТ НА МЫШЦАХ И КОЖЕ!",
+	"БОЛЬ ПРОСТРЕЛИВАЕТ ДО БЕДРА... БЛЯТЬ, ДЕЛО ДРЯНЬ!",
+	"Я НЕ МОГУ ПОШЕВЕЛИТЬ СТОПОЙ... ЛОДЫЖКА ТОЖЕ СЛОМАНА!",
 }
 
 local dislocated_leg = {
-	"MY LEG- FUCK, IT'S DISLOCATED AT THE KNEE!",
-	"I CAN SEE THE KNEECAP IN THE WRONG PLACE!",
-	"AGHH- THE HIP'S POPPED OUT- IT'S STUCK OUTWARD!",
-	"IT'S BENT BACKWARD- THE KNEE SHOULDN'T BEND THIS WAY!",
-	"FUCK! THE HIP'S DISLOCATED!",
-	"THE ANKLE'S TWISTED- BUT THE KNEE'S THE REAL PROBLEM!",
+	"МОЯ НОГА... БЛЯТЬ, У МЕНЯ ВЫВИХ КОЛЕНА!",
+	"Я ВИЖУ, ЧТО КОЛЕННАЯ ЧАШЕЧКА НЕ НА МЕСТЕ!",
+	"АГХХ... БЕДРО ВЫСКОЧИЛО... ОНО ТОРЧИТ НАРУЖУ!",
+	"ОНА СОГНУТА НАЗАД... КОЛЕНО НЕ ДОЛЖНО ТАК СГИБАТЬСЯ!",
+	"БЛЯТЬ! ВЫВИХ БЕДРА!",
+	"ЛОДЫЖКА ВЫВИХНУТА... НО ГЛАВНАЯ ПРОБЛЕМА В КОЛЕНЕ!",
 }
 
 local function legs(org, bone, dmg, dmgInfo, key, boneindex, dir, hit, ricochet)
@@ -229,16 +229,16 @@ local function spine(org, bone, dmg, dmgInfo, number, boneindex, dir, hit, ricoc
 end
 
 local jaw_broken_msg = {
-	"I FEEL PIECES OF MY JAW... FUCK-FUCK-FUCK",
-	"MY JAW IS FUCKING FLOATING IN MY HEAD",
-	"MY JAW... OHH IT HURTS REALLY BAD... I FEEL PIECES OF IT MOVING",
+	"Я ЧУВСТВУЮ КУСКИ СВОЕЙ ЧЕЛЮСТИ... БЛЯТЬ-БЛЯТЬ-БЛЯТЬ",
+	"МОЯ ЧЕЛЮСТЬ, СУКА, БОЛТАЕТСЯ В ГОЛОВЕ",
+	"МОЯ ЧЕЛЮСТЬ... ОХХ, ТАК СИЛЬНО БОЛИТ... Я ЧУВСТВУЮ, КАК ЕЁ КУСКИ ДВИГАЮТСЯ",
 }
 
 local jaw_dislocated_msg = {
-	"I CAN'T CLOSE MY JAW... IT FUCKING HURTS",
-	"MY JAW... ITS JUST STUCK THERE-- OH ITS PAINING",
-	"I CANT MOVE MY JAW AT ALL... AND ITS REALLY ACHING",
-	//"I CANT EVEN SPEAK, I NEED TO PUNCH IT BACK IN PLACE... BUT IT HURTS REAL BAD",
+	"Я НЕ МОГУ ЗАКРЫТЬ ЧЕЛЮСТЬ... БЛЯТЬ, КАК ЖЕ БОЛЬНО",
+	"МОЯ ЧЕЛЮСТЬ... ОНА ПРОСТО ЗАСТРЯЛА ТАМ — ОХ, ЭТО БОЛЬНО",
+	"Я ВООБЩЕ НЕ МОГУ ПОШЕВЕЛИТЬ ЧЕЛЮСТЬЮ... И ОНА СИЛЬНО НОЕТ",
+	--"Я ДАЖЕ ГОВОРИТЬ НЕ МОГУ, НУЖНО ВБИТЬ ЕЁ ОБРАТНО... НО ОЧЕНЬ БОЛЬНО",
 }
 
 local input_list = hg.organism.input_list
@@ -286,7 +286,7 @@ hook.Add("CanListenOthers", "CantHaveShitInDetroit", function(output, input, isC
 	if IsValid(output) and (output.organism.jaw == 1 or output.organism.jawdislocation) and output:Alive() and (output:IsSpeaking() or isChat) then
 		-- and !isChat and output:IsSpeaking()
 		output.organism.painadd = output.organism.painadd + 2 * (output:IsSpeaking() and 1 or (isChat and 5 or 0))
-		output:Notify("My jaw is really hurting when I speak.", 60, "painfromjawspeak", 0, nil, Color(255, 210, 210))
+		output:Notify("Моя челюсть сильно болит, когда я говорю.", 60, "painfromjawspeak", 0, nil, Color(255, 210, 210))
 	end
 end)
 

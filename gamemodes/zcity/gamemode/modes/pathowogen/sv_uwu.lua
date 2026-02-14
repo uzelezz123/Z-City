@@ -411,7 +411,7 @@ end
 
 function MODE:CanPlayerSuicide(ply)
 	if IsValid(ply) and ply:IsPlayer() then
-		ply:ChatPrint("nuh uh!!!")
+		ply:ChatPrint("ноу ноу ноу мистер фиш!!!")
 		return false
 	end
 end
@@ -506,7 +506,7 @@ function MODE:SpawnDeltaSquad(count)
 	end
 
 	net.Start("zb_commandertransmit")
-		net.WriteString("Don't forget: you're here to extract the survivors still remaining in this area. Don't even try to return to base without at least one of them.")
+		net.WriteString("Не забывай: твоя задача — эвакуировать выживших, остающихся в этом районе. Даже не думай возвращаться на базу без хотя бы одного из них.")
 	net.Send(SpawnedPlayers)
 
 	return SpawnedPlayers
@@ -524,9 +524,9 @@ function MODE:SpawnSquadHelicopter()
 			PrintTable(squad)
 
 			if #squad == 0 then
-				self:BroadcastCommander("Sorry, the extraction isn't coming. You're doomed. Better kill yourself.")
+				self:BroadcastCommander("Извини, эвакуации не будет. Ты обречен. Лучше покончи с собой.")
 			else
-				self:BroadcastCommander("The extraction helicopter is now in your area. Find it and try to signal to it somehow.")
+				self:BroadcastCommander("Эвакуационный вертолет уже в твоем районе. Найди его и попробуй как-нибудь подать сигнал.")
 
 				local heli = self:SpawnGlideHelicopter()
 				self.saved.UWUCopter = heli
@@ -796,17 +796,17 @@ function MODE:CanPlayerEnterVehicle(ply, ent) -- damdn i forgot about the broken
 end
 
 local killfurries = {
-	"One freak less.",
-	"Cleansed.",
-	"Die, scum!",
-	"Not even human!",
-	"A raving beast, silenced.",
-	"Unholy creature.",
-	"Die! Die! Die!",
-	"Fucking hate those things.",
-	"I'll see you in hell.",
-	"I bring god's justice.",
-	"One abomination, now dead."
+	"Одним уродом меньше.",
+	"Очищено.",
+	"Сдохни, мразь!",
+	"Это даже не человек!",
+	"Бешеный зверь замолк навсегда.",
+	"Нечестивое отродье.",
+	"Сдохни! Сдохни! Сдохни!",
+	"Как же я, сука, ненавижу этих тварей.",
+	"Встретимся в аду.",
+	"Я вершу божий суд.",
+	"Одной мерзостью меньше."
 }
 
 function MODE:PlayerDeath(ply, inflictor, att)

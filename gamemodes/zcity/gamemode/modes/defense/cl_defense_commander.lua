@@ -153,28 +153,32 @@ surface.CreateFont("CommanderTitle", {
     size = 24,
     weight = 700,
     antialias = true,
-    shadow = true
+    shadow = true,
+	extended = true
 })
 
 surface.CreateFont("CommanderCategory", {
     font = "Roboto",
     size = 20,
     weight = 600,
-    antialias = true
+    antialias = true,
+	extended = true
 })
 
 surface.CreateFont("CommanderText", {
     font = "Roboto",
     size = 18,
     weight = 500,
-    antialias = true
+    antialias = true,
+	extended = true
 })
 
 surface.CreateFont("CommanderSmall", {
     font = "Roboto",
     size = 16,
     weight = 400,
-    antialias = true
+    antialias = true,
+	extended = true
 })
 
 
@@ -183,7 +187,8 @@ surface.CreateFont("CommanderHintText", {
     size = 19,  
     weight = 600,
     antialias = true,
-    shadow = false
+    shadow = false,
+	extended = true
 })
 
 local commanderMenu = nil

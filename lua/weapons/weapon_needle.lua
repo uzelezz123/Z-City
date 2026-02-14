@@ -1,7 +1,7 @@
 if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_bandage_sh"
-SWEP.PrintName = "Decompression needle"
-SWEP.Instructions = "Needle decompression is used to treat tension pneumothorax. LMB to use on yourself; RMB to use on someone else."
+SWEP.PrintName = "Декомпрессионная игла"
+SWEP.Instructions = "Игольная декомпрессия используется для лечения напряженного пневмоторакса.\n\nЛКМ — использовать на себе; ПКМ — использовать на другом человеке."
 SWEP.Category = "ZCity Medicine"
 SWEP.Spawnable = true
 SWEP.Primary.Wait = 1

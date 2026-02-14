@@ -562,9 +562,9 @@ function SWEP:Think()
 		elseif owner.PlayerClassName == "furry" and self.PrintName ~= "Paws" then
 			self.PrintName = "Paws"
 			self.WepSelectIcon = paw
-			self.Instructions = "LMB - raise paws\nRELOAD - lower paws\n\nIn the raised state:\nLMB - strike\nRMB - block\n\n<color=91,121,229>As a bearer of a pathowogen infection, you have new abilities.\n\nIn lowered state, hold RMB to grab uninfected prey, then hold LMB to assimilate them.\n\nYou can press LMB to lick your fellow mates, doing so helps them alleviate their pain.\n\n:3<color=180,180,180>"
+			self.Instructions = "ЛКМ — поднять лапы\nRELOAD — опустить лапы\n\nВ поднятом состоянии:\nЛКМ — удар\nПКМ — блок\n\n<color=91,121,229>Как носитель инфекции «патовогена», у вас появились новые способности.\n\nВ опущенном состоянии: удерживайте ПКМ, чтобы схватить незараженную добычу, а затем удерживайте ЛКМ, чтобы ассимилировать её.\n\nВы можете нажать ЛКМ, чтобы лизнуть своих сородичей — это помогает им унять боль.\n\n:3<color=180,180,180>"
 		else
-			self.PrintName = "Hands"
+			self.PrintName = "Руки"
 		end
 		self.changedName = true
 	-- end

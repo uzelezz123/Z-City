@@ -1,7 +1,7 @@
 if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_bandage_sh"
-SWEP.PrintName = "Thiamine"
-SWEP.Instructions = "A water-soluble vitamin (B1) that plays a big part in the organism's metabolism of carbohydrates, fats and proteins."
+SWEP.PrintName = "Тиамин"
+SWEP.Instructions = "Водорастворимый витамин (B1), который играет важную роль в метаболизме углеводов, жиров и белков в организме."
 SWEP.Category = "ZCity Medicine"
 SWEP.Spawnable = true
 SWEP.Primary.Wait = 1

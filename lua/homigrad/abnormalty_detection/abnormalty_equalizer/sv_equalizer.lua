@@ -20,13 +20,13 @@ local function TryConjureEqualizer(zone, ply)
 	local equalizers_consumption = 400
 	
 	if(PLUGIN.GetZoneOrPlyEqualizers(zone, ply) >= equalizers_consumption)then
-		PLUGIN.ShowMessageInSphere("Conjuring Equalizer...", zone.Pos, zone.Radius)
+		PLUGIN.ShowMessageInSphere("Призываю Эквалайзер...", zone.Pos, zone.Radius)
 		PLUGIN.ConjureEqualizer.Do(ent, 5, zone)
 		PLUGIN.RemoveZoneOrPlyEqualizers(zone, ply, equalizers_consumption)
 		PLUGIN.AddConsequencesToZoneChanters(zone, 3)
 		PLUGIN.AddConsequences(ply, 50)
 	else
-		PLUGIN.ShowMessage(ply, "There is not enough equalizers in order to conjure Equalizer")
+		PLUGIN.ShowMessage(ply, "Недостаточно эквалайзеров, чтобы призвать Эквалайзер")
 	end
 end
 --//
@@ -85,7 +85,7 @@ hook.Add("PlayerPostThink", "Abnormalties_ConjureEqualizer", function(ply)
 			if(ply.armors["torso"] == "ego_equalizer")then
 				if(ply.Karma and ply.Karma < zb.MaxKarma)then
 					ply:Kill()
-					PLUGIN.ShowMessage(ply, "You received your punishment")
+					PLUGIN.ShowMessage(ply, "Ты получил свое наказание")
 				end
 			end
 		end
@@ -96,7 +96,7 @@ hook.Add("CanEquipArmor", "Abnormalties_ConjureEqualizer", function(ply, armor_n
 	if(!PLUGIN.FunMode)then
 		if(armor_name == "ego_equalizer")then
 			if(ply.Karma and ply.Karma < zb.MaxKarma)then
-				PLUGIN.ShowMessage(ply, "It seems that I'm unworthy")
+				PLUGIN.ShowMessage(ply, "Кажется, я недостоин")
 				
 				return false
 			end

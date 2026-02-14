@@ -72,7 +72,7 @@ if CLIENT then
 
 		if IsValid(hg.furload) and hg.furload.alpha >= 255 then return end
 
-		local Status = "NOMINAL"
+		local Status = "НОРМАЛЬНОЕ"
 
 		local damageSum = 0
 
@@ -93,18 +93,18 @@ if CLIENT then
 		damageSum = damageSum + org.brain * 10
 
 		if damageSum >= 10 then
-			Status = "CRITICAL"
+			Status = "КРИТИЧЕСКОЕ"
 		elseif damageSum >= 7 then
-			Status = "Heavy damage"
+			Status = "Тяжелые повреждения"
 		elseif damageSum >= 4 then
-			Status = "Moderate damage"
+			Status = "Средние повреждения"
 		elseif damageSum >= 2 then
-			Status = "Minor damage"
+			Status = "Легкие повреждения"
 		elseif damageSum > 0 then
-			Status = "Minimal damage"
+			Status = "Минимальные повреждения"
 		end
 
-		DrawTextAndShadow("System status: " .. Status, "ZB_ProotOSMedium", sw * 0.01, sh * 0.96, bluewhite, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		DrawTextAndShadow("Состояние: " .. Status, "ZB_ProotOSMedium", sw * 0.01, sh * 0.96, bluewhite, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
 		local Emoticon = "OwO"
 

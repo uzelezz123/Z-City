@@ -247,7 +247,8 @@ surface.CreateFont(
 		font = "Bahnschrift",
 		size = ScreenScale(16),
 		italic = true,
-		weight = 1500
+		weight = 1500,
+		extended = true
 	}
 )
 

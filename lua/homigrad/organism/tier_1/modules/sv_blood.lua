@@ -46,17 +46,17 @@ module[1] = function(org)
 end
 
 local internalbleed_phrases = {
-	"That's... that's blood I just vomited...",
-	"Oh, that's blood...",
-	"Fuck, I just puked blood...",
-	"Oh shit... I don't feel good...",
+	"Это... это кровь, которую я только что вырвал...",
+	"Ох, это кровь...",
+	"Черт, я только что блеванул кровью...",
+	"Вот дерьмо... мне нехорошо...",
 }
 
 local about_to_puke = {
-	"I feel like I'm gonna puke any second now...",
-	"Not feeling good...",
-	"Gonna puke right now...",
-	"I want to vomit...",
+	"Кажется, меня сейчас вырвет...",
+	"Мне нехорошо...",
+	"Сейчас блевану...",
+	"Меня тошнит...",
 }
 
 local vecZero = Vector(0, 0, 0)
@@ -85,7 +85,7 @@ module[2] = function(owner, org, mulTime)
 		end
 	end
 
-	if org.isPly and not org.otrub and org.blood < 2900 then org.owner:Notify(math.random(2) == 1 and "I cant feel anything..." or (math.random(2) == 1 and "I think I'm gonna faint right now...") or "I dont feel so good...",60,"blood2",0) end
+	if org.isPly and not org.otrub and org.blood < 2900 then org.owner:Notify(math.random(2) == 1 and "Я ничего не чувствую..." or (math.random(2) == 1 and "Кажется, я сейчас потеряю сознание...") or "Мне нехорошо...",60,"blood2",0) end
 
 	if org.internalBleed < 0.5 and org.bleed < 0.05 and org.pulse > 5 then
 		org.blood = min(org.blood + mulTime * 5 * (adrenaline * 1.5 + 1) * (org.satiety / 100 + 1) * org.pulse / 70, 5000)

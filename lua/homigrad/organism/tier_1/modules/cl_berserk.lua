@@ -66,7 +66,7 @@ hook.Add("RenderScreenspaceEffects", "berserkEffect", function()
 
 		hg.currentNotification = nil
 		hg.notifications = {}
-		hg.CreateNotificationBerserk("I feel...")
+		hg.CreateNotificationBerserk("Я чувствую себя...")
 
 		timer.Simple(3.95, function()
 			if IsValid(part) then
@@ -89,7 +89,7 @@ hook.Add("RenderScreenspaceEffects", "berserkEffect", function()
 
 			hg.currentNotification = nil
 			hg.notifications = {}
-			hg.CreateNotificationBerserk("GREAT.")
+			hg.CreateNotificationBerserk("ОТЛИЧНО.")
 
 			hg.berserkStartTime2 = SysTime()
 		end)

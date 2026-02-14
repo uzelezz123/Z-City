@@ -89,14 +89,16 @@ surface.CreateFont("HomigradFont", {
 	font = font(),
 	size = ScreenScale(10),
 	weight = 1100,
-	outline = false
+	outline = false,
+	extended = true
 })
 
 surface.CreateFont("ScoreboardPlayer", {
 	font = font(),
 	size = ScreenScale(7),
 	weight = 1100,
-	outline = false
+	outline = false,
+	extended = true
 })
 
 surface.CreateFont("HomigradFontBig", {
@@ -104,7 +106,8 @@ surface.CreateFont("HomigradFontBig", {
 	size = ScreenScale(12),
 	weight = 1100,
 	outline = false,
-	shadow = true
+	shadow = true,
+	extended = true
 })
 
 surface.CreateFont("HomigradFontMedium", {
@@ -112,13 +115,15 @@ surface.CreateFont("HomigradFontMedium", {
 	size = ScreenScale(8),
 	weight = 1100,
 	outline = false,
+	extended = true
 })
 
 surface.CreateFont("HomigradFontLarge", {
 	font = font(),
 	size = ScreenScale(15),
 	weight = 1100,
-	outline = false
+	outline = false,
+	extended = true
 })
 
 surface.CreateFont("HomigradFontGigantoNormous", {
@@ -126,21 +131,24 @@ surface.CreateFont("HomigradFontGigantoNormous", {
 	size = ScreenScale(25),
 	weight = 1100,
 	outline = false,
-	shadow = false
+	shadow = false,
+	extended = true
 })
 
 surface.CreateFont("HomigradFontSmall", {
 	font = font(),
 	size = 17,
 	weight = 1100,
-	outline = false
+	outline = false,
+	extended = true
 })
 
 surface.CreateFont("HomigradFontVSmall", {
 	font = font(),
 	size = 12,
 	weight = 400,
-	outline = false
+	outline = false,
+	extended = true
 })
 
 local w, h
@@ -492,7 +500,7 @@ end
 hook.Add("radialOptions", "77", function()
 	local organism = lply.organism or {}
 	if not organism.otrub and IsValid(lply:GetActiveWeapon()) and lply:GetActiveWeapon():GetClass() ~= "weapon_hands_sh" then
-		local tbl = {dropWeapon, "Drop Weapon"}
+		local tbl = {dropWeapon, "Выбросить оружие"}
 		hg.radialOptions[#hg.radialOptions + 1] = tbl
 	end
 end)
@@ -548,7 +556,7 @@ hook.Add("radialOptions", "7", function()
 				end
 				CreateRadialMenu(commands)
 			end
-		end, "Do Gesture\nRMB - Menu"}
+		end, "Жест\nRMB - Меню"}
         hg.radialOptions[#hg.radialOptions + 1] = tbl
     end
 end)
@@ -556,7 +564,7 @@ end)
 local font_size = 50
 surface.CreateFont("HG_font", {
 	font = "Arial",
-	extended = false,
+	extended = true,
 	size = font_size,
 	weight = 500,
 	outline = true

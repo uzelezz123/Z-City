@@ -259,7 +259,7 @@ elseif CLIENT then
 				function()
 					RunConsoleCommand("hg_takearrow")
 				end,
-				"Take arrow from yourself"
+				"Вытащить стрелу из себя"
 			}
 			hg.radialOptions[#hg.radialOptions + 1] = tbl
 		end

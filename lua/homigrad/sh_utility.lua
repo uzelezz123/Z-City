@@ -1033,7 +1033,7 @@ local IsValid = IsValid
 		curlean = curlean or 0
 		unmodified_angle = unmodified_angle or 0
 		local time = SysTime() - 0.01
-		hook.Add("Think", "leanin", function()
+		hook.Add("HUDPaint", "leanin", function()
 			local ply = LocalPlayer()
 			local angles = ply:EyeAngles()
 
@@ -1830,7 +1830,7 @@ local IsValid = IsValid
 		k = k * math.Clamp(5 / ((org.immobilization or 0) + 1), 0.25, 1)
 		k = k * math.Clamp((org.blood or 0) / 5000, 0, 1)
 		k = k * math.Clamp(10 / ((org.shock or 0) + 1), 0.25, 1)
-		k = k * (math.min((org.adrenaline or 0) / 24, 0.3) + 1)
+		--k = k * (math.min((org.adrenaline or 0) / 24, 0.3) + 1)
 		k = k * math.Clamp((org.lleg and org.lleg >= 0.5 and math.max(1 - org.lleg, 0.6) or 1) * (org.lleg and org.rleg >= 0.5 and math.max(1 - org.rleg, 0.6) or 1) * ((org.analgesia * 1 + 1)), 0, 1)
 		k = k * (org.llegdislocation and 0.75 or 1) * (org.rlegdislocation and 0.75 or 1)
 		k = k * (org.pelvis == 1 and 0.4 or 1)
@@ -2102,16 +2102,15 @@ local IsValid = IsValid
 	end)
 --//
 --\\ Lootable npcs
-	--[[ --!! TODO
 	local lootNPCs = {
-		["npc_combine_s"] = {
+		["npc_metropolice"] = {
 			"weapon_hg_stunstick",
 			"weapon_medkit_sh",
 			"weapon_bandage_sh",
 			"weapon_handcuffs",
 			"weapon_walkie_talkie"
 		},
-		["npc_metropolice"] = {
+		["npc_combine_s"] = {
 			"weapon_melee",
 			"weapon_hg_hl2nade_tpik",
 			"weapon_bandage_sh",
@@ -2123,19 +2122,39 @@ local IsValid = IsValid
 			"weapon_painkillers"
 		}
 	}
+
+	local nameNPCs = {
+		["npc_metropolice"] = {"Metrocop", Vector(0, 100, 255) / 255},
+		["npc_combine_s"] = {"Combine", Vector(0, 180, 180) / 255},
+		["npc_citizen"] = {"Refugee", Vector(255, 155, 0) / 255}
+	}
+
 	hook.Add("CreateEntityRagdoll", "npcloot", function(ent, rag)
 		local loot = lootNPCs[ent:GetClass()]
 		if IsValid(ent) and IsValid(rag) and ent:IsNPC() and loot then
-			rag.armors = {}
 			rag.inventory = {}
+			rag.inventory.Weapons = {}
 
-			rag.was_opened = true
-
-			rag.inventory.Weapons = loot or {}
-			rag:SetNetVar("Inventory", rag.inventory )
+			for k, wep in pairs(loot) do
+				rag.inventory.Weapons[wep] = {}
+				rag:SetNetVar("Inventory", rag.inventory)
+				rag:SetNWString("PlayerName", nameNPCs[ent:GetClass()][1])
+				rag:SetNWVector("PlayerColor", nameNPCs[ent:GetClass()][2])
+				rag.GetPlayerName = function()
+					return nameNPCs[ent:GetClass()][1]
+				end
+			end
 		end
 	end)
-	]]
+--//
+--\\ Disable drive
+	--[[hook.Add("StartEntityDriving", "disabledriving", function(ent, ply)
+		return false
+	end)
+
+	hook.Add("PlayerDriveAnimate", "disabledriving", function(ent, ply)
+		return false
+	end)]]
 --//
 --\\ timescale pitch change
 	local cheats = GetConVar( "sv_cheats" )
@@ -2563,7 +2582,7 @@ duplicator.Allow( "homigrad_base" )
 
 --\\ Custom running anim activity
 	hook.Add( "CalcMainActivity", "RunningAnim", function( Player, Velocity )
-		if (not Player:InVehicle()) and Player:IsOnGround() and Velocity:Length() > 250 and IsValid(Player:GetActiveWeapon()) and Player:GetActiveWeapon():GetClass() == "weapon_hands_sh" then
+		if (not Player:InVehicle()) and Player:IsOnGround() and Velocity:Length() > 250 and IsValid(Player:GetActiveWeapon()) and Player:GetActiveWeapon():GetHoldType() == "normal" then
 			local isFurry = Player.PlayerClassName == "furry"
 			local anim = ACT_HL2MP_RUN_FAST
 			if Player:IsOnFire() then

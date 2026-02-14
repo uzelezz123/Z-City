@@ -43,7 +43,7 @@ hg.settings:AddOpt("Weapons","hg_dynamic_mags", "Dynamic Ammo Inspect")
 
 hg.settings:AddOpt("View","hg_firstperson_death", "First-Person Death")
 hg.settings:AddOpt("View","hg_fov", "Field Of View")
-hg.settings:AddOpt("View","hg_coolgloves", "Cool Gloves")
+-- hg.settings:AddOpt("View","hg_coolgloves", "Cool Gloves")
 hg.settings:AddOpt("View","hg_newspectate", "Smooth Spectator Camera")
 hg.settings:AddOpt("View","hg_change_gloves", "Gloves Model")
 hg.settings:AddOpt("View","hg_cshs_fake", "C'sHS Ragdoll Camera")

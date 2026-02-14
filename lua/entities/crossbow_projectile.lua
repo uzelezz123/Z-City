@@ -8,8 +8,8 @@ ENT.AdminOnly = true
 ENT.Model = "models/crossbow_bolt.mdl"
 ENT.HitSound = "weapons/crossbow/hit1.wav"
 
-ENT.Damage = 350
-ENT.Force = 10
+ENT.Damage = 0
+ENT.Force = 0
 
 ENT.DesiredSilks = {	--; WARNING POINTER
 	{SegmentsDesiredAmt = 5, SegmentsDesiredWidth = 1, SegmentsDesiredLength = 3, EntityOffset = Vector(2, 0, 0)},

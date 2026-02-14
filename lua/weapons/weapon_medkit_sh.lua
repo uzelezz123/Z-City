@@ -35,14 +35,6 @@ SWEP.ofsA = Angle(90,-90,90)
 function SWEP:InitializeAdd()
 	self:SetHold(self.HoldType)
 
-	local owner = self:GetOwner()
-	if owner:IsNPC() then
-		self:SetHold("melee")
-		owner:SetHealth(math.Clamp(owner:Health() + (owner:GetMaxHealth() * 0.7), 0, owner:GetMaxHealth() * 2))
-		owner:EmitSound("snd_jack_hmcd_bandage.wav", 75, math.random(95, 105))
-		self:Remove()
-	end
-
 	self.modeValues = {
 		[1] = 80,
 		[2] = 1,
@@ -79,8 +71,19 @@ function SWEP:Animation()
     self:BoneSet("l_forearm", vector_origin, lang2)
 end
 
+function SWEP:OwnerChanged()
+	local owner = self:GetOwner()
+	if IsValid(owner) and owner:IsNPC() then
+		self:NPCHeal(owner, 0.6, "snd_jack_hmcd_bandage.wav")
+	end
+end
+
 if SERVER then
-	function SWEP:Heal(ent, mode, bone)
+	function SWEP:Heal(ent, mode)
+		if ent:IsNPC() then
+			self:NPCHeal(ent, 0.6, "snd_jack_hmcd_bandage.wav")
+		end
+
 		local org = ent.organism
 		if not org then return end
 

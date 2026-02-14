@@ -273,23 +273,23 @@ AddTrack(
         [3] = {
             ["kick"]        = { volume = 1 },
             ["perc"]        = { volume = 1 },
-            --["synth_bass"]        = { volume = 1 },
+            ["synth_bass"]        = { volume = 2 },
             --["synth_keys"]        = { volume = 1 },
             ["weird"]        = { volume = 1 },
         },
         [4] = {
             ["kick"]        = { volume = 1 },
             ["perc"]        = { volume = 1 },
-            ["synth_bass"]        = { volume = 1 },
-            --["synth_keys"]        = { volume = 1 },
-            ["weird"]        = { volume = 1 },
+            ["synth_bass"]        = { volume = 2 },
+            ["synth_keys"]        = { volume = 1 },
+            ["weird"]        = { volume = 2 },
         },
         [5] = {
-            ["kick"]        = { volume = 1 },
+            ["kick"]        = { volume = 2 },
             ["perc"]        = { volume = 1 },
-            ["synth_bass"]        = { volume = 1 },
+            ["synth_bass"]        = { volume = 2 },
             ["synth_keys"]        = { volume = 1 },
-            ["weird"]        = { volume = 1 },
+            ["weird"]        = { volume = 2 },
         },
     },
     { -- Layers
@@ -322,7 +322,7 @@ AddTrack(
         if org.adrenaline > 2.5 then
             intens = intens + 1
         end
-
+        
         return intens
     end,
     "uzelezz",
@@ -384,19 +384,8 @@ AddTrack(
         local intens = 0
         local org = ply.organism
         if (!org or org.otrub) or !ply:Alive() then return -1 end
-        if org.adrenaline > 0.1 then
-            intens = intens + 1
-        end
-
-        if ply:GetVelocity():Length() > 50 then
-            intens = intens + 1
-        end
-
-        if ply:GetVelocity():Length() > 150 then
-            intens = intens + 1
-        end
         
-        return intens
+        return 2
     end,
     "uzelezz",
     "Final Heartbeat",

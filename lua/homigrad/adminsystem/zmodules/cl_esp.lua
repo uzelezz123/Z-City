@@ -7,7 +7,7 @@ ESP.Enabled = false
 ESP.InAdminMode = false
 ESP.AllESP = false
 
-local ESPEye = CreateClientConVar("zb_espeye", "0", true, false, "Show eye trace line")
+local ESPEye = CreateClientConVar("zb_espeye", "0", true, false, "Show admin ESP eye trace line")
 
 local col_default = Color(255, 0, 0)
 local col_white = Color(255, 255, 255)

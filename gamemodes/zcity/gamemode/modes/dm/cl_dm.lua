@@ -16,6 +16,8 @@ local snds = {
 	"https://kappa.vgmsite.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/kvlgywwwnt/13.%20Escape.mp3"
 }
 
+local deathmatch_nozone = ConVarExists("deathmatch_nozone") and GetConVar("deathmatch_nozone") or CreateConVar("deathmatch_nozone", 0, FCVAR_REPLICATED, "Allows to disable deathmatch mode zone.", 0, 1)
+
 local function restartMusic()
 	local snd = snds[math.random(#snds)]
 
@@ -63,6 +65,7 @@ hook.Add("Think", "ZoneSoundThink", function()
 	if CurrentRound() and CurrentRound().name ~= "dm" then return end
 	local station = zb.SoundStation
 	if not IsValid(station) then return end
+	if deathmatch_nozone:GetBool() then return end
 	local radius = MODE.GetZoneRadius()
 	local volume = math.Clamp((LocalPlayer():GetPos():Distance(ZonePos) - radius) + 200,0,200) / 200
 	station:SetVolume(volume)
@@ -83,7 +86,7 @@ local mat = Material("hmcd_dmzone")
 local mapsize = 7500
 
 function MODE:PostDrawTranslucentRenderables(bDepth, bSkybox, isDraw3DSkybox)
-	if(!bSkybox and !isDraw3DSkybox)then
+	if(!bSkybox and !isDraw3DSkybox) and !deathmatch_nozone:GetBool() then
 		local radius = MODE.GetZoneRadius()
 		render.SetMaterial(mat)
 		render.DrawSphere( ZonePos, -radius, 60, 60, color_white )

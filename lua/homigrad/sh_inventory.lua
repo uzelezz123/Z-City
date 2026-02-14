@@ -165,8 +165,14 @@ if CLIENT then
 		local armor = ent:GetNetVar("Armor")
 		inv["Armor"] = armor
 		if not inv then return end
-		
-		local name = IsValid(ent) and (ent:IsPlayer() or ent:IsRagdoll()) and ent:GetPlayerName().. "'s inventory" or "Container"
+
+		local nameStr = "Unknown"
+		if IsValid(ent) then
+			if (ent:IsPlayer() or ent:IsRagdoll()) then
+				nameStr = ent:GetPlayerName() or string.NiceName(ent:GetClass())
+			end
+		end
+		local name = nameStr .. "'s inventory" or "Container"
 		local sizeX, sizeY = ScrW() / 3, ScrH() / 2.5
 		plyMenu = vgui.Create("ZFrame")
 		plyMenu.ent = ent

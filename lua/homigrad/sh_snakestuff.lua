@@ -88,7 +88,7 @@ if CLIENT then
 
 	local cursor
 
-	local zmeyka_legs = ConVarExists("zmeyka_legs") and GetConVar("zmeyka_legs") or CreateClientConVar("zmeyka_legs",0,true,true,"snake legz",0,1)
+	local zmeyka_legs = ConVarExists("zmeyka_legs") and GetConVar("zmeyka_legs") or CreateClientConVar("zmeyka_legs",0,true,true,"Toggle UI snake/worm legs",0,1)
 
 	local zmeyka_lmao = function()
 		cursor = Vector(input.GetCursorPos())
@@ -249,7 +249,7 @@ if CLIENT then
 		end
 	end
 
-	local zmeyka = GetConVar("zmeyka") or CreateClientConVar("zmeyka",1,true,false,"Enable or disable worm that appears in Q menu",0,1)
+	local zmeyka = GetConVar("zmeyka") or CreateClientConVar("zmeyka",1,true,false,"Toggle snake/worm that appears in emote menu",0,1)
 
 	local funcs = {
 		[1] = function(float) return math.ease.OutCirc(float) end,
@@ -259,9 +259,9 @@ if CLIENT then
 		[5] = function(float) return 1 end,
 	}
 
-	local zmeyka_size = ConVarExists("zmeyka_size") and GetConVar("zmeyka_size") or CreateClientConVar("zmeyka_size",30,true,true,"size of snake",10,50)
-	local zmeyka_gravity = ConVarExists("zmeyka_gravity") and GetConVar("zmeyka_gravity") or CreateClientConVar("zmeyka_gravity",0,true,true,"snake gravity",0,30)
-	local zmeyka_func = ConVarExists("zmeyka_func") and GetConVar("zmeyka_func") or CreateClientConVar("zmeyka_func",3,true,true,"snake func",1,5)
+	local zmeyka_size = ConVarExists("zmeyka_size") and GetConVar("zmeyka_size") or CreateClientConVar("zmeyka_size",30,true,true,"Modify size of UI snake/worm",10,50)
+	local zmeyka_gravity = ConVarExists("zmeyka_gravity") and GetConVar("zmeyka_gravity") or CreateClientConVar("zmeyka_gravity",0,true,true,"Modify gravity of UI snake/worm",0,30)
+	local zmeyka_func = ConVarExists("zmeyka_func") and GetConVar("zmeyka_func") or CreateClientConVar("zmeyka_func",3,true,true,"Change UI snake/worm appearance",1,5)
 
 	local function startZmeyka(i)
 		local color1 = Color(math.random(255),math.random(255),math.random(255))

@@ -79,7 +79,7 @@ SWEP.AmmoTypes2 = {
 		[2] = {"23x75 SH25"},
 		[3] = {"23x75 Barricade"},
 		[4] = {"23x75 Zvezda"},
-		[5] = {"23x75 Waver"}
+		[5] = {"23x75 Wave R"}
 	},
 	["20/70 gauge"] = {
 		[1] = {"20/70 gauge"},
@@ -1495,7 +1495,7 @@ SWEP.vecSuicidePist2 = Vector(-5,-5,3)
 SWEP.angSuicidePist2 = Angle(32,105,20)
 SWEP.vecSuicideRifle = Vector(2,-19,-1)
 SWEP.angSuicideRifle = Angle(15,100,90)
-SWEP.vecSuicideRifle2 = Vector(12, -20, 0)
+SWEP.vecSuicideRifle2 = Vector(14, -22, 0)
 SWEP.angSuicideRifle2 = Angle(14,118,90)
 local function isCrouching(ply)
 	return (hg.KeyDown(ply,IN_DUCK)) and ply:OnGround()

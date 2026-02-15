@@ -619,7 +619,7 @@ hg.ConVars = hg.ConVars or {}
 	function ActivateNoCollision(target, min) // gmodwiki my beloved
 		if !IsValid(target) then return end
 
-		local oldCollision = COLLISION_GROUP_PLAYER
+		local oldCollision = target:GetCollisionGroup()
 		target:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
 
 		timer.Simple(min or 0, function()
@@ -643,7 +643,9 @@ hg.ConVars = hg.ConVars or {}
 				//print(target, penetrating, tooNearPlayer, target:GetCollisionGroup())
 
 				if (!penetrating and !tooNearPlayer) or i >= (math.Round(time / checkdtime) - 1) then
-					target:SetCollisionGroup(oldCollision)
+					if target:GetCollisionGroup() == COLLISION_GROUP_PASSABLE_DOOR then -- if it somehow changed, we shouldn't touch it
+						target:SetCollisionGroup(oldCollision)
+					end
 
 					timer.Destroy(target:SteamID64().."_checkBounds_cycle")
 				end

@@ -184,6 +184,19 @@ function hg.HomigradBones(ply, dtime)
 		ply:ManipulateBoneAngles(boneID, tbl.Ang, false)
 	end--]]
 
+	--[[for i = 1, 10 do
+		print(ent:GetFlexName(i))
+	end--]]
+
+	--[[local ent = hg.GetCurrentCharacter(ply)
+	local blink = ent:GetFlexIDByName("blink")
+	local set = ply.suiciding and 1 or 0
+	if blink and ent:GetFlexWeight(blink) != set then
+		ent:SetFlexWeight(blink, set)
+	end--]]
+
+	--ent:SetFlexWeight()
+
 	if IsValid(ply.FakeRagdoll) then return end
 
 	if not ply.manipulated then reset(ply) return end

@@ -44,6 +44,8 @@ hook.Add("PostPlayerDeath", "homigrad-organism", function(ply)
 		newOrg.alive = false
 		newOrg.owner = ragdoll
 		ragdoll:CallOnRemove("organism", hg.organism.Remove, ragdoll)
+		newOrg.owner.fullsend = true
+		hg.send_bareinfo(newOrg)
 	end
 
 	hg.organism.Clear(ply.organism)

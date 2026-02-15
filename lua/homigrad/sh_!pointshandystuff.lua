@@ -53,4 +53,3 @@ if (CLIENT) then
         draw.SimpleText( text, font, x, y, col, align, align2)
     end
 end
-

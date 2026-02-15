@@ -1,28 +1,49 @@
-----
-local PANEL = {}
-
---[[
-hg.AddOptionPanel( "hg_potatopc", "switcher", {desc = "Enables weaker effects. Use for weak PCs"}, "optimization" )
-hg.AddOptionPanel( "hg_dynamic_mags", "switcher", {desc = "Enables the \"floating Ammo HUD\" feature"}, "other" )
-hg.AddOptionPanel( "hg_anims_draw_distance", "slider", {desc = "Changes the rendering distance of animations\nCan help increase FPS | 0 - inf",min = 0,max = 4096}, "optimization" )
-hg.AddOptionPanel( "hg_attachment_draw_distance", "slider", {desc = "Changes the rendering distance of attachments\nCan help increase FPS | 0 - inf",min = 0,max = 4096}, "optimization" )
-hg.AddOptionPanel( "hg_old_notificate", "switcher", {desc = "Enables old damage notifications (in chat)",min = 0,max = 4096}, "other" )
-hg.AddOptionPanel( "hg_weaponshotblur_enable", "switcher", {desc = "Enables blur when you are shooting the weapon",min = 0,max = 4096}, "other" )
-hg.AddOptionPanel( "hg_weaponshotblur_mul", "slider", {desc = "Multiplicates the blur that happens when you are shooting the weapon",min = 0,max = 1,decimals = 3}, "other" )
-hg.AddOptionPanel( "hg_bulletholes", "slider", {desc = "Amount of bullet hole effects (Rainbow Six Siege-like)",min = 0,max = 500,decimals = 0}, "optimization" )
-hg.AddOptionPanel( "hg_maxsmoketrails", "slider", {desc = "Max amount of smoke trail effects (lags after 10)",min = 0,max = 30,decimals = 0}, "optimization" )
-hg.AddOptionPanel( "hg_optimise_scopes", "slider", {desc = "Enable this if scoping makes your fps cry (1 - lowers quality of props around you, 2 - \"disables\" main render)",min = 0,max = 2,decimals = 0}, "optimization" )
-
-]]
-
 hg.settings = hg.settings or {}
 hg.settings.tbl = hg.settings.tbl or {}
-
 
 function hg.settings:AddOpt( strCategory, strConVar, strTitle, bDecimals, bString )
     self.tbl[strCategory] = self.tbl[strCategory] or {}
     self.tbl[strCategory][strConVar] = { strCategory, strConVar, strTitle, bDecimals or false, bString or false }
 end
+local hg_firstperson_death = CreateClientConVar("hg_firstperson_death", "0", "Toggle first-person death camera view", true, false, 0, 1)
+local hg_font = CreateClientConVar("hg_font", "Bahnschrift", true, false, "change every text font to selected because ui customization is cool")
+local hg_attachment_draw_distance = CreateClientConVar("hg_attachment_draw_distance", 0, true, nil, "distance to draw attachments", 0, 4096)
+
+xbars = 17
+ybars = 30
+
+gradient_l = Material("vgui/gradient-l")
+
+local blur = Material("pp/blurscreen")
+local blur2 = Material("effects/shaders/zb_blur" )
+local sw, sh = ScrW(), ScrH()
+
+local font = function() -- hg_coolvetica:GetBool() and "Coolvetica" or "Bahnschrift"
+    local usefont = "Bahnschrift"
+
+    if hg_font:GetString() != "" then
+        usefont = hg_font:GetString()
+    end
+
+    return usefont
+end
+
+surface.CreateFont("ZCity_setiings_tiny", {
+	font = font(),
+	size = ScreenScale(7),
+	weight = 100
+})
+
+surface.CreateFont("ZCity_setiings_fine", {
+	font = font(),
+	size = ScreenScale(10),
+	weight = 100
+})
+
+
+hg.settings:AddOpt("Gameplay","hg_old_notificate", "Old Notifications")
+hg.settings:AddOpt("Gameplay","hg_cheats", "Enable/Disable Cheats")
+
 
 hg.settings:AddOpt("Optimization","hg_potatopc", "Potato PC Mode")
 hg.settings:AddOpt("Optimization","hg_anims_draw_distance", "Animations Draw Distance")
@@ -35,7 +56,6 @@ hg.settings:AddOpt("Blood","hg_blood_draw_distance", "Blood Draw Distance")
 hg.settings:AddOpt("Blood","hg_blood_fps", "Blood FPS")
 hg.settings:AddOpt("Blood","hg_blood_sprites", "Blood Sprites (DISABLED FOR EVERYONE)")
 
---hg.settings:AddOpt("Other","hg_coolvetica", "Coolvetica font")
 hg.settings:AddOpt("UI","hg_font", "Change Custom Font", false, true)
 
 hg.settings:AddOpt("Weapons","hg_weaponshotblur_enable", "Shooting Blur")
@@ -43,9 +63,8 @@ hg.settings:AddOpt("Weapons","hg_dynamic_mags", "Dynamic Ammo Inspect")
 
 hg.settings:AddOpt("View","hg_firstperson_death", "First-Person Death")
 hg.settings:AddOpt("View","hg_fov", "Field Of View")
--- hg.settings:AddOpt("View","hg_coolgloves", "Cool Gloves")
 hg.settings:AddOpt("View","hg_newspectate", "Smooth Spectator Camera")
---hg.settings:AddOpt("View","hg_change_gloves", "Gloves Model")
+hg.settings:AddOpt("View","hg_change_gloves", "Gloves Model")
 hg.settings:AddOpt("View","hg_cshs_fake", "C'sHS Ragdoll Camera")
 hg.settings:AddOpt("View","hg_gun_cam", "Gun Camera (ADMIN ONLY)")
 hg.settings:AddOpt("View","hg_nofovzoom", "Disable/Enable FOV Zoom")
@@ -54,162 +73,224 @@ hg.settings:AddOpt("Sound","hg_dmusic", "Dynamic Music")
 
 hg.settings:AddOpt("Sound","hg_quietshots", "Enable/Disable Quietshoot Sounds (FOR PUSSY)")
 
---hg.settings:AddOpt("Sound","hg_thirdperson","ThirdPerson",false,true)
---^^ СТРИНГ ИНПУТ
-hg.settings:AddOpt("Gameplay","hg_old_notificate", "Old Notifications")
---hg.settings:AddOpt("Gameplay","hg_random_appearance", "Enable/Disable Random Appearance")
-hg.settings:AddOpt("Gameplay","hg_cheats", "Enable/Disable Cheats")
 
-
-function PANEL:Init()
-    self:SetAlpha( 0 )
-    self:SetSize( ScrW()*1, ScrH()*1 )
-    self:SetY( ScrH() )
-    self:SetX( ScrW() / 2 - self:GetWide() / 2 )
-    self:SetTitle( "" )
-    self:SetBorder( false )
-    self:SetColorBG( Color(10,10,25,245) )
-    self:SetBlurStrengh( 2 )
-    self:SetDraggable( false )
-    self:ShowCloseButton( true )
-    self.Options = {}
-
-    timer.Simple(0,function()
-        if self.First then
-            self:First()
-        end
-    end)
-
-    self.fDock = vgui.Create("DScrollPanel",self)
-    local fDock = self.fDock
-    fDock:Dock( FILL )
-
-    self:CreateCategory( "ZCity Settings" )
+function hg.CreateCategory(ctgName, ParentPanel, yPos)
+    local pppanel = vgui.Create('DPanel', ParentPanel)
+    pppanel:SetSize(ParentPanel:GetWide()/1.05, ParentPanel:GetTall()/12)
+    pppanel:SetPos(ParentPanel:GetWide()/2-pppanel:GetWide()/2, yPos)
+    --pppanel:SetText(ctgName)
+    pppanel.Paint = function(self,w,h)
+        surface.SetDrawColor(60,60,60,145)
+        surface.DrawRect(0, 0, w, h)
+		surface.SetDrawColor(Color(42, 42, 42, 184))
+		surface.DrawRect(0, h-5, w, 5)
     
-    for k,t in SortedPairs(hg.settings.tbl) do
-        for _,tbl in SortedPairs(t) do
-            local convar = GetConVar(tbl[2])
+        draw.SimpleText(ctgName, 'ZCity_Fixed_Medium', w / 2, h / 2, color3, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
+    
+    return pppanel
+end
+
+function hg.GetConVarType(convar)
+    local stringv = convar:GetString()
+    local floatVal = convar:GetFloat()
+    local intVal = convar:GetInt()
+    local boolVal = convar:GetBool()
+
+    if (stringv == '0' and not boolVal) or (stringv == '1' and boolVal) then
+        return 'bool'
+    end
+
+    if tonumber(stringv) and math.floor(stringv) == floatVal then
+        if intVal == floatVal then
+            return "int"
+        end
+    end
+
+    return "string"
+end
+
+function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
+    local convar = GetConVar(convarName)
+
+    if not convar then 
+        return 
+    end
+    local pppanel = vgui.Create('DPanel', ParentPanel)
+    pppanel:SetSize(ParentPanel:GetWide()/1.05, ParentPanel:GetTall()/15)
+    pppanel:SetPos(ParentPanel:GetWide()/2-pppanel:GetWide()/2, yPos)
+    
+    surface.SetFont('ZCity_setiings_fine')
+    local width2, height2 = surface.GetTextSize(buttonData[3])
+    
+    local convarType = hg.GetConVarType(convar)
+    pppanel.Paint = function(self,w,h)
+        surface.SetDrawColor(43, 43, 43,145)
+        surface.DrawRect(0, 0, w, h)
+		surface.SetDrawColor(Color(47, 47, 47,145))
+		surface.DrawRect(0, h-3, w, 3)
+        
+        draw.SimpleText(buttonData[3], 'ZCity_setiings_fine', 30, h / 2, Color(255,255,255,104), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(convar:GetHelpText(), 'ZCity_setiings_tiny', 30, h / 2+height2/1.5, Color(122,122,122,104), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    end
+
+    if convarType == 'bool' then
+        local toggle = vgui.Create('DButton', pppanel)
+        toggle:SetSize(pppanel:GetWide() / 18, pppanel:GetTall() / 2)
+
+        
+        toggle:SetPos(pppanel:GetWide() - toggle:GetWide()*1.4 - pppanel:GetWide() / 20, pppanel:GetTall() / 2 - toggle:GetTall() / 2)
+        toggle:SetText('')
+        
+        local animProgress = convar:GetBool() and 1 or 0
+        local targetProgress = animProgress
+        
+        function toggle:Paint(w, h)
+            if animProgress ~= targetProgress then
+                animProgress = Lerp(FrameTime() * 8, animProgress, targetProgress)
+            end
+            
+            local bgColor = Color(
+                Lerp(animProgress, 180, 80),  
+                Lerp(animProgress, 30, 120),  
+                Lerp(animProgress, 30, 50)   
+            )
+            
+            local shadowColor = Color(0, 0, 0, Lerp(animProgress, 150, 40))
+            surface.SetDrawColor(Color(28,28,28))
+            draw.RoundedBox(0, 0, 0, w, h, Color(28,28,28))
+            
+            surface.SetDrawColor(Color(30, 29, 29, 30))
+            draw.RoundedBox(0, 2, 2, w - 4, h - 4, Color(0, 0, 0, 30))
+            
+            local slsize = h - 12
+            local slPos = Lerp(animProgress, 6, w - slsize - 6)
+            surface.SetDrawColor(bgColor)
+            draw.RoundedBox(0, slPos, 6, slsize, slsize, bgColor)
+            surface.SetDrawColor(shadowColor)
+            surface.DrawRect(slPos, slsize+4, slsize, 3)
+    
+            surface.SetDrawColor(Color(255, 255, 255, 100))
+        end
+        
+        function toggle:DoClick()
             if convar then
-                self:CreateOption(tbl[1],convar:GetMax() == 1,convar, tbl[4], tbl[3] or convar:GetName(), nil, tbl[5])
-            else
-                -- print("huy'" .. tostring(tbl[2]) .. "' nema")
+                convar:SetBool(not convar:GetBool())
+
+                surface.PlaySound('glide/headlights_on.wav')
+                targetProgress = convar:GetBool() and 1 or 0
+            end
+        end
+        
+    elseif convarType == 'int' then
+        local slider = vgui.Create('DNumSlider', pppanel)
+        slider:SetSize(280, 30)
+        slider:SetPos(pppanel:GetWide() - 300, pppanel:GetTall() / 2 - 15)
+        slider:SetText('')
+        
+        local min = buttonData[4] or 0
+        local max = buttonData[5] or 100
+        local decimals = 0 
+        
+        slider:SetMin(min)
+        slider:SetMax(max)
+        slider:SetDecimals(decimals)
+        slider:SetValue(convar:GetInt())
+        
+        function slider:OnValueChanged(val)
+            if convar then
+                convar:SetInt(math.Round(val))
+            end
+        end
+        
+        local valueLabel = vgui.Create('DLabel', pppanel)
+        valueLabel:SetPos(pppanel:GetWide() - 350, pppanel:GetTall() / 2 - 8)
+        valueLabel:SetSize(50, 20)
+        valueLabel:SetText(convar:GetInt())
+        valueLabel:SetTextColor(Color(255, 255, 255, 200))
+        valueLabel:SetFont('ZCity_setiings_tiny')
+        
+        slider.Think = function()
+            if convar then
+                valueLabel:SetText(convar:GetInt())
+            end
+        end
+        
+    elseif convarType == 'string' then
+        local textEntry = vgui.Create('DTextEntry', pppanel)
+        textEntry:SetSize(pppanel:GetWide()/8, pppanel:GetTall()/2)
+        textEntry:SetPos(pppanel:GetWide()-pppanel:GetWide()/8-20, pppanel:GetTall()/2-textEntry:GetTall()/2)
+        textEntry:SetText(convar:GetString())
+        textEntry:SetUpdateOnType(true) 
+        textEntry:SetFont('ZCity_Tiny')
+        
+    
+        textEntry.Paint = function(self, w, h)
+            surface.SetDrawColor(30, 30, 30, 255)
+            surface.DrawRect(0, 0, w, h)
+            surface.SetDrawColor(60, 60, 60, 255)
+            surface.DrawOutlinedRect(0, 0, w, h)
+            
+            self:DrawTextEntryText(Color(255, 255, 255), Color(70, 130, 180), Color(255, 255, 255))
+        end
+        
+        function textEntry:OnValueChange(val)
+            if convar then
+                convar:SetString(val)
             end
         end
     end
-end
-
-function PANEL:First( ply )
-    self:MoveTo(self:GetX(), ScrH() / 2 - self:GetTall() / 2, 0.4, 0, 0.2, function() end)
-    self:AlphaTo( 255, 0.2, 0.1, nil )
-end
-
-function PANEL:CreateCategory( strCategory )
-    local fDock = self.fDock
-    if not self.Options[strCategory] then
-        local category = vgui.Create("DLabel",fDock)
-        category:Dock( TOP )
-        category:SetSize(0,ScreenScale(20))
-        category:SetText(strCategory)
-        category:SetFont("ZCity_Small")
-        category:DockMargin(ScreenScaleH(65),2,ScreenScaleH(65),5)
-    end
-    self.Options[strCategory] = self.Options[strCategory] or {}
-    return self.Options[strCategory]
-end
-
-local color_blacky = Color(39,39,39,220)
-local color_reddy = Color(105,0,0,220)
-
-function PANEL:CreateOption( strCategory, bType, cConVar, bDecimals, strTitle, strDesc, bString )
-    if not cConVar then
-        --print("huy")
-        return
-    end
     
-    local fDock = self.fDock
-    local Category = self:CreateCategory( strCategory )
-    Category[cConVar:GetName()] = vgui.Create("DPanel",fDock)
-    local opt = Category[cConVar:GetName()]
-    opt:Dock( TOP )
-    opt:SetSize(0,ScreenScale(25))
-    opt:DockMargin(ScreenScaleH(75),2,ScreenScaleH(75),2)
-    function opt:Paint(w,h)
-        draw.RoundedBox( 0, 0, 0, w, h, color_blacky )
-        --hg.DrawBlur(self, 0.1)
-        surface.SetDrawColor( color_reddy )
-        surface.DrawOutlinedRect(0,0,w,h,1.5)
-    end
-
-    opt.NLabel = vgui.Create("DLabel",opt)
-    local NLbl = opt.NLabel
-    NLbl:SetText( strTitle.."\n"..(strDesc or string.NiceName( cConVar:GetHelpText() ) ) )
-    NLbl:SetFont("ZCity_Tiny")
-    NLbl:SizeToContents()
-    NLbl:Dock(LEFT)
-    NLbl:DockMargin(10,0,0,0)
-
-    if bString then
-        opt.TextInput = vgui.Create("DTextEntry",opt)
-        local TextInput = opt.TextInput
-        TextInput:DockMargin( 10,ScreenScale(5),10,ScreenScale(5) )
-        TextInput:DockPadding(ScreenScale(5),ScreenScale(5),ScreenScale(5),ScreenScale(5))
-        TextInput:SetSize( ScreenScale(90),0 )
-        TextInput:Dock( RIGHT )
-
-        TextInput:SetValue(cConVar:GetString())
-        TextInput:SetPlaceholderText("Your cool var "..cConVar:GetName())
-        TextInput:SetFont("ZCity_Tiny")
-        function TextInput:OnLoseFocus()
-            cConVar:SetString(self:GetValue())
-        end
-    elseif bType then
-        opt.Button = vgui.Create("DButton",opt)
-        local btn = opt.Button
-        btn:SetText( "" )
-        btn:DockMargin( 10,ScreenScale(5),10,ScreenScale(5) )
-        btn:SetSize( ScreenScale(40),0 )
-        btn:Dock( RIGHT )
-
-        btn.On = cConVar:GetBool()
-
-        function btn:Paint(w,h)
-            self.Lerp = LerpFT(0.2,self.Lerp or (btn.On and 1 or 0), btn.On and 1 or 0)
-            local CLR = color_reddy:Lerp(Color(55,175,55),self.Lerp)
-            draw.RoundedBox( 0, 0, 0, w, h, CLR )
-            --hg.DrawBlur(self, 0.1)
-            
-            draw.RoundedBox( 0, (w/2)*(self.Lerp), 0, w/2, h, ColorAlpha(color_blacky,255) )
-            surface.SetDrawColor( color_reddy )
-            surface.DrawOutlinedRect(0,0,w,h,1.5)
-        end
-        
-        function btn:DoClick()
-            cConVar:SetBool(not cConVar:GetBool())
-            btn.On = cConVar:GetBool()
-        end
-    else
-        local Slid = vgui.Create( "DNumSlider", opt )
-        Slid:DockMargin( 10,15,10,15 )
-        Slid:SetSize( 500, 0 )
-        Slid:Dock( RIGHT )
-        Slid:SetMin( cConVar:GetMin() )
-        Slid:SetMax( cConVar:GetMax() )
-        Slid:SetDecimals( bDecimals and 2 or 0)
-        Slid:SetConVar( cConVar:GetName() )
-        Slid.TextArea:SetFont("ZCity_Tiny")
-    end
+    return pppanel
 end
 
-vgui.Register( "ZOptions", PANEL, "ZFrame")
- 
-concommand.Add("hg_settings",function()
-    if hg_options and IsValid(hg_options) then
-        hg_options:Close()
-        hg_options = nil
-    end
-    local s = vgui.Create("ZOptions") 
-    s:MakePopup()
-    hg_options = s
-end)
+function hg.DrawSettings(ParentPanel)
+    ParentPanel:SetAlpha(0)
+    ParentPanel.Paint = function(self,w,h)
 
---https://vk.com/audio-2001212316_123212316
+        surface.SetDrawColor(28,28,28,255)
+        surface.DrawRect(0, 0, w, h)
+
+        surface.SetDrawColor(107, 107, 107,20)
+
+        for i = 1, (ybars + 1) do
+            surface.DrawRect((sw / ybars) * i - (CurTime() * 30 % (sw / ybars)), 0, ScreenScale(1), sh)
+        end
+
+        for i = 1, (xbars + 1) do
+            surface.DrawRect(0, (sh / xbars) * (i - 1) + (CurTime() * 30 % (sh / xbars)), sw, ScreenScale(1))
+        end
+
+        local border_size = ScreenScale(2)
+
+        surface.SetDrawColor(0, 0, 0)
+        surface.SetMaterial(gradient_l)
+        surface.DrawTexturedRect(0, 0, border_size, sh)
+		surface.SetMaterial(blur)
+        surface.SetDrawColor(28,28,28,208)
+        surface.DrawRect(0, 0, w, h)
+    end
+    hg.DrawBlur(ParentPanel, 5)
+    ParentPanel:AlphaTo(255,0.15,0)
+    local pppanel3 = vgui.Create('DScrollPanel', ParentPanel)
+    pppanel3:SetSize(ParentPanel:GetWide(), ParentPanel:GetTall())
+    pppanel3:SetPos(0,0)
+    --pppanel3:SetAlpha(0)
+    pppanel3.Paint = function()end
+    -- 🥴 <- лучший смайлик
+
+    local yOffset = pppanel3:GetTall()/100
+
+    for categoryName, categoryTable in pairs(hg.settings.tbl) do
+        local category = hg.CreateCategory(categoryName, pppanel3, yOffset)
+        yOffset = yOffset + category:GetTall() + 12
+        for convarName, settingData in pairs(categoryTable) do
+            local vbv = hg.CreateButton(settingData,convarName,pppanel3,yOffset)
+            if not vbv then continue end
+            yOffset = yOffset + (vbv:GetTall()) + 12
+        end
+    end
+    local pppanel23 = vgui.Create('DPanel', pppanel3)
+    pppanel23:SetSize(0, 0)
+    pppanel23:SetPos(0,yOffset+12)
+end

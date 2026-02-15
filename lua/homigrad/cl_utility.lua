@@ -715,14 +715,20 @@ players : 1 humans, 0 bots (20 max)
 				ent.Blinking = cachedLerp(FrameTime() * 5,ent.Blinking or 0,1)
 			end
 
-			if ent:IsRagdoll() and ent:GetFlexIDByName("blink") then
+			if ply.suiciding then
+				ent.Blinking = 1
+			end
+			
+			if ent:GetFlexIDByName("blink") then
 				ent:SetFlexWeight(ent:GetFlexIDByName("blink"), ent.Blinking or 0)
-				if ent:GetFlexIDByName("wrinkler") then
-					ent:SetFlexWeight(ent:GetFlexIDByName("wrinkler"), ent.Blinking or 0)
-				end
-				if ent:GetFlexIDByName("half_closed") then
-					ent:SetFlexWeight(ent:GetFlexIDByName("half_closed"), ent.Blinking or 0)
-				end
+			end
+
+			if ent:GetFlexIDByName("wrinkler") then
+				ent:SetFlexWeight(ent:GetFlexIDByName("wrinkler"), ent.Blinking or 0)
+			end
+
+			if ent:GetFlexIDByName("half_closed") then
+				ent:SetFlexWeight(ent:GetFlexIDByName("half_closed"), ent.Blinking or 0)
 			end
 		end
 

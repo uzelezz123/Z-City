@@ -405,23 +405,15 @@ hook.Add("RenderScreenspaceEffects", "organism-effects", function()
 
 	--print(lply.tinnitus)
 	local adrenK = math.min(math.max(1 + adrenaline, 1), 1.2)
-	
-	if lply.suiciding and lply:Alive() then
-		lply:SetDSP(130)
-		olddspchange = true
-	else
-		if olddspchange then
-			lply:SetDSP(0)
-			olddspchange = false
-		end
-	end
 
 	if org.otrub then
 		//DrawMotionBlur(0.1, 1., 0.1)
 		//lply:ScreenFade( SCREENFADE.IN, clr_black2, 2, 0.5 )
 	end
+	
+	lply:SetDSP(0)
 
-	if otrub or (fakeTimer and fakeTimer - 2 > CurTime()) then
+	if otrub or ((fakeTimer and fakeTimer - 2 > CurTime()) and GetConVar("hg_deathfadeout"):GetBool()) then
 		--if otrub or (fakeTimer and fakeTimer - 2 > CurTime()) then
 		clr_black1.a = math.Clamp(pain / 50 * 255, 250, 255)
 		//lply:ScreenFade( SCREENFADE.IN, clr_black2, 2, 0.5 )
@@ -440,7 +432,7 @@ hook.Add("RenderScreenspaceEffects", "organism-effects", function()
 		if ((disorientation and disorientation > 3) or (brain and brain > 0.2) or lply.PlayerClassName == "headcrabzombie" or lply:GetNetVar("headcrab")) and lply:Alive() then
 			lply:SetDSP(130)
 		else
-			lply:SetDSP(0)
+			lply:SetDSP((lply.suiciding and lply:Alive()) and 130 or 0)
 		end
 	end
 
@@ -461,7 +453,7 @@ hook.Add("RenderScreenspaceEffects", "organism-effects", function()
 
 	local amount = 1 - math.Clamp(lowpulse + disorientation / 4 + k2 * 2,0,1)
 
-	disorientationLerp = LerpFT(disorientation > disorientationLerp and 1 or 0.01, disorientationLerp, disorientation)
+	disorientationLerp = LerpFT(disorientation > disorientationLerp and 1 or 0.01, disorientationLerp, math.max(lply.suiciding and 1.5 or 0, disorientation))
 
 	if (disorientationLerp > 1) and lply:Alive() or brain > 0 then
 		local add2 = disorientationLerp - 1

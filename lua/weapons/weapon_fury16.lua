@@ -92,8 +92,8 @@ if SERVER then
 			ent:Kill()
 		end
 
-		if org.noradrenaline >= 1 then
-			--ent:Kill()
+		if org.noradrenaline >= 1.8 then
+			ent:Kill()
 		end
 
 		org.noradrenaline = org.noradrenaline + 1.25

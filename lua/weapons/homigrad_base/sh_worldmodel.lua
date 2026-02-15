@@ -260,7 +260,13 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
 	local restpos
 
     if self:GetNWVector("RestPos") and IsValid(self:GetNWEntity("RestEntity")) or self:GetNWEntity("RestEntity"):IsWorld() then
-		local posa, anga2, anga = self:GetBipodPosAng()
+        local restent = self:GetNWEntity("RestEntity")
+        local restbone = self:GetNWInt("RestPBone")
+        restbone = restbone == -1 and 0 or restbone
+
+        local mat = restent:IsWorld() and Matrix() or restent:GetBoneMatrix(restbone)
+		if not mat then return end
+        local posa, anga = mat:GetTranslation(), mat:GetAngles()
 
         restpos = LocalToWorld(self:GetNWVector("RestPos"), angle_zero, posa, anga)
     end

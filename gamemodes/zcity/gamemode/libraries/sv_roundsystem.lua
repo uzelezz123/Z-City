@@ -133,7 +133,7 @@ function zb:EndRoundThink()
 			zb.END_TIME = (CurTime() + (CurrentRound().end_time or 5))
 			if zb.nextround == "coop" and GetGlobalVar("coop_first_round_timer", 0) == 0 then
 
-				zb.END_TIME = (CurTime() + (GetConVar("zb_dev") and 5 or 60))
+				zb.END_TIME = (CurTime() + 60)
 				SetGlobalVar("coop_first_round_timer", zb.END_TIME)
 			end
 		end
@@ -766,18 +766,15 @@ COMMANDS.setforcemode = {
 		if args[1] ~= "random" then
 			NextRound(args[1])
 		end
-	end, 0
+	end,
+	0
 }
 
-COMMANDS.endround = {
-	function(ply, args)
-		if not ply:IsAdmin() then
-			ply:ChatPrint("You don't have access")
-			return
-		end
+COMMANDS.endround = {function(ply, args)
+	if not ply:IsAdmin() then ply:ChatPrint("You don't have access") return end
 	 	zb:EndRound()
-	end, 0
-}
+	end,
+	0}
 
 if SERVER then
 	util.AddNetworkString("SendAvailableModes")

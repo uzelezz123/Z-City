@@ -619,8 +619,15 @@ end)
 
 hook.Add("Org Think", "regenerationnoradrenaline", function(owner, org, timeValue)
 	if not owner:IsPlayer() or not owner:Alive() then return end
+	if !owner:IsStimulated() then
+		if org.noradrenaline <= 0.1 then
+			owner:SetRunSpeed(350)
+		end
 
-	local regen = timeValue / 60 * org.noradrenaline
+		return
+	end
+
+	local regen = timeValue / 120 * org.noradrenaline
 
 	org.lungsR[1] = math.max(org.lungsR[1] - regen, 0)
 	org.lungsL[1] = math.max(org.lungsL[1] - regen, 0)
@@ -629,25 +636,26 @@ hook.Add("Org Think", "regenerationnoradrenaline", function(owner, org, timeValu
 
 	org.hungry = 0
 
-	org.pain = math.Approach(org.pain, 0, regen * 10)
-	org.painadd = math.Approach(org.painadd, 0, regen * 10)
-	org.avgpain = math.Approach(org.avgpain, 0, regen * 10)
-	org.shock = math.Approach(org.shock, 0, regen * 10)
-	org.immobilization = math.Approach(org.immobilization, 0, regen * 10)
-	org.disorientation = math.Approach(org.disorientation, 0, regen * 10)
-	org.adrenaline = math.Approach(org.adrenaline, 5, regen * 100)
-	org.analgesia = math.Approach(org.analgesia, 1, regen * 10)
+	org.pain = math.Approach(org.pain, 0, timeValue * 10)
+	org.painadd = math.Approach(org.painadd, 0, timeValue * 10)
+	org.avgpain = math.Approach(org.avgpain, 0, timeValue * 10)
+	org.shock = math.Approach(org.shock, 0, timeValue * 10)
+	org.immobilization = math.Approach(org.immobilization, 0, timeValue * 10)
+	org.disorientation = math.Approach(org.disorientation, 0, timeValue * 10)
+	org.adrenalineAdd = math.Approach(org.adrenalineAdd, 2, regen * 10)
 
-	if org.noradrenaline > 2 then
-		org.brain = math.Approach(org.brain, 0.3, timeValue / 60)
-	end
-
-	org.pulse = math.Approach(org.pulse, 70, regen * 10)
-	org.heartbeat = math.Approach(org.heartbeat, 220, regen * 10)
+	org.pulse = math.Approach(org.pulse, 220, timeValue * 10)
+	org.heartbeat = math.Approach(org.heartbeat, 220, timeValue * 10)
 	--org.stamina.regen = math.Approach(org.stamina.regen, 1.2, regen * 10)
 
 	org.lungsfunction = true
 	org.heartstop = false
+
+	owner:SetRunSpeed(math.min(500, 400 + (40 * org.noradrenaline)))
+
+	if org.noradrenaline <= 0.1 then
+		owner:SetRunSpeed(350)
+	end
 end)
 
 concommand.Add("hg_organism_setvalue", function(ply, cmd, args)

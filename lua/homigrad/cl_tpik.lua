@@ -855,10 +855,6 @@ local function solve(segments, iter, turn)
         final = backward(final, segments)
         final = forward(final, segments)
     end
-    
-    if segments[1].Pos:DistToSqr(segments[#segments].Pos) < 15 * 15 then
-        final = backward(final, segments)
-    end
 
     return final
 end
@@ -952,8 +948,8 @@ function hg.DoTPIK(ply, ent)
         ent.dirtymatrixrh = nil
     end*/
 
-    ply.lerp_lh = math.Approach(ply.lerp_lh or 0, lhik2 and 1 or 0, FrameTime() * 6.0 * game.GetTimeScale())//LerpFT(0.1, ply.lerp_lh or 1, lhik2 and 1 or 0)
-    ply.lerp_rh = math.Approach(ply.lerp_rh or 0, rhik2 and 1 or 0, FrameTime() * 6.0 * game.GetTimeScale())//LerpFT(0.1, ply.lerp_rh or 1, rhik2 and 1 or 0)
+    ply.lerp_lh = math.Approach(ply.lerp_lh or 0, lhik2 and 1 or 0, FrameTime() * 6.0)//LerpFT(0.1, ply.lerp_lh or 1, lhik2 and 1 or 0)
+    ply.lerp_rh = math.Approach(ply.lerp_rh or 0, rhik2 and 1 or 0, FrameTime() * 6.0)//LerpFT(0.1, ply.lerp_rh or 1, rhik2 and 1 or 0)
 
     //if ply.lerp_rh == 0 and ply.lerp_lh == 0 then return end
 
@@ -1002,16 +998,12 @@ function hg.DoTPIK(ply, ent)
             start = ply.segmentsr[1].Pos,
             endpos = ply.segmentsr[2].Pos,
             filter = {ent, ply},
-            mask = MASK_SOLID_BRUSHONLY,
+            mask = MASK_SHOT,
         })
-        
-        ply.lerpedsegmenthit = LerpFT(0.1, ply.lerpedsegmenthit or 0, (1 - tr.Fraction))
-        ply.oldhitnormal = LerpAngleFT(0.1, ply.oldhitnormal or tr.HitNormal:Angle(), tr.Hit and tr.HitNormal:Angle() or ply.oldhitnormal or Angle())
-        
-        if ply.lerpedsegmenthit > 0.01 and ply.oldhitnormal then
-            local hitnormal = ply.oldhitnormal:Forward()
-            local dist = 20--ply.segmentsl[2].Pos:Distance(ply.segmentsl[1].Pos)
-            local new = hitnormal * dist * ply.lerpedsegmenthit * (math.sin(math.acos(hitnormal:Dot(tr.Normal)))) + ply.segmentsr[2].Pos
+
+        if tr.Hit then
+            local dist = ply.segmentsr[2].Pos:Distance(ply.segmentsr[1].Pos)
+            local new = tr.HitNormal * dist * (1 - tr.Fraction) * (math.sin(math.acos(tr.HitNormal:Dot(tr.Normal)))) + ply.segmentsr[2].Pos
 
             ply.segmentsr[2].Pos = new
         end
@@ -1101,7 +1093,7 @@ function hg.DoTPIK(ply, ent)
         local q = Quaternion()--:SetAngle(eyeang)
         q = q * Quaternion():SetAngleAxis(angrr.y, Vector(0, 0, 1))
         q = q * Quaternion():SetAngleAxis(angrr.p, Vector(0, 1, 0))
-        q = q * Quaternion():SetAngleAxis(-120 + eyeang.r - angrr.r - math.NormalizeAngle((eyeang.y - angrr.y)) * (math.NormalizeAngle(angrr.p)) / 90, Vector(1, 0, 0))
+        q = q * Quaternion():SetAngleAxis(-60 + angrr.p + eyeang.r - angrr.r, Vector(1, 0, 0))
         --q:SetAngleAxis(-angle2 + 180, Vector(0, 1, 0))
         --q:SetAngleAxis(180, Vector(1, 0, 0))
         local ang = q:Angle()
@@ -1138,7 +1130,7 @@ function hg.DoTPIK(ply, ent)
             ent:SetBoneMatrix(wrst, wmat)
         end--]]
     end
-    
+
     if ply.lerp_lh != 0 then
         local old = ply.segmentsl[2] and ((ply.segmentsl[2].Pos - ply.segmentsl[1].Pos):GetNormalized() * 2) or vector_origin
         local eyeang = -(-eyeang)
@@ -1150,16 +1142,12 @@ function hg.DoTPIK(ply, ent)
             start = ply.segmentsl[1].Pos,
             endpos = ply.segmentsl[2].Pos,
             filter = {ent, ply},
-            mask = MASK_SOLID_BRUSHONLY,
+            mask = MASK_SHOT,
         })
 
-        ply.lerpedsegmenthit2 = LerpFT(0.1, ply.lerpedsegmenthit2 or 0, (1 - tr.Fraction))
-        
-        ply.oldhitnormal2 = LerpAngleFT(0.1, ply.oldhitnormal2 or tr.HitNormal:Angle(), tr.Hit and tr.HitNormal:Angle() or ply.oldhitnormal2 or Angle())
-        if ply.lerpedsegmenthit2 > 0.01 and ply.oldhitnormal2 then
-            local hitnormal = ply.oldhitnormal2:Forward()
-            local dist = 20--ply.segmentsl[2].Pos:Distance(ply.segmentsl[1].Pos)
-            local new = hitnormal * dist * ply.lerpedsegmenthit2 * (math.sin(math.acos(hitnormal:Dot(tr.Normal)))) + ply.segmentsl[2].Pos
+        if tr.Hit then
+            local dist = ply.segmentsl[2].Pos:Distance(ply.segmentsl[1].Pos)
+            local new = tr.HitNormal * dist * (1 - tr.Fraction) * (math.sin(math.acos(tr.HitNormal:Dot(tr.Normal)))) + ply.segmentsl[2].Pos
 
             ply.segmentsl[2].Pos = new
         end
@@ -1173,7 +1161,7 @@ function hg.DoTPIK(ply, ent)
         local hand = ply_l_hand_matrix:GetTranslation()
         local add = (hand - ply.segmentsl[1].Pos):GetNormalized() * 5 + eyeang:Right() * -5 + eyeang:Forward() * ((ply.lerp_hand or 0) - 0.5) * 10
 
-        --[[if ishgweapon(self) and !ply:InVehicle() then
+        if ishgweapon(self) and !ply:InVehicle() then
             local tr = util.TraceLine({
                     start = ply.segmentsl[1].Pos,
                     endpos = hand + add,
@@ -1191,7 +1179,7 @@ function hg.DoTPIK(ply, ent)
                 ang:RotateAroundAxis(ang:Right(), 40)
                 ply_l_hand_matrix:SetAngles(ang)
             end
-        end--]]
+        end
 
         if ply.organism and ply.organism.larm and ply.organism.larm > 0.99 and ishgweapon(self) and !self.reload and ishgweapon(self) then
             ply.segmentsl[3] = ply.segmentsl[3] or {Pos = hand, Len = limblength}
@@ -1261,11 +1249,11 @@ function hg.DoTPIK(ply, ent)
         local q = Quaternion()--:SetAngle(eyeang)
         q = q * Quaternion():SetAngleAxis(angrr.y, Vector(0, 0, 1))
         q = q * Quaternion():SetAngleAxis(angrr.p, Vector(0, 1, 0))
-        q = q * Quaternion():SetAngleAxis(-60 + eyeang.r - angrr.r - math.NormalizeAngle((eyeang.y - angrr.y)) * (math.NormalizeAngle(angrr.p)) / 90, Vector(1, 0, 0))
+        q = q * Quaternion():SetAngleAxis(-120 - angrr.p - eyeang.p + eyeang.r - angrr.r, Vector(1, 0, 0))
         --q:SetAngleAxis(-angle2 + 180, Vector(0, 1, 0))
         --q:SetAngleAxis(180, Vector(1, 0, 0))
         local ang = q:Angle()
-        
+
         ply_l_forearm_matrix:SetAngles(ang)
 
         if ply.organism and ply.organism.larm and ply.organism.larm > 0.99 and ishgweapon(self) and !self.reload and ishgweapon(self) then
@@ -1352,9 +1340,7 @@ function hg.DoTPIK(ply, ent)
         ply_l_hand_matrix:SetTranslation(ply_l_hand_matrix:GetTranslation() - (ply.segmentsl[3].Pos - ply.segmentsl[2].Pos):GetNormalized() * 1)
         //ent:SetBoneMatrix(ent:LookupBone("ValveBiped.Bip01_L_Wrist"), ply_l_hand_matrix)
     end
-    
-    self.lhandik = false
-    self.rhandik = false
+
 /*
     local ang = ply_r_forearm_matrix:GetAngles()
     ang:RotateAroundAxis(ang:Forward(), 45)

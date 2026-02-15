@@ -73,7 +73,7 @@ local whitelist = {
 
 local islply
 
-local hg_firstperson_death = ConVarExists("hg_firstperson_death") and GetConVar("hg_firstperson_death") or CreateClientConVar("hg_firstperson_death", "0", "first person death", true, false, 0, 1)
+local hg_firstperson_death = CreateClientConVar("hg_firstperson_death", "0", "first person death", true, false, 0, 1)
 
 function RenderAccessories(ply, accessories, setup)
 
@@ -201,7 +201,7 @@ function DrawAccesories(ply, ent, accessories,accessData, islply, force, setup)
 		return
 	end
 
-	if ply.organism and hg.amputatedlimbs2[accessData["bone"]] and ent.organism and ent.organism[hg.amputatedlimbs2[accessData["bone"]].."amputated"] then return end
+	if ply.organism and hg.amputatedlimbs2[accessData["bone"]] and ply.organism[hg.amputatedlimbs2[accessData["bone"]].."amputated"] then return end
 
 	if setup != false then
 		local bone = ent:LookupBone(accessData["bone"])

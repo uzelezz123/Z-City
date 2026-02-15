@@ -44,8 +44,6 @@ hook.Add("RenderScreenspaceEffects", "noradrenalineEffect", function()
 
 	local noradrenaline = (organism.noradrenaline or 0)
 	local noradrenalineClamped = math.Clamp(noradrenaline, 0, 3) * (organism.consciousness or 1)
-	
-	hg.noradrenalineClamped = noradrenalineClamped
 
 	if noradrenaline > 0.0001 and !hg.undernoradrenaline then
 		hg.undernoradrenaline = true

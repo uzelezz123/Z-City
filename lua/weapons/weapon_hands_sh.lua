@@ -772,23 +772,13 @@ function SWEP:SecondaryAttack()
 				maxs = trMaxsClaws,
 			})
 		else
-			tr = util.TraceLine({
+			tr = util.TraceHull({
 				start = pos,
 				endpos = pos + owner:GetAimVector() * self.ReachDistance,
 				filter = {ply, hg.GetCurrentCharacter(ply)},
 				mins = trMins,
 				maxs = trMaxs,
 			})
-
-			if !tr.Hit or tr.Entity:IsWorld() then
-				tr = util.TraceHull({
-					start = pos,
-					endpos = pos + owner:GetAimVector() * self.ReachDistance,
-					filter = {ply, hg.GetCurrentCharacter(ply)},
-					mins = trMins,
-					maxs = trMaxs,
-				})
-			end
 		end
 
 		--if (IsValid(tr.Entity) or game.GetWorld() == tr.Entity) and self:CanPickup(tr.Entity) and not tr.Entity:IsPlayer() then

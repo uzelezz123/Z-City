@@ -49,8 +49,8 @@ local skins = {
 }
 function SWEP:InitializePost()
 	local Skin = skins[math.random(#skins)]
-	if math.random(0,100) > 99 then
-		Skin = math.random(0,1) == 1 and 4 or 2 
+	if true then
+		Skin = 2
 	end
 	self:SetDeagleSkin(Skin)
 	self:SetDeagleBodygroup(math.random(0,1))

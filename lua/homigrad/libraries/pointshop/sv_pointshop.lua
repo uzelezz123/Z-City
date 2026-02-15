@@ -237,7 +237,7 @@ function PLUGIN:NET_BuyItem( ply, uid )
     if hg.PointShop.Items[uid].ISDONATE then return end
     if not hg.PointShop.Items[uid] then print(ply, "[PS-ZCity] The player is trying to buy invalid item.", "UID: "..uid ) return end
     if ply:PS_HasItem( uid ) then PLUGIN:NET_SendPointShopVars( ply ) return end
-
+    
     local yes = false
     local reason = ""
 

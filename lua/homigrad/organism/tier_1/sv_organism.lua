@@ -258,26 +258,26 @@ function META2:IsStimulated()
 end
 
 local numerical = {
-	"One.",
-	"Two.",
-	"Three.",
-	"Four.",
-	"Five.",
-	"Six.",
-	"Seven.",
-	"Eight.",
-	"Nine.",
-	"Ten.",
-	"Eleven.",
-	"Twelve.",
-	"Thirteen.",
-	"Fourteen.",
-	"Fifteen.",
-	"Sixteen.",
-	"Seventeen.",
-	"Eighteen.",
-	"Nineteen.",
-	"Twenty."
+	"Один.",
+	"Два.",
+	"Три.",
+	"Четыре.",
+	"Пять.",
+	"Шесть.",
+	"Семь.",
+	"Восемь.",
+	"Девять.",
+	"Десять.",
+	"Одиннадцать.",
+	"Двенадцать.",
+	"Тринадцать.",
+	"Четырнадцать.",
+	"Пятнадцать.",
+	"Шестнадцать.",
+	"Семнадцать.",
+	"Восемнадцать.",
+	"Девятнадцать.",
+	"Двадцать."
 }
 
 hook.Add("HomigradDamage", "Berserk", function(ply, dmgInfo, hitgroup, ent)

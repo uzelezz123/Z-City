@@ -143,8 +143,8 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 			local spread_x = bullet.Spread[1] * 45
 			local spread_y = bullet.Spread[2] * 45
 			
-			ang:RotateAroundAxis(vec_up, math.random(-spread_x, spread_x))
-			ang:RotateAroundAxis(vec_right, math.random(-spread_y, spread_y))
+			ang:RotateAroundAxis(vec_up, math.Rand(-spread_x, spread_x))
+			ang:RotateAroundAxis(vec_right, math.Rand(-spread_y, spread_y))
 			
 			bullet.Vel = ang:Forward() * len
 		end

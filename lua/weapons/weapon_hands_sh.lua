@@ -1992,3 +1992,33 @@ function SWEP:Holster( wep )
 
 	return true
 end
+
+-- hook.Add("IKPoleRightArm", "HandsPoles", function(ply, ent)
+-- 	local wep = ply.GetActiveWeapon and ply:GetActiveWeapon() or false
+-- 	if wep and IsValid(wep) then
+-- 		local mdl = wep.GetWM and IsValid(wep:GetWM()) and wep:GetWM() or false
+-- 		if mdl then
+-- 			local rh = mdl:LookupBone("ValveBiped.Bip01_R_Forearm")
+-- 			if not rh then return end
+-- 			local rhmat = mdl:GetBoneMatrix(rh)
+-- 			if rhmat then
+-- 				return rhmat:GetTranslation()
+-- 			end
+-- 		end
+-- 	end
+-- end)
+
+-- hook.Add("IKPoleLeftArm", "HandsPoles", function(ply, ent)
+-- 	local wep = ply.GetActiveWeapon and ply:GetActiveWeapon() or false
+-- 	if wep and IsValid(wep) then
+-- 		local mdl = wep.GetWM and IsValid(wep:GetWM()) and wep:GetWM() or false
+-- 		if mdl then
+-- 			local lh = mdl:LookupBone("ValveBiped.Bip01_L_Forearm")
+-- 			if not lh then return end
+-- 			local lhmat = mdl:GetBoneMatrix(lh)
+-- 			if lhmat then
+-- 				return lhmat:GetTranslation()
+-- 			end
+-- 		end
+-- 	end
+-- end)

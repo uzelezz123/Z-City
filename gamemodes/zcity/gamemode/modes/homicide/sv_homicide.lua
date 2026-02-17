@@ -199,21 +199,21 @@ MODE.TraitorWordsAdjectives = {
 }
 
 MODE.TraitorWords = {
-	"crate",
-	"death",
-	"man",
-	"revolver",
-	"door",
-	"pistol",
-	"traitor",
-	"gunman",
-	"ak rifle",
-	"bomb",
-	"cyanide",
-	"knife",
-	"pipe",
-	"axe",
-	"usp pistol",
+	"Crate",
+	"Death",
+	"Man",
+	"Revolver",
+	"Door",
+	"Pistol",
+	"Traitor",
+	"Gunman",
+	"Assault Rifle",
+	"Bomb",
+	"Cyanide",
+	"Knife",
+	"Pipe",
+	"Axe",
+	"USP",
 	"ar15 rifle",
 	"kar98k rifle",
 	"grenade",
@@ -226,7 +226,8 @@ MODE.TraitorWords = {
 	"shotgun",
 	"melancholic",
 	"poison",
-	"murder",
+	"Sauce",
+	"Bodangle",
 }
 
 MODE.TraitorActions = {
@@ -667,15 +668,13 @@ function MODE:Intermission()
 	MODE.TraitorFrequency = nil
 	MODE.TraitorWord = MODE.TraitorWords[math.random(1, #MODE.TraitorWords)]
 	MODE.TraitorWordSecond = MODE.TraitorWords[math.random(1, #MODE.TraitorWords)]
-	local traitors_needed = 1
+	local traitors_needed = math.ceil(player_count / 9)
 	
+	--[[
 	if(MODE.ShouldStartRoleRound())then
 		traitors_needed = math.ceil(player_count / 9)
-		
-		if(player_count > 8 and math.random(1, 8) == 1)then
-			traitors_needed = traitors_needed + 1
-		end
 	end
+	]]
 
 	MODE.TraitorExpectedAmt = traitors_needed
 	local main_traitor = nil

@@ -44,8 +44,8 @@ local allowedPrefix = {
 
 local prefixWeights = {
     ["ttt"] = 18, ["hmcd"] = 19, ["mu"] = 18, ["ze"] = 0,
-    ["zs"] = 9,  ["tdm"] = 5,  ["zb"] = 0,  ["zbattle"] = 0,
-    ["gm"] = 20, ["ph"] = 11, ["cs"] = 0,  ["de"] = 0
+    ["zs"] = 9,  ["tdm"] = 15,  ["zb"] = 0,  ["zbattle"] = 0,
+    ["gm"] = 20, ["ph"] = 8, ["de"] = 0--, ["cs"] = 0
 }
 
 local function GetSafeServerName()

@@ -293,7 +293,7 @@ if CLIENT then
         
         local allowedModes = {
             ["tdm"] = true,
-            ["cstrike"] = true,
+            --["cstrike"] = true,
             ["hmcd"] = true,
             ["hl2dm"] = true,
             ["riot"] = true,

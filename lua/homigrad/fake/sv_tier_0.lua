@@ -557,6 +557,7 @@ function hg.Fake(ply, huyragdoll, no_freemove, force)
 	end
 
 	ply.FakeRagdollOld = nil
+	ply.OldRagdoll = nil
 
 	if timer.Exists("faking_up"..ply:EntIndex()) then
 		timer.Remove("faking_up"..ply:EntIndex(), 0)
@@ -728,6 +729,7 @@ function hg.FakeUp(ply, forced, instant)
 	hook_Run("Fake Up", ply, ragdoll)
 
 	ply.FakeRagdollOld = ragdoll
+	ply.OldRagdoll = ragdoll
 	ply:SetNWEntity("FakeRagdollOld", ragdoll)
 	ply.FakeRagdoll = nil
 	

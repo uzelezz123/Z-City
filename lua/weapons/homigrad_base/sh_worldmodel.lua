@@ -102,6 +102,7 @@ function SWEP:ChangeGunPos(dtime)
 
 	self.lerped_positioning = Lerp(hg.lerpFrameTime2(0.1, dtime), self.lerped_positioning or 0, should and 1 or 0.3)
 	self.lerped_angle = Lerp(hg.lerpFrameTime2(0.1, dtime), self.lerped_angle or 0, should and 1 or (hg.KeyDown(owner, IN_ATTACK2) and 1 or 0))
+	self.restlerp = Lerp(hg.lerpFrameTime(0.0001, dtime), self.restlerp or 0, self:IsResting() and 1 or 0)
 
 	self.weaponAng[1] = 0
 	self.weaponAng[2] = 0
@@ -255,19 +256,11 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
 	self.fuckingfuckpos = pos
 	desiredPos, desiredAng = LocalToWorld(self.RHPos + (bNoAdditional and vector_origin or (self.AdditionalPos + self.AdditionalPos2)), bNoAdditional and angle_zero or (self.AdditionalAng + self.AdditionalAng2), pos, ang)
 	desiredAng[3] = desiredAng[3] + 90
-
-	self.restlerp = Lerp(hg.lerpFrameTime(0.0001, dtime), self.restlerp or 0, self:IsResting() and 1 or 0)
     
 	local restpos
 
     if self:GetNWVector("RestPos") and IsValid(self:GetNWEntity("RestEntity")) or self:GetNWEntity("RestEntity"):IsWorld() then
-        local restent = self:GetNWEntity("RestEntity")
-        local restbone = self:GetNWInt("RestPBone")
-        restbone = restbone == -1 and 0 or restbone
-
-        local mat = restent:IsWorld() and Matrix() or restent:GetBoneMatrix(restbone)
-		if not mat then return end
-        local posa, anga = mat:GetTranslation(), mat:GetAngles()
+		local posa, anga2, anga = self:GetBipodPosAng()
 
         restpos = LocalToWorld(self:GetNWVector("RestPos"), angle_zero, posa, anga)
     end

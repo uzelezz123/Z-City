@@ -1496,6 +1496,23 @@ hook.Add( "AcceptInput", "StealthOpenDoors", function( ent, inp, act, ply, val )
 	end
 end )
 
+hook.Add("PlayerUse", "DoorClose", function(ply, ent)
+	local getdoor = ply:GetUseEntity()
+	if string.find(tostring(getdoor), "prop_door_rotating") and getdoor:GetInternalVariable("m_eDoorState") == 2 then
+		if getdoor:GetInternalVariable("m_hMaster") != NULL then
+			getdoor:GetInternalVariable("m_hMaster"):Fire("close")
+			hg.RunZManipAnim(ply, "door_open_back", nil, 2, {self})
+
+			return false
+		else
+			getdoor:Fire("close")
+			hg.RunZManipAnim(ply, "door_open_back", nil, 2, {self})
+
+			return false
+		end
+	end	
+end)
+
 hook.Add( "KeyPress", "snowballs_pickup", function( ply, key )
 	if IsValid(ply.FakeRagdoll) then return end
 	ply.SnowBallPickupCD = ply.SnowBallPickupCD or 0

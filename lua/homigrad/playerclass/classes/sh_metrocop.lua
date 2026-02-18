@@ -77,6 +77,10 @@ local rebels = {
 function CLASS.Off(self)
     if CLIENT then return end
 
+	if eightbit and eightbit.EnableEffect and self.UserID then
+		eightbit.EnableEffect(self:UserID(), 0)
+	end
+
     for k,v in ipairs(ents.FindByClass("npc_*")) do
         if table.HasValue(combines,v:GetClass()) then
             v:AddEntityRelationship( self, D_HT, 99 )
@@ -125,6 +129,11 @@ end
 
 function CLASS.On(self, data)
     if CLIENT then return end
+
+	if eightbit and eightbit.EnableEffect and self.UserID then
+		eightbit.EnableEffect(self:UserID(), eightbit.EFF_PROOT) --!! placeholder
+	end
+
     ApplyAppearance(self,nil,nil,nil,true)
     local Appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
     Appearance.AAttachments = ""

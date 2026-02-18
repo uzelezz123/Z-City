@@ -271,7 +271,7 @@ local function ExplodeTheItem(self,ent)
 				phys:ApplyForceCenter(forceadd)
 			end
 
-			hgWreckBuildings(ent, EntPos, BlastDamage / 400, BlastDis/8, false)
+			--hgWreckBuildings(ent, EntPos, BlastDamage / 400, BlastDis/8, false)
 			hgBlastDoors(ent, EntPos, BlastDamage / 400, BlastDis/8, false)
 			util.ScreenShake( EntPos, 45, 225, 2.5, 3000 )
 
@@ -368,7 +368,7 @@ function SWEP:SecondaryAttack(calledFrom)
 
 			local bomb = ents.Create("prop_physics")
 			bomb:SetModel("models/props_junk/cardboard_jox004a.mdl")
-			bomb:SetPos(Tr.HitPos)
+			bomb:SetPos(Tr.HitPos + Tr.HitNormal * 4)
 			bomb:SetModelScale(0.4)
 			bomb:Spawn()
 			bomb:Activate()

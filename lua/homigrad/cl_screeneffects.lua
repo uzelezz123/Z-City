@@ -401,7 +401,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 	local pain = org.pain or 0
 	pain = math.max(pain - 15, 0)
 	local shock = (org.shock or 0) * 1 + (1 - org.consciousness) * 40
-	shockLerp = LerpFT(0.01, shockLerp or 0, shock)
+	shockLerp = LerpFT(0.01, shockLerp or 0, shock + (lply.suiciding and 30--[[math.max(0, org.heartbeat - 90)]] or 0))
 	consciousnessLerp = LerpFT(org.consciousness < (consciousnessLerp or 1) and 1 or 0.01, consciousnessLerp or 1, org.consciousness)
 	-- local immobilization = org.immobilization
 	PainLerp = LerpFT(0.05, PainLerp, math.max(pain * (org.otrub and 0.2 or 1), 0))

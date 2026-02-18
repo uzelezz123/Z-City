@@ -14,7 +14,7 @@ function PLAYER:LegAttack()
     self:EmitSound("player/clothes_generic_foley_0" .. math.random(1,5) .. ".wav",65)
 
     local org = self.organism
-    org.stamina.subadd = org.stamina.subadd + (anim == "curbstomp_base" and 12 or 20)
+    org.stamina.subadd = org.stamina.subadd + (anim == "curbstomp_base" and 12 or 20) / (org.superfighter and 2 or 1)
     local speedmul = (2 - (org.stamina[1] / org.stamina.max))
     local speed = 1.5 * speedmul
     local animstopAdjust = 0.3 * speedmul

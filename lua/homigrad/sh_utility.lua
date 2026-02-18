@@ -392,7 +392,7 @@ hg.ConVars = hg.ConVars or {}
 		end
 
 		hook.Add("Think", "viewpunch_think", function(ply, cmd)
-			--if LocalPlayer():InVehicle() then return end
+			--if lply:InVehicle() then return end
 
 			local consmul = hg.CalculateConsciousnessMul()
 
@@ -452,14 +452,15 @@ hg.ConVars = hg.ConVars or {}
 				vp_punch_angle_velocity4 = Angle()
 			end
 
-			--if not LocalPlayer():Alive() then vp_punch_angle:Zero() vp_punch_angle_velocity:Zero() vp_punch_angle2:Zero() vp_punch_angle_velocity2:Zero() end
+			--if not lply:Alive() then vp_punch_angle:Zero() vp_punch_angle_velocity:Zero() vp_punch_angle2:Zero() vp_punch_angle_velocity2:Zero() end
 
 			local consmulrev = 1 - consmul
 			if vp_punch_angle:IsZero() and vp_punch_angle_velocity:IsZero() and vp_punch_angle2:IsZero() and vp_punch_angle_velocity2:IsZero() and vp_punch_angle3:IsZero() and vp_punch_angle_velocity3:IsZero() and  vp_punch_angle4:IsZero() and vp_punch_angle_velocity4:IsZero() then return end
 			local add = vp_punch_angle - vp_punch_angle_last + vp_punch_angle2 - vp_punch_angle_last2 + vp_punch_angle3 - vp_punch_angle_last3 + vp_punch_angle4 * consmulrev - vp_punch_angle_last4 * consmulrev
-			local ang = LocalPlayer():EyeAngles() + add
+			local ang = lply:EyeAngles() + add
+			lply.addvpangles = add
 
-			LocalPlayer():SetEyeAngles(ang)
+			lply:SetEyeAngles(ang)
 			vp_punch_angle_last = vp_punch_angle
 			vp_punch_angle_last2 = vp_punch_angle2
 			vp_punch_angle_last3 = vp_punch_angle3
@@ -618,7 +619,7 @@ hg.ConVars = hg.ConVars or {}
 	function ActivateNoCollision(target, min) // gmodwiki my beloved
 		if !IsValid(target) then return end
 
-		local oldCollision = COLLISION_GROUP_PLAYER
+		local oldCollision = target:GetCollisionGroup()
 		target:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
 
 		timer.Simple(min or 0, function()
@@ -642,7 +643,9 @@ hg.ConVars = hg.ConVars or {}
 				//print(target, penetrating, tooNearPlayer, target:GetCollisionGroup())
 
 				if (!penetrating and !tooNearPlayer) or i >= (math.Round(time / checkdtime) - 1) then
-					target:SetCollisionGroup(oldCollision)
+					if target:GetCollisionGroup() == COLLISION_GROUP_PASSABLE_DOOR then -- if it somehow changed, we shouldn't touch it
+						target:SetCollisionGroup(oldCollision)
+					end
 
 					timer.Destroy(target:SteamID64().."_checkBounds_cycle")
 				end
@@ -1031,7 +1034,7 @@ local IsValid = IsValid
 		curlean = curlean or 0
 		unmodified_angle = unmodified_angle or 0
 		local time = SysTime() - 0.01
-		hook.Add("Think", "leanin", function()
+		hook.Add("HUDPaint", "leanin", function()
 			local ply = LocalPlayer()
 			local angles = ply:EyeAngles()
 
@@ -1824,11 +1827,11 @@ local IsValid = IsValid
 		k = k * math.Clamp(consmul, 0.7, 1)
 		k = k * math.Clamp((org.temperature and (1 - (org.temperature - 38) * 0.25) or 1), 0.5, 1)
 		k = k * math.Clamp((org.temperature and ((org.temperature - 35) * 0.25 + 1) or 1), 0.5, 1)
-		k = k * math.Clamp((org.stamina and org.stamina[1] or 180) / 120, hg_movement_stamina_debuff:GetFloat(), 1)
+		k = k * math.Clamp(math.Round((org.stamina and org.stamina[1] or 180), 0) / 120, hg_movement_stamina_debuff:GetFloat(), 1)
 		k = k * math.Clamp(5 / ((org.immobilization or 0) + 1), 0.25, 1)
 		k = k * math.Clamp((org.blood or 0) / 5000, 0, 1)
 		k = k * math.Clamp(10 / ((org.shock or 0) + 1), 0.25, 1)
-		k = k * (math.min((org.adrenaline or 0) / 24, 0.3) + 1)
+		k = k * (math.min(math.Round((org.adrenaline or 0), 1) / 24, 0.3) + 1)
 		k = k * math.Clamp((org.lleg and org.lleg >= 0.5 and math.max(1 - org.lleg, 0.6) or 1) * (org.lleg and org.rleg >= 0.5 and math.max(1 - org.rleg, 0.6) or 1) * ((org.analgesia * 1 + 1)), 0, 1)
 		k = k * (org.llegdislocation and 0.75 or 1) * (org.rlegdislocation and 0.75 or 1)
 		k = k * (org.pelvis == 1 and 0.4 or 1)
@@ -1948,7 +1951,11 @@ local IsValid = IsValid
 		if ply:GetMoveType() == MOVETYPE_LADDER or ply:GetMoveType() == MOVETYPE_NONE then
 			speed = 100
 		end
-
+		
+		if org.noradrenaline and org.noradrenaline > 0 then
+			speed = speed + 200 * math.Round(org.noradrenaline, 1)
+		end
+		
 		mv:SetMaxSpeed(speed)
 		mv:SetMaxClientSpeed(speed)
 		ply:SetMaxSpeed(speed)
@@ -2100,16 +2107,15 @@ local IsValid = IsValid
 	end)
 --//
 --\\ Lootable npcs
-	--[[ --!! TODO
 	local lootNPCs = {
-		["npc_combine_s"] = {
+		["npc_metropolice"] = {
 			"weapon_hg_stunstick",
 			"weapon_medkit_sh",
 			"weapon_bandage_sh",
 			"weapon_handcuffs",
 			"weapon_walkie_talkie"
 		},
-		["npc_metropolice"] = {
+		["npc_combine_s"] = {
 			"weapon_melee",
 			"weapon_hg_hl2nade_tpik",
 			"weapon_bandage_sh",
@@ -2121,19 +2127,39 @@ local IsValid = IsValid
 			"weapon_painkillers"
 		}
 	}
+
+	local nameNPCs = {
+		["npc_metropolice"] = {"Metrocop", Vector(0, 100, 255) / 255},
+		["npc_combine_s"] = {"Combine", Vector(0, 180, 180) / 255},
+		["npc_citizen"] = {"Refugee", Vector(255, 155, 0) / 255}
+	}
+
 	hook.Add("CreateEntityRagdoll", "npcloot", function(ent, rag)
 		local loot = lootNPCs[ent:GetClass()]
 		if IsValid(ent) and IsValid(rag) and ent:IsNPC() and loot then
-			rag.armors = {}
 			rag.inventory = {}
+			rag.inventory.Weapons = {}
 
-			rag.was_opened = true
-
-			rag.inventory.Weapons = loot or {}
-			rag:SetNetVar("Inventory", rag.inventory )
+			for k, wep in pairs(loot) do
+				rag.inventory.Weapons[wep] = {}
+				rag:SetNetVar("Inventory", rag.inventory)
+				rag:SetNWString("PlayerName", nameNPCs[ent:GetClass()][1])
+				rag:SetNWVector("PlayerColor", nameNPCs[ent:GetClass()][2])
+				rag.GetPlayerName = function()
+					return nameNPCs[ent:GetClass()][1]
+				end
+			end
 		end
 	end)
-	]]
+--//
+--\\ Disable drive
+	--[[hook.Add("StartEntityDriving", "disabledriving", function(ent, ply)
+		return false
+	end)
+
+	hook.Add("PlayerDriveAnimate", "disabledriving", function(ent, ply)
+		return false
+	end)]]
 --//
 --\\ timescale pitch change
 	local cheats = GetConVar( "sv_cheats" )
@@ -2560,8 +2586,15 @@ duplicator.Allow( "homigrad_base" )
 --//
 
 --\\ Custom running anim activity
+	local runHoldTypes = {
+		["normal"] = true,
+		["slam"] = true,
+		["grenade"] = true
+	}
+
 	hook.Add( "CalcMainActivity", "RunningAnim", function( Player, Velocity )
-		if (not Player:InVehicle()) and Player:IsOnGround() and Velocity:Length() > 250 and IsValid(Player:GetActiveWeapon()) and Player:GetActiveWeapon():GetClass() == "weapon_hands_sh" then
+		local wep = IsValid(Player:GetActiveWeapon()) and Player:GetActiveWeapon()
+		if (not Player:InVehicle()) and Player:IsOnGround() and Velocity:Length() > 250 and wep and runHoldTypes[wep:GetHoldType()] then
 			local isFurry = Player.PlayerClassName == "furry"
 			local anim = ACT_HL2MP_RUN_FAST
 			if Player:IsOnFire() then

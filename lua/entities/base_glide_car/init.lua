@@ -448,9 +448,28 @@ function ENT:OnPostThink( dt, selfTbl )
 end
 
 local ExpDecay = Glide.ExpDecay
-
+local hg_glide_steering_realism = CreateConVar("hg_glide_steering_realism","1",{FCVAR_ARCHIVE,FCVAR_NOTIFY},"Enables realistic steering on glide cars", 0, 1)
 function ENT:UpdateSteering( dt )
-    local inputSteer = self:GetInputFloat( 1, "steer" )
+    -- Z-City cant steer when reloading
+    if hg_glide_steering_realism:GetBool() then
+        local wep = IsValid(self:GetDriver()) and self:GetDriver():GetActiveWeapon()
+        local cantsteer = IsValid(self:GetDriver()) and IsValid(wep) and ishgweapon(wep) and wep.reload
+        self.customSteering = cantsteer and (self.customSteering or 0) or self:GetInputFloat( 1, "steer" )
+        self.oldInputSteer = math.Approach(self.oldInputSteer or 0, cantsteer and 0 or self.customSteering, self.customSteering != 0 and math.max(1 - self.forwardSpeed / 7000,2) * dt or self.forwardSpeed / 15000)
+
+        if cantsteer then
+            self.oldInputSteer = math.Approach(self.oldInputSteer, 0, self.forwardSpeed / 50000)
+        end
+
+        local noise = math.random(-1,1)
+        if cantsteer or self.steeringNeedNoise and self.steeringNeedNoise > CurTime() then
+            self.oldInputSteer = self.oldInputSteer + math.min(math.max( (noise / 10) * self.forwardSpeed / 500, -0.1),0.1)
+        end
+
+        self.oldInputSteer = math.min(math.max(self.oldInputSteer,-1),1)
+    end
+
+    local inputSteer = hg_glide_steering_realism:GetBool() and self.oldInputSteer or self:GetInputFloat( 1, "steer" )
     local absInputSteer = Abs( inputSteer )
 
     local sideSlip = Clamp( self.avgSideSlip, -1, 1 )
@@ -588,6 +607,14 @@ local traction, tractionFront, tractionRear
 local frontTorque, rearTorque, steerAngle, frontBrake, rearBrake
 local groundedCount, rpm, avgRPM, totalSideSlip, totalForwardSlip, state
 
+local badMaterials = {
+    [MAT_DIRT] = true,
+    [MAT_SAND] = true,
+    [MAT_GRASS] = true,
+    [MAT_SNOW] = true,
+    [MAT_WOOD] = true,
+    [MAT_TILE] = true
+}
 --- Implement this base class function.
 function ENT:WheelThink( dt )
     local selfTbl = getTable( self )
@@ -607,6 +634,8 @@ function ENT:WheelThink( dt )
 
     frontBrake, rearBrake = selfTbl.frontBrake, selfTbl.rearBrake
     groundedCount, avgRPM, totalSideSlip, totalForwardSlip = 0, 0, 0, 0
+    
+    --self.steeringNeedNoise = 0
 
     for _, w in EntityPairs( selfTbl.wheels ) do
         w:Update( self, steerAngle, isAsleep, dt )
@@ -633,6 +662,10 @@ function ENT:WheelThink( dt )
 
         if state.isOnGround then
             groundedCount = groundedCount + 1
+        end
+        
+        if hg_glide_steering_realism:GetBool() and w.isFrontWheel and badMaterials[w:GetContactSurface()] then
+            self.steeringNeedNoise = CurTime() + 0.1
         end
     end
 

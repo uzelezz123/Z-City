@@ -93,6 +93,14 @@ local primary_weapons = {
     "weapon_osipr"
 }
 
+local primary_attachments = {
+    ["weapon_svd"] = function(ply, wep)
+        if IsValid(wep) then
+            hg.AddAttachmentForce(ply,wep,"optic11")
+        end
+    end,
+}
+
 local secondary_weapons = {
     "weapon_m9beretta",
     "weapon_browninghp",
@@ -130,6 +138,10 @@ local rebel_subclasses = {
         give_fn = function(ply)
             local wep1 = ply:Give(primary_weapons[math.random(#primary_weapons)])
             ply:GiveAmmo(wep1:GetMaxClip1() * 3, wep1:GetPrimaryAmmoType(), true)
+
+            if isfunction(primary_attachments[wep1:GetClass()]) then
+                primary_attachments[wep1:GetClass()](ply, wep1)
+            end
 
             local wep2 = ply:Give(secondary_weapons[math.random(#secondary_weapons)])
             ply:GiveAmmo(wep2:GetMaxClip1() * 3, wep2:GetPrimaryAmmoType(), true)
@@ -176,7 +188,7 @@ local rebel_subclasses = {
 
     grenadier = {
         give_fn = function(ply)
-            ply:Give("weapon_hg_rpg")
+            ply:Give(math.random(0,1) == 1 and "weapon_hg_rebelrpg" or "weapon_hg_rpg")
             ply:Give("weapon_claymore")
             ply:Give("weapon_traitor_ied")
             ply:Give("weapon_hg_slam")

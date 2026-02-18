@@ -145,6 +145,10 @@ hook.Add("HomigradDamage", "GuiltReg", function(ply, dmgInfo, hitgroup, ent, har
         --print("They contributed a total of "..math.Round(newharm / maxharm * 100, 0).."% of "..(Victim:IsPlayer() and Victim:Name() or (tostring(Victim))).."'s death")
     end
 
+    if zb and zb.hostage and Victim == zb.hostage then
+        zb.hostageLastTouched = Attacker
+    end
+
     local attackerTeam = dmgInfo:GetInflictor().team or (Attacker:IsPlayer() and Attacker:Team()) or Attacker.team
     zb.HarmDoneDetailed[id][id2] = {
         harm = newharm,

@@ -1,3 +1,4 @@
+do return end -- until you find a good model
 SWEP.Base = "weapon_m4super"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
@@ -15,7 +16,7 @@ SWEP.FakeScale = 1
 SWEP.FakePos = Vector(-7, 2.7, 6)
 SWEP.FakeAng = Angle(0.25, 0, 0)
 
-SWEP.FakeAttachment = "muzzle"
+SWEP.FakeAttachment = "shell"
 SWEP.AttachmentPos = Vector(-0.1,-0.3,2)
 SWEP.AttachmentAng = Angle(90,0,0)
 SWEP.FakeBodyGroups = "000000000"
@@ -71,13 +72,15 @@ SWEP.Primary.Sound = {"Mosin-Nagant_Shoot", 80, 90, 110}
 SWEP.SupressedSound = {"mosin/mosin_suppressed_fp.wav", 80, 90, 100}
 SWEP.availableAttachments = {
 	barrel = {
-		[1] = {"supressor1", Vector(-4.7,1,0), {}},
-		[2] = {"supressor6", Vector(-2.2,1.3,0), {}},
-		[3] = {"supressor7", Vector(-3.7,0.4,0), {}},
+		[1] = {"supressor1", Vector(22.55,1,-0.5), {}},
+		[2] = {"supressor6", Vector(22.55,1,-0.5), {}},
+		[3] = {"supressor7", Vector(23.5,0.4,-0.8), {}},
+		["mountAngle"]=Angle(0,0,37.5),
 	},
 	sight = {
 		["mountType"] = "kar98mount",
-		["mount"] = Vector(-20, 5, 0.1),
+		["mountAngle"] = Angle(0,0,35),
+		["mount"] = Vector(5, 1.5, 0.125),
 	},
 }
 

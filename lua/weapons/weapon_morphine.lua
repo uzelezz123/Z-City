@@ -31,14 +31,6 @@ SWEP.HolsterSnd = ""
 function SWEP:InitializeAdd()
 	self:SetHold(self.HoldType)
 
-	local owner = self:GetOwner()
-	if owner:IsNPC() then
-		self:SetHold("melee")
-		owner:SetHealth(math.Clamp(owner:Health() + (owner:GetMaxHealth() * 0.3), 0, owner:GetMaxHealth() * 2))
-		owner:EmitSound("snd_jack_hmcd_needleprick.wav", 75, math.random(95, 105))
-		self:Remove()
-	end
-
 	self.modeValues = {
 		[1] = 1,
 	}
@@ -67,8 +59,19 @@ sound.Add( {
 	sound = "snd_jack_sss.wav",
 } )
 
+function SWEP:OwnerChanged()
+	local owner = self:GetOwner()
+	if IsValid(owner) and owner:IsNPC() then
+		self:NPCHeal(owner, 0.3, "snd_jack_hmcd_needleprick.wav")
+	end
+end
+
 if SERVER then
 	function SWEP:Heal(ent, mode)
+		if ent:IsNPC() then
+			self:NPCHeal(ent, 0.3, "snd_jack_hmcd_needleprick.wav")
+		end
+
 		local org = ent.organism
 		if not org then return end
 		self:SetBodygroup(1, 1)

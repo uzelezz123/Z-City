@@ -20,13 +20,12 @@ end
 
 local function recursive_bone(rag, bone, list)
 	for i,bone in pairs(rag:GetChildBones(bone)) do
-		if bone == 0 then continue end--wtf
+		if bone == 0 then continue end
 
 		list[#list + 1] = bone
 
 		recursive_bone(rag, bone, list)
 	end
-
 end
 
 function Gib_RemoveBone(rag, bone, phys_bone, nohuys)
@@ -41,92 +40,25 @@ function Gib_RemoveBone(rag, bone, phys_bone, nohuys)
 	end
 end
 
---[[concommand.Add("removebone",function(ply)
-	if not ply:IsAdmin() then return end
-	local trace = ply:GetEyeTrace()
-	local ent = trace.Entity
-	if not IsValid(ent) then return end
-
-	local phys_bone = trace.PhysicsBone
-	if not phys_bone or phys_bone == 0 then return end
-
-	Gib_RemoveBone(ent,ent:TranslatePhysBoneToBone(phys_bone),phys_bone)
-end)]]
-
 gib_ragdols = gib_ragdols or {}
 local gib_ragdols = gib_ragdols
 
-local validHitGroup = {
-	[HITGROUP_LEFTARM] = true,
-	[HITGROUP_RIGHTARM] = true,
-	[HITGROUP_LEFTLEG] = true,
-	[HITGROUP_RIGHTLEG] = true,
-}
-
-local Rand = math.Rand
-
-local validBone = {
-	["ValveBiped.Bip01_R_UpperArm"] = true,
-	["ValveBiped.Bip01_R_Forearm"] = true ,
-	["ValveBiped.Bip01_R_Hand"] = true,
-	["ValveBiped.Bip01_L_UpperArm"] = true,
-	["ValveBiped.Bip01_L_Forearm"] = true,
-	["ValveBiped.Bip01_L_Hand"] = true,
-
-	["ValveBiped.Bip01_L_Thigh"] = true,
-	["ValveBiped.Bip01_L_Calf"] = true,
-	["ValveBiped.Bip01_L_Foot"] = true,
-	["ValveBiped.Bip01_R_Thigh"] = true,
-	["ValveBiped.Bip01_R_Calf"] = true,
-	["ValveBiped.Bip01_R_Foot"] = true
-}
-
 local VectorRand, ents_Create = VectorRand, ents.Create
-function SpawnGore(ent, pos, headpos)
-	if ent.gibRemove and not ent.gibRemove[ent:TranslateBoneToPhysBone(ent:LookupBone("ValveBiped.Bip01_Head1"))] then
-		local ent = ents_Create("prop_physics")
-		ent:SetModel("models/Gibs/HGIBS.mdl")
-		ent:SetPos(headpos or pos)
-		ent:SetVelocity(VectorRand(-100, 100))
-		ent:Spawn()
-	end
-
-	for i = 1, 2 do
-		local ent = ents_Create("prop_physics")
-		ent:SetModel("models/Gibs/HGIBS_spine.mdl")
-		ent:SetPos(pos)
-		ent:SetVelocity(VectorRand(-100, 100))
-		ent:Spawn()
-		
-		local ent = ents_Create("prop_physics")
-		ent:SetModel("models/Gibs/HGIBS_scapula.mdl")
-		ent:SetPos(pos)
-		ent:SetVelocity(VectorRand(-100, 100))
-		ent:Spawn()
-
-		local ent = ents_Create("prop_physics")
-		ent:SetModel("models/Gibs/HGIBS_rib.mdl")
-		ent:SetPos(pos)
-		ent:SetVelocity(VectorRand(-100, 100))
-		ent:Spawn()
-	end
-end
-
 local function PhysCallback( ent, data )
 	--data.HitPos -- data.HitNormal
 	if data.DeltaTime < 0.2 then return end
-	ent:EmitSound("physics/flesh/flesh_squishy_impact_hard"..math.random(1,4)..".wav")
-	util.Decal("Blood",data.HitPos - data.HitNormal*1,data.HitPos + data.HitNormal*1,ent)
+	ent:EmitSound("physics/flesh/flesh_squishy_impact_hard"..math.random(4)..".wav")
+	util.Decal("Blood", data.HitPos - data.HitNormal * 1, data.HitPos + data.HitNormal * 1, ent)
 end
 
-local grub = Model("models/grub_nugget_small.mdl")
+local grub, mat = Model("models/grub_nugget_small.mdl"), "models/flesh"
 function SpawnMeatGore(mainent, pos, count, force)
 	--models/grub_nugget_small.mdl
 	force = force or Vector(0,0,0)
 	for i = 1, (count or math.random(8, 10)) do
 		local ent = ents_Create("prop_physics")
 		ent:SetModel(grub)
-		ent:SetSubMaterial(0,"models/flesh")
+		ent:SetSubMaterial(0, mat)
 		ent:SetPos(pos)
 		ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 		ent:SetModelScale(math.Rand(0.8,1.1))

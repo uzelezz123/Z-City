@@ -165,7 +165,7 @@ function SWEP:Shoot(override)
 		bullet.Dir = ang:Forward()
 		bullet.Speed = 310
 			-- bullet.Force = ammotype.Force or primary.Force
-		bullet.Damage = 1000
+		bullet.Damage = 500
 		bullet.Force = 80
 			-- bullet.Size = 0.5
 			-- bullet.Spread = ammotype.Spread or self.Primary.Spread or 0

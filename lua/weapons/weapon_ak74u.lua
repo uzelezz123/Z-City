@@ -208,10 +208,6 @@ SWEP.availableAttachments = {
 		["mount"] = Vector(-2.5,1,0.45),
 		["mountAngle"] = Angle(0,-1.5,0)
 	},
-	grip = {
-		["mount"] = Vector(-14.2,-0.1,-9),
-		["mountType"] = {"ak74"}
-	},
 }
 
 SWEP.weight = 3

@@ -142,6 +142,9 @@ hg.ConVars = hg.ConVars or {}
 	end
 
 	hook.Add("PostCleanupMap","fuckclientsidemodels",hg.ClearClientsideModels)
+	hook.Add("PostCleanupMap","remove_this_stupid_clside_ragdolls",function()
+		for k,v in ipairs(ents.FindByClass('class C_ClientRagdoll')) do v:Remove() end
+	end)
 --//
 
 --\\ Fake status info for scare mode
@@ -337,7 +340,7 @@ players : 1 humans, 0 bots (20 max)
 			[ "$pp_colour_mulb" ] = 0
 		}
 
-		local hg_potatopc = GetConVar("hg_potatopc") or CreateClientConVar("hg_potatopc", "0", true, false, "enable this if you are noob", 0, 1)
+		local hg_potatopc = GetConVar("hg_potatopc") or CreateClientConVar("hg_potatopc", "0", true, false, "Toggle potato (low-end pc) mode", 0, 1)
 
 		hg.ConVars.potatopc = hg_potatopc
 
@@ -712,14 +715,20 @@ players : 1 humans, 0 bots (20 max)
 				ent.Blinking = cachedLerp(FrameTime() * 5,ent.Blinking or 0,1)
 			end
 
-			if ent:IsRagdoll() and ent:GetFlexIDByName("blink") then
+			if ply.suiciding then
+				ent.Blinking = 1
+			end
+			
+			if ent:GetFlexIDByName("blink") then
 				ent:SetFlexWeight(ent:GetFlexIDByName("blink"), ent.Blinking or 0)
-				if ent:GetFlexIDByName("wrinkler") then
-					ent:SetFlexWeight(ent:GetFlexIDByName("wrinkler"), ent.Blinking or 0)
-				end
-				if ent:GetFlexIDByName("half_closed") then
-					ent:SetFlexWeight(ent:GetFlexIDByName("half_closed"), ent.Blinking or 0)
-				end
+			end
+
+			if ent:GetFlexIDByName("wrinkler") then
+				ent:SetFlexWeight(ent:GetFlexIDByName("wrinkler"), ent.Blinking or 0)
+			end
+
+			if ent:GetFlexIDByName("half_closed") then
+				ent:SetFlexWeight(ent:GetFlexIDByName("half_closed"), ent.Blinking or 0)
 			end
 		end
 
@@ -887,4 +896,10 @@ players : 1 humans, 0 bots (20 max)
 			AddTinnitus(time,bool)
 		end)
 	end
+--//
+
+--\\ Remove CLIENT side hit particles
+	hook.Add("ScalePlayerDamage","remove_cl_hit_particles",function()
+		return !game.SinglePlayer() -- i hate singleplayer in gmod. WHY I SHOULD DO THIS STUPID IDIOTIC SHIT, i hate it.
+	end)
 --//

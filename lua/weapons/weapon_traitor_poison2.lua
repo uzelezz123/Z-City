@@ -99,7 +99,7 @@ function SWEP:DoPoison(ent)
     local owner = self:GetOwner()
 
     owner:EmitSound("snd_jack_hmcd_needleprick.wav",30)
-	
+
 	ent.poisoned = true
 
     self:Remove()
@@ -109,7 +109,7 @@ end
 if SERVER then
 	hook.Add("PlayerUse","otravleno_dibil!!!",function(ply,ent)
 		if IsValid(ent) and ent.poisoned then
-			if ply.organism then
+			if IsValid(ply) and ply.organism then
 				ply.organism.poison2 = CurTime()
 				ent.poisoned = nil
 			end

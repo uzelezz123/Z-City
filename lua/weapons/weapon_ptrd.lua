@@ -86,7 +86,10 @@ SWEP.holsteredAng = Angle(210, 0, 180)
 SWEP.PPSMuzzleEffect = "pcf_jack_mf_mshotgun" -- shared in sh_effects.lua
 
 -- bipod
-SWEP.RestPosition = Vector(15,2, 9)
+SWEP.RestPosition = Vector(15, 2, 5)
+SWEP.BipodOffset = Vector(0, -6, -5)
+
+SWEP.ReloadNoPitch = true
 
 local math = math
 local math_random = math.random
@@ -147,6 +150,14 @@ function SWEP:ThinkAdd()
 	if not IsValid(owner) then return end
 
 	local ft = FrameTime()
+
+	if CLIENT and self:IsResting() then
+		local wm = self:GetWM()
+		local bone = wm:LookupBone("bipod")
+		local posa, anga = self:GetBipodPosAng()
+		wm:ManipulateBoneAngles(bone, Angle(anga[2] - owner:EyeAngles()[2], 0, -owner:EyeAngles()[3]))
+	end
+
 	if self:IsResting() and self.FakePos ~= restVec and not self.reload then
 		self.ZoomPos = bipodZoomPos
 		self.AnimList = {

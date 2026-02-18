@@ -8,6 +8,26 @@ MODE.Rounds = 5
 
 MODE.ROUND_TIME = 240
 
+MODE.ForBigMaps = false -- if it can launch, then it doesn't really matter
+
+MODE.CooldownRounds = 5 -- 5 rounds of cs, 5 rounds without cs (at least 5)
+
+function MODE:ChanceFunction(info)
+    if info.rounds then
+        for i = #info.rounds, #info.rounds - self.CooldownRounds + 1, -1 do
+            if info.rounds[i] == self.name then
+                return 0
+            else
+                continue
+            end
+        end
+    end
+
+    return self.Chance
+end
+
+util.AddNetworkString("zb_cs_round_intermission")
+
 function MODE:DontKillPlayer(ply)
     return zb.RoundsLeft and (zb.RoundsLeft != self.Rounds)
 end
@@ -33,6 +53,8 @@ function MODE:RoundStartPost()
     end
 end
 
+
+
 function MODE:Intermission()
 	game.CleanUpMap()
     
@@ -49,10 +71,17 @@ function MODE:Intermission()
         zb.bombexploded = nil
         zb.bomb = nil
         --zb.rtype = zb.nextcsround or (math.random(2) == 1 and "bomb" or "hostage")
+        zb.rtype = (
+            (#zb.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zb.GetMapPoints( "BOMB_ZONE_B" ) > 0) and  "bomb") or 
+            (zb.hostagepoints and #zb.hostagepoints > 0 and "hostage")
         zb.nextcsround = nil
     end
-    
-    zb.rtype = (#zb.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zb.GetMapPoints( "BOMB_ZONE_B" ) > 0) and "bomb" or (zb.hostagepoints and #zb.hostagepoints > 0) and "hostage"
+
+    if !zb.rtype then
+        zb.rtype = (
+            (#zb.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zb.GetMapPoints( "BOMB_ZONE_B" ) > 0) and  "bomb") or 
+            (zb.hostagepoints and #zb.hostagepoints > 0 and "hostage")
+    end
 
     zb.SendSpecificPointsToPly(nil, "BOMB_ZONE_A", false)
     zb.SendSpecificPointsToPly(nil, "BOMB_ZONE_B", false)
@@ -69,7 +98,11 @@ function MODE:Intermission()
         if self.GameStarted then
             ply:SetNWInt( "TDM_Money", self.StartMoney )
         end
-	end
+        net.Start("zb_cs_round_intermission")
+        net.WriteBool(ply:Team() == 0)
+        net.WriteInt(MODE.Rounds - zb.RoundsLeft or 0,6)
+        net.Send(ply)
+    end
 
     if zb.rtype == "bomb" then
         timer.Simple(3,function()
@@ -89,7 +122,6 @@ function MODE:Intermission()
             local team_t = team.GetPlayers(0)
             local ply = team_t[math.random(#team_t)]
 			--ent:SetModel("models/humans/group01/"..(math.random(2) == 1 and "fe" or "").."male_0"..math.random(9)..".mdl")
-            //ApplyAppearance(ent,nil,nil,nil,true)
             ent:SetModel("models/player/hostage/hostage_0"..math.random(4)..".mdl")
             ent:SetPos(ply:GetPos())
             ent:Spawn()
@@ -106,12 +138,12 @@ function MODE:Intermission()
         end)
     end
 
-    PrintMessage(HUD_PRINTTALK, "Round "..(self.Rounds + 1 - zb.RoundsLeft).." out of "..(self.Rounds)..".")
+    PrintMessage(HUD_PRINTTALK, "Round "..(self.Rounds - zb.RoundsLeft).." out of "..self.Rounds..".")
 
 	net.Start("tdm_start")
-        net.WriteString(zb.rtype)
-	net.Broadcast()
-
+        net.WriteString(zb.rtype or "bomb")
+        net.Broadcast()
+    
     self.GameStarted = nil
 end
 
@@ -123,7 +155,7 @@ concommand.Add("tdm_setrounds", function(ply, cmd, args)
     local played = oldRounds - oldLeft
     MODE.Rounds = math.max(tonumber(args[1]) or oldRounds, 1)
     zb.RoundsLeft = math.max(MODE.Rounds - played, 0)
-    PrintMessage(HUD_PRINTTALK, "TDM rounds set to "..(MODE.Rounds)..". Rounds left: "..zb.RoundsLeft)
+    PrintMessage(HUD_PRINTTALK, "TDM rounds set to "..MODE.Rounds..". Rounds left: "..zb.RoundsLeft)
 end)
 
 COMMANDS.nextcsround = {
@@ -131,10 +163,12 @@ COMMANDS.nextcsround = {
 		if not ply:IsAdmin() then ply:ChatPrint("You don't have access") return end
 		if string.lower(args[1]) == "bomb" then
             zb.nextcsround = "bomb"
+            PrintMessage(HUD_PRINTTALK, "Chosen CS round - Bomb")
         end
 
         if string.lower(args[1]) == "hostage" then
             zb.nextcsround = "hostage"
+            PrintMessage(HUD_PRINTTALK, "Chosen CS round - Hostage")
         end
 	end,
 	0
@@ -184,7 +218,7 @@ function MODE:EndRound()
     elseif zb.rtype == "hostage" then
         if not IsValid(zb.hostage) then
             winner = 3
-
+            
             if IsValid(zb.hostageLastTouched) then
                 winner = zb.hostageLastTouched:Team() == 0 and 1 or 0
             end
@@ -192,8 +226,8 @@ function MODE:EndRound()
         
         if IsValid(zb.hostage) and not zb.hostage.organism.alive then
             local max, maxTeam = 0
-            if zb.HarmDoneDetailed[zb.hostage] then
-                for steamid, tbl in pairs(zb.HarmDone[zb.hostage]) do
+            if zb.HarmDoneDetailed[zb.hostage:EntIndex()] then
+                for steamid, tbl in pairs(zb.HarmDoneDetailed[zb.hostage:EntIndex()]) do
                     if tbl.harm > max then
                         max = tbl.harm
                         maxTeam = tbl.teamAttacker
@@ -201,15 +235,18 @@ function MODE:EndRound()
                 end
                 
                 winner = maxTeam == 0 and 1 or 0
-
-                PrintMessage(HUD_PRINTTALK, (maxTeam == 0 and "Terrorists" or "Counter-Terrorists") .. " killed the hostage")
+                PrintMessage(HUD_PRINTTALK, (maxTeam == 0 and "Terrorists" or "Counter-Terrorists") .. " have killed the hostage")
             else
                 winner = 3
             end
         end
 
         if IsValid(zb.hostage) and zb.hostage.organism.alive then
-            winner = #tbl[0] == 0 and 1 or 0
+            winner = 0
+
+            if #tbl[0] == 0 then
+                winner = 1
+            end
         end
 
         if IsValid(zb.hostage) and zb.hostage.organism.alive and HostageInZone(zb.hostage:GetPos()) then

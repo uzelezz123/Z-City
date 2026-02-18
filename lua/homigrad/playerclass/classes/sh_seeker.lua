@@ -1,5 +1,7 @@
 local CLASS = player.RegClass("seeker")
 
+
+
 function CLASS.Off(self)
     if CLIENT then return end
 end
@@ -14,13 +16,12 @@ function CLASS.On(self)
 
     self:SetPlayerColor(Color(205,0,0):ToVector())
 
-    local inv = self:GetNetVar("Inventory", {})
-    inv["Weapons"] = inv["Weapons"] or {}
-    inv["Weapons"]["hg_sling"] = true
-    self:SetNetVar("Inventory", inv)
-
     self:SetNWString("PlayerName","Seeker "..Appearance.AName)
 end
+
+CLASS.CanUseDefaultPhrase = true
+CLASS.CanEmitRNDSound = false
+CLASS.CanUseGestures = true
 
 function CLASS.Guilt(self, Victim)
     if CLIENT then return end

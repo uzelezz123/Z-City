@@ -2,9 +2,9 @@ MODE.name = "hideandseek"
 MODE.PrintName = "Hide & Seek"
 
 --MODE.ForBigMaps = false
-MODE.ROUND_TIME = 635
+MODE.ROUND_TIME = 600
 
-MODE.Chance = 0.10
+MODE.Chance = 0.02
 
 function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
 	return 1, true--returning true so guilt bans
@@ -39,9 +39,9 @@ function MODE:AssignTeams()
 	local optOutPly = {}
 
 	for _, ply in ipairs(players) do
-		if ply:GetInfoNum("hg_opt_seeker") == 0 then
+		if ply:GetInfoNum("hg_opt_seeker", 0) == 0 then
 			table.insert(willingPly, ply)
-		elseif ply:GetInfoNum("hg_opt_seeker") == 1 then
+		elseif ply:GetInfoNum("hg_opt_seeker", 0) == 1 then
 			table.insert(optOutPly, ply)
 		else
 			print("How did you get here? You should raise a git issue about this message.")
@@ -53,6 +53,7 @@ function MODE:AssignTeams()
 	for i = 1, numSEEKERS do
 		if IsValid(players[i]) then 
 			players[i]:SetTeam(0) 
+			players[i]:SetPlayerClass("seeker")
 		end
 	end
 
@@ -60,6 +61,7 @@ function MODE:AssignTeams()
 	for i = numSEEKERS + 1, numPlayers do
 		if IsValid(players[i]) then 
 			players[i]:SetTeam(1)
+			players[i]:SetPlayerClass("hider")
 		end
 	end
 end
@@ -77,7 +79,6 @@ function MODE:Intermission()
 
 	net.Start("hs_start")
 	net.Broadcast()
-
 end
 
 function MODE:CheckAlivePlayers()
@@ -115,7 +116,7 @@ end
 local swatSpawned = false
 
 function MODE:RoundStart()
-    swatSpawned = false 
+    swatSpawned = false
 end
 
 local tblweps = {
@@ -135,29 +136,73 @@ local tblotheritems = {
 	[0] = { 
 		"weapon_medkit_sh", 
 		"weapon_tourniquet",
-		"weapon_walkie_talkie",
+		--"weapon_walkie_talkie",
         "weapon_melee",
+		--"weapon_hg_grenade_tpik",
+		"weapon_hg_pipebomb_tpik",
+		"weapon_hg_molotov_tpik"
 	},
 	[1] = { 
 		"weapon_bigconsumable", 
 		"weapon_bandage_sh",
+		"weapon_hg_bottle",
 		"weapon_painkillers",
-
+		"weapon_walkie_talkie"
 	}
 }
 
 local hideOtherItem = {
-		"weapon_ducttape", --TODO: Make Hammer and Duct Tape random chance
+		"weapon_ducttape",
 		"weapon_hammer"
 }
 
 local tblarmors = {
 	[0] = { 
-		{"ent_armor_vest8","ent_armor_helmet6"} 
+		{"helmet2"},
+    	{"helmet1"},
+    	{"helmet7"},
+    	{""},
+    	{""}
 	},
 	[1] = { 
-		{"ent_armor_vest8","ent_armor_helmet6"} 
+		{"vest2"},
+		{"vest7"},
+		{"vest5"},
+		{""}
 	}
+}
+
+local seekerweps = {
+	[0] = { 
+		{"weapon_akm", {"holo15","grip3","laser4"} }, 
+		{"weapon_ak74u", {"holo15","grip3","laser4"} },
+		{"weapon_remington870", {} },
+		{"weapon_m16a2", {"holo14"} },
+		{"weapon_uzi", {"optic2","grip3","supressor7"} }
+	},
+    [1] = { 
+		"weapon_medkit_sh", 
+		"weapon_tourniquet",
+		"weapon_walkie_talkie",
+        "weapon_melee",
+		"weapon_hg_pipebomb_tpik",
+		"weapon_hg_molotov_tpik"
+    }
+}
+
+local helmet = {
+    "helmet2",
+    "helmet1",
+    "helmet7",
+    "",
+    ""
+}
+
+local vest = {
+   	"vest2",
+	"vest7",
+	"vest5",
+	""
 }
 
 function MODE:CanLaunch()
@@ -190,26 +235,27 @@ function MODE:GiveEquipment()
 					inv["Weapons"]["hg_sling"] = true
 					ply:SetNetVar("Inventory",inv)
 
-					hg.AddArmor(ply, tblarmors[ply:Team()][math.random(#tblarmors[ply:Team()])]) 
+					hg.AddArmor(ply, helmet[math.random(#helmet)]) 
+					hg.AddArmor(ply, vest[math.random(#vest)]) 
 
 					zb.GiveRole(ply, "Seeker", Color(228, 49, 49))
 
 					table.insert(seekPlayers, ply) 
 
-					local wep = tblweps[ply:Team()][math.random(#tblweps[ply:Team()])]
+					local wep = seekerweps[ply:Team()][math.random(#seekerweps[ply:Team()])]
 
 					local gun = ply:Give(wep[1])
 
 					if IsValid(gun) and gun.GetMaxClip1 then
 						hg.AddAttachmentForce(ply,gun,wep[2])
-						ply:GiveAmmo(gun:GetMaxClip1() * 3,gun:GetPrimaryAmmoType(),true)
+						ply:GiveAmmo(gun:GetMaxClip1() * 2,gun:GetPrimaryAmmoType(),true)
 					else
 						print("WTH???")
 					end
 
 					local gun = ply:Give("weapon_browninghp")
 					if IsValid(gun) and gun.GetMaxClip1 then
-						ply:GiveAmmo(gun:GetMaxClip1() * 3,gun:GetPrimaryAmmoType(),true)
+						ply:GiveAmmo(gun:GetMaxClip1() * 1,gun:GetPrimaryAmmoType(),true)
 					end
 
 					for _, item in ipairs(tblotheritems[ply:Team()]) do
@@ -226,13 +272,37 @@ function MODE:GiveEquipment()
 				ply:SetSuppressPickupNotices(true)
 				ply.noSound = true
 
-				--ply:SetPlayerClass("hider")
+				--[[
+				hook.Add("Player Think","hs_taunt",function(ply)
+					if not ply:Alive() then return end
+					--print("We are thinking!!")
+					-- TODO: Make sneezes and coughs play appropriate gender
+					local taunts = {
+						"zcitysnd/female/cough_"..math.random(1,4)..".mp3" or "zcitysnd/female/cough_"..math.random(1,4)..".mp3",
+						"zcitysnd/female/sneez_"..math.random(1,4)..".mp3" or "zcitysnd/male/sneez_"..math.random(1,4)..".mp3",
+						"snd_jack_hmcd_fart.wav",
+						"snd_jack_hmcd_burp.wav",
+					}
+					local event = taunts[math.random(#taunts)]
+
+					if CurTime() >= tauntTime then
+						ply:EmitSound()
+						tauntTime = CurTime() + math.random(3,5)
+					end
+				end)]]
+
+				hook.Run("hs_taunt")
+
+				ply:SetPlayerClass("hider")
 
 				zb.GiveRole(ply, "Hider", Color(91,237,71))
 
 				for _, item in ipairs(tblotheritems[ply:Team()]) do
 					ply:Give(item)
 				end
+
+				--local result = (math.random(1, 2) == 1) and "helmet4" or false
+				--hg.AddArmor(ply, result)
 
 				local randItem = hideOtherItem[math.random(#hideOtherItem)]
 				ply:Give(randItem)
@@ -251,7 +321,7 @@ function MODE:GiveEquipment()
 end
 
 function MODE:RoundThink()
-    if not swatSpawned and (CurTime() - zb.ROUND_BEGIN) >= 342 then
+    if not swatSpawned and (CurTime() - zb.ROUND_BEGIN) >= 240 then
         local deadPlayers = {}
 
         for _, ply in player.Iterator() do
@@ -296,6 +366,8 @@ function MODE:RoundThink()
         swatSpawned = true
     end
 end
+
+
 
 function MODE:GetTeamSpawn()
 	return zb.TranslatePointsToVectors(zb.GetMapPoints( "HIDESEEK_SEEKER" )), zb.TranslatePointsToVectors(zb.GetMapPoints( "HIDESEEK_HIDER" ))

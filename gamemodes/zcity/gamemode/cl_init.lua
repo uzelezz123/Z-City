@@ -122,6 +122,48 @@ hook.Add("HUDPaint","FUCKINGSAMENAMEUSEDINHOOKFUCKME",function()
 	local w, h = surface.GetTextSize(txt)
 	surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() / 8 * 7 + h)
 	surface.DrawText(txt)
+
+	local key = lply:KeyDown(IN_WALK)
+		if keyOld ~= key and key then
+			SpectateHideNick = not SpectateHideNick
+		end
+		keyOld = key
+
+		-- 4. Draw Other Player Names (ESP)
+		if not SpectateHideNick then
+			for _, v in ipairs(player.GetAll()) do
+				-- Skip if dead, sleeping, or if it is the person we are currently spectating
+				if not v:Alive() or v == spect then continue end
+
+				local targetEnt = IsValid(v:GetNWEntity("Ragdoll")) and v:GetNWEntity("Ragdoll") or v
+				
+				local screenPosition = targetEnt:GetPos():ToScreen()
+				local x, y = screenPosition.x, screenPosition.y
+				
+				if not screenPosition.visible then continue end
+
+				-- Calculate distance for fading
+				local distance = lply:GetPos():Distance(v:GetPos())
+				local factor = 1 - math.Clamp(distance / 1024, 0, 1)
+				local size = math.max(10, 32 * factor)
+				local alpha = math.max(255 * factor, 80)
+
+				local text = v:Name()
+				surface.SetFont("ZB_InterfaceSmall") 
+				local tw, th = surface.GetTextSize(text)
+
+				surface.SetDrawColor(166, 0, 0, 220) 
+				surface.DrawRect(x - size / 2 - tw / 2, y - th / 2, size + tw, th)
+
+				-- Draw Name Text
+				surface.SetTextColor(255, 255, 255, 220)
+				surface.SetTextPos(x - tw / 2, y - th / 2)
+				surface.DrawText(text)
+
+				-- Health bar code has been removed
+			end
+		end
+
 end)
 
 hook.Add("HG_CalcView", "zzzzzzzUwU", function(ply, pos, angles, fov)
@@ -944,6 +986,14 @@ end)
 function GM:AddHint( name, delay )
 	return false
 end
+
+
+concommand.Add("hg_pass", function(ply)
+    if IsValid(ply) and ply:Alive() then
+        --ply.organism.TriggerRandomEvent(ply, "Fart")
+		-- ply:Notify("Brap :3", 0, "Farting", nil, function() hg.organism.module.random_events.TriggerRandomEvent(ent,"Fart") end, color_white)
+    end
+end)
 
 local snakeGameOpen = false
 

@@ -8,6 +8,12 @@ local mapsize = 7500
 
 local roundend = false
 
+if not ConVarExists("hg_autoequip_dm") then
+	CreateClientConVar("hg_autoequip_dm", "0", true, false, "If enabled, you will automatically equip your primary in Deathmach once the round starts.", 0, 1)
+end
+--local hg_realismcam = ConVarExists("hg_realismcam") and GetConVar("hg_realismcam") or CreateClientConVar("hg_realismcam", "0", true, false, "realism camera", 0, 1)
+
+
 local snds = {
 	"https://kappa.vgmsite.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/ujuwzquyre/01.%20A%20Grim%20Feeling.mp3",
 	"https://kappa.vgmsite.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/zgagxqybov/02.%20Alley%20.mp3",
@@ -69,7 +75,7 @@ hook.Add("Think", "ZoneSoundThink", function()
 end)
 
 local fighter = {
-    objective = "Kill everyone.",
+    objective = "Free For All. Fight until you're the last one standing!",
     name = "Fighter",
     color1 = Color(0,120,190)
 }

@@ -112,6 +112,16 @@ hook.Add("OnNetVarSet", "AsdGuilt",function(index, key, var)
     end
 end)
 
+function SWEP:ModelAnimAdd(model, pos, ang)
+    self.CustomLerpMode = LerpFT(0.1,self.CustomLerpMode or 0, self:GetNetVar("extinguishermode") and 1 or 0)
+    pos = pos + ((ang:Up() * -14 + ang:Forward() * -5 + ang:Right() * 3) * self.CustomLerpMode)
+    ang:RotateAroundAxis(ang:Forward(), -5 * self.CustomLerpMode)
+    ang:RotateAroundAxis(ang:Up(), 3 * self.CustomLerpMode)
+    ang:RotateAroundAxis(ang:Right(), 10 * self.CustomLerpMode)
+
+    return pos, ang
+end
+
 function SWEP:CanSecondaryAttack()
     self.DamageType = DMG_CLUB
     self.AttackHit = "Canister.ImpactHard"

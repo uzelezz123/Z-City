@@ -619,7 +619,8 @@ end)
 
 hook.Add("Org Think", "regenerationnoradrenaline", function(owner, org, timeValue)
 	if not owner:IsPlayer() or not owner:Alive() then return end
-
+	if org.noradrenaline <= 0 then return end
+	
 	local regen = timeValue / 60 * org.noradrenaline
 
 	org.lungsR[1] = math.max(org.lungsR[1] - regen, 0)

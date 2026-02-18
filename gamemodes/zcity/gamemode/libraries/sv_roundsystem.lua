@@ -316,7 +316,7 @@ function zb.GetModesPlaytime()
 	local newtbl = {}
 	local count = 0
 
-	for i,name in ipairs(tbl) do
+	for i, name in ipairs(tbl) do
 		local amt = zb.ModesPlaytime[name] or 0
 		newtbl[name] = amt
 		count = count + amt
@@ -351,25 +351,21 @@ end
 
 zb.ModesChances = zb.ModesChances or {}
 
-function zb.GetChance(name, modes, amtplayed)
+function zb.GetChance(name, addtbl)
 	local mode = zb:GetMode(name)
 	local tbl = zb.modes[mode]
 
-	local frequency_played = modes and amtplayed and modes[name] and modes[name] / amtplayed
-
 	local newtbl = tbl.Types and tbl.Types[name] or tbl
 
-	return newtbl.ChanceFunction and newtbl:ChanceFunction() or newtbl.Chance or 0.1
+	return newtbl.ChanceFunction and newtbl:ChanceFunction(addtbl or {}) or newtbl.Chance or 0.1
 end
 
 function zb.GetModesChances()
 	local tbl = zb.GetAvailableModes()
 	local newtbl = {}
 
-	local modes, amtplayed = zb.GetModesPlaytime()
-
 	for i, name in pairs(tbl) do
-		newtbl[name] = zb.GetChance(name, modes, amtplayed)
+		newtbl[name] = zb.GetChance(name)
 	end
 
 	return newtbl
@@ -378,16 +374,18 @@ end
 function zb.WeightedChanceMode(modes_chances)
 	local weight = 0
 
+	local newchancestbl = {}
 	for name, chance in pairs(modes_chances) do
-		local played = modes_chances[name]
-		weight = weight + chance * 100
+		local newchance = zb.GetChance(name, {rounds = zb.RoundList}) or chance
+		newchancestbl[name] = newchance
+		weight = weight + newchance * 100
 	end
 
 	local random = math.random(weight)
 
 	local count = 0
 	for name, chance in RandomPairs(modes_chances) do
-		count = count + chance * 100
+		count = count + (newchancestbl[name] or chance) * 100
 
 		if count >= random then
 			return name
@@ -454,12 +452,13 @@ function zb.RerollChances()
 	local chances = zb.GetModesChances()
 
 	for i = 1, 20 do
-		zb.RoundList[i] = zb.WeightedChanceMode(chances)
+		local round = zb.WeightedChanceMode(chances)
+
+		zb.RoundList[i] = round
 	end
 
 	zb.nextround = table.remove(zb.RoundList, 1)
 end
-
 
 function zb.GetModesInfo()
 	local modesInfo = {}

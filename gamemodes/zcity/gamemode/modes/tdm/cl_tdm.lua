@@ -336,7 +336,7 @@ local function OpenBuyMenu()
 	if not LocalPlayer():Alive() or StartTime + 40 < CurTime() then return end
 	TDM_OpenedBuyMenu = vgui.Create("ZFrame")
 	local Frame = TDM_OpenedBuyMenu
-	Frame:SetSize(1920*0.35,ScrH()*0.85)
+	Frame:SetSize(ScrW()*0.35,ScrH()*0.85)
 	Frame:Center()
 	Frame:MakePopup()
 	Frame:SetTitle("Buy menu")

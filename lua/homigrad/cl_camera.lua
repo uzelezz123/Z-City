@@ -294,7 +294,7 @@ end
 CalcView = function(ply, origin, angles, fov, znear, zfar)
 	local x, y = input.GetCursorPos()
 
-	if vgui.CursorVisible() or (x == 0 and y == 0) then
+	if (vgui.CursorVisible() or (x == 0 and y == 0)) and !hg.GetCurrentCharacter(ply):IsRagdoll() then
 		local ang = ply:EyeAngles()
 		ang[3] = 0
 		ply:SetEyeAngles(ang)

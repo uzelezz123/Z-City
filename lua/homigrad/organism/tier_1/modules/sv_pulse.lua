@@ -77,6 +77,10 @@ module[2] = function(owner, org, timeValue)
 	if org.pulse < 10 or org.brain >= 0.6 then org.heartstop = true end
 	if org.temperature < 28 or org.temperature > 42 then org.heartstop = true end
 
+	if org.temperature < 34 or org.temperature > 38 then
+		org.fear = math.max(org.fear, 0)
+	end
+
 	-- temperature
 	local needed_temp = math.min(math.max(37 * (org.pulse / 45), 35), 36.7)
 	local changeRate = timeValue / 60

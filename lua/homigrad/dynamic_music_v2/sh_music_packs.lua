@@ -304,10 +304,10 @@ AddTrack(
         local org = ply.organism
         if (!org or org.otrub) or !ply:Alive() then return -1 end
 
-        if org.noradrenaline then
-            local timediff = SysTime() - hg.noradrenalineStartTime
-            return org.noradrenaline > 1.5 and 5 or (timediff < 3) and 1 or timediff < 8 and 2 or (org.noradrenaline > 0.6 and 3 or org.noradrenaline > 0.3 and 2 or org.noradrenaline > 0.1 and 1 or 0)
-        end
+        -- if org.noradrenaline then
+        --     local timediff = SysTime() - hg.noradrenalineStartTime
+        --     return org.noradrenaline > 1.5 and 5 or (timediff < 3) and 1 or timediff < 8 and 2 or (org.noradrenaline > 0.6 and 3 or org.noradrenaline > 0.3 and 2 or org.noradrenaline > 0.1 and 1 or 0)
+        -- end
 
         if org.fear > 0.1 then
             intens = intens + 1

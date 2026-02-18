@@ -248,7 +248,7 @@ util.AddNetworkString("hmcd_announce_traitor_lose")
 MODE.Type = MODE.Type or "standard"
 MODE.Types = MODE.Types or {}
 MODE.Types.standard = {
-	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and 0.4 or 0 end,
+	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and 0.05 or 0 end,
 	LootTable = MODE.LootTableStandard,
 	Messages = {
 		[3] = "Everyone died.",
@@ -323,7 +323,7 @@ MODE.Types.standard = {
 	end
 }
 MODE.Types.wildwest = {
-	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and 0.1 or 0 end,
+	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and 0.02 or 0 end,
 	LootTable = MODE.LootTableStandard,
 	Messages = {
 		[3] = "The dead silence fills the empty city...",
@@ -458,7 +458,7 @@ MODE.Types.wildwest = {
 }
 
 MODE.Types.gunfreezone = {
-	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and 0.1 or 0 end,
+	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and 0.02 or 0 end,
 	LootTable = MODE.LootTableStandard,
 	Messages = {
 		[3] = "Everyone died.",
@@ -533,7 +533,7 @@ MODE.Types.gunfreezone = {
 }
 
 MODE.Types.soe = {
-	ChanceFunction = function() return (zb.GetWorldSize() >= ZBATTLE_BIGMAP) and 0.4 or 0 end,
+	ChanceFunction = function() return (zb.GetWorldSize() >= ZBATTLE_BIGMAP) and 0.05 or 0 end,
 	LootTable = MODE.LootTable,
 	Messages = {
 		[3] = "Everyone died.",

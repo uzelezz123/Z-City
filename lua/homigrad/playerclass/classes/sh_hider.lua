@@ -20,7 +20,7 @@ function CLASS.On(self)
         local taunts = {
             "zcitysnd/male/cough_"..math.random(1,2)..".mp3",
             "snd_jack_hmcd_fart.wav",
-            "snd_jack_hmcd_burp.wav",
+            "snd_jack_hmcd_burp.wav"
         }
 
         local event = taunts[math.random(#taunts)]

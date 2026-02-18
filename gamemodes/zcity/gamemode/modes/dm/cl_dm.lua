@@ -8,10 +8,7 @@ local mapsize = 7500
 
 local roundend = false
 
-if not ConVarExists("hg_autoequip_dm") then
-	CreateClientConVar("hg_autoequip_dm", "0", true, false, "If enabled, you will automatically equip your primary in Deathmach once the round starts.", 0, 1)
-end
---local hg_realismcam = ConVarExists("hg_realismcam") and GetConVar("hg_realismcam") or CreateClientConVar("hg_realismcam", "0", true, false, "realism camera", 0, 1)
+local autoEquipDisabled = ConVarExists("hg_autoequipdisabled") and GetConVar("hg_autoequipdisabled") or CreateClientConVar("hg_autoequipdisabled", "0", true, false, "When a deathmatch round starts, you will not automatically equip your primary weapon.", 0, 1)
 
 
 local snds = {

@@ -4,7 +4,7 @@ MODE.PrintName = "Hide & Seek"
 --MODE.ForBigMaps = false
 MODE.ROUND_TIME = 600
 
-MODE.Chance = 0.02
+MODE.Chance = 0.06
 
 function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
 	return 1, true--returning true so guilt bans

@@ -10,6 +10,10 @@ if not ConVarExists("hg_opt_seeker") then
 	CreateClientConVar("hg_opt_seeker", "0", true, true, "Opt out of becoming a seeker in Hide & Seek.", 0, 1)
 end
 
+if not ConVarExists("hg_autoequipdisabled") then
+	CreateClientConVar("hg_autoequipdisabled", "0", true, false, "When a deathmatch round starts, you will not automatically equip your primary weapon.", 0, 1)
+end
+
 function CurrentRound()
 	return zb.modes[zb.CROUND]
 end

@@ -167,6 +167,10 @@ function MODE:RoundStart()
 		if IsValid(gun) then
 			ply:GiveAmmo(gun:GetMaxClip1() * loadout.ammo, gun:GetPrimaryAmmoType(), true)
 			hg.AddAttachmentForce(ply, gun, selectedAttachments)
+
+			if ConVarExists("hg_autoequip_dm") and GetConVar("hg_autoequip_dm") == 1 then
+				ply:SelectWeapon(loadout.primary)
+			end
 		end
 
 		if loadout.secondary then

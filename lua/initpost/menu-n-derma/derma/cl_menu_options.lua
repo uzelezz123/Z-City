@@ -54,13 +54,14 @@ hg.settings:AddOpt("Sound","hg_dmusic", "Dynamic Music")
 
 hg.settings:AddOpt("Sound","hg_quietshots", "Enable/Disable Quietshoot Sounds (FOR PUSSY)")
 
+
 --hg.settings:AddOpt("Sound","hg_thirdperson","ThirdPerson",false,true)
 --^^ СТРИНГ ИНПУТ
 hg.settings:AddOpt("Gameplay","hg_old_notificate", "Old Notifications")
 hg.settings:AddOpt("Gameplay","hg_random_appearance", "Enable/Disable Random Appearance")
 --hg.settings:AddOpt("Gameplay","hg_cheats", "Enable/Disable Cheats")
 --hg.settings:AddOpt("Gameplay","hg_opt_seeker", "Opt out of Seeker [Hide & Seek]")
-
+hg.settings.AddOpt("Gameplay", "hg_autoequip_dm", "Auto-Equip Primary on Deathmatch Start")
 
 function PANEL:Init()
     self:SetAlpha( 0 )

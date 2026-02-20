@@ -494,6 +494,10 @@ function SWEP:ModelAnim(model, pos, ang)
 
 	self.timetick2 = SysTime()
 
+    if self.ModelAnimAdd then
+        return self:ModelAnimAdd(model,pos,ang)
+    end
+
     return pos, ang
 end
 

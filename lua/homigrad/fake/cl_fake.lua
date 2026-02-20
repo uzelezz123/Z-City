@@ -88,7 +88,7 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 	if not att or not istable(att) then return end
 	local att_Ang = att.Ang
 	local vel = follow:GetVelocity()
-	local huy = vel:Dot(angle:Right()) / 200
+	local huy = vel:Dot(angle:Right()) / 2000
 	
 	angle.roll = angle.roll - (lply.addvpangles and lply.addvpangles[3] or 0)
 

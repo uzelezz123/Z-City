@@ -18,7 +18,14 @@ local matRepl = Material("decals/decalsplash")
 local curmat
 local curmat2
 function AddDecalToEnt(ent, id, --[[optional]] entIndex, tex, clear, x, y, rot, size, alpha)
-	local mata = Material(ent:GetSubMaterial(id - 1) != "" and ent:GetSubMaterial(id - 1) or ent:GetMaterials()[id])
+	local subm = ent:GetSubMaterial(id - 1) != "" and ent:GetSubMaterial(id - 1) or ent:GetMaterials()[id]
+	if !subm then
+		print("Invalid submaterial entered for weapon "..tostring(Entity(entIndex)).."; change SWEP.bloodID to something else or remove it completely if you don't wanna bother.")
+			
+		return
+	end
+
+	local mata = Material(subm)
 	if !IsValid(ent) then return end
 	if !mata then return end
 	

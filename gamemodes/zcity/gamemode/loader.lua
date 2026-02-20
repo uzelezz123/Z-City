@@ -18,10 +18,10 @@ end
 
 --прошу обратить внимание что файлы внутри папок загружаются первыми
 local function LoadFromDir(directory)
-    local files, folders = file.Find(directory .. "/*", "LUA")
-    
+	local files, folders = file.Find(directory .. "/*", "LUA")
+
 	for _, v in ipairs(folders) do
-        LoadFromDir(directory .. "/" .. v)
+		LoadFromDir(directory .. "/" .. v)
 	end
 
 	for _, v in ipairs(files) do
@@ -31,113 +31,88 @@ end
 
 LoadFromDir("zcity/gamemode/libraries")
 
---моды лоадер (плывисочная машина), если чё непонятно спрашивайте у меня (мистера поинта). мод много модов.
 zb.modesHooks = {}
 zb.modes = zb.modes or {}
 
-local function LoadModes()
-    local directory = "zcity/gamemode/modes"
-    local files, folders = file.Find(directory .. "/*", "LUA")
-     
-    for _, v in ipairs(files) do
-        MODE = {}
-        
-        IncluderFunc(directory .. "/" .. v)
-        if table.IsEmpty(MODE) then continue end
-        
-        local saved = zb.modes[MODE.name] and zb.modes[MODE.name].saved or {}
-        
-        if MODE.base then
-            table.Inherit(MODE,zb.modes[MODE.base])
-            
-            for i, tbl in pairs(MODE) do
-                if istable(MODE[i]) and istable(zb.modes[MODE.base][i]) then
-                    local tbl = {}
+local function InitMode()
+	if table.IsEmpty(MODE) then return end
 
-                    table.CopyFromTo(MODE[i], tbl)
+	local name = MODE.name
+	local saved = zb.modes[name] and zb.modes[name].saved or {} -- saved table is used for saving data between hot reloads
 
-                    MODE[i] = tbl
-                end
-            end
+	if MODE.base then
+		table.Inherit(MODE, zb.modes[MODE.base])
 
-            if MODE.AfterBaseInheritance then
-                MODE.AfterBaseInheritance()
-            end
-        end
+		for i, tbl in pairs(MODE) do
+			if istable(MODE[i]) and istable(zb.modes[MODE.base][i]) then
+				tbl2 = {}
 
-        zb.modes[MODE.name] = MODE
-        
-        zb.modes[MODE.name].saved = saved
+				table.CopyFromTo(MODE[i], tbl2)
 
-        for k, v2 in pairs(MODE) do
-            if isfunction(v2) then
-                zb.modesHooks[MODE.name] = zb.modesHooks[MODE.name] or {}
-                zb.modesHooks[MODE.name][k] = v2
-            end
-        end
+				MODE[i] = tbl2
+			end
+		end
 
-        MODE = nil
+		if MODE.AfterBaseInheritance then
+			MODE:AfterBaseInheritance()
+		end
 	end
 
-    for _, v in ipairs(folders) do
-        MODE = {}
-        LoadFromDir(directory .. "/" .. v)
-        if table.IsEmpty(MODE) then continue end
+	zb.modes[name] = MODE
+	zb.modes[name].saved = saved
 
-        local saved = zb.modes[MODE.name] and zb.modes[MODE.name].saved or {}
-        
-        if MODE.base then
-            table.Inherit(MODE, zb.modes[MODE.base])
+	zb.modesHooks[name] = zb.modesHooks[name] or {}
 
+	for k, v2 in pairs(MODE) do
+		if isfunction(v2) then
+			zb.modesHooks[name][k] = v2
+		end
+	end
+end
 
-            for i, tbl in pairs(MODE) do
-                if istable(MODE[i]) and istable(zb.modes[MODE.base][i]) then
-                    local tbl = {}
+local function LoadModes()
+	local directory = "zcity/gamemode/modes"
+	local files, folders = file.Find(directory .. "/*", "LUA")
 
-                    table.CopyFromTo(MODE[i], tbl)
+	for _, v in ipairs(files) do
+		MODE = {}
+		IncluderFunc(directory .. "/" .. v)
+		InitMode()
+		MODE = nil
+	end
 
-                    MODE[i] = tbl
-                end
-            end
-            
-            if MODE.AfterBaseInheritance then
-                MODE.AfterBaseInheritance()
-            end
-        end
-
-        zb.modes[MODE.name] = MODE
-
-        zb.modes[MODE.name].saved = saved
-
-        for k, v2 in pairs(MODE) do
-            if isfunction(v2) then
-                zb.modesHooks[MODE.name] = zb.modesHooks[MODE.name] or {}
-                zb.modesHooks[MODE.name][k] = v2
-            end
-        end
-
-        MODE = nil
+	for _, v in ipairs(folders) do
+		MODE = {}
+		LoadFromDir(directory .. "/" .. v)
+		InitMode()
+		MODE = nil
 	end
 end
 
 LoadModes()
 
-print("ZB modes loaded!")
+print("Z-City modes loaded!")
 
 zb.oldHook = zb.oldHook or hook.Call
+local oldHook = zb.oldHook
 
 function hook.Call(name, gm, ...)
-    local Current = zb.CROUND_MAIN or zb.CROUND or "tdm"
+	local Current = zb.CROUND_MAIN or zb.CROUND or "tdm"
 
-    local ModeTable = zb.modes[Current]
-    
-    if zb.modesHooks[Current] and zb.modesHooks[Current][name] then
-        local a, b, c, d, e, f = zb.modesHooks[Current][name](ModeTable, ...)
+	local modesHooks = zb.modesHooks[Current]
 
-        if (a != nil) then
-            return a, b, c, d, e, f
-        end
-    end
+	if modesHooks then -- technically an unnecessary nil check but i don't trust legacy code
+		local hookFunc = modesHooks[name]
+		if hookFunc then
+			local ModeTable = zb.modes[Current]
 
-    return zb.oldHook(name, gm, ...)
+			local a, b, c, d, e, f = hookFunc(ModeTable, ...)
+
+			if (a != nil) then
+				return a, b, c, d, e, f
+			end
+		end
+	end
+
+	return oldHook(name, gm, ...)
 end

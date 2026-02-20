@@ -1009,6 +1009,7 @@ local IsValid = IsValid
 
 		DrawPlayerRagdoll(ent, self)
 		RenderAccessoriesCool(ent, self)
+		hook_Run("CoolPostDrawAppearance", ent, self)
 		//hg.HomigradBones(self, CurTime(), FrameTime())
 
 		if IsValid(self.OldRagdoll) then DrawAppearance(ent, self, true) end

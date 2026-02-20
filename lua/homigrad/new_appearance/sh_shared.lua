@@ -570,7 +570,9 @@ function plymeta:GetSubMaterialSlots()
 	return slots
 end
 
-function plymeta:GetSubMaterialIdByName(strName)
+local entmeta = FindMetaTable("Entity")
+
+function entmeta:GetSubMaterialIdByName(strName)
 	local mats = self:GetMaterials()
 	local id = false
 	for i = 1, #mats do

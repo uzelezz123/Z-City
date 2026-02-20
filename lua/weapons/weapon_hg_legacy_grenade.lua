@@ -169,9 +169,9 @@ end
 
 function SWEP:PrimaryAttack()
 	local time = CurTime()
-	--time the throw!
-	--self:GetOwner():SetAnimation(PLAYER_ATTACK1)
-	--if SERVER and not self.removed then self:Throw(800, time) end
+	--// Time to throw!
+	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+	if SERVER and not self.removed then self:Throw(800, time) end
 end
 if SERVER then
 	util.AddNetworkString("hg_started_attack")

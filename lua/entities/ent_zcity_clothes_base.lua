@@ -129,13 +129,23 @@ end
             table.Empty(self.OldSubMaterials)
         end
 
-        self:SetPos(entUser:GetPos())
+        -- Drop clothes in front of the player
+        local forward = entUser:GetForward()
+        local offset = 60 -- Distance in front of player
+        local dropPos = entUser:GetPos() + forward * offset + Vector(0, 0, 30) -- Add some height to prevent falling through ground
+        self:SetPos(dropPos)
         self:SetParent(nil, 0)
         self:SetNoDraw(false)
         self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetCollisionGroup(COLLISION_GROUP_NONE)
         self:RemoveSolidFlags(FSOLID_NOT_SOLID)
         self:SetSolid(SOLID_VPHYSICS)
+
+        -- Wake up physics to make clothes dynamic immediately
+        local phys = self:GetPhysicsObject()
+        if IsValid(phys) then
+            phys:Wake()
+        end
 
         self.WearOwner = nil
 
@@ -241,4 +251,50 @@ end
 
         return changeRate, MaxWarmMul, warmLoseMul
     end)
+--//
+
+--\\ Radial menu for clothing removal
+if CLIENT then
+    hook.Add("radialOptions", "zc-clothes-menu", function()
+        local ply = LocalPlayer()
+        local organism = ply.organism or {}
+        
+        if !ply:Alive() or !organism or organism.otrub or !organism.canmove then return end
+        
+        local Clothes = ply:GetNetVar("zc_clothes", {})
+        if #Clothes < 1 then return end
+        
+        local clothesMenu = {}
+        for i, Cloth in ipairs(Clothes) do
+            if IsValid(Cloth) then
+                clothesMenu[i] = {
+                    [1] = function()
+                        net.Start("zc_unwear_cloth")
+                        net.WriteEntity(Cloth)
+                        net.SendToServer()
+                    end,
+                    [2] = Cloth.PrintName or "Unknown Clothing"
+                }
+            end
+        end
+        
+        hg.radialOptions[#hg.radialOptions + 1] = {
+            [1] = function(mouseClick)
+                hg.CreateRadialMenu(clothesMenu)
+                return -1
+            end,
+            [2] = "Remove Clothing"
+        }
+    end)
+else
+    util.AddNetworkString("zc_unwear_cloth")
+    
+    net.Receive("zc_unwear_cloth", function(len, ply)
+        local Cloth = net.ReadEntity()
+        
+        if IsValid(ply) and IsValid(Cloth) and Cloth.WearOwner == ply then
+            Cloth:Unwear(ply)
+        end
+    end)
+end
 --//

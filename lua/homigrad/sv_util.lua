@@ -1613,9 +1613,18 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 	
 	local isFreezing = temp < 0
 	local isHeating = temp > 30
-	
+
+	local MaxWarmMul = 1
+	local warmLoseMul = 1
+
 	if temp < -20 then
 		changeRate = changeRate * math.abs(temp) * 0.1
+	end
+	local result1,result2,result3 = hook.Run("ZC_BodyTemperature", owner, org, timeValue, changeRate, MaxWarmMul, warmLoseMul)
+	if result1 and result2 and result3 then
+		changeRate = result1
+		MaxWarmMul = result2
+		warmLoseMul = result3
 	end
 
 	if temp > 25 then
@@ -1671,9 +1680,9 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 		org.HeatDMGCd = CurTime() + 0.5
 	end
 
-	org.heatbuff = math.Approach(org.heatbuff, isFreezing and -30 or 30, timeValue * 1)
+	org.heatbuff = math.Approach(org.heatbuff, isFreezing and -30 or 30 * MaxWarmMul, (timeValue * 1) * warmLoseMul)
 
-	org.heatbuff = math.Approach(org.heatbuff, 120, timeValue * math.Clamp(warming * 1, 0, 4))
+	org.heatbuff = math.Approach(org.heatbuff, 120 * MaxWarmMul, timeValue * math.Clamp(warming * 1, 0, 4))
 
 	//PrintTable(ents.FindInSphere(org.owner:GetPos(), 128))
 	--мб сделать тепло от env_sprite?

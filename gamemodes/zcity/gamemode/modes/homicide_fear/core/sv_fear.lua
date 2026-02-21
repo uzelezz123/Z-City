@@ -4,14 +4,14 @@ local MODE = MODE
 MODE.GuiltDisabled = true
 MODE.PoliceTime = 9999
 
-function MODE.AfterBaseInheritance()
-	MODE.Types.standard2 = MODE.Types.standard
-	MODE.Types.soe2 = MODE.Types.soe
+function MODE:AfterBaseInheritance()
+	self.Types.standard2 = self.Types.standard
+	self.Types.soe2 = self.Types.soe
 
-	MODE.Types.wildwest = nil
-	MODE.Types.gunfreezone = nil
-	MODE.Types.standard = nil
-	MODE.Types.soe = nil
+	self.Types.wildwest = nil
+	self.Types.gunfreezone = nil
+	self.Types.standard = nil
+	self.Types.soe = nil
 end
 
 function MODE:CanLaunch()

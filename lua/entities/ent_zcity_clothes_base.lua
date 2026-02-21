@@ -101,6 +101,17 @@ end
             end
         end
 
+        if table.HasValue(data.HideSubMaterails, "distac/gloves/hands") then
+            local bodygroups = entUser:GetBodyGroups()
+            for k, v in ipairs(bodygroups) do
+                if v.name == "HANDS" then
+                    self.OldBodygroup = self.OldBodygroup or entUser:GetBodygroup(k-1)
+                    entUser:SetBodygroup(k-1, 0)
+                    break
+                end
+            end
+        end
+
         self:SetPos(entUser:GetPos())
         self:SetParent(entUser, 0)
         self.WearOwner = entUser
@@ -129,22 +140,36 @@ end
             table.Empty(self.OldSubMaterials)
         end
 
-        -- Drop clothes in front of the player
-        local forward = entUser:GetForward()
-        local offset = 60 -- Distance in front of player
-        local dropPos = entUser:GetPos() + forward * offset + Vector(0, 0, 30) -- Add some height to prevent falling through ground
-        self:SetPos(dropPos)
+        if self.OldBodygroup then
+            local bodygroups = entUser:GetBodyGroups()
+            for k, v in ipairs(bodygroups) do
+                if v.name == "HANDS" then
+                    entUser:SetBodygroup(k-1, self.OldBodygroup)
+                    self.OldBodygroup = nil
+                    break
+                end
+            end
+        end
+
+        local eyeAng = entUser:EyeAngles()
+        eyeAng.p = 0
+        local forward = eyeAng:Forward()
+        local spawnPos = entUser:GetPos() + forward * 60 + Vector(0, 0, 80)
+        
+        self:SetPos(spawnPos)
+        self:SetAngles(eyeAng)
         self:SetParent(nil, 0)
         self:SetNoDraw(false)
         self:SetMoveType(MOVETYPE_VPHYSICS)
-        self:SetCollisionGroup(COLLISION_GROUP_NONE)
+        self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
         self:RemoveSolidFlags(FSOLID_NOT_SOLID)
         self:SetSolid(SOLID_VPHYSICS)
 
-        -- Wake up physics to make clothes dynamic immediately
         local phys = self:GetPhysicsObject()
         if IsValid(phys) then
+            phys:EnableMotion(true)
             phys:Wake()
+            phys:SetVelocity(forward * 100)
         end
 
         self.WearOwner = nil
@@ -253,7 +278,7 @@ end
     end)
 --//
 
---\\ Radial menu for clothing removal
+--\\ Radial menu for clothing remove
 if CLIENT then
     hook.Add("radialOptions", "zc-clothes-menu", function()
         local ply = LocalPlayer()

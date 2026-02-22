@@ -433,28 +433,20 @@ properties.Add( "break_limb", {
         local dmgInfo = DamageInfo()
 		if limb == 0 then
             hg.BreakNeck(ent)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s neck!")
         elseif limb == 1 then
             hg.organism.input_list.larmup(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s left arm!")
 		elseif limb == 2 then
 			hg.organism.input_list.rarmup(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s right arm!")
 		elseif limb == 3 then
 			hg.organism.input_list.llegup(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s left leg!")
 		elseif limb == 4 then
 			hg.organism.input_list.rlegup(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s right leg!")
 		elseif limb == 5 then
 			hg.organism.input_list.spine1(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s spine (1)")
 		elseif limb == 6 then
 			hg.organism.input_list.spine2(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s spine (2)")
 		elseif limb == 7 then
 			hg.organism.input_list.spine3(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s spine (3)")
 		end
 	end
 } )
@@ -513,7 +505,7 @@ properties.Add( "amputate_limb", {
 		local limb = net.ReadUInt( 8 )
         
 		if not self:Filter(ent, ply) then return end
-        ent = hg.RagdollOwner(ent) or hg.GetCurrentCharacter(ent) or ent
+        ent = hg.RagdollOwner(ent) or ent
         
         local dmgInfo = DamageInfo()
 		if limb == 0 then
@@ -526,21 +518,21 @@ properties.Add( "amputate_limb", {
 					end]]
 
 					Gib_Input(ent.RagdollDeath, ent.RagdollDeath:LookupBone("ValveBiped.Bip01_Head1"))
-					print(tostring(ply:Nick() or ply) .." completely blew off ".. tostring(ent:Nick() or ent) .."'s head smoove off!")
+					
+					ent.RagdollDeath.organism.headamputated = true
+
+					ent.RagdollDeath.organism.owner.fullsend = true
+					hg.send_bareinfo(ent.RagdollDeath.organism)
 				end)
 			end
         elseif limb == 1 then
             hg.organism.AmputateLimb(ent.organism, "larm")
-			print(tostring(ply:Nick() or ply) .." amputated ".. tostring(ent:Nick() or ent) .."'s left arm!")
 		elseif limb == 2 then
 			hg.organism.AmputateLimb(ent.organism, "rarm")
-			print(tostring(ply:Nick() or ply) .." amputated ".. tostring(ent:Nick() or ent) .."'s right arm!")
 		elseif limb == 3 then
 			hg.organism.AmputateLimb(ent.organism, "lleg")
-			print(tostring(ply:Nick() or ply) .." amputated ".. tostring(ent:Nick() or ent) .."'s left leg!")
 		elseif limb == 4 then
 			hg.organism.AmputateLimb(ent.organism, "rleg")
-			print(tostring(ply:Nick() or ply) .." amputated ".. tostring(ent:Nick() or ent) .."'s right leg!")
 		end
 	end
 } )

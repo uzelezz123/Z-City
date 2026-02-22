@@ -329,7 +329,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		lean_lerp = 0
 	end
 
-	angles.roll = (turned and 180 or 0) + lean_lerp * 10
+	--angles.roll = (turned and 180 or 0) + lean_lerp * 10
 	
 	if IsValid(follow) then
 		return hg.CalcViewFake(ply, origin, angles, fov, znear, zfar)

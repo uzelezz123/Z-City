@@ -210,7 +210,7 @@ end
 --//
 
 --\\ Transfer items
-    hook.Add("ItemsTransfered","TransferMats",function(ply, ragdoll)
+    hook.Add("ItemsTransfered","TransferClothes",function(ply, ragdoll)
         local Clothes = ply:GetNetVar("zc_clothes", {})
         if #Clothes < 1 then return end
 

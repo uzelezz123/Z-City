@@ -1938,6 +1938,10 @@ function SWEP:SetHandPos(noset)
 		--self.lhandik = self:IsPistolHoldType() and !self:KeyDown(IN_FORWARD) and !self:KeyDown(IN_BACK)//self.weight > 1 and (self.lerped_angle and self.lerped_angle > 0.5)
 		self.lhandik = false
 	end
+	
+	if (ent ~= ply and ent ~= ply.OldRagdoll) then
+		self.lhandik = self.lhandik and !hg.KeyDown(ply, IN_FORWARD + IN_BACK)
+	end
 
 	--ply:SetIK(false)
 	if not IsValid(ply) or not ply:IsPlayer() then return end

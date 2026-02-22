@@ -101,6 +101,17 @@ end
             end
         end
 
+        if table.HasValue(data.HideSubMaterails, "distac/gloves/hands") then
+            local bodygroups = entUser:GetBodyGroups()
+            for k, v in ipairs(bodygroups) do
+                if v.name == "HANDS" then
+                    self.OldBodygroup = self.OldBodygroup or entUser:GetBodygroup(k-1)
+                    entUser:SetBodygroup(k-1, 0)
+                    break
+                end
+            end
+        end
+
         self:SetPos(entUser:GetPos())
         self:SetParent(entUser, 0)
         self.WearOwner = entUser
@@ -129,13 +140,37 @@ end
             table.Empty(self.OldSubMaterials)
         end
 
-        self:SetPos(entUser:GetPos())
+        if self.OldBodygroup then
+            local bodygroups = entUser:GetBodyGroups()
+            for k, v in ipairs(bodygroups) do
+                if v.name == "HANDS" then
+                    entUser:SetBodygroup(k-1, self.OldBodygroup)
+                    self.OldBodygroup = nil
+                    break
+                end
+            end
+        end
+
+        local eyeAng = entUser:EyeAngles()
+        eyeAng.p = 0
+        local forward = eyeAng:Forward()
+        local spawnPos = entUser:GetPos() + forward * 60 + Vector(0, 0, 80)
+        
+        self:SetPos(spawnPos)
+        self:SetAngles(eyeAng)
         self:SetParent(nil, 0)
         self:SetNoDraw(false)
         self:SetMoveType(MOVETYPE_VPHYSICS)
-        self:SetCollisionGroup(COLLISION_GROUP_NONE)
+        self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
         self:RemoveSolidFlags(FSOLID_NOT_SOLID)
         self:SetSolid(SOLID_VPHYSICS)
+
+        local phys = self:GetPhysicsObject()
+        if IsValid(phys) then
+            phys:EnableMotion(true)
+            phys:Wake()
+            phys:SetVelocity(forward * 100)
+        end
 
         self.WearOwner = nil
 
@@ -241,4 +276,50 @@ end
 
         return changeRate, MaxWarmMul, warmLoseMul
     end)
+--//
+
+--\\ Radial menu for clothing remove
+if CLIENT then
+    hook.Add("radialOptions", "zc-clothes-menu", function()
+        local ply = LocalPlayer()
+        local organism = ply.organism or {}
+        
+        if !ply:Alive() or !organism or organism.otrub or !organism.canmove then return end
+        
+        local Clothes = ply:GetNetVar("zc_clothes", {})
+        if #Clothes < 1 then return end
+        
+        local clothesMenu = {}
+        for i, Cloth in ipairs(Clothes) do
+            if IsValid(Cloth) then
+                clothesMenu[i] = {
+                    [1] = function()
+                        net.Start("zc_unwear_cloth")
+                        net.WriteEntity(Cloth)
+                        net.SendToServer()
+                    end,
+                    [2] = Cloth.PrintName or "Unknown Clothing"
+                }
+            end
+        end
+        
+        hg.radialOptions[#hg.radialOptions + 1] = {
+            [1] = function(mouseClick)
+                hg.CreateRadialMenu(clothesMenu)
+                return -1
+            end,
+            [2] = "Remove Clothing"
+        }
+    end)
+else
+    util.AddNetworkString("zc_unwear_cloth")
+    
+    net.Receive("zc_unwear_cloth", function(len, ply)
+        local Cloth = net.ReadEntity()
+        
+        if IsValid(ply) and IsValid(Cloth) and Cloth.WearOwner == ply then
+            Cloth:Unwear(ply)
+        end
+    end)
+end
 --//

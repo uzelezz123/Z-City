@@ -8,12 +8,12 @@ zb.Points = zb.Points or {}
 
 zb.Points.UWU_GlideHeli = zb.Points.UWU_GlideHeli or {}
 zb.Points.UWU_GlideHeli.Color = Color(255, 85, 0)
-zb.Points.UWU_GlideHeli.Name = "Pathowogen Helicopter"
+zb.Points.UWU_GlideHeli.Name = "Pathowogen Delta Squad Helicopter"
 zb.Points.UWU_GlideHeli.Points = zb.Points.UWU_GlideHeli.Points or {}
 
 zb.Points.UWU_DeltaSquad = zb.Points.UWU_DeltaSquad or {}
 zb.Points.UWU_DeltaSquad.Color = Color(255, 208, 0)
-zb.Points.UWU_DeltaSquad.Name = "Pathowogen Delta Squad"
+zb.Points.UWU_DeltaSquad.Name = "Pathowogen Extraction Point"
 zb.Points.UWU_DeltaSquad.Points = zb.Points.UWU_DeltaSquad.Points or {}
 
 zb.Points.SCRAPPERS_BIGBOX = zb.Points.SCRAPPERS_BIGBOX or {}

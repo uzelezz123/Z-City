@@ -2154,7 +2154,7 @@ local IsValid = IsValid
 		end
 	end)
 
-	if SERVER then --// Force enable npc ragdolls collision
+	if SERVER then --// Force enable npc serverside ragdolls
 		RunConsoleCommand("ai_serverragdolls", "1")
 	end
 --//

@@ -165,7 +165,7 @@ local bit_band,util_PointContents = bit.band,util.PointContents
 local color_white, color_red, color_red2, color_red3 = Color(255, 255, 255), Color(255, 0, 0), Color(200, 55, 55), Color(255, 100, 100)
 module[2] = function(owner, org, timeValue)
 	local o2 = org.o2
-	local losing_oxy = timeValue * 1 * math.Clamp(org.o2[1] / 30, 0.25, 1)
+	local losing_oxy = timeValue * 0.5 * math.Clamp(org.o2[1] / 30, 0.25, 1)
 	org.losing_oxy = losing_oxy
 	o2[1] = max(o2[1] - losing_oxy, 0)
 	local ent = hg.GetCurrentCharacter(owner)
@@ -231,7 +231,7 @@ module[2] = function(owner, org, timeValue)
 		local sprayed = org.is_sprayed_at
 		org.is_sprayed_at = nil
 
-		local regenerate = regen * timeValue * 4 * (org.stamina[1] / org.stamina.max) * (mask_blevota and 0 or 1) * ((org.temperature > 38) and math.Clamp(math.Remap(org.temperature, 38, 41, 1, 0.1), 0.1, 1) or 1)
+		local regenerate = regen * timeValue * 2 * (org.stamina[1] / org.stamina.max) * (mask_blevota and 0 or 1) * ((org.temperature > 38) and math.Clamp(math.Remap(org.temperature, 38, 41, 1, 0.1), 0.1, 1) or 1)
 		o2[1] = min(o2[1] + regenerate * math.Clamp(org.o2[1] / 30, 0.25, 1) * (org.holdingbreath and 0 or 1) * (sprayed and 0 or 1) * min((10 / max(org.CO,1)),1), o2.range * math.max(1 - org.pneumothorax * org.pneumothorax, 0.1) * math.min(org.blood / 4500, 1) * math.max(1 - (org.lungsL[1] + org.lungsR[1]) / 2, 0.5))
 
 		o2.curregen = regenerate

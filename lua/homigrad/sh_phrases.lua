@@ -2,46 +2,47 @@ phrases = {
 	[1] = {
 		{"vo/npc/male01/question", ".wav", 3, 31},
 		{"vo/npc/male01/answer", ".wav", 1, 40},
-		//{"vo/npc/male01/sorry", ".wav", 1, 3},
+		{"vo/npc/male01/sorry", ".wav", 1, 3},
 		{"vo/npc/male01/squad_affirm", ".wav", 1, 9},
 		{"vo/episode_1/npc/male01/cit_remarks", ".wav", 1, 21},
 		{"vo/trainyard/male01/cit_bench", ".wav", 1, 4},
 		{"vo/trainyard/male01/cit_hit", ".wav", 1, 5},
 		{"vo/trainyard/male01/cit_pedestrian", ".wav", 1, 5},
 		{"vo/outland_11a/silo/reb1_idles", ".wav", 1, 7},
+		{"vo/npc/male01/hi", ".wav", 1, 2},
 		//{"vo/npc/male01/startle", ".wav", 1, 2},
-		//{"vo/npc/male01/vanswer", ".wav", 1, 14},
+		{"vo/npc/male01/vanswer", ".wav", 1, 14},
 		//{"vo/npc/male01/wetrustedyou", ".wav", 1, 2},
 		//{"vo/npc/male01/whoops", ".wav", 1, 1},
 		//{"vo/npc/male01/yeah", ".wav", 2, 2},
 		//{"vo/npc/male01/gordead_ans", ".wav", 1, 20},
 		//{"vo/npc/male01/heretohelp", ".wav", 1, 2},
-		//{"vo/npc/male01/holddownspot", ".wav", 1, 2},
-		//{"vo/npc/male01/imstickinghere01", ".wav", 1, 1},
-		//{"vo/npc/male01/imstickinghere01", ".wav", 1, 1},
+		{"vo/npc/male01/holddownspot", ".wav", 1, 2},
+		{"vo/npc/male01/imstickinghere", ".wav", 1, 1},
 	},
 	[2] = {
 		{"vo/npc/female01/question", ".wav", 3, 30},
 		{"vo/npc/female01/answer", ".wav", 1, 40},
-		//{"vo/npc/female01/sorry", ".wav", 1, 3},
+		{"vo/npc/female01/sorry", ".wav", 1, 3},
 		{"vo/npc/female01/squad_affirm", ".wav", 1, 9},
 		{"vo/episode_1/npc/female01/cit_remarks", ".wav", 1, 21},
 		{"vo/trainyard/female01/cit_bench", ".wav", 1, 4},
 		{"vo/trainyard/female01/cit_hit", ".wav", 1, 5},
 		{"vo/trainyard/female01/cit_pedestrian", ".wav", 1, 5},
+		{"vo/npc/female01/hi", ".wav", 1, 2},
 		//{"vo/npc/female01/startle", ".wav", 1, 2},
-		//{"vo/npc/female01/vanswer", ".wav", 1, 14},
+		{"vo/npc/female01/vanswer", ".wav", 1, 14},
 		//{"vo/npc/female01/wetrustedyou", ".wav", 1, 2},
 		//{"vo/npc/female01/whoops", ".wav", 1, 1},
 		//{"vo/npc/female01/yeah", ".wav", 2, 2},
 		//{"vo/npc/female01/gordead_ans", ".wav", 1, 20},
 		//{"vo/npc/female01/heretohelp", ".wav", 1, 2},
-		//{"vo/npc/female01/holddownspot", ".wav", 1, 2}
+		{"vo/npc/female01/holddownspot", ".wav", 1, 2}
 	}
 }
 
 contextPhrases = {
-	[1] = {
+	[1] = { -- male phrases
 		["Scared"] = {
 			"vo/npc/male01/gordead_ques06.wav",
 			"vo/npc/male01/gordead_ques10.wav",
@@ -56,7 +57,6 @@ contextPhrases = {
 			"vo/npc/male01/no01.wav",
 			"vo/npc/male01/gordead_ans04.wav",
 			"vo/npc/male01/gordead_ques13.wav",
-			"vo/npc/male01/gordead_ques10.wav",
 			"vo/episode_1/npc/male01/cit_alert_head06.wav",
 			"vo/episode_1/npc/male01/cit_alert_head07.wav",
 			"vo/episode_1/npc/male01/cit_alert_zombie03.wav",
@@ -68,6 +68,9 @@ contextPhrases = {
 			"vo/trainyard/male01/cit_window_use03.wav",
 			"vo/outland_12/reb1_lastwaveannounced05.wav",
 			"vo/outland_02/griggs_cantholdout.wav",
+			"vo/npc/male01/gordead_ans06.wav",
+			"vo/npc/male01/gordead_ans14.wav",
+
 		},
 		["Yell"] = {
 			"vo/episode_1/npc/male01/cit_pain06.wav",
@@ -78,6 +81,9 @@ contextPhrases = {
 			"vo/episode_1/npc/male01/cit_shock04.wav",
 			"vo/outland_02/griggs_fightlion_01.wav",
 			"vo/npc/male01/no02.wav",
+			"vo/npc/male01/cit_dropper04.wav",
+			"vo/npc/male01/headsup02.wav"
+
 		},
 		["Cheer"] = {
 			"vo/coast/odessa/male01/nlo_cheer01.wav",
@@ -152,6 +158,7 @@ contextPhrases = {
 			"vo/outland_12/reb1_buildingexplo06.wav", --
 			"vo/outland_12/reb1_lastwaveannounced03.wav", --
 			"vo/outland_12/reb1_prepare_battle_08.wav", --
+			"vo/npc/male01/gordead_ques06.wav",
 		},
 		["Die!"] = {
 			"vo/episode_1/npc/male01/cit_kill01.wav",
@@ -174,7 +181,7 @@ contextPhrases = {
 			"vo/outland_12/reb1_striderdown12.wav", --
 		},
 	},
-	[2] = {
+	[2] = { -- female phrases
 		["Scared"] = {
 			"vo/npc/female01/gordead_ques06.wav",
 			"vo/npc/female01/gordead_ques10.wav",

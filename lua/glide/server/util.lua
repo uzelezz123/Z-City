@@ -230,13 +230,14 @@ function Glide.SwitchSeat( ply, seatIndex )
         ply:EmitSound( "player/suit_denydevice.wav", 50, 100, 1.0, 6, 0, 0 )
         return
     end
+    
+    hg.RemoveDeadBodies(seat)
 
     ply.switchingseat = true
     ply:ExitVehicle()
     ply:SetAllowWeaponsInVehicle( false )
     timer.Simple(0.1, function()
         ply:EnterVehicle( seat )
-        ply.switchingseat = nil
     end)
 
     hook.Run( "Glide_PostSwitchSeat", ply, seatIndex )

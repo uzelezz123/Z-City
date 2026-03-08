@@ -356,6 +356,47 @@ properties.Add("removeply", {
 	end 
 })
 
+properties.Add( "setplayerclass", {
+	MenuLabel = "Set player class", -- Name to display on the context menu
+	Order = 15, -- The order to display this property relative to other properties
+	MenuIcon = "vgui/entities/npc_nukude_proto_h", -- The icon to display next to the property
+
+	Filter = check,
+	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+		self:MsgStart()
+			net.WriteEntity( ent )
+		self:MsgEnd()
+	end,
+	PlayerClass = function( self, ent, name )
+		self:MsgStart()
+			net.WriteEntity( ent )
+			net.WriteString( name )
+		self:MsgEnd()
+	end,
+	Receive = function( self, length, ply )
+		local ent = net.ReadEntity()
+		local class = net.ReadString( )
+
+		ent = hg.RagdollOwner(ent) or hg.GetCurrentCharacter(ent) or ent
+		if IsValid(ent) and ent:IsPlayer() and player.classList[class] then
+			ent:SetPlayerClass(class)
+		end
+	end,
+	MenuOpen = function( self, option, ent, tr )
+		local submenu = option:AddSubMenu()
+
+		for name, tbl in pairs(player.classList) do
+			local opt = submenu:AddOption(name)
+			opt:SetRadio(true)
+			opt:SetChecked(ent.PlayerClassName == name)
+			opt:SetIsCheckable(true)
+			opt.OnChecked = function(s, checked)
+				self:PlayerClass(ent, name)
+			end	
+		end
+	end
+} )
+
 properties.Add( "break_limb", {
 	MenuLabel = "Break Limb",
 	Order = 13,
@@ -433,28 +474,20 @@ properties.Add( "break_limb", {
         local dmgInfo = DamageInfo()
 		if limb == 0 then
             hg.BreakNeck(ent)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s neck!")
         elseif limb == 1 then
             hg.organism.input_list.larmup(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s left arm!")
 		elseif limb == 2 then
 			hg.organism.input_list.rarmup(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s right arm!")
 		elseif limb == 3 then
 			hg.organism.input_list.llegup(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s left leg!")
 		elseif limb == 4 then
 			hg.organism.input_list.rlegup(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s right leg!")
 		elseif limb == 5 then
 			hg.organism.input_list.spine1(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s spine (1)")
 		elseif limb == 6 then
 			hg.organism.input_list.spine2(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s spine (2)")
 		elseif limb == 7 then
 			hg.organism.input_list.spine3(ent.organism, 0, 1, dmgInfo)
-			print(tostring(ply:Nick() or ply) .." broke ".. tostring(ent:Nick() or ent) .."'s spine (3)")
 		end
 	end
 } )
@@ -513,34 +546,21 @@ properties.Add( "amputate_limb", {
 		local limb = net.ReadUInt( 8 )
         
 		if not self:Filter(ent, ply) then return end
-        ent = hg.RagdollOwner(ent) or hg.GetCurrentCharacter(ent) or ent
+        ent = hg.RagdollOwner(ent) or ent
         
         local dmgInfo = DamageInfo()
 		if limb == 0 then
 			if SERVER and not ent.noHead then
-				ent:Kill()
-				timer.Simple(0, function()
-					if not IsValid(ent.RagdollDeath) then return end
-					--[[if not isbool(ent) then
-						hook.Run("OnHeadExplode", ent, ent.RagdollDeath)
-					end]]
-
-					Gib_Input(ent.RagdollDeath, ent.RagdollDeath:LookupBone("ValveBiped.Bip01_Head1"))
-					print(tostring(ply:Nick() or ply) .." completely blew off ".. tostring(ent:Nick() or ent) .."'s head smoove off!")
-				end)
+				hg.ExplodeHead(ent)
 			end
         elseif limb == 1 then
             hg.organism.AmputateLimb(ent.organism, "larm")
-			print(tostring(ply:Nick() or ply) .." amputated ".. tostring(ent:Nick() or ent) .."'s left arm!")
 		elseif limb == 2 then
 			hg.organism.AmputateLimb(ent.organism, "rarm")
-			print(tostring(ply:Nick() or ply) .." amputated ".. tostring(ent:Nick() or ent) .."'s right arm!")
 		elseif limb == 3 then
 			hg.organism.AmputateLimb(ent.organism, "lleg")
-			print(tostring(ply:Nick() or ply) .." amputated ".. tostring(ent:Nick() or ent) .."'s left leg!")
 		elseif limb == 4 then
 			hg.organism.AmputateLimb(ent.organism, "rleg")
-			print(tostring(ply:Nick() or ply) .." amputated ".. tostring(ent:Nick() or ent) .."'s right leg!")
 		end
 	end
 } )

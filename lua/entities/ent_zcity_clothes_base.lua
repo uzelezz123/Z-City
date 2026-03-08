@@ -30,7 +30,34 @@ ENT.FeMale.Bodygroups = "0000000000000"
 
 ENT.PhysicsSounds = true
 
+ENT.NamePos = Vector(12,1.5,4.6)
+ENT.NameAng = Angle(0,-90,0)
+
+local textcolor = Color(0, 0, 0)
+
+function ENT:Draw()
+    if self:GetMoveType() == MOVETYPE_NONE or self.GetEquiped and self:GetEquiped() then self:DrawShadow(false) return end
+    self:DrawModel()
+
+    local pos, ang = LocalToWorld(self.NamePos * self:GetModelScale(), self.NameAng, self:GetPos(), self:GetAngles())
+    cam.Start3D2D(pos,ang, 0.10 * self:GetModelScale())
+        local light1 = render.ComputeLighting(pos, ang:Up() * 1)
+        local light2 = render.ComputeDynamicLighting(pos, ang:Up() * 1)
+
+        local light = (light1 + light2) * 2
+        textcolor.r = 255 * light[1]
+        textcolor.g = 55 * light[2]
+        textcolor.b = 55 * light[3]
+        draw.SimpleText(self.PrintName, "HomigradFontSmall", 1, 1, color_black, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+        draw.SimpleText(self.PrintName, "HomigradFontSmall", 0, 0, textcolor, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+    cam.End3D2D()
+end
+
 function ENT:SetupDataTables()
+    self:NetworkVar( "Bool", "Equiped" )
+    if SERVER then
+        self:SetEquiped(false)
+    end
 end
 
 function ENT:Initialize()
@@ -58,16 +85,18 @@ end
     function ENT:CanWear(entUser)
         local Clothes = entUser:GetNetVar("zc_clothes", {})
         if IsValid(self.WearOwner) then return false end
+
         for _,v in pairs(Clothes) do
-            if !IsValid(v) then continue end
+            local cloth = Entity(v)
+            if !IsValid(cloth) then continue end
             --PrintTable(v.SlotOccupation)
             --PrintTable(self.SlotOccupation)
-            for slot, _ in pairs(v.SlotOccupation) do
+            for slot, _ in pairs(cloth.SlotOccupation) do
                 if isnumber(slot) and self.SlotOccupation[slot] then return false end
             end
 
             for slot, _ in pairs(self.SlotOccupation) do
-                if isnumber(slot) and v.SlotOccupation[slot] then return false end
+                if isnumber(slot) and cloth.SlotOccupation[slot] then return false end
             end
         end
 
@@ -83,9 +112,21 @@ end
 --//
 --\\ Wear Unwear functions
     function ENT:Wear(entUser, bDontChangeMaterials, noChange)
+        if !self.Respawned then -- I'M VERRY SORRY FOR THIS SILLY SHIT, BUT GMOD IS BULLSHIT I CAN'T REMOVE ENT FROM PLAYERS CLEANUP ACTUALY I CAN BUT IS MORE JANKY THAN THAT!!!
+            local class = self:GetClass()
+            local ent = ents.Create(class)
+            if !IsValid(ent) then return end
+            ent.Respawned = true
+            ent:Spawn()
+            ent:Wear(entUser, bDontChangeMaterials, noChange)
+
+            SafeRemoveEntity(self)
+            return
+        end
+
         if !noChange then
             local Clothes = entUser:GetNetVar("zc_clothes", {})
-            Clothes[#Clothes + 1] = self
+            Clothes[#Clothes + 1] = self:EntIndex()
             entUser:SetNetVar("zc_clothes", Clothes)
         end
 
@@ -94,10 +135,15 @@ end
         if !bDontChangeMaterials then
             for k,v in ipairs(data.HideSubMaterails) do
                 local mat = entUser:GetSubMaterialIdByName(v)
+                if !mat then continue end
                 self.OldSubMaterials = self.OldSubMaterials or {}
                 self.OldSubMaterials[mat] = entUser:GetSubMaterial(mat)
 
                 entUser:SetSubMaterial(mat,"NULL")
+                local curchar = hg.GetCurrentCharacter(entUser)
+                if IsValid(curchar) and curchar:IsRagdoll() then
+                    curchar:SetSubMaterial(mat,"NULL")
+                end
             end
         end
 
@@ -116,26 +162,36 @@ end
         self:SetParent(entUser, 0)
         self.WearOwner = entUser
 
-        self:SetNoDraw(true)
+        self:SetNoDraw(false)
         self:SetMoveType(MOVETYPE_NONE)
         self:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
         self:AddSolidFlags(FSOLID_NOT_SOLID)
         self:SetSolid(SOLID_NONE)
+        self:AddEFlags(EFL_KEEP_ON_RECREATE_ENTITIES)
+        self:DrawShadow(false)
+        self:SetEquiped(true)
 
         self:OnWear(entUser)
     end
-    function ENT:OnWear(entUser)   end
+
+    function ENT:OnWear(entUser)
+		--// Write your code here
+	end
 ---------------------------------------------------------------
     function ENT:Unwear(entUser, bDontChangeMaterials, noChange)
         if !noChange then
             local Clothes = entUser:GetNetVar("zc_clothes", {})
-            table.RemoveByValue(Clothes, self)
+            table.RemoveByValue(Clothes, self:EntIndex())
             entUser:SetNetVar("zc_clothes", Clothes)
         end
 
         if !bDontChangeMaterials and self.OldSubMaterials then
             for k,v in pairs(self.OldSubMaterials) do
                 entUser:SetSubMaterial(k,v)
+                local curchar = hg.GetCurrentCharacter(entUser)
+                if IsValid(curchar) and curchar:IsRagdoll() then
+                    curchar:SetSubMaterial(k,v)
+                end
             end
             table.Empty(self.OldSubMaterials)
         end
@@ -164,6 +220,23 @@ end
         self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
         self:RemoveSolidFlags(FSOLID_NOT_SOLID)
         self:SetSolid(SOLID_VPHYSICS)
+        self:RemoveEFlags(EFL_KEEP_ON_RECREATE_ENTITIES)
+        self:DrawShadow(true)
+        self:SetEquiped(false)
+
+        timer.Simple(0,function()
+            if !IsValid(self) or !IsValid(entUser) then return end
+            self:SetPos(entUser:IsPlayer() and hg.eyeTrace(entUser).StartPos or entUser:GetPos())
+        end)
+        if !noChange then
+            local phys = self:GetPhysicsObject()
+            if IsValid(phys) then
+                phys:Wake()
+                phys:AddVelocity(entUser:IsPlayer() and hg.eyeTrace(entUser).Normal * 65 or vector_origin)
+            end
+
+            self:SetAngles(entUser:EyeAngles())
+        end
 
         local phys = self:GetPhysicsObject()
         if IsValid(phys) then
@@ -176,8 +249,12 @@ end
 
         self:OnUnwear(entUser)
     end
-    function ENT:OnUnwear(entUser)   end
+
+    function ENT:OnUnwear(entUser)
+		--// Write your code here
+	end
 --//
+
 --\\
     function ENT:OnRemove()
         if !IsValid(self.WearOwner) then return end
@@ -185,7 +262,6 @@ end
         self:Unwear(self.WearOwner)
     end
 --//
-
 
 --\\ Render clothes
     local vec = Vector(1,1,1)
@@ -205,7 +281,8 @@ end
 
             if data.ModelSubMaterials then
                 for k,v in pairs(data.ModelSubMaterials) do
-                    local id = model:GetSubMaterialIdByName(k)
+                    local id = isnumber(k) and k or model:GetSubMaterialIdByName(k)
+                    if !id then continue end
                     model:SetSubMaterial(id, v)
                 end
             end
@@ -237,7 +314,7 @@ end
         if #Clothes < 1 then return end
 
         for i = 1, #Clothes do
-            local Cloth = Clothes[i]
+            local Cloth = Entity(Clothes[i])
             if !IsValid(Cloth) then continue end
             Cloth:RenderOnBody(ent)
         end
@@ -245,12 +322,12 @@ end
 --//
 
 --\\ Transfer items
-    hook.Add("ItemsTransfered","TransferMats",function(ply, ragdoll)
+    hook.Add("ItemsTransfered", "TransferClothes", function(ply, ragdoll)
         local Clothes = ply:GetNetVar("zc_clothes", {})
         if #Clothes < 1 then return end
 
         for i = 1, #Clothes do
-            local Cloth = Clothes[i]
+            local Cloth = Entity(Clothes[i])
             if !IsValid(Cloth) then continue end
             Cloth:Unwear(ply, true, true)
             Cloth:Wear(ragdoll, true, true)
@@ -266,7 +343,7 @@ end
         if #Clothes < 1 then return end
 
         for i = 1, #Clothes do
-            local Cloth = Clothes[i]
+            local Cloth = Entity(Clothes[i])
             if !IsValid(Cloth) then continue end
             if !Cloth.WarmSave then continue end
             MaxWarmMul = MaxWarmMul + (Cloth.WarmSave / 1.5)

@@ -154,6 +154,7 @@ function zb:EndRoundThink()
 			zb.SHOULD_FADE = true
 
 			hook.Run("ZB_PreRoundStart")
+			hook.Run("TTTPrepareRound") -- stormfox2 random_round_weather
 
 			zb.CROUND = zb.nextround or "hmcd"
 			if CurrentRound().shouldfreeze then zb:Freeze() end
@@ -349,15 +350,13 @@ function zb.AddCurrentModePlayed()
 	zb.AddModePlaytime(name, 1)
 end
 
-zb.ModesChances = zb.ModesChances or {}
-
 function zb.GetChance(name, addtbl)
 	local mode = zb:GetMode(name)
 	local tbl = zb.modes[mode]
 
 	local newtbl = tbl.Types and tbl.Types[name] or tbl
 
-	return newtbl.ChanceFunction and newtbl:ChanceFunction(addtbl or {}) or newtbl.Chance or 0.1
+	return newtbl.ChanceFunction and newtbl:ChanceFunction(addtbl or {}) or zb.ModesChances[name] or newtbl.Chance or 0.1
 end
 
 function zb.GetModesChances()
@@ -567,7 +566,6 @@ function zb:RoundStart()
 	zb.START_TIME = nil
 
 	local mode, round = CurrentRound()
-	
 
 	VFIRE_DISABLED = (mode.name == "coop")
 

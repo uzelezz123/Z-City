@@ -1,5 +1,7 @@
 hg.armor = {}
+local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
 
+local vecAdjust2 = Vector(5, -6.3, -5)
 local function DrawFirstPersonHelmet(ply, strModel, vecAdjust, fFov, setMat)
 	if ply:GetNetVar("headcrab") then return end
 	if not ply:Alive() then return end
@@ -41,14 +43,16 @@ local function DrawFirstPersonHelmet(ply, strModel, vecAdjust, fFov, setMat)
 		mdl.matseted1 = false
 	end
 
+	local gp = hg_gopro:GetBool()
+
 	local view = render.GetViewSetup()
 	cam.Start3D(view.origin,view.angles,view.fov + fFov,nil,nil,nil,nil,1,10)
 		--cam.IgnoreZ(true)
 		local viewpunching = GetViewPunchAngles() / 2
 		local ang = view.angles + viewpunching
-		mdl:SetRenderOrigin(view.origin + ang:Forward() * vecAdjust.x + ang:Right() * vecAdjust.y + ang:Up() * vecAdjust.z)
+		mdl:SetRenderOrigin(view.origin + ang:Forward() * (vecAdjust.x + (gp and vecAdjust2.x or 0)) + ang:Right() * (vecAdjust.y + (gp and vecAdjust2.y or 0)) + ang:Up() * (vecAdjust.z + (gp and vecAdjust2.z or 0)))
 		mdl:SetRenderAngles(ang)
-		mdl2:SetRenderOrigin(view.origin + ang:Forward() * vecAdjust.x + ang:Right() * vecAdjust.y + ang:Up() * vecAdjust.z)
+		mdl2:SetRenderOrigin(view.origin + ang:Forward() * (vecAdjust.x + (gp and vecAdjust2.x or 0)) + ang:Right() * (vecAdjust.y + (gp and vecAdjust2.y or 0)) + ang:Up() * (vecAdjust.z + (gp and vecAdjust2.z or 0)))
 		mdl2:SetRenderAngles(ang)
 		mdl:SetParent(ply, ply:LookupBone("ValveBiped.Bip01_Head1"))
 		render.SetColorModulation(1,1,1)
@@ -311,7 +315,9 @@ hg.armor.head = {
 		bone = "ValveBiped.Bip01_Head1",
 		model = "models/barney_helmet.mdl",
 		femPos = Vector(-1, 0, 0),
-		material = "sal/hanker",
+		material = {"sal/hanker", "models/jacky_camouflage/digi",
+		"models/jacky_camouflage/digi2", "models/lightvest/accs_diff_000_g_uni",
+		"sal/acc/armor01_2", "sal/acc/armor01_3", "sal/acc/armor01_4", "sal/acc/armor01_5"},
 		norender = true,
 		customviewrender = function(ply)
 			DrawFirstPersonHelmet(ply, "models/barney_helmet.mdl", vectors[1], -40, "sal/hanker")

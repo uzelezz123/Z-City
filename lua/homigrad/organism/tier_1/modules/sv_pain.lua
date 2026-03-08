@@ -103,7 +103,7 @@ module[2] = function(owner, org, timeValue)
 
 	org.pain = org.avgpain * math.max(1 - adrenaline / 4, 0.75) * math.max(1 - org.analgesia, 0)
 
-	org.painadd = min(max(org.painadd - add, 0), 150)
+	org.painadd = min(max(org.painadd - add * analgesiaMul, 0), 150)
 
 	//org.painkiller = Approach(org.painkiller, 0, timeValue / 240 * (org.naloxone * 25 + 1))
 

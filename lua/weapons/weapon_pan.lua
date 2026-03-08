@@ -20,6 +20,7 @@ SWEP.TwoHanded = false
 
 SWEP.HoldPos = Vector(-13,0,0)
 SWEP.HoldAng = Angle(0,0,0)
+SWEP.weight = 0.6
 
 SWEP.AttackTime = 0.45
 SWEP.AnimTime1 = 1.3

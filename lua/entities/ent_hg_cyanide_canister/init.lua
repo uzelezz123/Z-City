@@ -61,13 +61,13 @@ function ENT:Think()
 				
 				if mode_hmcd then
 					if(ent.SubRole == "traitor_chemist")then
-						local ply_cyanide_accumulated = mode_hmcd.AddChemicalToPlayer(ent, "HCN", 10)
+						local ply_cyanide_accumulated = AddChemicalToPlayer(ent, "HCN", 10)
 						
 						if(ply_cyanide_accumulated > 100)then
 							ent.organism.poison3 = CurTime()
 						end
 						
-						mode_hmcd.NetworkChemicalResistanceOfPlayer(ent)
+						NetworkChemicalResistanceOfPlayer(ent)
 						
 						ent.PassiveAbility_ChemicalAccumulation_NextNetworkTime = CurTime() + 1
 						

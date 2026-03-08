@@ -15,7 +15,7 @@ SWEP.WepSelectIcon2 = Material("pwb/sprites/xm1014.png")
 SWEP.IconOverride = "entities/weapon_pwb_xm1014.png"
 SWEP.WorldModelFake = "models/weapons/arccw/c_ud_m1014.mdl"
 
---PrintAnims(Entity(1):GetActiveWeapon():GetWM())
+
 --PrintTable(Entity(1):GetActiveWeapon():GetWM():GetAttachments())
 --uncomment for funny
 SWEP.FakePos = Vector(-10, 3.035, 3.45)

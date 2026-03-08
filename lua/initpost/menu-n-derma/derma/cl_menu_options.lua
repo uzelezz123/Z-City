@@ -1,9 +1,9 @@
 hg.settings = hg.settings or {}
 hg.settings.tbl = hg.settings.tbl or {}
 
-function hg.settings:AddOpt( strCategory, strConVar, strTitle, bDecimals, bString )
+function hg.settings:AddOpt( strCategory, strConVar, strTitle, bDecimals, bString, category )
     self.tbl[strCategory] = self.tbl[strCategory] or {}
-    self.tbl[strCategory][strConVar] = { strCategory, strConVar, strTitle, bDecimals or false, bString or false }
+    self.tbl[strCategory][strConVar] = { strCategory, strConVar, strTitle, bDecimals or false, bString or false, category }
 end
 local hg_firstperson_death = CreateClientConVar("hg_firstperson_death", "0", true, false, "Toggle first-person death camera view", 0, 1)
 local hg_font = CreateClientConVar("hg_font", "Bahnschrift", true, false, "change every text font to selected because ui customization is cool")
@@ -40,44 +40,83 @@ surface.CreateFont("ZCity_setiings_fine", {
 	weight = 100
 })
 
+surface.CreateFont("ZCity_setiings_category", {
+	font = font(),
+	size = ScreenScale(15),
+	weight = 100
+})
+
 
 hg.settings:AddOpt("Gameplay","hg_old_notificate", "Old Notifications")
-hg.settings:AddOpt("Gameplay","hg_cheats", "Enable/Disable Cheats")
+hg.settings:AddOpt("Gameplay","hg_cheats", "Enable Cheats")
+hg.settings:AddOpt("Gameplay","hg_showthoughts", "Show thoughts")
+hg.settings:AddOpt("Gameplay","hg_hints", "Show hints")
+hg.settings:AddOpt("Gameplay","hg_gary", "HG GARY")
+hg.settings:AddOpt("Gameplay","hg_deathfadeout", "Death fade out")
+--hg_gary
+--hg_deathfadeout
+if not game.IsDedicated() then
+	hg.settings:AddOpt("Serverside gameplay","hg_toughnpcs", "Tough npcs")
+	hg.settings:AddOpt("Serverside gameplay","hg_thirdperson", "Thirdperson (WIP)")
+	hg.settings:AddOpt("Serverside gameplay","hg_legacycam", "Legacy camera")
+	hg.settings:AddOpt("Serverside gameplay","hg_ragdollcombat", "Ragdoll combat mode")
+	hg.settings:AddOpt("Serverside gameplay","hg_movement_stamina_debuff", "Movement stamina debuff")
+	hg.settings:AddOpt("Serverside gameplay","hg_furcity", "Furcity")
+	hg.settings:AddOpt("Serverside gameplay","hg_appearance_access_for_all", "Appearance full access for all", nil, nil, "bool")
+	hg.settings:AddOpt("Serverside gameplay","hg_healanims", "Heal & food animations")
+	hg.settings:AddOpt("Serverside gameplay","hg_aimtoshoot", "DarkRP-like shoot system (aim to shoot)")
+	hg.settings:AddOpt("Serverside gameplay","hg_slings", "Sling system")
+end
+--hg_appearance_access_for_all
+--hg_furcity
+--hg_legacycam
+--hg_toughnpcs
 
+hg.settings:AddOpt("Debug","hg_show_hitposmuzzle", "Show weapon hitpos")
+hg.settings:AddOpt("Debug","hg_setzoompos", "Edit weapon zoompos, check console for results")
+hg.settings:AddOpt("Debug","hg_show_hitbox", "Show hitboxes")
 
 hg.settings:AddOpt("Optimization","hg_potatopc", "Potato PC Mode")
-hg.settings:AddOpt("Optimization","hg_anims_draw_distance", "Animations Draw Distance")
-hg.settings:AddOpt("Optimization","hg_anim_fps", "Animations FPS")
-hg.settings:AddOpt("Optimization","hg_attachment_draw_distance", "Attachment Draw Distance")
-hg.settings:AddOpt("Optimization","hg_maxsmoketrails", "Maximum Smoke Trails")
-hg.settings:AddOpt("Optimization","hg_tpik_distance", "TPIK Render Distance")
+hg.settings:AddOpt("Optimization","hg_anims_draw_distance", "Animations Draw Distance", true, nil, "int")
+hg.settings:AddOpt("Optimization","hg_anim_fps", "Animations FPS", nil, nil, "int")
+hg.settings:AddOpt("Optimization","hg_attachment_draw_distance", "Attachment Draw Distance", true, nil, "int")
+hg.settings:AddOpt("Optimization","hg_maxsmoketrails", "Maximum Smoke Trails", nil, nil, "int")
+hg.settings:AddOpt("Optimization","hg_tpik_distance", "TPIK Render Distance", true, nil, "int")
 
 hg.settings:AddOpt("Blood","hg_blood_draw_distance", "Blood Draw Distance")
 hg.settings:AddOpt("Blood","hg_blood_fps", "Blood FPS")
 hg.settings:AddOpt("Blood","hg_blood_sprites", "Blood Sprites (DISABLED FOR EVERYONE)")
+hg.settings:AddOpt("Blood","hg_old_blood", "Old blood")
 
 hg.settings:AddOpt("UI","hg_font", "Change Custom Font", false, true)
 
 hg.settings:AddOpt("Weapons","hg_weaponshotblur_enable", "Shooting Blur")
 hg.settings:AddOpt("Weapons","hg_dynamic_mags", "Dynamic Ammo Inspect")
+hg.settings:AddOpt("Weapons","hg_zoomsensitivity", "Scope sensitivity")
+hg.settings:AddOpt("Weapons","hg_highpitchgunfire", "Toggle high pitched gunfire sounds inside buildings")
 
 hg.settings:AddOpt("View","hg_firstperson_death", "First-Person Death")
 hg.settings:AddOpt("View","hg_fov", "Field Of View")
 hg.settings:AddOpt("View","hg_newspectate", "Smooth Spectator Camera")
-hg.settings:AddOpt("View","hg_change_gloves", "Gloves Model")
 hg.settings:AddOpt("View","hg_cshs_fake", "C'sHS Ragdoll Camera")
 hg.settings:AddOpt("View","hg_gun_cam", "Gun Camera (ADMIN ONLY)")
 hg.settings:AddOpt("View","hg_nofovzoom", "Disable/Enable FOV Zoom")
-  
+hg.settings:AddOpt("View","hg_realismcam", "Realism camera (shitty)")
+hg.settings:AddOpt("View","hg_gopro", "GoPro camera")
+hg.settings:AddOpt("View","hg_newfakecam", "New fake camera")
+hg.settings:AddOpt("View","hg_leancam_mul", "Lean camera mul", true, nil, "int")
+hg.settings:AddOpt("View","hg_gun_cam", "Gun camera (WIP Admin only)")
+--hg_hints
+--hg_leancam_mul
+  --hg_newfakecam
 hg.settings:AddOpt("Sound","hg_dmusic", "Dynamic Music")
-
-hg.settings:AddOpt("Sound","hg_quietshots", "Enable/Disable Quietshoot Sounds (FOR PUSSY)")
+hg.settings:AddOpt("Sound","hg_quietshots", "Enable/Disable Quietshoot Sounds")
 
 
 function hg.CreateCategory(ctgName, ParentPanel, yPos)
     local pppanel = vgui.Create('DPanel', ParentPanel)
-    pppanel:SetSize(ParentPanel:GetWide()/1.05, ParentPanel:GetTall()/12)
-    pppanel:SetPos(ParentPanel:GetWide()/2-pppanel:GetWide()/2, yPos)
+    pppanel:SetSize(ParentPanel:GetWide() / 1.05, ParentPanel:GetTall() * 0.07)
+    pppanel:SetPos(ParentPanel:GetWide() / 2 -pppanel:GetWide() / 2, yPos)
     --pppanel:SetText(ctgName)
     pppanel.Paint = function(self,w,h)
         surface.SetDrawColor(60,60,60,145)
@@ -85,7 +124,7 @@ function hg.CreateCategory(ctgName, ParentPanel, yPos)
 		surface.SetDrawColor(42, 42, 42, 184)
 		surface.DrawRect(0, h-5, w, 5)
     
-        draw.SimpleText(ctgName, 'ZCity_Fixed_Medium', w / 2, h / 2, color3, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(ctgName, 'ZCity_setiings_category', w / 2, h / 2, color3, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
     
     return pppanel
@@ -130,7 +169,7 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
     surface.SetFont('ZCity_setiings_fine')
     local width2, height2 = surface.GetTextSize(buttonData[3])
     
-    local convarType = hg.GetConVarType(convar)
+    convarType = buttonData[6] or hg.GetConVarType(convar)
     pppanel.Paint = function(self,w,h)
         surface.SetDrawColor(43, 43, 43,145)
         surface.DrawRect(0, 0, w, h)
@@ -195,9 +234,9 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
         slider:SetPos(pppanel:GetWide() - 300, pppanel:GetTall() / 2 - 15)
         slider:SetText('')
         
-        local min = buttonData[4] or 0
-        local max = buttonData[5] or 100
-        local decimals = 0 
+        local min = convar:GetMin() or 0
+        local max = convar:GetMax() or 100
+        local decimals = buttonData[4] and 2 or 0
         
         slider:SetMin(min)
         slider:SetMax(max)

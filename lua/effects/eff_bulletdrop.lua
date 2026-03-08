@@ -33,7 +33,7 @@ function EFFECT:Init(data)
 
 	if ammotype == "nil" or ammotype == "" then return end
 
-	if not hg.ammotypes[ammotype].TracerSetings or hg.ammotypes[ammotype].TracerSetings.TracerHeadSize < 2 then
+	if not ammotype or not hg.ammotypes[ammotype] or not hg.ammotypes[ammotype].TracerSetings or hg.ammotypes[ammotype].TracerSetings.TracerHeadSize < 2 then
 		self:Remove()
 		return
 	end

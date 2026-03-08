@@ -194,6 +194,10 @@ function hg.HomigradBones(ply, dtime)
 	if blink and ent:GetFlexWeight(blink) != set then
 		ent:SetFlexWeight(blink, set)
 	end--]]
+	
+	if ply.organism and ply.IsBerserk and ply:IsBerserk() and !IsValid(ply.FakeRagdoll) and ply.organism.llegamputated and ply.organism.rlegamputated then
+		hg.bone.Set(ply, 0, -vector_up * 15, angle_zero, "berserk", 0.01, dtime2)
+	end
 
 	--ent:SetFlexWeight()
 

@@ -75,6 +75,8 @@ hook.Add("Org Clear", "Main", function(org)
 	org.berserk = 0
 	org.noradrenaline = 0
 
+	org.blindness = nil
+
 	if IsValid(org.owner) then
 		if org.owner:IsPlayer() and org.owner:Alive() then
 			org.owner:SetHealth(100)
@@ -95,14 +97,18 @@ end)
 
 hook.Add("Should Fake Up", "organism", function(ply)
 	local org = ply.organism
-	if org.otrub or org.fake or org.spine1 >= hg.organism.fake_spine1 or org.spine2 >= hg.organism.fake_spine2 or org.spine3 >= hg.organism.fake_spine3 or (org.lleg == 1 and org.rleg == 1) or (org.blood < 2900) or org.consciousness <= 0.4 then return false end
+	if org.otrub or org.fake or org.spine1 >= hg.organism.fake_spine1 or org.spine2 >= hg.organism.fake_spine2 or org.spine3 >= hg.organism.fake_spine3 or (org.lleg == 1 and org.rleg == 1) and org.berserk <= 0.3 or (org.blood < 2900) or org.consciousness <= 0.4 then
+		return false
+	end
 end)
+
+local hg_unreliable_nets = ConVarExists("hg_unreliable_nets") and GetConVar("hg_unreliable_nets") or CreateConVar("hg_unreliable_nets", 0, FCVAR_ARCHIVE + FCVAR_SERVER_CAN_EXECUTE, "Toggle unreliable net messages for some of the expensive nets", 0, 1)
 
 util.AddNetworkString("organism_send")
 util.AddNetworkString("organism_sendply")
 local CurTime = CurTime
 local nullTbl = {}
-local hg_developer = ConVarExists("hg_developer") and GetConVar("hg_developer") or CreateConVar("hg_developer",0,FCVAR_SERVER_CAN_EXECUTE,"Toggle developer mode (enables damage traces)",0,1)
+local hg_developer = ConVarExists("hg_developer") and GetConVar("hg_developer") or CreateConVar("hg_developer", 0, FCVAR_SERVER_CAN_EXECUTE, "Toggle developer mode (enables damage traces)", 0, 1)
 local function send_organism(org, ply)
 	if not IsValid(org.owner) then return end
 	local sendtable = {}
@@ -157,13 +163,15 @@ local function send_organism(org, ply)
 	sendtable.noradrenaline = org.noradrenaline
 	sendtable.LodgedEntities = org.LodgedEntities
 	sendtable.CantCheckPulse = org.CantCheckPulse
-
+	sendtable.blindness = org.blindness
 	sendtable.critical = org.critical
 	sendtable.incapacitated = org.incapacitated
+	sendtable.berserkActive2 = org.berserkActive2
+	sendtable.noradrenalineActive = org.noradrenalineActive
 
 	sendtable.superfighter = org.superfighter
 
-	net.Start("organism_send")
+	net.Start("organism_send", hg_unreliable_nets:GetBool())
 	net.WriteTable(not hg_developer:GetBool() and sendtable or org)
 	net.WriteBool(org.owner.fullsend)
 	net.WriteBool(false)
@@ -219,7 +227,7 @@ local function send_bareinfo(org)
 	rf:AddPVS(org.owner:GetPos())
 	if org.owner:IsPlayer() then rf:RemovePlayer(org.owner) end
 
-	net.Start("organism_send")
+	net.Start("organism_send", hg_unreliable_nets:GetBool())
 	net.WriteTable(not hg_developer:GetBool() and sendtable or org)
 	net.WriteBool(org.owner.fullsend)
 	net.WriteBool(true)
@@ -320,7 +328,7 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 	else
 		org.alive = false
 	end
-
+	
 	org.needotrub = false
 	org.needfake = false
 	if isPly then
@@ -348,8 +356,8 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 	--module.blood[3](owner,org,timeValue)--arteria
 	module.blood[2](owner, org, timeValue)
 
+	module.pain[2](owner, org, timeValue)
 	if isPly then
-		module.pain[2](owner, org, timeValue)
 		module.metabolism[2](owner, org, timeValue)
 		module.random_events[2](owner, org, timeValue)
 	end
@@ -401,7 +409,7 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 		org.noradrenalineActive = false
 	end
 
-	if org.llegamputated or org.rlegamputated then
+	if (org.llegamputated or org.rlegamputated) and org.berserk <= 0.3 then
 		org.needfake = true
 	end
 
@@ -510,6 +518,13 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 
 	org.otrub = org.needotrub
 	org.fake = org.needfake
+	
+	if org.needfake and owner:IsNPC() then
+		local dmgInfo = DamageInfo()
+		dmgInfo:SetDamage(10000)
+		dmgInfo:SetAttacker(owner)
+		owner:TakeDamageInfo(dmgInfo)
+	end
 
 	if owner:IsPlayer() and (org.healthRegen or 0) < CurTime() then
 		org.healthRegen = CurTime() + 30
@@ -555,6 +570,9 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 		if (org.sendPlyTime > time) and !just_went_uncon then return end
 		org.sendPlyTime = CurTime() + 1 + (not isPly and 2 or 0)
 		send_bareinfo(org)
+
+		org.owner:SetNetVar("wounds", org.wounds)
+		org.owner:SetNetVar("arterialwounds", org.arterialwounds)
 
 		if isPly and owner:Alive() then
 			send_organism(org, owner)

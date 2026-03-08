@@ -12,6 +12,7 @@ SWEP.WorldModelExchange = "models/weapons/tacint_melee/w_tonfa.mdl"
 SWEP.ViewModel = ""
 
 SWEP.HoldType = "melee"
+SWEP.weight = 0.6
 
 SWEP.HoldPos = Vector(-12,0,0)
 SWEP.HoldAng = Angle(0,0,0)
@@ -31,7 +32,7 @@ SWEP.sprint_ang = Angle(15,0,0)
 
 SWEP.basebone = 94
 
-SWEP.weaponPos = Vector(0,0,-8)
+SWEP.weaponPos = Vector(-0.3,0.5,-8)
 SWEP.weaponAng = Angle(0,-90,0)
 
 SWEP.DamageType = DMG_CLUB

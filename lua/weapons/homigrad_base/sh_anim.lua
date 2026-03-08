@@ -153,6 +153,7 @@ function SWEP:AnimHold()
 	self.holdtype = (self:IsPistolHoldType() and (self:GetButtstockAttack() - CurTime() > -0.5)) and "melee" or self.holdtype
 	--self.holdtype = (!self:IsPistolHoldType() and ply.posture == 2 and "revolver" or self.holdtype)
 	--self.holdtype = self:ReadyStance() and not self:IsPistolHoldType() and "pistol" or self.holdtype
+	self.holdtype = self:IsResting() and "slam" or self.holdtype
 	self:SetHold(self.holdtype)
 
 	local stam = (ply.organism ~= nil and ply.organism.stamina and ply.organism.stamina[1]) or 180
@@ -211,21 +212,23 @@ function SWEP:GetAnimPos_Shoot(time, timeSpan)
 	return timeSpan - math_Clamp(CurTime() - time, 0, timeSpan)
 end
 
+local angShoot = Angle()
+local angShoot2 = Angle()
+
 function SWEP:AnimApply_ShootRecoil(time)
 	local owner = self:GetOwner()
 	local animpos = self:GetAnimPos_Shoot(time, 0.3)
-	if animpos > 0 then
-		animpos = animpos * ((self:IsZoom() and self.SpreadMulZoom or self.SpreadMul) + math_max(self.Primary.Force / 110 - 1, 0)) * (( not owner:IsNPC() and owner:Crouching() ) and self.CrouchMul or 1) * 0.75
-		animpos = animpos * self.AnimShootMul
-		animpos = math.ease.InOutSine(animpos)
-
-		//if self.IsPistolHoldType and not self:IsPistolHoldType() then
-			if CLIENT and (owner ~= LocalPlayer() or LocalPlayer() ~= GetViewEntity()) then
-				self:BoneSet("spine", vecZero, Angle(0, 0, -15 * animpos * self.Primary.Force / 50 * (self.NumBullet and self.NumBullet * 0.5 or 1)))
-				self:BoneSet("head", vecZero, Angle(0, -15 * animpos * self.Primary.Force / 50 * (self.NumBullet and self.NumBullet * 0.5 or 1)), 0)
-			end
-		//end
-	end
+	animpos = math.ease.InOutSine(animpos)
+	animpos = animpos * ((self:IsZoom() and self.SpreadMulZoom or self.SpreadMul) + math_max(self.Primary.Force / 110 - 1, 0)) * (( not owner:IsNPC() and owner:Crouching() ) and self.CrouchMul or 1) * 0.75
+	animpos = animpos * self.AnimShootMul
+	--if animpos > 0 then
+		if CLIENT and (owner ~= LocalPlayer() or LocalPlayer() ~= GetViewEntity()) then
+			angShoot[3] = -15 * animpos * self.Primary.Force / 50 * (self.NumBullet and self.NumBullet * 0.5 or 1)
+			angShoot2[2] = -15 * animpos * self.Primary.Force / 50 * (self.NumBullet and self.NumBullet * 0.5 or 1)
+			self:BoneSet("spine", vecZero, angShoot, "shooting")
+			self:BoneSet("head", vecZero, angShoot2, "shooting")
+		end
+	--end
 end
 
 local hullVec = Vector(0, 0, 0)
@@ -352,12 +355,12 @@ hook.Add("Bones", "homigrad-lean-bone", function(ply, dtime)
 	local right = ((isragdoll and !ragdollcombat and hg.KeyDown(ply, IN_MOVELEFT)) or hg.KeyDown(ply, IN_ALT1)) and not hg.KeyDown(ply, IN_ALT2)
 
 	ply.lean = Lerp(
-		hg.lerpFrameTime( ( left or right ) and 0.045 * ply:GetNetVar("leanSpeedMul",1) or 0.075, dtime), 
+		hg.lerpFrameTime( ( left or right ) and 0.045 * ply:GetNetVar("leanSpeedMul",1) or 0.075, dtime * game.GetTimeScale()), 
 		ply.lean or 0,
 		hg.IsLocal(ply) and ( (left and right and 0) or (left and 1.3) or (right and -1.3) or 0) or ply:GetNWFloat("PlayerLean", 0)
 	)
 
-	if SERVER then
+	if SERVER and !IsValid(ply.FakeRagdoll) then
 		ply.takeOldLeanStamina = ply.takeOldLeanStamina or 0
 		local leanStamina = math.Round(ply.lean,2)
 

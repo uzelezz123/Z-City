@@ -53,6 +53,14 @@ SWEP.modeValuesdef = {
 }
 SWEP.ShouldDeleteOnFullUse = true
 
+local math = math
+local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_SERVER_CAN_EXECUTE + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
+function SWEP:Think()
+	if not self:GetOwner():KeyDown(IN_ATTACK) and hg_healanims:GetBool() then
+		self:SetHolding(math.max(self:GetHolding() - 12, 0))
+	end
+end
+
 local lang1, lang2 = Angle(0, -10, 0), Angle(0, 10, 0)
 function SWEP:Animation()
 	local owner = self:GetOwner()
@@ -74,6 +82,7 @@ end
 function SWEP:OwnerChanged()
 	local owner = self:GetOwner()
 	if IsValid(owner) and owner:IsNPC() then
+		self:SpawnGarbage()
 		self:NPCHeal(owner, 0.6, "snd_jack_hmcd_bandage.wav")
 	end
 end
@@ -81,6 +90,7 @@ end
 if SERVER then
 	function SWEP:Heal(ent, mode)
 		if ent:IsNPC() then
+			self:SpawnGarbage()
 			self:NPCHeal(ent, 0.6, "snd_jack_hmcd_bandage.wav")
 		end
 
@@ -88,6 +98,12 @@ if SERVER then
 		if not org then return end
 
 		local owner = self:GetOwner()
+		if ent == hg.GetCurrentCharacter(owner) and hg_healanims:GetBool() then
+			self:SetHolding(math.min(self:GetHolding() + 50, 100))
+
+			if self:GetHolding() < 100 then return end
+		end
+
 		local entOwner = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or owner
 		if self.mode == 2 then
 			if self.modeValues[2] == 0 then return end

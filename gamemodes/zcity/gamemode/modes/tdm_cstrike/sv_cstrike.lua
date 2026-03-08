@@ -23,7 +23,7 @@ function MODE:ChanceFunction(info)
         end
     end
 
-    return self.Chance
+    return zb.ModesChances["cstrike"] or self.Chance
 end
 
 util.AddNetworkString("zb_cs_round_intermission")

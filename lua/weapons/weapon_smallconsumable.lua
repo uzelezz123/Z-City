@@ -77,17 +77,35 @@ SWEP.WaterModel = {
 	["models/foodnhouseholditems/juicesmall.mdl"] = true
 }
 
+local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_SERVER_CAN_EXECUTE + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
+
 if SERVER then
+	local ang_eat = Angle(6, 0, 0)
 	function SWEP:Heal(ent, mode, bone)
+		if ent:IsNPC() then
+			self:SpawnGarbage(self:GetCurModel())
+			self:NPCHeal(ent, 0.2, "snd_jack_hmcd_eat"..math.random(4)..".wav")
+		end
+
 		local org = ent.organism
 		if not org then return end
+
 		self.Eating = self.Eating or 0
 		self.CDEating = self.CDEating or 0
 		if self.CDEating > CurTime() then return end
 
+		local owner = self:GetOwner()
+		if ent == hg.GetCurrentCharacter(owner) and hg_healanims:GetBool() then
+			self:SetHolding(math.min(self:GetHolding() + 10, 100))
+
+			if self:GetHolding() < 100 then
+				return
+			end
+		end
+
 		org.satiety = org.satiety + 10/5
 		local ply = self:GetOwner()
-		ply:ViewPunch(Angle(3,0,0))
+		ply:ViewPunch(ang_eat)
 		
 		ent:EmitSound( self.WaterModel[self.WorldModel] and "snd_jack_hmcd_drink"..math.random(3)..".wav" or "snd_jack_hmcd_eat"..math.random(4)..".wav", 60, math.random(95, 105))
 		
@@ -96,6 +114,7 @@ if SERVER then
 		--self:SetHolding(0.98)
 		if self.Eating > 5 then
 			self:GetOwner():SelectWeapon("weapon_hands_sh")
+			self:SpawnGarbage(self:GetCurModel())
 			self:Remove()
 		end
 		

@@ -6,7 +6,7 @@ local CHANCE, FORCE, VIBRATION = 0.95, 1200, 150
 local extendDur, rigorDur, flexionDur = {4, 10}, {10, 20}, {6, 12}
 local RIGOR_DAMP, FLEXION_FORCE = 8, 400
 
-local spasmTypes = {{"extend", 35}, {"rigor", 40}, {"flexion", 25}} --;; Че хотите добавляйте изменяйте
+local spasmTypes = {[1] = {35, "extend"}, [2] = {25, "rigor"}, [3] = {15,"flexion"}} --;; Че хотите добавляйте изменяйте
 
 local extendBones = {
 	["ValveBiped.Bip01_R_Hand"] = true, ["ValveBiped.Bip01_L_Hand"] = true,
@@ -51,14 +51,9 @@ local fencingLegBones = {
 }
 
 local function getRandomSpasm()
-	local total = 0
-	for i = 1, #spasmTypes do total = total + spasmTypes[i][2] end
-	local roll, cur = math_random(1, total), 0
-	for i = 1, #spasmTypes do
-		cur = cur + spasmTypes[i][2]
-		if roll <= cur then return spasmTypes[i][1] end
-	end
-	return "extend"
+	local _, stype = hg.WeightedRandomSelect(spasmTypes, 1)
+	print(stype)
+	return stype
 end
 
 hg.getRandomSpasm = getRandomSpasm

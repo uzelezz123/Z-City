@@ -29,7 +29,7 @@ SWEP.SuicidePunchAng = Angle(5, -15, 0)
 SWEP.HoldPos = Vector(-12,0,0)
 SWEP.HoldAng = Angle(0,0,0)
 
-SWEP.AttackTime = 0.3
+SWEP.AttackTime = 0.26
 SWEP.AnimTime1 = 1.2
 SWEP.WaitTime1 = 0.9
 SWEP.ViewPunch1 = Angle(1,1,0)
@@ -100,6 +100,8 @@ function SWEP:CustomAttack2()
     ent.owner = ply
     ent.localshit = Vector(4,6,0)
     ent.damage = 25
+    ent.penetration = 5
+    ent.shouldntlodge = true
 
     local phys = ent:GetPhysicsObject()
     if IsValid(phys) then
@@ -133,10 +135,12 @@ SWEP.PenetrationSizePrimary = 2
 SWEP.PenetrationSizeSecondary = 3
 
 SWEP.StaminaPrimary = 20
-SWEP.StaminaSecondary = 20
+SWEP.StaminaSecondary = 60
 
 SWEP.AttackLen1 = 40
 SWEP.AttackLen2 = 30
+
+SWEP.AnimAlwaysBack = true
 
 SWEP.NoHolster = true
 

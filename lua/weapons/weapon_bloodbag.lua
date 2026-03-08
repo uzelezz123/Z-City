@@ -82,9 +82,13 @@ end
 function SWEP:OwnerChanged()
 	local owner = self:GetOwner()
 	if IsValid(owner) and owner:IsNPC() then
+		self:SpawnGarbage()
 		self:NPCHeal(owner, 0.3, "zcity/healing/bloodbag_spear_0.wav")
 	end
 end
+
+local math = math
+local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_SERVER_CAN_EXECUTE + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
 
 if SERVER then
 	function SWEP:SecondaryAttack()
@@ -98,7 +102,15 @@ if SERVER then
 	end
 
 	function SWEP:PrimaryAttack()
+		local owner = self:GetOwner()
+		if hg_healanims:GetBool() then
+			self:SetHolding(math.min(self:GetHolding() + 50, 100))
+
+			if self:GetHolding() < 100 then return end
+		end
+
 		if not self:GetOwner():KeyPressed(IN_ATTACK) then return end
+
 		self.sndcd = CurTime() + 1
 		self:GetOwner():EmitSound("zcity/healing/bloodbag_spear_0.wav")
 		self:SetNextPrimaryFire(CurTime() + 1)
@@ -108,7 +120,7 @@ if SERVER then
 		if self:GetOwner():KeyPressed(IN_RELOAD) then
 			local mode = self:GetNetVar("mode",2)
 			self:SetNetVar("mode",((mode + 1) > 2) and 1 or (mode + 1))
-			self:GetOwner():ChatPrint("You have chosen the " .. self.modeNames2[mode] .. " mode")
+			--self:GetOwner():ChatPrint("You have chosen the " .. self.modeNames2[mode] .. " mode")
 		end
 	end
 
@@ -119,6 +131,10 @@ if SERVER then
 
 		self.net_cooldown = self.net_cooldown or CurTime()
 		local owner = self:GetOwner()
+
+		if not owner:KeyDown(IN_ATTACK) and hg_healanims:GetBool() then
+			self:SetHolding(math.max(self:GetHolding() - 12, 0))
+		end
 		
 		if self:GetNetVar("mode",2) == 2 then
 			if self.modeValues[1] != 1 then
@@ -205,24 +221,31 @@ if SERVER then
 		end
 	end
 else
+	local lang1, lang2 = Angle(0, -10, 0), Angle(0, 10, 0)
 	function SWEP:Animation()
-		self:SetHold(self.HoldType)
 		local owner = self:GetOwner()
-
-		if owner.zmanipstart ~= nil and not owner.organism.larmamputated then return end
+		if (owner.zmanipstart ~= nil and not owner.organism.larmamputated) then return end
 
 		local aimvec = owner:GetAimVector()
 		if not aimvec then return end
+
+		local hold = self:GetHolding()
 		local ducking = owner:IsFlagSet(FL_ANIMDUCKING)
 
-		self:BoneSet("r_upperarm", vector_origin, Angle(10, -65 - 20 * aimvec[3] * (ducking and 3 or 1), 10))
+		self:BoneSet("r_upperarm", vector_origin, Angle(30 - hold / 5, -40 + hold / 2 + 20 * aimvec[3] * (ducking and -3 or -1), 5 - hold / 4))
+		self:BoneSet("r_forearm", vector_origin, Angle(hold / 25, -hold / 2.5, 35 -hold / 1.4))
+
+		self:BoneSet("l_upperarm", vector_origin, lang1)
+		self:BoneSet("l_forearm", vector_origin, lang2)
 	end
 
 	function SWEP:Think()
 		local ent = hg.eyeTrace(self:GetOwner()).Entity
 		ent = IsValid(ent) and ent.organism and ent or self:GetOwner()
-		local mode = self:GetNetVar("mode",2)
-		self.modeNames[1] = self:GetNetVar("modeValues", {})[1] == 0 and self.modeNames2[mode] .. " | Recipent: " .. ent.organism.bloodtype or self.modeNames2[mode] .. " | in: "..self:GetNetVar("type","o-").." | recipent: "..ent.organism.bloodtype
+		local mode = self:GetNetVar("mode",2) - 1
+		if mode == 0 then mode = 2 end
+		local modeStr = self.modeNames2[mode]
+		self.modeNames[1] = self:GetNetVar("modeValues", {})[1] == 0 and modeStr .. " | Recipent: " .. ent.organism.bloodtype or modeStr .. " | in: "..self:GetNetVar("type","o-").." | recipent: "..ent.organism.bloodtype
 	end
 
 	function SWEP:AfterDrawModel(wm,nodraw)

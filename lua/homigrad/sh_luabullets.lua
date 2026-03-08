@@ -419,11 +419,11 @@ local function Damage(bDoDebugHit, bStartedWater, bEndNotWater, iFlags, iDamage,
 			info:SetDamageForce(vShotDir * flAmmoForce * flForce * flPhysPush)
 			info:SetAmmoType(iAmmoType)
 			info:SetReportedPosition(vSrc)
+			
+			if (fCallback) then
+				fCallback(info:GetAttacker(), tr, info, tInfo, Weapon)
+			end
 		pEntity:DispatchTraceAttack(info, tr, vShotDir)
-		
-		if (fCallback) then
-			fCallback(info:GetAttacker(), tr, info, tInfo, Weapon)
-		end
 		
 		if (bEndNotWater or bit.band(iFlags, FIRE_BULLETS_ALLOW_WATER_SURFACE_IMPACTS) ~= 0) then
 			Impact(Weapon, iAmmoDamageType, bFirstTimePredicted, vSrc, tr, sImpactEffect, sRagdollImpactEffect)
@@ -485,9 +485,20 @@ local tDefaultAmmoTable = {
 	force = 0
 }
 
-local numbullets = 0
+local numbullets = 0 
 
 hg.vehicles = hg.vehicles or {}
+
+local armsbones = {
+	["ValveBiped.Bip01_L_Clavicle"] = true,
+	["ValveBiped.Bip01_L_Clavicle"] = true,
+	["ValveBiped.Bip01_L_UpperArm"] = true,
+	["ValveBiped.Bip01_R_UpperArm"] = true,
+	["ValveBiped.Bip01_L_Forearm"] = true,
+	["ValveBiped.Bip01_R_Forearm"] = true,
+	["ValveBiped.Bip01_L_Hand"] = true,
+	["ValveBiped.Bip01_R_Hand"] = true,
+}
 
 function ENTITY:FireLuaBullets(tInfo)
     if (hook.Run("EntityFireBullets", self, tInfo) == false) then
@@ -522,7 +533,7 @@ function ENTITY:FireLuaBullets(tInfo)
 	local flDistance = tInfo.Distance or MAX_TRACE_LENGTH
 	local Filter = tInfo.Filter or owner
 	
-	table.Add(Filter, hg.vehicles)
+	//table.Add(Filter, hg.vehicles)
 
 	local iFlags = tInfo.Flags or 0
 	local flForce = tInfo.Force or 1
@@ -713,7 +724,7 @@ function ENTITY:FireLuaBullets(tInfo)
 				local bonename = ent:GetBoneName(ent:TranslatePhysBoneToBone(tr.PhysicsBone))
 				local hitgroup = hg.bonetohitgroup[bonename]--( ent:IsPlayer() and tr.HitGroup or hg.bonetohitgroup[bonename])
 				
-				if (tr.PhysicsBone != 0 or !tr.StartSolid) and (!hg.amputeetable[bonename] or !ent.organism[hg.amputeetable[bonename].."amputated"]) then break end
+				if !(armsbones[bonename] and hg.RagdollOwner(tr.Entity) == pInflictor:GetOwner()) and !IsValid(tr.Entity.OldRagdoll) and (tr.PhysicsBone != 0 or !tr.StartSolid) and (!hg.amputeetable[bonename] or !ent.organism[hg.amputeetable[bonename].."amputated"]) then break end
 
 				tr = bHullTrace and iShot % 2 == 0 and
 					// Half of the shotgun pellets are hulls that make it easier to hit targets with the shotgun.

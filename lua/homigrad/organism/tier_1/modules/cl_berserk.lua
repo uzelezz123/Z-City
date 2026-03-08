@@ -204,9 +204,11 @@ end)
 
 local META = FindMetaTable("Player")
 function META:IsBerserk()
-	if !self:Alive() then return false end
+	if !IsValid(self) then return false end
+	if self:IsPlayer() and not self:Alive() then return false end
 
-	return hg.underberserk2 or false
+	local org = self.organism
+	return org and org.berserkActive2 or false
 end
 
 local META2 = FindMetaTable("Entity")

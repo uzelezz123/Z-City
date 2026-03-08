@@ -113,7 +113,7 @@ if SERVER then
         ent.returndamage = 30
         ent.returnblood = 100
         ent.PenetrationSize = 15
-        ent.Penetration = 40
+        ent.penetration = 10
 
         local phys = ent:GetPhysicsObject()
 

@@ -29,7 +29,7 @@ SWEP.Primary.Spread = Vector(0.0075, 0.0075, 0.0075)
 SWEP.Primary.Damage = 100
 SWEP.Primary.Force = 120
 SWEP.NumBullet = 3
-SWEP.Primary.Sound = {"weapons/awoi/musket_5_fire.wav", 65, 80, 85}
+SWEP.Primary.Sound = {"snds_jack_gmod/ez_weapons/flintlock_longgun.wav", 65, 80, 85}
 SWEP.SupressedSound = {"weapons/awoi/musket_5_fire.wav", 65, 80, 85}
 SWEP.availableAttachments = {
 	--[[barrel = {
@@ -91,7 +91,7 @@ SWEP.FOVMax = 10
 SWEP.huyRotate = 25
 SWEP.FOVScoped = 40
 
-SWEP.DistSound = "toz_shotgun/toz_dist.wav"--SWEP.DistSound = "weapons/awoi/musket_1_fire.wav"
+SWEP.DistSound = "snds_jack_gmod/ez_weapons/shotgun_far.wav"
 SWEP.lengthSub = 25
 SWEP.ShootAnimMul = 12
 SWEP.punchmul = 12

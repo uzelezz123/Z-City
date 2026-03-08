@@ -520,7 +520,7 @@ function SWEP:CreateSpoon(entownr)
 
 		if self.SpoonSounds then
 			for k,v in ipairs(self.SpoonSounds) do
-				self:GetOwner():EmitSound(v[1], v[2], v[3])
+				self:GetOwner():EmitSound(v[1], v[2], v[3], v[5])
 
 				if v[4] then
 					local effectData = EffectData()

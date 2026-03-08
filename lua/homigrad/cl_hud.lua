@@ -204,6 +204,7 @@ local taitorCol = Color(155,0,0)
 local menuPanel
 
 local colBack = Color(0,0,0)
+local surface, draw, hook, IsColor, IsValid, math, input = surface, draw, hook, IsColor, IsValid, math, input
 local function CreateRadialMenu(options_arg, bAutoClose)
 	local sizeX, sizeY = ScrW(), ScrH()
 	hg.radialOptions = {}
@@ -226,9 +227,11 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 		MENUPANELHUYHUY = nil
 	end
 
+	local scrH, scrW = ScrH(), ScrW()
+
 	MENUPANELHUYHUY = vgui.Create("DPanel")
 	menuPanel = MENUPANELHUYHUY
-	menuPanel:SetPos(ScrW() / 2 - sizeX / 2, ScrH() / 2 - sizeY / 2)
+	menuPanel:SetPos(scrW / 2 - sizeX / 2, scrH / 2 - sizeY / 2)
 	menuPanel:SetSize(sizeX, sizeY)
 	menuPanel:MakePopup()
 	menuPanel:SetKeyBoardInputEnabled(false)
@@ -286,8 +289,8 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 		local viewLerp = Lerp(math.ease.OutExpo(sizePan),0,1)
 		for num, option in ipairs(options) do
 			local num = num - 1
-			
-			local r = ScrH() * (options_arg ~= nil and 0.4 or 0.45) * viewLerp
+
+			local r = scrH * (options_arg ~= nil and 0.4 or 0.45) * viewLerp
 			local partDeg = 360 / #options
 			local sqrt = math.sqrt(x ^ 2 + y ^ 2)
 			isMouseOnRadial = sqrt <= r and sqrt > 4
@@ -297,8 +300,8 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 
 			optionSelected[num] = optionSelected[num] or 0
 			optionSelected[num] = LerpFT(0.1, optionSelected[num], isMouseIntersecting and 1 or 0)
-			
-			if option[3] then
+
+			if option[3] then --// Multibutton
 				surface.SetMaterial(matHuy)
 				surface.SetDrawColor(isMouseIntersecting and colBlack or colBlack)
 				draw.CirclePart(w / 2, h / 2, r, 40, #options, num)
@@ -321,34 +324,61 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 						math.randomseed(os.time())
 					end
 
-					draw.DrawText(opt, "HomigradFont", ScrW() / 2 + math.sin(a) * r * (i / count - 0.5 / count), ScrH() / 2 + math.cos(a) * r * (i / count - 0.5 / count), colWhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+					draw.DrawText(opt, "HomigradFont", scrW / 2 + math.sin(a) * r * (i / count - 0.5 / count), scrH / 2 + math.cos(a) * r * (i / count - 0.5 / count), colWhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				end
 
 				continue
 			end
 			
 			--print(options_arg ~= nil and true or false)
-			surface.SetMaterial(matHuy)	
-			surface.SetDrawColor(colWhiteTransparent:Lerp(options_arg ~= nil and colOption or colBlack, 1 - optionSelected[num]))
+			surface.SetMaterial(matHuy)
+			if option[6] and IsColor(option[6]) then --// Custom color
+				if option[7] and IsColor(option[7]) then --// Custom select color
+					surface.SetDrawColor(option[7]:Lerp(option[6], 1 - optionSelected[num]))
+				else
+					surface.SetDrawColor(colWhiteTransparent:Lerp(option[6], 1 - optionSelected[num]))
+				end
+			else
+				if option[7] and IsColor(option[7]) then --// Custom select color
+					surface.SetDrawColor(option[7]:Lerp(options_arg ~= nil and colOption or colBlack, 1 - optionSelected[num]))
+				else
+					surface.SetDrawColor(colWhiteTransparent:Lerp(options_arg ~= nil and colOption or colBlack, 1 - optionSelected[num]))
+				end
+			end
+
 			draw.CirclePart(w / 2, h / 2, r * (1 + 0.1 * optionSelected[num]), 30, #options, num)
 			local a = -partDeg * num - partDeg / 2
 			a = math.rad(a) + math.pi
-			local txt = option[2]
-			if txt and !options_old then return end
-			if paining then
-				math.randomseed(math.Round(CurTime() / 5 + num, 0))
-				txt = hg.get_status_message(ply)
-				math.randomseed(os.time())
+
+			--PrintTable(option)
+			if option[5] then --// Icon
+				local a = -partDeg * num - partDeg / 2
+				a = math.rad(a) + math.pi
+
+				surface.SetMaterial(option[5])
+				surface.SetDrawColor(color_white)
+				local sizeW = scrW / 2.25 + math.sin(a) * r * 0.7
+				local sizeH = scrH / 2.2 + math.cos(a) * r * 0.7
+		
+				surface.DrawTexturedRect(sizeW, sizeH, scrW * 0.1, scrH * 0.1)
+			else
+				local txt = option[2] --// Text
+				if txt and !options_old then return end
+				if paining then
+					math.randomseed(math.Round(CurTime() / 5 + num, 0))
+					txt = hg.get_status_message(ply)
+					math.randomseed(os.time())
+				end
+				draw.DrawText(txt, "HomigradFont", scrW / 2 + math.sin(a) * r * 0.75, scrH / 2 + math.cos(a) * r * 0.75, colWhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
-			draw.DrawText(txt, "HomigradFont", ScrW() / 2 + math.sin(a) * r * 0.75, ScrH() / 2 + math.cos(a) * r * 0.75, colWhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 			if !(paining) then
-				draw.SimpleText(lply:GetPlayerName(),"HomigradFontGigantoNormous",ScrW() * 0.0215* viewLerp,ScrH() * 0.042, colBack, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-				draw.SimpleText( ( (lply.role and lply.role.name) or ""),"HomigradFontGigantoNormous" ,ScrW() * 0.0215 * viewLerp,ScrH() * 0.098, colBack, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+				draw.SimpleText(lply:GetPlayerName(),"HomigradFontGigantoNormous",scrW * 0.0215* viewLerp,scrH * 0.042, colBack, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+				draw.SimpleText( ( (lply.role and lply.role.name) or ""),"HomigradFontGigantoNormous" ,scrW * 0.0215 * viewLerp,scrH * 0.098, colBack, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
 				local col = lply:GetPlayerColor():ToColor()
-				draw.SimpleText(lply:GetPlayerName(),"HomigradFontGigantoNormous",ScrW() * 0.02 * viewLerp,ScrH() * 0.04, col, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-				draw.SimpleText( ( (lply.role and lply.role.name) or ""),"HomigradFontGigantoNormous" ,ScrW() * 0.02 * viewLerp,ScrH() * 0.095, lply.role and lply.role.color or incoentCol, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+				draw.SimpleText(lply:GetPlayerName(),"HomigradFontGigantoNormous",scrW * 0.02 * viewLerp,scrH * 0.04, col, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+				draw.SimpleText( ( (lply.role and lply.role.name) or ""),"HomigradFontGigantoNormous" ,scrW * 0.02 * viewLerp,scrH * 0.095, lply.role and lply.role.color or incoentCol, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 			end
 		end
 	end

@@ -107,8 +107,9 @@ function CLASS.On(self)
 				self:SetSubMaterial(self:GetSubMaterialIdByName("distac/gloves/players_sheet"), fallbackMats[self.PreZombClass]["main"])
 				self:SetSubMaterial(self:GetSubMaterialIdByName("distac/gloves/pants"), fallbackMats[self.PreZombClass]["pants"])
 				self:SetSubMaterial(self:GetSubMaterialIdByName("distac/gloves/cross"), fallbackMats[self.PreZombClass]["boots"])
+
+				self:SetPlayerColor(clr_darkred:ToVector())
 			end
-			self:SetPlayerColor(clr_darkred:ToVector())
 		end
 
 		self:SetSubMaterial(4, "")
@@ -249,14 +250,21 @@ function CLASS.Think(self)
 		org.consciousness = 1
 		org.adrenalineAdd = 4
 		org.analgesia = 0.4
+		org.painadd = -5
 	end
 
-	if org.pain >= 75 then
-		org.painadd = -10
+	if org.pain >= 30 then
+		org.consciousness = 1
+		org.adrenalineAdd = 1
+		org.painadd = -15
 	end
 
 	org.pulse = 70
 	org.o2["curregen"] = 2
+
+	if org.brain >= 0.1 then
+		org.brain = 0.05
+	end
 
 	if org.consciousness <= 0.3 then
 		org.consciousness = 1
@@ -292,10 +300,10 @@ end)
 
 hook.Add("HG_ReplacePhrase", "ZombPhrases", function(ply, phrase, muffed, pitch) -- pitch means pitched effect, not exact sound pitch
 	if ply.PlayerClassName == "headcrabzombie" then
-		local inpain = ply.organism.pain > 60
+		local inpain = ply.organism.pain > 30
 		local phr = (inpain and zomb_pain[math.random(#zomb_pain)] or zomb_phrases[math.random(#zomb_phrases)])
 
-		return ply, phr, true, pitch -- pitch effect will be useful for zombine
+		return ply, phr, inpain and false or true, pitch -- pitch effect will be useful for zombine
 	end
 end)
 
@@ -333,7 +341,8 @@ end)
 
 hook.Add("UpdateAnimation", "ZombAnimRate", function(ply, vel, maxSeqGroundSpeed)
 	if ply.PlayerClassName == "headcrabzombie" then
-		if not IsValid(ply) or not ply:Alive() then return end
+		local isAmputated = ply:IsBerserk() and ply.organism and (ply.organism.llegamputated or ply.organism.rlegamputated)
+		if not IsValid(ply) or not ply:Alive() or isAmputated then return end
 
 		if vel:LengthSqr() >= 77000 and vel:LengthSqr() < 110000 then
 			ply:SetPlaybackRate(1.1)
@@ -467,7 +476,7 @@ else
 	end
 
 	hook.Add("Post Pre Post Processing", "ZombDrawHeadcrab", function()
-		if lply.PlayerClassName == "headcrabzombie" and lply:Alive() and lply.organism and not lply.organism.otrub then
+		if lply.PlayerClassName == "headcrabzombie" and lply:Alive() and lply.organism and not lply.organism.otrub and GetViewEntity() == lply then
 			DrawHeadcrab(lply, "models/nova/w_headcrab.mdl", vector_origin, -50)
 		end
 	end)
@@ -498,6 +507,39 @@ else
 	hook.Add("hg_AdjustMouseSensitivity", "ZombSens", function(sensitivity)
 		if lply.PlayerClassName == "headcrabzombie" and lply:GetVelocity():LengthSqr() >= 140000 and lply:GetMoveType() == MOVETYPE_WALK then
 			return 0.25
+		end
+	end)
+
+	local zombMat = Material("effects/shaders/zb_grain2") -- Material("effects/shaders/zb_zomb")
+	local zombMat_Add = Material("effects/shaders/zb_heat")
+	hook.Add("Post Post Processing", "ZombShaders", function()
+		if lply.PlayerClassName == "headcrabzombie" and lply:Alive() and GetViewEntity() == lply then
+			render.UpdateScreenEffectTexture()
+
+			zombMat_Add:SetFloat("$c0_x", -CurTime() * 0.1) //time
+			zombMat_Add:SetFloat("$c0_y", 0.1) //intensity (strict)
+			zombMat_Add:SetFloat("$c2_x", 2)
+
+			render.SetMaterial(zombMat_Add)
+			render.DrawScreenQuad()
+
+			render.UpdateScreenEffectTexture()
+			render.UpdateFullScreenDepthTexture()
+			
+			local asad = math.Clamp(math.sin(CurTime() * 2), 0.7, 1)
+			zombMat:SetFloat("$c0_x", CurTime()) -- time
+			zombMat:SetFloat("$c0_y", -1) -- gate
+			zombMat:SetFloat("$c0_z", 2) -- Pixelize
+			zombMat:SetFloat("$c1_x", 16) -- lerp
+			zombMat:SetFloat("$c1_y", 0.2) -- vignette intensity
+			zombMat:SetFloat("$c1_z", 0.2) -- BlurIntensity
+			zombMat:SetFloat("$c2_x", 0.4 * asad) -- r
+			zombMat:SetFloat("$c2_y", 0.05) -- g
+			zombMat:SetFloat("$c2_z", 0) -- b
+			zombMat:SetFloat("$c3_x", 0) -- ImageIntensity
+		
+			render.SetMaterial(zombMat)
+			render.DrawScreenQuad()
 		end
 	end)
 end

@@ -20,7 +20,7 @@ SWEP.weight = 3.5
 SWEP.HoldPos = Vector(-14,-2,1)
 SWEP.HoldAng = Angle(0,0,0)
 
-SWEP.AttackTime = 0.4
+SWEP.AttackTime = 0.43
 SWEP.AnimTime1 = 1.9
 SWEP.WaitTime1 = 1.3
 SWEP.ViewPunch1 = Angle(1,2,0)

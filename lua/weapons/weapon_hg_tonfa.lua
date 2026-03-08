@@ -12,26 +12,29 @@ SWEP.WorldModelExchange = "models/weapons/tacint_melee/w_tonfa.mdl"
 SWEP.ViewModel = ""
 
 SWEP.HoldType = "melee"
+SWEP.weight = 0.6
 
 SWEP.HoldPos = Vector(-12,0,0)
 SWEP.HoldAng = Angle(0,0,0)
 
-SWEP.AttackTime = 0.4
-SWEP.AnimTime1 = 1.3
-SWEP.WaitTime1 = 1
-SWEP.ViewPunch1 = Angle(0,-5,3)
+SWEP.AttackTime = 0.275
+SWEP.AnimTime1 = 1.2
+SWEP.WaitTime1 = 0.9
+SWEP.ViewPunch1 = Angle(1,1,0)
 
 SWEP.Attack2Time = 0.3
-SWEP.AnimTime2 = 1
-SWEP.WaitTime2 = 0.8
-SWEP.ViewPunch2 = Angle(0,0,-4)
+SWEP.AnimTime2 = 0.7
+SWEP.WaitTime2 = 0.7
+SWEP.ViewPunch2 = Angle(0,0,-2)
+
+SWEP.AnimAlwaysBack = true
 
 SWEP.attack_ang = Angle(0,0,0)
 SWEP.sprint_ang = Angle(15,0,0)
 
 SWEP.basebone = 94
 
-SWEP.weaponPos = Vector(0,0,-8)
+SWEP.weaponPos = Vector(-0.3,0.5,-8)
 SWEP.weaponAng = Angle(0,-90,0)
 
 SWEP.DamageType = DMG_CLUB

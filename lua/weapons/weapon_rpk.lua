@@ -60,7 +60,8 @@ SWEP.ViewPunchDiv = 70
 
 SWEP.FakeMagDropBone = 57
 
-SWEP.RestPosition = Vector(25, -1, 4)
+SWEP.RestPosition = Vector(30, -1, 6)
+SWEP.BipodOffset = Vector(5, 0, -7.5)
 
 SWEP.AnimList = {
 	["idle"] = "idle",
@@ -107,6 +108,22 @@ function SWEP:ModelCreated(model)
 		self:GetWM():ManipulateBoneScale(58, vector_origin)
 		self:GetWM():SetBodyGroups(self.FakeBodyGroups)
 	end
+end
+
+function SWEP:ThinkAdd()
+	-- local owner = self:GetOwner()
+	-- if not IsValid(owner) then return end
+
+	-- if CLIENT and self:IsResting() then
+	-- 	local wm = self:GetWM()
+	-- 	local bone = wm:LookupBone("bipod1")
+	-- 	local posa, anga = self:GetBipodPosAng()
+	-- 	wm:ManipulateBoneAngles(bone, Angle(anga[2] + 35, 0, -owner:EyeAngles()[3] - 90))
+
+	-- 	local bone = wm:LookupBone("bipod2")
+	-- 	local posa, anga = self:GetBipodPosAng()
+	-- 	wm:ManipulateBoneAngles(bone, Angle(anga[2] - 35, 0, -owner:EyeAngles()[3] - 90))
+	-- end
 end
 
 SWEP.ReloadHold = nil

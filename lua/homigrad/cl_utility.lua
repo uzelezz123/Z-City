@@ -262,10 +262,16 @@ players : 1 humans, 0 bots (20 max)
 			if not lply:Alive() then return end
 			if not IsValid(lply) or not lply:IsPlayer() then return end
 			if !lply:Alive() or !lply.organism or lply.organism.otrub then return end
+			local CustomAmmoType = false
+			if hg.ammotypeshuy[bullet.AmmoType] then
+				CustomAmmoType = hg.ammotypeshuy[bullet.AmmoType]
+			end
+			local subsonic = !(CustomAmmoType and CustomAmmoType.BulletSettings and CustomAmmoType.BulletSettings.Speed and CustomAmmoType.BulletSettings.Speed > 340)
+			
 			local tr = bullet.Trace
 			local mr = math.random(17)
 			local view = render.GetViewSetup(true)
-			if tr.StartPos:Distance( tr.HitPos ) > 5000 then
+			if tr.StartPos:Distance( tr.HitPos ) > 5000 and !subsonic then
 				local time = view.origin:Distance(tr.StartPos+tr.HitPos/2) / 17836
 				timer.Simple(time,function()
 					EmitSound("cracks/distant/dist_crack_" .. ( mr < 9 and "0" or "") .. mr .. ".ogg", tr.StartPos+tr.HitPos*0.35, 0, CHAN_AUTO, 1,SNDLVL_140dB)
@@ -275,12 +281,11 @@ players : 1 humans, 0 bots (20 max)
 			local self = ent
 			if tr.Entity == hg.GetCurrentCharacter(lply) then
 
-				Suppress((10))
+				Suppress( 10 )
 				return
 			end
 
 			if not IsValid(self) or self:GetOwner() == lply:GetViewEntity() then return end
-
 			local eyePos = view.origin
 			local dis, pos = util.DistanceToLine(tr.StartPos, tr.HitPos, eyePos)
 			local isVisible = not util.TraceLine({
@@ -297,10 +302,21 @@ players : 1 humans, 0 bots (20 max)
 			local mr = math.random(9)
 
 			if shooterdist < 200 and not IsLookingAt(self:GetOwner(),eyePos) then return end
-			if dist < 180 then EmitSound("cracks/heavy/heav_crack_0" .. mr .. ".ogg", pos, 0, CHAN_AUTO, 1,65) end
-			if dist > 120 then return end
+			local SND = subsonic and "weapons/bullets/fx/subsonic_0" .. mr .. ".wav"
+				or bullet.Damage >= 50 and "cracks/" .. "heavy/heav" .. "_crack_0" .. mr .. ".ogg"
+				or bullet.Damage >= 30 and "cracks/" .. "medium/med" .. "_crack_0" .. mr .. ".ogg"
+				or "cracks/" .. "light/light" .. "_crack_0" .. mr .. ".ogg"
 
-			EmitSound("cracks/heavy/heav_crack_0" .. mr .. ".ogg", pos, 0, CHAN_AUTO, 1,85)
+			if dist < 180 then
+				timer.Simple(0.01,function()
+					EmitSound("weapons/bullets/fx/subsonic_0" .. mr .. ".wav", pos - tr.Normal * 25, 0, CHAN_AUTO, 1, 55)
+				end)
+				-- EmitSound(SND, pos - tr.Normal * 25, 0, CHAN_AUTO, 1, 65) 
+			end
+			if dist > 120 then return end
+			if !subsonic then
+				EmitSound(SND, pos - tr.Normal * 25, 0, CHAN_AUTO, 1, 75)
+			end
 
 			dist = dist / math.abs((tr.HitPos - tr.StartPos):GetNormalized():Dot((tr.StartPos - eyePos):GetNormalized()))
 			dist = math.Clamp(1 / dist, 0.05,0.25)
@@ -558,6 +574,13 @@ players : 1 humans, 0 bots (20 max)
 		--checkcd = CurTime() + 1
 		local entities = ents_FindByClass("prop_ragdoll")
 		table_Add(entities, player_GetAll())
+
+		local orgents = {}
+		for ent in pairs(hg.organism_ents) do
+			if !IsValid(ent) then hg.organism_ents[ent] = nil continue end
+
+			table.insert(entities, ent)
+		end
 
 		hg.seenents = {}
 		hg.seenents2 = {}
@@ -901,5 +924,14 @@ players : 1 humans, 0 bots (20 max)
 --\\ Remove CLIENT side hit particles
 	hook.Add("ScalePlayerDamage","remove_cl_hit_particles",function()
 		return !game.SinglePlayer() -- i hate singleplayer in gmod. WHY I SHOULD DO THIS STUPID IDIOTIC SHIT, i hate it.
+	end)
+--//
+
+--\\ Remove sfbreath effect
+	hook.Add("Think","RemoveSF2_breath",function()
+		hook.Remove("PostPlayerDraw", "StormFox2.Effect.Breath")
+		timer.Remove("StormFox2.Effect.BreathT")
+
+		hook.Remove("Think","RemoveSF2_breath")
 	end)
 --//

@@ -6,13 +6,13 @@ MODE.LootSpawn = false
 MODE.GuiltDisabled = true
 MODE.randomSpawns = true
 
-MODE.Chance = 0.01
+MODE.Chance = 0.00
 
 util.AddNetworkString("scugarena_start")
 util.AddNetworkString("scugarena_end")
 
 function MODE:CanLaunch()
-    return false
+    return true
 end
 
 function MODE:Intermission()

@@ -16,6 +16,9 @@ SWEP.FakeBodyGroups = "0A0000C0010002"
 SWEP.WepSelectIcon2 = Material("pwb/sprites/akm.png")
 SWEP.IconOverride = "entities/arc9_eft_vpo136.png"
 
+SWEP.Primary.Sound = {"weapons/ak74/ak74_tp.wav", 85, 90, 100}
+SWEP.Primary.SoundFP = {"weapons/ak74/ak74_fp.wav", 85, 90, 100}
+
 --local mat = "models/weapons/tfa_ins2/ak_pack/ak74n/ak74n_stock"
 --function SWEP:ModelCreated(model)
 --	local wep = self:GetWeaponEntity()

@@ -53,41 +53,6 @@ function MODE.GetPlayerTraceToOtherVictim(ply, victim, dist)
 end
 --//
 
---\\Chemical resistance
-function MODE.DegradeChemicalsOfPlayer(ply)
-	ply.PassiveAbility_ChemicalAccumulation = ply.PassiveAbility_ChemicalAccumulation or {}
-	
-	for chemical_name, amt in pairs(ply.PassiveAbility_ChemicalAccumulation) do
-		ply.PassiveAbility_ChemicalAccumulation[chemical_name] = math.max(amt - FrameTime() * (chemical_degrade_speeds[chemical_name] or 1), 0)
-	end
-end
-
-function MODE.CleanChemicalsOfPlayer(ply)
-	ply.PassiveAbility_ChemicalAccumulation = {}
-end
-
-function MODE.GetChemicalOfPlayer(ply, chemical_name)
-	ply.PassiveAbility_ChemicalAccumulation = ply.PassiveAbility_ChemicalAccumulation or {}
-	ply.PassiveAbility_ChemicalAccumulation[chemical_name] = (ply.PassiveAbility_ChemicalAccumulation[chemical_name] or 0)
-	
-	return ply.PassiveAbility_ChemicalAccumulation[chemical_name]
-end
-
-function MODE.SetChemicalToPlayer(ply, chemical_name, amt)
-	amt = amt or 1
-	ply.PassiveAbility_ChemicalAccumulation = ply.PassiveAbility_ChemicalAccumulation or {}
-	ply.PassiveAbility_ChemicalAccumulation[chemical_name] = amt
-end
-
-function MODE.AddChemicalToPlayer(ply, chemical_name, amt)
-	amt = amt or 1
-	ply.PassiveAbility_ChemicalAccumulation = ply.PassiveAbility_ChemicalAccumulation or {}
-	ply.PassiveAbility_ChemicalAccumulation[chemical_name] = (ply.PassiveAbility_ChemicalAccumulation[chemical_name] or 0) + amt
-	
-	return ply.PassiveAbility_ChemicalAccumulation[chemical_name]
-end
---//
-
 --\\Neck Break
 function MODE.CanPlayerBreakOtherNeck(ply, aim_ent)
 	if(aim_ent:IsRagdoll())then

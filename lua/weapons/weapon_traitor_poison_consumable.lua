@@ -169,6 +169,41 @@ function SWEP:DoPoison(ent)
 	self:SetUsesLeft(math.max(self:GetUsesLeft(0) - 1, 0))
 end
 
+--\\Chemical resistance
+function DegradeChemicalsOfPlayer(ply)
+	ply.PassiveAbility_ChemicalAccumulation = ply.PassiveAbility_ChemicalAccumulation or {}
+	
+	for chemical_name, amt in pairs(ply.PassiveAbility_ChemicalAccumulation) do
+		ply.PassiveAbility_ChemicalAccumulation[chemical_name] = math.max(amt - FrameTime() * (chemical_degrade_speeds[chemical_name] or 1), 0)
+	end
+end
+
+function CleanChemicalsOfPlayer(ply)
+	ply.PassiveAbility_ChemicalAccumulation = {}
+end
+
+function GetChemicalOfPlayer(ply, chemical_name)
+	ply.PassiveAbility_ChemicalAccumulation = ply.PassiveAbility_ChemicalAccumulation or {}
+	ply.PassiveAbility_ChemicalAccumulation[chemical_name] = (ply.PassiveAbility_ChemicalAccumulation[chemical_name] or 0)
+	
+	return ply.PassiveAbility_ChemicalAccumulation[chemical_name]
+end
+
+function SetChemicalToPlayer(ply, chemical_name, amt)
+	amt = amt or 1
+	ply.PassiveAbility_ChemicalAccumulation = ply.PassiveAbility_ChemicalAccumulation or {}
+	ply.PassiveAbility_ChemicalAccumulation[chemical_name] = amt
+end
+
+function AddChemicalToPlayer(ply, chemical_name, amt)
+	amt = amt or 1
+	ply.PassiveAbility_ChemicalAccumulation = ply.PassiveAbility_ChemicalAccumulation or {}
+	ply.PassiveAbility_ChemicalAccumulation[chemical_name] = (ply.PassiveAbility_ChemicalAccumulation[chemical_name] or 0) + amt
+	
+	return ply.PassiveAbility_ChemicalAccumulation[chemical_name]
+end
+--//
+
 if(SERVER)then
     hook.Add("Org Clear", "RemovePoison_KCN", function(org)
         org.Poison_KCN = nil
@@ -192,7 +227,7 @@ if(SERVER)then
 			org.stamina[1] = math.min(org.stamina[1], 50 / poison_potency)
 			org.o2[1] = math.min(org.o2[1], org.o2.range / poison_potency)
 			org.disorientation = math.max(org.disorientation, 10 * poison_potency)
-			org.pulse = math.max(org.pulse, 120 + 10 * poison_potency)
+			//org.pulse = math.max(org.pulse, 120 + 10 * poison_potency)
 		end
 
 		if((poison_start_time + (90 / poison_potency)) < CurTime())then

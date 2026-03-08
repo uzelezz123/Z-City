@@ -165,7 +165,7 @@ local bit_band,util_PointContents = bit.band,util.PointContents
 local color_white, color_red, color_red2, color_red3 = Color(255, 255, 255), Color(255, 0, 0), Color(200, 55, 55), Color(255, 100, 100)
 module[2] = function(owner, org, timeValue)
 	local o2 = org.o2
-	local losing_oxy = timeValue * 0.5 * math.Clamp(org.o2[1] / 30, 0.25, 1)
+	local losing_oxy = timeValue * 1 * math.Clamp(org.o2[1] / 30, 0.25, 1)
 	org.losing_oxy = losing_oxy
 	o2[1] = max(o2[1] - losing_oxy, 0)
 	local ent = hg.GetCurrentCharacter(owner)
@@ -198,7 +198,7 @@ module[2] = function(owner, org, timeValue)
 	if not head then head = owner:GetPos() end
 	
 	local inwater = bit_band(util_PointContents(head),CONTENTS_WATER) == CONTENTS_WATER
-	
+	-- test
 	local success = owner:IsBerserk() or (not org.heartstop and org.alive and not (org.brain >= 0.4 and math.random(10 - (org.brain * 10)) < 4) and org.lungsfunction)
 	if success and owner:IsPlayer() and inwater then success = false end
 	if success and org.choking then org.needfake = true success = false end
@@ -231,7 +231,7 @@ module[2] = function(owner, org, timeValue)
 		local sprayed = org.is_sprayed_at
 		org.is_sprayed_at = nil
 
-		local regenerate = regen * timeValue * 2 * (org.stamina[1] / org.stamina.max) * (mask_blevota and 0 or 1) * ((org.temperature > 38) and math.Clamp(math.Remap(org.temperature, 38, 41, 1, 0.1), 0.1, 1) or 1)
+		local regenerate = regen * timeValue * 4 * (org.stamina[1] / org.stamina.max) * (mask_blevota and 0 or 1) * ((org.temperature > 38) and math.Clamp(math.Remap(org.temperature, 38, 41, 1, 0.1), 0.1, 1) or 1)
 		o2[1] = min(o2[1] + regenerate * math.Clamp(org.o2[1] / 30, 0.25, 1) * (org.holdingbreath and 0 or 1) * (sprayed and 0 or 1) * min((10 / max(org.CO,1)),1), o2.range * math.max(1 - org.pneumothorax * org.pneumothorax, 0.1) * math.min(org.blood / 4500, 1) * math.max(1 - (org.lungsL[1] + org.lungsR[1]) / 2, 0.5))
 
 		o2.curregen = regenerate
@@ -280,14 +280,18 @@ module[2] = function(owner, org, timeValue)
 		end
 	end
 
-	if (org.lungsL[1] == 1 and org.lungsR[1] == 1) or org.heartstop then
-		org.lungsfunction = false
-	end
-
 	if o2[1] == 0 then
 		if math.random(50) == 1 then
 			org.lungsfunction = false
 		end
+	else
+		if math.random(50) == 1 then
+			org.lungsfunction = true
+		end
+	end
+
+	if (org.lungsL[1] == 1 and org.lungsR[1] == 1) or org.heartstop then
+		org.lungsfunction = false
 	end
 
 	--[[if (pneumothorax or org.trachea >= 0.6 or org.lungsR[1] >= 0.6 or org.lungsL[1] >= 0.6) and org.alive and o2[1] > 0 then
@@ -321,8 +325,14 @@ module[2] = function(owner, org, timeValue)
 	end
 
 	local k = halfValue2(o2[1], o2.range, o2.k)
-	
-	if o2[1] < 8 then
+
+	if o2[1] < 10 then
+		if org.isPly then
+			hg.StunPlayer(owner, 3)
+		end
+	end
+
+	if o2[1] < 12 then
 		org.needfake = true
 
 		if org.isPly then

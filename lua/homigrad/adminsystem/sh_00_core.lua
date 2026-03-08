@@ -3,7 +3,7 @@ hg.AdminSystem = hg.AdminSystem or {}
 
 local AS = hg.AdminSystem
 
-AS.Version = "2.0" --;; 1488
+AS.Version = "2.0"
 AS.Modules = AS.Modules or {}
 AS.PlayerData = AS.PlayerData or {}
 

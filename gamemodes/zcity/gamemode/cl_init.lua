@@ -620,7 +620,7 @@ function GM:ScoreboardShow()
 		local lengthX, lengthY = surface.GetTextSize("Spectators:")
 		surface.SetTextPos(w * 0.75 - lengthX/2,ScreenScale(25))
 		surface.DrawText("Spectators:")
-		tick = math.Round(LerpFT(0.1,tick or 0, 1 / engine.ServerFrameTime()))
+		tick = math.Round(1 / engine.ServerFrameTime())
 		local txt = "SV Tick: " .. tick
 		local lengthX, lengthY = surface.GetTextSize(txt)
 		surface.SetTextPos(w * 0.5 - lengthX/2,ScreenScale(25))

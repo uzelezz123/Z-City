@@ -39,7 +39,7 @@ SWEP.PenetrationSizePrimary = 2
 SWEP.PenetrationSizeSecondary = 2
 
 SWEP.StaminaPrimary = 15
-SWEP.StaminaSecondary = 10
+SWEP.StaminaSecondary = 30
 
 SWEP.AttackTime = 0.25
 SWEP.AnimTime1 = 0.7

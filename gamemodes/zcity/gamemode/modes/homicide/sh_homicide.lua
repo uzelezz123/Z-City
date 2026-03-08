@@ -154,10 +154,10 @@ For people who like to play checkers.]],
 			
 			ply.organism.recoilmul = 0.8
 			ply.organism.stamina.max = 300
-			-- local inv = ply:GetNetVar("Inventory", {})
-			-- inv["Weapons"]["hg_flashlight"] = true
+			--local inv = ply:GetNetVar("Inventory", {}) // WHY SOMEONE COMMENTED THIS
+			--inv["Weapons"]["hg_flashlight"] = true
 			
-			ply:SetNetVar("Inventory", inv)
+			--ply:SetNetVar("Inventory", inv) // BUT NOT THIS???
 		end,
 	},
 	["traitor_assasin_soe"] = {
@@ -179,10 +179,10 @@ For people who like to play checkers.]],
 			
 			ply.organism.recoilmul = 0.4
 			ply.organism.stamina.max = 300
-			--local inv = ply:GetNetVar("Inventory", {})
+			--local inv = ply:GetNetVar("Inventory", {}) // WHY SOMEONE COMMENTED THIS
 			--inv["Weapons"]["hg_flashlight"] = true
 			
-			ply:SetNetVar("Inventory", inv)
+			--ply:SetNetVar("Inventory", inv) // BUT NOT THIS???
 		end,
 	},
 	--==//

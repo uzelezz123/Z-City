@@ -31,10 +31,10 @@ SWEP.DamageType = DMG_SLASH
 SWEP.HoldPos = Vector(-11, 0, 0)
 SWEP.HoldAng = Angle()
 
-SWEP.AttackTime = 0.25
-SWEP.AnimTime1 = 1.2
-SWEP.WaitTime1 = 1.2
-SWEP.ViewPunch1 = Angle(1, 2, 0)
+SWEP.AttackTime = 0.42
+SWEP.AnimTime1 = 1.5
+SWEP.WaitTime1 = 1.3
+SWEP.ViewPunch1 = Angle(1, 1, -1)
 
 SWEP.Attack2Time = 0.2
 SWEP.AnimTime2 = 1

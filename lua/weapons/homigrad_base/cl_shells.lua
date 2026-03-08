@@ -57,6 +57,7 @@ hg_trails = hg_trails or {}
 local hg_shouldnt_autoremove = ConVarExists("hg_shouldnt_autoremove") and GetConVar("hg_shouldnt_autoremove") or CreateConVar("hg_shouldnt_autoremove", 0, FCVAR_REPLICATED, "Toggle weapon shell disappearing", 0, 1)
 local hg_potatopc
 local hg_maxsmoketrails = GetConVar("hg_maxsmoketrails") or CreateClientConVar("hg_maxsmoketrails", "7", true, false, "Max amount of smoke trail effects (lags starts after 10)", 0, 30)
+local physvec = Vector(0.5, 0.15, 0.5)
 function SWEP:MakeShell(shell, pos, ang, vel)
 	if not shell or not pos or not ang then
 		return
@@ -70,7 +71,7 @@ function SWEP:MakeShell(shell, pos, ang, vel)
 	
 	vel = vel or Vector(0, 0, -100)
 	vel = vel + VectorRand() * 5
-	
+
 	local ent = ClientsideModel(t.m, RENDERGROUP_BOTH) 
 	function ent:Draw()
 		if (LocalPlayer():EyePos() - self:GetPos()):LengthSqr() < 512^2 then
@@ -79,7 +80,7 @@ function SWEP:MakeShell(shell, pos, ang, vel)
 	end
 	ent:SetPos(pos)
 
-	ent:PhysicsInitBox( t.vCustomPhys and -t.vCustomPhys or Vector(-0.5, -0.15, -0.5), t.vCustomPhys or Vector(0.5, 0.15, 0.5),"gmod_silent")
+	ent:PhysicsInitBox( t.vCustomPhys and -t.vCustomPhys or -physvec, t.vCustomPhys or physvec,"gmod_silent")
 
 	ent:SetAngles(ang)
 	ent:SetMoveType(MOVETYPE_VPHYSICS)
@@ -91,13 +92,13 @@ function SWEP:MakeShell(shell, pos, ang, vel)
 	local phys = ent:GetPhysicsObject()
 	phys:SetMaterial("gmod_silent")
 	phys:SetMass(10)
-	phys:SetVelocity(vel + (((IsValid(self) and IsValid(self:GetOwner())) and self:GetOwner():GetVelocity()/1.1) or Vector(0,0,0)))
+	phys:SetVelocity(vel + (((IsValid(self) and IsValid(self:GetOwner())) and self:GetOwner():GetVelocity()/1.1) or vector_origin))
     phys:SetAngleVelocity(VectorRand() * 100 - ang:Forward() * math.random(1500,3500))
 	
 	hg_potatopc = hg_potatopc or hg.ConVars.potatopc
 	
 	if not hg_potatopc:GetBool() then
-		if math.random(1) == 1 and #hg_trails < hg_maxsmoketrails:GetInt() then
+		if #hg_trails < hg_maxsmoketrails:GetInt() then
 			local eff = ent:CreateParticleEffect("smoke_trail_wild",1,{PATTACH_ABSORIGIN_FOLLOW,ent,ent:GetPos()})
 			table.insert(hg_trails,eff)
 			eff:StartEmission()
@@ -123,7 +124,7 @@ function SWEP:MakeShell(shell, pos, ang, vel)
 					fallmat = "water"
 				end
 				local Type = Types[fallmat] or "default"
-				ent:EmitSound(ShellsSND[t.s]..Type.."_"..math.random(1,5)..".mp3", 60, 100) 
+				ent:EmitSound(ShellsSND[t.s]..Type.."_"..math.random(5)..".mp3", 60, 100) 
 			end
 
             if istable(t.s) then
@@ -131,11 +132,12 @@ function SWEP:MakeShell(shell, pos, ang, vel)
             end
         end
     end)
-	gamemod = gamemod or engine.ActiveGamemode()
-	if not hg_shouldnt_autoremove:GetBool() and ( zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox" ) then	
+
+	if not hg_shouldnt_autoremove:GetBool() and (zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox") then	
 		SafeRemoveEntityDelayed(ent, 10)
 	end
 end
+
 local vec = Vector(1.3,0.2,4.5)
 local lpos, lang = Vector(-5,0,0), Angle(0,0,0)
 local lpos2, lang2 = Vector(0,5,0), Angle(0,0,0)
@@ -158,7 +160,6 @@ function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
 	local ent = ClientsideModel(self.MagModel or "models/weapons/upgrades/w_magazine_m1a1_30.mdl")
 	hg_shelles[#hg_shelles+1] = ent
 	ent.RenderOverride = function(self)
-		
 		if (LocalPlayer():EyePos() - self:GetPos()):LengthSqr() < 512*512 then -- так быстрее
 			if not bDontChangePhys then
 				local phys = self:GetPhysicsObject()
@@ -222,14 +223,14 @@ function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
 			ent:EmitSound("physics/metal/weapon_impact_hard"..math.random(1,3)..".wav", 60, 110)   
 		end
 	end)
-	gamemod = gamemod or engine.ActiveGamemode()
-	if not hg_shouldnt_autoremove:GetBool() and ( zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox" )then	
+
+	if not hg_shouldnt_autoremove:GetBool() and (zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox") then	
+		ent:DrawShadow(false)
+		ent:SetModelScale(0, 10)
 		SafeRemoveEntityDelayed(ent, 10)
 	end
 
 	return ent
-	--ent:Spawn()
-	--print("SHIT")
 end
 
 function hg.addBulletHoleEffect(pos)

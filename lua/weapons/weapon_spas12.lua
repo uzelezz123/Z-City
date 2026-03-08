@@ -12,7 +12,7 @@ SWEP.ViewModel = ""
 SWEP.WorldModel = "models/weapons/w_shotgun.mdl"
 SWEP.WorldModelFake = "models/weapons/arccw/c_ur_spas12.mdl"
 
---PrintAnims(Entity(1):GetActiveWeapon():GetWM())
+
 --PrintTable(Entity(1):GetActiveWeapon():GetWM():GetAttachments())
 --uncomment for funny
 SWEP.FakePos = Vector(-10, 4.15, 3.85)

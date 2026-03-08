@@ -11,6 +11,7 @@ SWEP.Primary.Wait = 0.15
 SWEP.Primary.ClipSize = 1000
 SWEP.Primary.DefaultClip = 1000
 SWEP.Primary.Automatic = true
+SWEP.AutomaticDraw = true
 
 function SWEP:PrimaryShootPost()
 	if CLIENT then return end

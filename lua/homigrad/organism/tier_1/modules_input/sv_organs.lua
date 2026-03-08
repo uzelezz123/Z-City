@@ -88,7 +88,15 @@ input_list.brain = function(org, bone, dmg, dmgInfo)
 	hg.AddHarmToAttacker(dmgInfo, (org.brain - oldDmg) * 15, "Brain damage harm")
 
 	if dmgInfo:IsDamageType(DMG_BULLET + DMG_BUCKSHOT) then
-		ParticleEffect( "headshot", dmgInfo:GetDamagePosition(), dmgInfo:GetDamageForce():GetNormalized():Angle() )
+		local dmgPos = dmgInfo:GetDamagePosition()
+		local dirCool = dmgInfo:GetDamageForce():GetNormalized()
+
+		local effdata = EffectData()
+		effdata:SetOrigin(dmgPos)
+		effdata:SetRadius(dmg / 10)
+		effdata:SetMagnitude(dmg / 10)
+		effdata:SetScale(1)
+		util.Effect("BloodImpact",effdata)
 	end
 
 	if org.brain >= 0.01 and (org.brain - oldDmg) > 0.01 and math.random(3) == 1 then
@@ -98,7 +106,7 @@ input_list.brain = function(org, bone, dmg, dmgInfo)
 		timer.Simple(0.1, function()
 			local rag = hg.GetCurrentCharacter(org.owner)
 
-			if rag:IsRagdoll() then
+			if IsValid(rag) and rag:IsRagdoll() then
 				local stype = hg.getRandomSpasm()
 				hg.applySpasm(rag, stype)
 				if rag.organism then rag.organism.spasm, rag.organism.spasmType = true, stype end

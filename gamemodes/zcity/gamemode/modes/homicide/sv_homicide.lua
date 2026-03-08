@@ -14,8 +14,14 @@ MODE.OverrideSpawn = true
 MODE.LootSpawn = true
 MODE.LootOnTime = true
 
-MODE.Chance = 0.05
+MODE.Chance = 0.2 -- this is mostly unused
 MODE.LootDivTime = 500
+
+function MODE:SetupChances()
+	for name, tbl in pairs(MODE.Types) do
+		zb.ModesChances[name] = zb.ModesChances[name] or tbl.Chance
+	end
+end
 
 MODE.LootTable = {
 	{40, {
@@ -248,7 +254,8 @@ util.AddNetworkString("hmcd_announce_traitor_lose")
 MODE.Type = MODE.Type or "standard"
 MODE.Types = MODE.Types or {}
 MODE.Types.standard = {
-	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and 0.05 or 0 end,
+	Chance = 0.2,
+	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and (zb.ModesChances["standard"] or zb.modes["hmcd"].Types.standard.Chance) or 0 end,
 	LootTable = MODE.LootTableStandard,
 	Messages = {
 		[3] = "Everyone died.",
@@ -323,7 +330,8 @@ MODE.Types.standard = {
 	end
 }
 MODE.Types.wildwest = {
-	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and 0.02 or 0 end,
+	Chance = 0.05,
+	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and (zb.ModesChances["wildwest"] or zb.modes["hmcd"].Types.wildwest.Chance) or 0 end,
 	LootTable = MODE.LootTableStandard,
 	Messages = {
 		[3] = "The dead silence fills the empty city...",
@@ -458,7 +466,8 @@ MODE.Types.wildwest = {
 }
 
 MODE.Types.gunfreezone = {
-	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and 0.02 or 0 end,
+	Chance = 0.05,
+	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and (zb.ModesChances["gunfreezone"] or zb.modes["hmcd"].Types.gunfreezone.Chance) or 0 end,
 	LootTable = MODE.LootTableStandard,
 	Messages = {
 		[3] = "Everyone died.",
@@ -533,7 +542,8 @@ MODE.Types.gunfreezone = {
 }
 
 MODE.Types.soe = {
-	ChanceFunction = function() return (zb.GetWorldSize() >= ZBATTLE_BIGMAP) and 0.05 or 0 end,
+	Chance = 0.2,
+	ChanceFunction = function() return (zb.GetWorldSize() >= ZBATTLE_BIGMAP) and (zb.ModesChances["soe"] or zb.modes["hmcd"].Types.soe.Chance) or 0 end,
 	LootTable = MODE.LootTable,
 	Messages = {
 		[3] = "Everyone died.",
@@ -1375,6 +1385,14 @@ function MODE:EndRound()
 				hook.Run("ZB_TraitorWinOrNot", traitor, winner)
 			else
 				PrintMessage(HUD_PRINTTALK, self.Types[self.Type].Messages[winner]..(winner == 0 and (" killed.") or ""))
+				for _, traitor in ipairs(traitors) do
+					net.Start("hmcd_announce_traitor_lose")
+						net.WriteEntity(traitor)
+						net.WriteBool(traitor:Alive())
+					net.Broadcast()
+
+					hook.Run("ZB_TraitorWinOrNot", traitor, winner)
+				end
 			end
 		end
 	end

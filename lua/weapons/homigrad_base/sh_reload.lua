@@ -449,7 +449,7 @@ function SWEP:Reload(time)
 	self:ReloadStart()
 	self:ReloadStartPost()
 	--self.StaminaReloadTime = -- self.ReloadTime * ( IsValid( self:GetOwner() ) and self:GetOwner().organism and self:GetOwner().organism.stamina and 2 -(self:GetOwner().organism.stamina[1] / 180 ) or 1 )
-	self.reload = time + (self.StaminaReloadTime or self.ReloadTime) + 0.05
+	self.reload = time + (self.StaminaReloadTime or self.ReloadTime)
 	if self:ShouldUseFakeModel() then
 		self:PlayAnim(self:Clip1() == 0 and "reload_empty" or "reload", (self.StaminaReloadTime or self.ReloadTime), false, function()
 			self:PlayAnim("idle", 1, not self.NoIdleLoop)

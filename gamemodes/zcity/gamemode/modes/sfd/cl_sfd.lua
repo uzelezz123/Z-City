@@ -17,11 +17,29 @@ dmmusic = dmmusic or nil
 local roundend = false
 
 local snds = {
-	"https://kappa.vgmsite.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/ujuwzquyre/01.%20A%20Grim%20Feeling.mp3",
-	"https://kappa.vgmsite.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/zgagxqybov/02.%20Alley%20.mp3",
-	"https://kappa.vgmsite.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/qsoislqepd/17.%20Hazardous.mp3",
-	"https://kappa.vgmsite.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/zqxkrixwbn/26.%20Rooftops.mp3",
-	"https://kappa.vgmsite.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/kvlgywwwnt/13.%20Escape.mp3"
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/iwhxpivf/01.%20A%20Grim%20Feeling.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/mtgdygkh/02.%20Alley%20.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/fflmfnap/03.%20Anarchy%20.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/korpbnkj/05.%20Balista.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/kskuvrwi/09.%20Cowboy%20Robot.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/pzdrcika/11.%20Downtown.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/ttnjhkbe/14.%20Funnyman.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/imlvujpu/17.%20Hazardous.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/digfibga/18.%20Heroes%20Battle.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/leltjoug/19.%20High%20Moon.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/vmvsazvg/20.%20Iron%20Fists.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/rwhvibkt/25.%20Military.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/ptymnflo/26.%20Rooftops.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/odapyyyv/27.%20Rust%20And%20Gore.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/icnhxrsl/28.%20Seek%20And%20Destroy.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/awhxnyct/29.%20SFD%20Classic.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/jrhivbwe/30.%20Shards.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/gucepmnf/31.%20Steamship%20Synths.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/mumzmlvt/32.%20Steamship.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/gakzpeyi/33.%20Steamy.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/rlfuhzdr/34.%20Submarine.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/pxtzqfeh/38.%20The%20Dragon.mp3",
+	"https://vgmtreasurechest.com/soundtracks/superfighters-deluxe-original-soundtrack-2018/wkmgufqo/39.%20Zombie%20Nightmare.mp3",
 }
 
 local function restartMusic()

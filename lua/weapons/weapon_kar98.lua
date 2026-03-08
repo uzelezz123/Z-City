@@ -17,7 +17,7 @@ SWEP.FakePos = Vector(-7, 3.6, 10.1)
 SWEP.FakeAng = Angle(0, 0, 0)
 
 SWEP.FakeAttachment = "1"
-SWEP.AttachmentPos = Vector(-8.5,0,0)
+SWEP.AttachmentPos = Vector(-1.5,0,0)
 SWEP.AttachmentAng = Angle(0,0,0)
 SWEP.FakeBodyGroups = "000000000"
 SWEP.BarrelLength = 40
@@ -35,7 +35,7 @@ SWEP.FakeVPShouldUseHand = false
 SWEP.WepSelectIcon2 = Material("vgui/wep_jack_hmcd_rifle")
 SWEP.IconOverride = "vgui/wep_jack_hmcd_rifle"
 
-SWEP.LocalMuzzlePos = Vector(36.739, -0.25, 4)
+SWEP.LocalMuzzlePos = Vector(36.739, -0.25, 8)
 SWEP.LocalMuzzleAng = Angle(0.4,-0.0,0)
 SWEP.WeaponEyeAngles = Angle(-0.7,0.1,0)
 

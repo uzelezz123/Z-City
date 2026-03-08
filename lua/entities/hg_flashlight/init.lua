@@ -34,7 +34,8 @@ function ENT:TakeByPlayer(activator)
 		activator.inventory["Weapons"]["hg_flashlight"] = true
 		activator:SetNetVar("Inventory",activator.inventory)
 		activator:SetNetVar("flashlight",self:GetNetVar("enabled"))
-		self:EmitSound("physics/metal/weapon_impact_soft" .. math.random(3) .. ".wav", 65, math.random(90, 110), 1, CHAN_ITEM)
+		activator:ViewPunch(AngleRand(-1, 1))
+		self:EmitSound("snd_jack_tinyequip.wav", 65, math.random(95, 105), 1, CHAN_ITEM)
 		self:Remove()
 	end
 end

@@ -12,7 +12,31 @@ ENT.FleshHit = "weapons/crossbow/bolt_skewer1.wav"
 
 ENT.Damage = 200
 ENT.Force = 0.2
-// THE MOST PLUV
+
+-- pluv
+
+function hg.BestArrowToTake(ent)
+	local org = ent.organism
+	
+	if !IsValid(ent) or !org or !org.LodgedEntities or #org.LodgedEntities == 0 then return end
+	
+	local i = #org.LodgedEntities
+	
+	if org.LodgedEntities[i].CrossbowBolt then
+		while i > 0 do
+			i = i - 1
+
+			if i == 0 or !org.LodgedEntities[i].CrossbowBolt then
+				break
+			end
+		end
+
+		if i == 0 then return end
+	end
+	
+	return i
+end
+
 if SERVER then
 	function ENT:Initialize()
 		self:SetModel(self.Model)
@@ -66,6 +90,7 @@ if SERVER then
 				OffsetPos = offset_pos,
 				OffsetAng = offset_ang,
 				CrossbowBolt = self:GetClass() == "crossbow_projectile",
+				model = self:GetModel()
 			}
 
 			net.Start("organism_send")
@@ -189,21 +214,11 @@ if SERVER then
 		
 		if !IsValid(ent) or !org or !org.LodgedEntities or #org.LodgedEntities == 0 then return end
 		
-		local i = #org.LodgedEntities
+		local i = hg.BestArrowToTake(ent)
 		
-		if org.LodgedEntities[i].CrossbowBolt then
-			while i > 0 do
-				i = i - 1
+		if !i or i == 0 then return end
 
-				if i == 0 or !org.LodgedEntities[i].CrossbowBolt then
-					break
-				end
-			end
-
-			if i == 0 then return end
-		end
-
-		table.remove(org.LodgedEntities, i)
+		local tbl = table.remove(org.LodgedEntities, i)
 
 		local mat = ent:GetBoneMatrix(ent:TranslatePhysBoneToBone(org.LodgedEntities.PhysBoneID or 0))
 		
@@ -215,9 +230,20 @@ if SERVER then
 			end
 		end
 
-		ply:GiveAmmo(1, "Arrow", true)
-		ply:EmitSound("weapons/bow_deerhunter/arrow_load_0"..math.random(3)..".wav", 55)
-		
+		if tbl.takeent then
+			if ply:HasWeapon(tbl.takeent) then
+				local ent = ents.Create(tbl.takeent)
+				ent:SetPos(ply:EyePos())
+				ent.IsSpawned = true
+				ent:Spawn()
+			else
+				ply:Give(tbl.takeent)
+			end
+		else
+			ply:GiveAmmo(1, "Arrow", true)
+			ply:EmitSound("weapons/bow_deerhunter/arrow_load_0"..math.random(3)..".wav", 55)	
+		end
+
 		net.Start("organism_send")
 
 		local tbl = {}
@@ -254,16 +280,25 @@ elseif CLIENT then
 		local ply = LocalPlayer()
 		
 		if ply.organism and ply.organism.canmove and ply.organism.LodgedEntities and #ply.organism.LodgedEntities > 0 then
-			local points = ply:GetNWInt("CommanderPoints", 0)
-			local tbl = {
-				function()
-					RunConsoleCommand("hg_takearrow")
-				end,
-				"Take arrow from yourself"
-			}
-			hg.radialOptions[#hg.radialOptions + 1] = tbl
+			local i = hg.BestArrowToTake(ply)
+
+			if !i or i == 0 then return end
+
+			if i and ply.organism.LodgedEntities[i] then
+				local class = ply.organism.LodgedEntities[i].takeent
+				local ent = weapons.GetStored(class)
+				local tbl = {
+					function()
+						RunConsoleCommand("hg_takearrow")
+					end,
+					"Take "..(ent and ent.PrintName or "arrow").." from yourself"
+				}
+				hg.radialOptions[#hg.radialOptions + 1] = tbl
+			end
 		end
 	end)
+
+	hg.lodgedmodels = hg.lodgedmodels or {}
 
 	function hg.ProjectilesDraw(ent, ply)
 		if !IsValid(arrowasdasd) then
@@ -271,14 +306,20 @@ elseif CLIENT then
 			arrowasdasd:SetNoDraw(true)
 		end
 
-		if !IsValid(arrowasdasd2) then
-			arrowasdasd2 = ClientsideModel("models/crossbow_bolt.mdl")
-			arrowasdasd2:SetNoDraw(true)
-		end
-
 		if ent.organism and ent.organism.LodgedEntities then
-			for i, settings in ipairs(ent.organism.LodgedEntities) do
-				local arrow = settings.CrossbowBolt and arrowasdasd2 or arrowasdasd
+			for i, settings in ipairs(ent.organism.LodgedEntities) do				
+				local arrow = hg.lodgedmodels[settings.model] or arrowasdasd
+				
+				if settings.model then
+					if !IsValid(hg.lodgedmodels[settings.model]) then
+						local model = ClientsideModel(settings.model)
+						model:SetNoDraw(true)
+						
+						hg.lodgedmodels[settings.model] = model
+					end
+					
+					arrow = hg.lodgedmodels[settings.model]
+				end
 
 				local mat = ent:GetBoneMatrix(ent:TranslatePhysBoneToBone(settings.PhysBoneID))
 				local pos, ang = LocalToWorld(settings.OffsetPos, settings.OffsetAng, mat:GetTranslation(), mat:GetAngles())

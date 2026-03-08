@@ -1,3 +1,5 @@
+local Angle, Vector, AngleRand, VectorRand, math, hook = Angle, Vector, AngleRand, VectorRand, math, hook
+
 local ENTITY = FindMetaTable("Entity")
 local PLAYER = FindMetaTable("Player")
 
@@ -375,23 +377,36 @@ hg.ConVars = hg.ConVars or {}
 		local vp_punch_angle_velocity4 = Angle()
 		vp_punch_angle_last4 = vp_punch_angle_last4 or vp_punch_angle4
 
-		local fuck_you_debil = 0
-
 		function hg.CalculateConsciousnessMul()
 			local consciousness = 1
 
-			if lply.organism and lply.organism.consciousness then
-				consciousness = consciousness * lply.organism.consciousness
-				consciousness = consciousness * math.Clamp(lply.organism.blood / 4000, 0.5, 1)
-				consciousness = consciousness * math.Clamp(lply.organism.o2[1] / 20, 0.5, 1)
-				--consciousness = consciousness * (lply.organism.larmamputated and 0.8 or 1) * (lply.organism.rarmamputated and 0.8 or 1)
-				consciousness = consciousness * (1 - lply.organism.disorientation / 10)
+			local org = lply.organism
+			if org and org.consciousness then
+				consciousness = consciousness * org.consciousness
+				consciousness = consciousness * math.Clamp(org.blood / 4000, 0.5, 1)
+				consciousness = consciousness * math.Clamp(org.o2[1] / 20, 0.5, 1)
+				--consciousness = consciousness * (org.larmamputated and 0.8 or 1) * (org.rarmamputated and 0.8 or 1)
+				consciousness = consciousness * (1 - org.disorientation / 10)
+				//consciousness = consciousness * math.min(1, org.stamina[1] / (org.stamina.max * 0.3))
 			end
 
 			return math.Clamp(((consciousness - 1) * 3 + 1), 0.4, 1)
 		end
 
-		hook.Add("Think", "viewpunch_think", function(ply, cmd)
+		function hg.InGame()
+			local x, y = input.GetCursorPos()
+
+			return !(vgui.CursorVisible() or (x == 0 and y == 0))
+		end
+
+		hook.Add("Think", "vp_think", function()
+			if IsValid(lply.FakeRagdoll) and hg.InGame() then return end
+			
+			hook.Run("ViewpunchThink")
+		end)
+
+		local lastplyroll
+		hook.Add("ViewpunchThink", "viewpunch_think", function(tblang)
 			--if lply:InVehicle() then return end
 
 			local consmul = hg.CalculateConsciousnessMul()
@@ -457,10 +472,22 @@ hg.ConVars = hg.ConVars or {}
 			local consmulrev = 1 - consmul
 			if vp_punch_angle:IsZero() and vp_punch_angle_velocity:IsZero() and vp_punch_angle2:IsZero() and vp_punch_angle_velocity2:IsZero() and vp_punch_angle3:IsZero() and vp_punch_angle_velocity3:IsZero() and  vp_punch_angle4:IsZero() and vp_punch_angle_velocity4:IsZero() then return end
 			local add = vp_punch_angle - vp_punch_angle_last + vp_punch_angle2 - vp_punch_angle_last2 + vp_punch_angle3 - vp_punch_angle_last3 + vp_punch_angle4 * consmulrev - vp_punch_angle_last4 * consmulrev
-			local ang = lply:EyeAngles() + add
-			lply.addvpangles = add
-
+			if lply.organism and lply.organism.otrub then add:Zero() end
+			
+			if hg.InGame() then
+				lastplyroll = lply:EyeAngles()[3]
+			end
+			
+			local angs = lply:EyeAngles()
+			angs[3] = lastplyroll or angs[3]
+			
+			local ang = angs + add
+			
 			lply:SetEyeAngles(ang)
+			if tblang then
+				tblang.angle = tblang.angle + add
+				tblang.vpangle = add
+			end
 			vp_punch_angle_last = vp_punch_angle
 			vp_punch_angle_last2 = vp_punch_angle2
 			vp_punch_angle_last3 = vp_punch_angle3
@@ -535,6 +562,10 @@ hg.ConVars = hg.ConVars or {}
 
 		function ViewPunch4(angle)
 			Viewpunch4(angle)
+		end
+
+		function GetAllViewPunchAngles()
+			return GetViewPunchAngles2() + GetViewPunchAngles3() + GetViewPunchAngles4()
 		end
 
 		function GetViewPunchAngles()
@@ -658,6 +689,14 @@ hg.ConVars = hg.ConVars or {}
 
 	DEFAULT_JUMP_POWER = 200
 
+	local music_packs = {
+		"mirrors_edge",
+		"swat4",
+		--"hl_coop",
+		"splinter_cell",
+	}
+	local hg_sandboxmusic = ConVarExists("hg_sandboxmusic") and GetConVar("hg_sandboxmusic") or CreateConVar("hg_sandboxmusic", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle dynamic music in sandbox gamemode", 0, 1)
+	local gamemod = engine.ActiveGamemode()
 	hook.Add("player_spawn", "homigrad-spawn3", function(data)
 		local ply = Player(data.userid)
 		if not IsValid(ply) then return end
@@ -688,6 +727,17 @@ hg.ConVars = hg.ConVars or {}
 			ply:SetDuckSpeed(0.4)
 			ply:SetUnDuckSpeed(0.4)
 			ply:AddEFlags(EFL_NO_DAMAGE_FORCES)
+
+			if CLIENT and not ply:IsLocal() and gamemod == "sandbox" then
+				if hg.DynaMusic then
+					if hg_sandboxmusic:GetBool() then
+						hg.DynaMusic:Stop()
+						hg.DynaMusic:Start(music_packs[math.random(#music_packs)])
+					else
+						hg.DynaMusic:Stop()
+					end
+				end
+			end
 		end)
 
 		if SERVER then
@@ -889,6 +939,7 @@ local IsValid = IsValid
 	
 	local hg_firstperson_ragdoll = ConVarExists("hg_firstperson_ragdoll") and GetConVar("hg_firstperson_ragdoll") or CreateConVar("hg_firstperson_ragdoll", "0", FCVAR_ARCHIVE, "Toggle first-person ragdoll camera view", 0, 1) --!! unused??
 	local hg_firstperson_death = ConVarExists("hg_firstperson_death") and GetConVar("hg_firstperson_death") or CreateClientConVar("hg_firstperson_death", "0", true, false, "Toggle first-person death camera view", 0, 1)
+	local hg_thirdperson = ConVarExists("hg_thirdperson") and GetConVar("hg_thirdperson") or CreateConVar("hg_thirdperson", 0, FCVAR_REPLICATED, "Toggle third-person camera view", 0, 1)
 	local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "Toggle GoPro-like camera view", 0, 1)
 	local hg_deathfadeout = CreateClientConVar("hg_deathfadeout", "1", true, true, "Toggle screen fade and sound mute on death", 0, 1)
 
@@ -952,7 +1003,7 @@ local IsValid = IsValid
 			--ent:ManipulateBoneScale(lkp, wawanted)
 			local mat = ent:GetBoneMatrix(lkp)
 			
-			if (!hg_gopro:GetBool() and (ent == ply or (!hg_ragdollcombat:GetBool() or hg_firstperson_ragdoll:GetBool()))) or (hg_firstperson_death:GetBool() and follow == ent) then
+			if (!hg_thirdperson:GetBool() and !hg_gopro:GetBool() and (ent == ply or (!hg_ragdollcombat:GetBool() or hg_firstperson_ragdoll:GetBool()))) or (hg_firstperson_death:GetBool() and follow == ent) then
 				mat:SetScale(wawanted)
 			end
 			--angfuck[3] = -GetViewPunchAngles2()[2] - GetViewPunchAngles3()[2]
@@ -1001,7 +1052,7 @@ local IsValid = IsValid
 		if !self.shouldTransmit then return end
 
 		ent = IsValid(ent) and ent or self
-
+		if ent:GetMaterial() == "NULL" then ent:DrawShadow( false ) return end
 		if not IsValid(ent) then return end
 
 		--local drawornot = hook_Run("PreDrawPlayer2", ent, self) // true means nodraw
@@ -1511,8 +1562,9 @@ local IsValid = IsValid
 
 		hg.approach_vector = approach_vector
 	--//
-
-	local hg_movement_stamina_debuff = CreateConVar("hg_movement_stamina_debuff","0.3",{FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY},"Multiply movement debuff when having low stamina",0,1)
+	
+	local hg_movement_stamina_debuff = CreateConVar("hg_movement_stamina_debuff", "0.3", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Multiply movement debuff when having low stamina", 0, 1)
+	local hg_inertiamul = CreateConVar("hg_inertiamul", "1", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Multiply inertia for player movement", 0.01, 5)
 	local vecZero = Vector()
 	local vomitVPAng = Angle(1,0,0)
 	hook.Add("SetupMove", "HG(StartCommand)", function(ply, mv, cmd)
@@ -1565,7 +1617,7 @@ local IsValid = IsValid
 			return
 		end
 
-		local runnin = ply:KeyDown(IN_SPEED) and not ply:Crouching()
+		local runnin = ply:KeyDown(IN_SPEED) and not ply:Crouching() and ply:KeyDown(IN_FORWARD)
 
 		if runnin then
 			--mv:SetSideSpeed(0) --meh
@@ -1576,8 +1628,6 @@ local IsValid = IsValid
 		local wep = ply:GetActiveWeapon()
 		local vel = ply:GetVelocity()
 		local velLen = vel:Length()
-		local fm = cmd:GetForwardMove() * (org.brain and org.brain > 0.1 and math.sin(CurTime() / 2) or 1)
-		local sm = cmd:GetSideMove() * (org.brain and org.brain > 0.1 and math.sin(CurTime() / 2) or 1)
 
 		local slow_walking = ply:KeyDown(IN_WALK)
 		local aiming = ply:KeyDown(IN_ATTACK2) and wep and IsValid(wep) and ishgweapon(wep)
@@ -1645,7 +1695,7 @@ local IsValid = IsValid
 		ply.FrictionGainMul = 0.01
 		ply.FrictionLoseMul = 0.2
 		ply.SpeedGainMul = 240 * weightmul * (ply.organism.superfighter and 5 or 1) * (ply:GetNWInt("SpeedGainClassMul", 1) or 1)
-		ply.SpeedLoseMul = 540
+		ply.SpeedLoseMul = 10000
 		ply.SpeedSharpLoseMul = 0.007
 		ply.InertiaBlend = 2000 * weightmul * (ply.organism.superfighter and 100 or 1)
 		ply.DuckingSlowdown = ply.DuckingSlowdown or 0
@@ -1653,7 +1703,7 @@ local IsValid = IsValid
 		local inertia_blend_mul = 1
 
 		if(velLen <= slow_walk_speed)then
-			inertia_blend_mul = 3
+			inertia_blend_mul = 1
 		end
 
 		--[[
@@ -1682,6 +1732,9 @@ local IsValid = IsValid
 		if mul <= 0.01 then
 			mul = 0.01
 		end
+		
+		local fm = cmd:GetForwardMove() * (org.brain and org.brain > 0.1 and math.sin(CurTime() / 2) or 1)
+		local sm = cmd:GetSideMove() * (org.brain and org.brain > 0.1 and math.sin(CurTime() / 2) or 1)
 
 		mul = mul * (ply:GetNWBool("TauntStopMoving", false) and 0.01 or 1)
 
@@ -1793,9 +1846,11 @@ local IsValid = IsValid
 		//if(water_level > 0)then
 		//	ply.CurrentFrictionMul = math.Approach(ply.CurrentFrictionMul, 0.2, delta_time * ply.FrictionLoseMul * water_level)
 		//else
-			ply.CurrentFrictionMul = math.Approach(ply.CurrentFrictionMul, consmul, delta_time * ply.FrictionGainMul * (consmul < ply.CurrentFrictionMul and 100 or 10))
+		//	ply.CurrentFrictionMul = math.Approach(ply.CurrentFrictionMul, consmul, delta_time * ply.FrictionGainMul * (consmul < ply.CurrentFrictionMul and 100 or 10))
 		//end
 		--=//
+		
+		ply.CurrentFrictionMul = 0.5 / hg_inertiamul:GetFloat()
 
 		ply.InertiaBlend = ply.InertiaBlend * ply.CurrentFrictionMul
 
@@ -1803,10 +1858,15 @@ local IsValid = IsValid
 		-- local new_inertia = LerpVector(1 - 0.5^(delta_time * ply.InertiaBlend), ply.MovementInertia, inertia_to)
 		//local new_inertia = approach_vector(ply.MovementInertia, inertia_to, 1000)//SERVER and delta_time * ply.InertiaBlend * ply:Ping() / 100 or delta_time * ply.InertiaBlend)
 		//local new_inertia = approach_vector_smooth(ply.MovementInertia, inertia_to, hg.lerpFrameTime2(0.075, delta_time))
+		
+		if !ply:OnGround() then
+			ply.MovementInertia = ply.LastVelocity	
+		end
+
 		local new_inertia = approach_vector(ply.MovementInertia, inertia_to, delta_time * ply.InertiaBlend)
 
 		ply.MovementInertia = new_inertia
-
+		
 		local inertia_len = math.sqrt(ply.MovementInertia.x * ply.MovementInertia.x + ply.MovementInertia.y * ply.MovementInertia.y)
 
 		/*if (SERVER or (ply.huy or 0) < SysTime()) and inertia_len > 10 then
@@ -1957,10 +2017,13 @@ local IsValid = IsValid
 			speed = speed + 200 * math.Round(org.noradrenaline, 1)
 		end
 		
-		mv:SetMaxSpeed(speed)
-		mv:SetMaxClientSpeed(speed)
-		ply:SetMaxSpeed(speed)
+		mv:SetMaxSpeed(inertia_len)
+		mv:SetMaxClientSpeed(inertia_len)
+		ply:SetMaxSpeed(inertia_len)
 		ply:SetJumpPower(DEFAULT_JUMP_POWER * math.min(k, 1.1) * (not ply:GetNWBool("TauntStopMoving", false) and 1 or 0) * (ply.organism.superfighter and 1.5 or 1) * (ply.JumpPowerMul or 1))
+		--print(ply.MovementInertia, forward_move, side_move, inertia_len)
+		
+		--ply:SetVelocity(-ply:GetVelocity() + ply.MovementInertia)
 
 		if(CLIENT)then
 			local fwangs = math.rad(GetViewPunchAngles2()[2] + GetViewPunchAngles3()[2])
@@ -1971,6 +2034,9 @@ local IsValid = IsValid
 			cmd:SetForwardMove(forward_move * inertia_len)
 			cmd:SetSideMove(side_move * inertia_len)
 		end
+
+		mv:SetForwardSpeed(forward_move * inertia_len)
+		mv:SetSideSpeed(side_move * inertia_len)
 	end)
 --//
 --\\ custom footsteps
@@ -1986,7 +2052,7 @@ local IsValid = IsValid
 		local vel = ply:GetVelocity()
 		local len = vel:Length()
 		local ent = hg.GetCurrentCharacter(ply)
-
+		
 		local sprint = hg.KeyDown(ply, IN_SPEED)
 		ply.lastStepTime = CurTime() + 0.7 * (sprint and 1.5 or 1) * (1 / math_max(len, sprint and 200 or 150)) * 100
 
@@ -1998,7 +2064,7 @@ local IsValid = IsValid
 		end
 
 		hook_Run("HG_PlayerFootstep_Notify", ply, pos, foot, sound, volume, rf)	--; Do not return anything from this _Notify hook
-
+		
 		if CLIENT and ply == lply and ply.move then
 			footcl = (footcl == nil and -1 or footcl) + 1
 			if footcl > 1 then
@@ -2009,7 +2075,7 @@ local IsValid = IsValid
 			local mul = 1 * len / 300 * math_max((350 - ply.move) / 50, 0.4)
 			local mul2 = ((ply.organism.lleg or 0) * 3 + 1) * ((ply.organism.rleg or 0) * 3 + 1) * 0.5
 
-			ViewPunch(Angle(1 * len / 200 * math_max((350 - ply.move) / 50, 1) * mul2, footcl * mul * mul2, 0))
+			ViewPunch(Angle((hg_gopro:GetBool() and 5 or 1) * len / 200 * math_max((350 - ply.move) / 50, 1) * mul2, footcl * mul * mul2, 0))
 			--ViewPunch4(Angle(1 * len / 200 * math_max((350 - ply.move) / 50, 1), footcl * mul, footcl * mul * 16) * 0.05)
 		end
 
@@ -2071,89 +2137,7 @@ local IsValid = IsValid
 		if self.ReloadSound then util.PrecacheSound(self.ReloadSound) end
 	end
 --//
---\\ Tough npcs
-	local hg_toughnpcs = CreateConVar("hg_toughnpcs", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Toggle more health for npcs", 0, 1)
-	local npcToBuff = {
-		["npc_metropolice"] = 100,
-		["npc_combine_s"] = 150,
-		["npc_citizen"] = 100,
-		["npc_kleiner"] = 100,
-		["npc_magnusson"] = 100,
-		["npc_eli"] = 100,
-		["npc_odessa"] = 100,
-		["npc_breen"] = 100,
-		["npc_zombie"] = 120,
-		["npc_fastzombie"] = 90,
-		["npc_headcrab"] = 50,
-		["npc_headcrab_fast"] = 40,
-		["npc_headcrab_black"] = 70,
-		["npc_fastzombie_torso"] = 80,
-		["npc_zombie_torso"] = 110,
-		["npc_manhack"] = 50,
-		["npc_antlion_grub"] = 20,
-	}
-	hook.Add("OnEntityCreated", "toughnpcs", function(ent)
-		if SERVER and hg_toughnpcs:GetBool() and IsValid(ent) and ent:IsNPC() and npcToBuff[ent:GetClass()] then
-			timer.Simple(0.2, function()
-				if not IsValid(ent) then return end
-
-				ent:SetHealth(npcToBuff[ent:GetClass()])
-				ent:SetMaxHealth(npcToBuff[ent:GetClass()])
-				ent:SetPlaybackRate(2)
-				ent:SetKeyValue("m_flPlaybackSpeed", 2)
-
-				print(ent:Health())
-			end)
-		end
-	end)
---//
---\\ Lootable npcs
-	local lootNPCs = {
-		["npc_metropolice"] = {
-			"weapon_hg_stunstick",
-			"weapon_medkit_sh",
-			"weapon_bandage_sh",
-			"weapon_handcuffs",
-			"weapon_walkie_talkie"
-		},
-		["npc_combine_s"] = {
-			"weapon_melee",
-			"weapon_hg_hl2nade_tpik",
-			"weapon_bandage_sh",
-			"weapon_handcuffs"
-		},
-		["npc_citizen"] = {
-			"weapon_smallconsumable",
-			"weapon_bandage_sh",
-			"weapon_painkillers"
-		}
-	}
-
-	local nameNPCs = {
-		["npc_metropolice"] = {"Metrocop", Vector(0, 100, 255) / 255},
-		["npc_combine_s"] = {"Combine", Vector(0, 180, 180) / 255},
-		["npc_citizen"] = {"Refugee", Vector(255, 155, 0) / 255}
-	}
-
-	hook.Add("CreateEntityRagdoll", "npcloot", function(ent, rag)
-		local loot = lootNPCs[ent:GetClass()]
-		if IsValid(ent) and IsValid(rag) and ent:IsNPC() and loot then
-			rag.inventory = {}
-			rag.inventory.Weapons = {}
-
-			for k, wep in pairs(loot) do
-				rag.inventory.Weapons[wep] = {}
-				rag:SetNetVar("Inventory", rag.inventory)
-				rag:SetNWString("PlayerName", nameNPCs[ent:GetClass()][1])
-				rag:SetNWVector("PlayerColor", nameNPCs[ent:GetClass()][2])
-				rag.GetPlayerName = function()
-					return nameNPCs[ent:GetClass()][1]
-				end
-			end
-		end
-	end)
---//
---\\ Disable drive
+--\\ Disable drive (driving is fixed so i don't think that we need this)
 	--[[hook.Add("StartEntityDriving", "disabledriving", function(ent, ply)
 		return false
 	end)
@@ -2486,8 +2470,8 @@ local IsValid = IsValid
 			if PhysObj and PhysObj.GetMass and PhysObj:GetMass() > 14 then return false end
 		end
 
-		if IsValid(ply.FakeRagdoll) then return false end
-		if ply.PickUpCooldown > CurTime() then return false end
+		--if IsValid(ply.FakeRagdoll) then return false end
+		if ply.PickUpCooldown > CurTime() and not IsValid(ply.FakeRagdoll) then return false end
 
 		ply.PickUpCooldown = CurTime() + 0.15
 	end)
@@ -2593,15 +2577,16 @@ duplicator.Allow( "homigrad_base" )
 		["grenade"] = true
 	}
 
-	hook.Add( "CalcMainActivity", "RunningAnim", function( Player, Velocity )
-		local wep = IsValid(Player:GetActiveWeapon()) and Player:GetActiveWeapon()
-		if (not Player:InVehicle()) and Player:IsOnGround() and Velocity:Length() > 250 and wep and runHoldTypes[wep:GetHoldType()] then
-			local isFurry = Player.PlayerClassName == "furry"
+	hook.Add( "CalcMainActivity", "RunningAnim", function(ply, vel)
+		local wep = IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon()
+		local isAmputated = ply:IsBerserk() and ply.organism and (ply.organism.llegamputated or ply.organism.rlegamputated)
+		if (not ply:InVehicle()) and ply:IsOnGround() and vel:Length() > 250 and wep and runHoldTypes[wep:GetHoldType()] and not isAmputated then
+			local isFurry = ply.PlayerClassName == "furry"
 			local anim = ACT_HL2MP_RUN_FAST
-			if Player:IsOnFire() then
+			if ply:IsOnFire() then
 				anim = ACT_HL2MP_RUN_PANICKED
 			elseif isFurry then
-				if hg.KeyDown(Player, IN_WALK) and not hg.KeyDown(Player, IN_BACK) then
+				if hg.KeyDown(ply, IN_WALK) and not hg.KeyDown(ply, IN_BACK) then
 					anim = ACT_HL2MP_RUN_ZOMBIE_FAST
 				else
 					anim = ACT_HL2MP_RUN_FAST
@@ -2610,6 +2595,14 @@ duplicator.Allow( "homigrad_base" )
 				anim = ACT_HL2MP_RUN_FAST
 			end
 
+			return anim, -1
+		end
+
+		if (not ply:InVehicle()) and ply:IsOnGround() and isAmputated then
+			local anim = ACT_HL2MP_WALK_ZOMBIE_06
+			if vel:Length() > 250 then
+				anim = ACT_HL2MP_RUN_ZOMBIE_FAST
+			end
 			return anim, -1
 		end
 	end)
@@ -2671,7 +2664,7 @@ duplicator.Allow( "homigrad_base" )
 			amtflashed2 = 0
 		end)
 
-		hook.Add("Post Post Processing","flasheseffect",function()
+		hook.Add("Post Post Pre Post Processing","flasheseffect",function()
 			if !lply:Alive() then
 				if !next(hg.flashes) then
 					hg.flashes = {}
@@ -2698,10 +2691,12 @@ duplicator.Allow( "homigrad_base" )
 			amtflashed = amtflashed + amtflashed2
 			amtflashed2 = math.min(math.Approach(amtflashed2, 0, FrameTime() / 20),2)
 			
-			amtflashed = math.max(amtflashed - math.ease.InOutCubic(math.max(0, math.sin(CurTime() * 1) - 0.6) / 0.4),0)
+			if amtflashed < 0.8 then
+				tab["$pp_colour_brightness"] = 0 - math.max(amtflashed - 0.1,0)
+				DrawColorModify(tab)
+			end
 
-			tab["$pp_colour_brightness"] = 0 - math.max(amtflashed - 0.1,0)
-			DrawColorModify(tab)
+			//amtflashed = math.max(amtflashed - math.ease.InOutCubic(math.max(0, math.sin(CurTime() * 1) - 0.6) / 0.4),0)
 
 			for i = 1, #hg.flashes do
 				flash = hg.flashes[i]
@@ -2711,7 +2706,7 @@ duplicator.Allow( "homigrad_base" )
 
 				local huy = (1 - animpos) * -100
 				surface.SetMaterial(mat)
-				surface.SetDrawColor(255,255,255,animpos * 255 + math.Rand(-10,10) * animpos)
+				surface.SetDrawColor(255, 255, 255, (animpos * 255 + math.Rand(-10,10) * animpos) * (0.5 / #hg.flashes) * (amtflashed < 0.8 and 1.5 or 1))
 				surface.DrawTexturedRect(flash.x - size / 2 + huy, flash.y - size / 2 + huy, size, size)
 				surface.SetMaterial(mat2)
 				surface.DrawTexturedRect(flash.x - size / 2 + huy, flash.y - size / 2 + huy, size, size)
@@ -2808,9 +2803,7 @@ duplicator.Allow( "homigrad_base" )
     --Small Fireworks
     game.AddParticles( "particles/gf2_firework_small_01.pcf" )
 --//
---\\ Fun commands
-	local hg_thirdperson = ConVarExists("hg_thirdperson") and GetConVar("hg_thirdperson") or CreateConVar("hg_thirdperson", 0, FCVAR_REPLICATED, "Toggle third-person camera view", 0, 1)
---//
+
 --\\ Explosion Trace
 	function hg.ExplosionTrace(start,endpos,filter)
 		local filter1 = {}

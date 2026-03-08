@@ -1,4 +1,4 @@
---
+local isnumber, Angle, Vector, AngleRand, VectorRand, math, hook = isnumber, Angle, Vector, AngleRand, VectorRand, math, hook
 local vecZero, angZero = Vector(0, 0, 0), Angle(0, 0, 0)
 local eyeAngL = EyeAngles()
 local angZoom = Angle(0, 0, 0)
@@ -99,7 +99,7 @@ function SWEP:GetZoomPos(recoilZoomPos, view, eyePos)
 		if self:HasAttachment("sight","optic") then
 			posZoom = posZoom - recoilZoomPos * 0.25 - ang2:Forward() * (self.AdditionalPos2[1]) * 0.5 + ang2:Forward() * 1
 		else
-			local _, hitpos, dist = util.DistanceToLine(posZoom, posZoom + view.angles:Forward(), eyePos)
+			local _, hitpos, dist = util.DistanceToLine(posZoom, posZoom + (self:GetOwner():EyeAngles()):Forward(), eyePos)
 			dist = dist - 1
 			posZoom = posZoom + ang2:Forward() * dist - recoilZoomPos * 0.5
 		end
@@ -120,7 +120,7 @@ local blurintens = CreateClientConVar("hg_weaponshotblur_mul", "0.03", true, fal
 local shouldblur = CreateClientConVar("hg_weaponshotblur_enable", "1", true, false,"Enable shotblur",0,1)
 local hg_nofovzoom = CreateClientConVar("hg_nofovzoom", "0", true, false, "Enable fov zooming when aiming", 0, 1)
 local hg_show_hitposmuzzle = ConVarExists("hg_show_hitposmuzzle") and GetConVar("hg_show_hitposmuzzle") or CreateClientConVar("hg_show_hitposmuzzle", "0", false, false, "shows weapons crosshair, work only ведьма admin rank or sv_cheats 1")
-local hg_aiminganim = ConVarExists("hg_aiminganim") and GetConVar("hg_aiminganim") or CreateClientConVar("hg_aiminganim", "0", false, false, "change the way you aim your gun")
+--local hg_aiminganim = ConVarExists("hg_aiminganim") and GetConVar("hg_aiminganim") or CreateClientConVar("hg_aiminganim", "0", false, false, "change the way you aim your gun")
 
 function SWEP:Blur(x,y,w,z)
 	if not shouldblur:GetBool() then return nil end
@@ -235,22 +235,24 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen, ply)
 	--if hg_aiminganim:GetBool() then
 		self.k = Lerp(self.Ergonomics * FrameTime() * 2, self.k or 0, zoom and 1 or 0)
 	--else
-	--	self.k = math.Approach(self.k or 0, zoom and 1 or 0, FrameTime() * 3 * self.Ergonomics)
+		--self.k = math.Approach(self.k or 0, zoom and 1 or 0, FrameTime() * 2)
 	--end
+
+	if self.deploy or self.holster then self.k = 0 end
 
 	local k = math.min(1, math.ease.InOutCubic(self.k * 1))
 
 	local organism = ply.organism or {}
-	local larm = (type(organism.larm) == "number") and organism.larm or 0
-	local rarm = (type(organism.rarm) == "number") and organism.rarm or 0
-	local sp1  = (type(organism.spine1) == "number") and organism.spine1 or 0
-	local sp2  = (type(organism.spine2) == "number") and organism.spine2 or 0
-	local sp3  = (type(organism.spine3) == "number") and organism.spine3 or 0
+	local larm = isnumber(organism.larm) and organism.larm or 0
+	local rarm = isnumber(organism.rarm) and organism.rarm or 0
+	local sp1  = isnumber(organism.spine1) and organism.spine1 or 0
+	local sp2  = isnumber(organism.spine2) and organism.spine2 or 0
+	local sp3  = isnumber(organism.spine3) and organism.spine3 or 0
 
-	local debil = (((larm > 0.75 and (larm - 0.75) * (ply.posture != 7 and ply.posture != 8 and 1 or 0)) or 0)
+	local shakeMul = (((larm > 0.75 and (larm - 0.75) * (ply.posture != 7 and ply.posture != 8 and 1 or 0)) or 0)
 		+ ((rarm > 0.1 and (rarm - 0.1)) or 0)) / 4
 
-	local addview = AngleRand(-debil-0.005,debil+0.005) * (organism.holdingbreath and 0.1 or 1)
+	local addview = AngleRand(-shakeMul - 0.01, shakeMul + 0.01) * (organism.holdingbreath and 0.1 or 1)
 	addview[3] = 0
 
 	if ply == LocalPlayer() then

@@ -87,7 +87,7 @@ function SWEP:CanSecondaryAttack()
 end
 
 function SWEP:CanPrimaryAttack()
-    self.DamageType = DMG_SLASH
+    self.DamageType = DMG_CLUB
     return true
 end
 

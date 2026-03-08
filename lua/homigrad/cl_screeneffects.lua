@@ -1,7 +1,7 @@
 local function DrawSunEffect()
 	local sun = util.GetSunInfo()
 	if not sun then return end
-	if not sun.obstruction == 0 or sun.obstruction == 0 then return end
+	if not sun.obstruction == 0 or sun.obstruction == 0 or !sun.direction then return end
 	local sunpos = EyePos() + sun.direction * 1024 * 4
 	local scrpos = sunpos:ToScreen()
 	local dot = (sun.direction:Dot(EyeVector()) - 0.8) * 5
@@ -80,6 +80,8 @@ hook.Add("RenderScreenspaceEffects", "homigrad", function()
 	hook_Run("Post Pre Post Processing")
 
 	hook_Run("Post Post Processing")
+
+	hook_Run("Post Post Pre Post Processing")
 end)
 
 local postprs = hg.postprocess
@@ -229,7 +231,7 @@ local assimilationMat = Material("effects/shaders/zb_assimilation")
 local coldMat = Material("effects/shaders/zb_colda")
 local grainMat = Material("effects/shaders/zb_grain2")
 local heatMat = Material("effects/shaders/zb_heat")
-local zombMat = grainMat -- Material("effects/shaders/zb_zomb")
+local blindMat = Material("effects/shaders/zb_blind")
 
 local PainLerp = 0
 local O2Lerp = 0
@@ -320,6 +322,9 @@ local stations = {
 
 local choosera = 1
 local tempolerp = 0
+local lerpblood = 0
+local addtime = CurTime()
+local hurtoverlay = Material("zcity/neurotrauma/damageOverlay.png", "smooth")
 hook.Add("Post Post Processing", "ItHurts", function()
 	local spect = IsValid(lply:GetNWEntity("spect")) and lply:GetNWEntity("spect")
 	
@@ -334,6 +339,40 @@ hook.Add("Post Post Processing", "ItHurts", function()
 	if not organism.brain then stopthings() return end
 	local org = organism
 	
+	if org.blindness or amtflashed >= 0.8 then
+		local blindness = ((org.blindness and math.Round(org.blindness) == 0) or amtflashed >= 0.8) and 0 or (org.blindness)
+		render.UpdateScreenEffectTexture()
+		render.UpdateFullScreenDepthTexture()
+		
+		blindMat:SetFloat("$c0_x", 5)
+		blindMat:SetFloat("$c0_y", CurTime())
+		blindMat:SetFloat("$c0_z", math.Round(blindness))
+	
+		render.SetMaterial(blindMat)
+		render.DrawScreenQuad()
+	end
+
+	if (org.consciousness < 0.7) then
+		lerpblood = LerpFT(0.01, lerpblood or 0, math.Clamp((0.7 - org.consciousness) * 5, 0, 1) * 255)
+		local lowblood = (3600 - (org.blood or 5000)) / 600
+
+		addtime = addtime + FrameTime() / 6
+		local amt = (math.cos(addtime) + math.sin(addtime * 3) + math.sin(addtime * 2)) / 90
+		local amt2 = (math.sin(addtime) + math.cos(addtime * 5) + math.sin(addtime * 6)) / 90
+		local mat = Matrix({
+			{1 - amt, amt, 0, -amt2 / 2},
+			{amt2, 1 - amt2, 0, -amt / 2},
+			{0, 0, 1, 0},
+			{0, 0, 0, 1},
+		})
+		hurtoverlay:SetMatrix("$basetexturetransform", mat)
+		surface.SetMaterial(hurtoverlay)
+		surface.SetDrawColor(0, 0, 0, lerpblood)
+		surface.DrawTexturedRect(-ScrW() * 2.0, -ScrH() * 2.0, ScrW() * 5, ScrH() * 5)
+		//ViewPunch(Angle(-amt * 1, amt2 * 1,0))
+		//ViewPunch2(Angle(-amt * 1, amt2 * 1,0))
+	end
+
 	if !IsValid(PainStation) or PainStation:GetState() != GMOD_CHANNEL_PLAYING then
 		sound.PlayFile("sound/zbattle/pain_beat.ogg", "noblock noplay", function(station)
 			if IsValid(station) then
@@ -357,34 +396,6 @@ hook.Add("Post Post Processing", "ItHurts", function()
 
 	tempLerp = LerpFT(0.01, tempLerp, org.temperature)
 
-	if lply.PlayerClassName == "headcrabzombie" then
-		render.UpdateScreenEffectTexture()
-
-		heatMat:SetFloat("$c0_x", -CurTime() * 0.1) //time
-		heatMat:SetFloat("$c0_y", 0.1) //intensity (strict)
-		heatMat:SetFloat("$c2_x", 2)
-
-		render.SetMaterial(heatMat)
-		render.DrawScreenQuad()
-
-		render.UpdateScreenEffectTexture()
-		render.UpdateFullScreenDepthTexture()
-		
-		zombMat:SetFloat("$c0_x", CurTime()) -- time
-		zombMat:SetFloat("$c0_y", -1) -- gate
-		zombMat:SetFloat("$c0_z", 1) -- Pixelize
-		zombMat:SetFloat("$c1_x", 12) -- lerp
-		zombMat:SetFloat("$c1_y", 0.2) -- vignette intensity
-		zombMat:SetFloat("$c1_z", 0.3) -- BlurIntensity
-		zombMat:SetFloat("$c2_x", 0.3) -- r
-		zombMat:SetFloat("$c2_y", 0.05) -- g
-		zombMat:SetFloat("$c2_z", 0) -- b
-		zombMat:SetFloat("$c3_x", 0) -- ImageIntensity
-	
-		render.SetMaterial(zombMat)
-		render.DrawScreenQuad()
-	end
-
 	if tempLerp > 38 then
 		local heat = tempLerp - 38
 
@@ -401,7 +412,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 	local pain = org.pain or 0
 	pain = math.max(pain - 15, 0)
 	local shock = (org.shock or 0) * 1 + (1 - org.consciousness) * 40
-	shockLerp = LerpFT(0.01, shockLerp or 0, shock + (lply.suiciding and 30--[[math.max(0, org.heartbeat - 90)]] or 0))
+	shockLerp = LerpFT(0.01, shockLerp or 0, shock + (lply.suiciding and math.max(0, org.heartbeat - 90) or 0))
 	consciousnessLerp = LerpFT(org.consciousness < (consciousnessLerp or 1) and 1 or 0.01, consciousnessLerp or 1, org.consciousness)
 	-- local immobilization = org.immobilization
 	PainLerp = LerpFT(0.05, PainLerp, math.max(pain * (org.otrub and 0.2 or 1), 0))
@@ -607,6 +618,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		lobotomy_index = 0
 	end
 	
+
 	if O2Lerp > 1 then
 		render.UpdateScreenEffectTexture()
 		
@@ -682,4 +694,44 @@ hook.Add("Player Spawn", "ItDoesntNow", function(ply)
 	if ply != lply then return end
 
 	stopthings()
+end)
+
+local function removeflash()
+	if IsValid(lply.blindflash) then
+		lply.blindflash:Remove()
+	end
+end
+
+hook.Add("PreDrawOpaqueRenderables", "renderblindnessflash", function()
+	local spect = IsValid(lply:GetNWEntity("spect")) and lply:GetNWEntity("spect")
+	
+	if !lply:Alive() and !IsValid(spect) then removeflash() return end
+	if !lply:Alive() and viewmode != 1 then removeflash() return end
+
+	local organism = lply:Alive() and lply.organism or (IsValid(spect) and spect.organism)
+	if not organism or isbool(organism) then return end
+
+	if !(organism.blindness or (amtflashed or 0) >= 0.8) then removeflash() return end
+	local blindness = ((organism.blindness and math.Round(organism.blindness) == 0) or amtflashed >= 0.8) and 0 or (organism.blindness)
+
+	local eyesmode = math.Round(blindness)
+	
+	local view = render.GetViewSetup(true)
+	
+	if not IsValid(lply.blindflash) then
+		lply.blindflash = ProjectedTexture()
+		lply.blindflash:SetTexture("effects/flashlight001")
+		lply.blindflash:SetEnableShadows(false)
+		lply.blindflash:SetConstantAttenuation(.1)
+	end
+	
+	local Ang = view.angles
+	Ang[2] = Ang[2] + (eyesmode == 2 and 90 or eyesmode == 1 and -90 or 0)
+	Ang[1] = eyesmode == 0 and Ang[1] or 0
+	lply.blindflash:SetFarZ(40)
+	lply.blindflash:SetFOV(160)
+	lply.blindflash:SetBrightness(1)
+	lply.blindflash:SetPos(view.origin)
+	lply.blindflash:SetAngles(Ang)
+	lply.blindflash:Update()
 end)

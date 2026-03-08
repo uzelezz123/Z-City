@@ -36,49 +36,19 @@ function SWEP:GetAnimShoot2(time, force, delay)
 end
 
 local angZero, vecZero = Angle(0, 0, 0), Vector(0, 0, 0) -- а неиспользуется потому что глуалин подчеркнул это
-local angPosture3 = Angle(45, 45, -25)
-local angPosture3pistol = Angle(5, 65, 0)
-local angPosture4 = Angle(40, -30, -40)
-local angPosture5 = Angle(5, 5, 0)
-local angPosture6 = Angle(30, 20, 0)
-local angPosture7 = Angle(5, -30, 0)
-local angPosture8 = Angle(40, 10, -30)
-local angSuicide = Angle(-35, 120, 0)
-local angReload = Angle(-20, 10, 0)
+-- local angPosture3 = Angle(45, 45, -25)
+-- local angPosture3pistol = Angle(5, 65, 0)
+-- local angPosture4 = Angle(40, -30, -40)
+-- local angPosture5 = Angle(5, 5, 0)
+-- local angPosture6 = Angle(30, 20, 0)
+-- local angPosture7 = Angle(5, -30, 0)
+-- local angPosture8 = Angle(40, 10, -30)
+-- local angSuicide = Angle(-35, 120, 0)
+-- local angReload = Angle(-20, 10, 0)
 
 SWEP.AllowedInspect = true
 
 
-
-local funcNil = function() end
-
-hg.postureFuncWorldModel = {
-	[1] = function(self,ply)
-	end,
-	[2] = function(self,ply)
-		self.weaponAng[3] = self.weaponAng[3] - 15
-	end,
-	[3] = function(self, ply, force)
-		if self:IsZoom() and not force then return end
-		self.weaponAng:Add( (self:IsPistolHoldType() or self.CanEpicRun) and angPosture3pistol or angPosture3)
-	end,
-	[4] = function(self, ply, force)
-		if self:IsZoom() and not force then return end
-		self.weaponAng:Add((self:IsPistolHoldType() and angPosture7) or (ply:IsFlagSet(FL_ANIMDUCKING) and angPosture8 or angPosture4))
-		--self.weaponAng[2] = self.weaponAng[2] - 12
-	end,
-	[5] = function(self,ply)
-		self.weaponAng[3] = self.weaponAng[3] - (self:IsZoom() and 0 or 20)
-	end,
-	[6] = function(self,ply)
-		if self:IsZoom() then return end
-		self.weaponAng[3] = self.weaponAng[3] + 20
-	end,
-	[9] = function(self,ply)
-		if self:IsZoom() then return end
-		self.weaponAng[3] = self.weaponAng[3] - 40
-	end,
-}
 SWEP.lerpaddcloseanim = 0
 SWEP.closeanimdis = 40
 SWEP.WepAngOffset = Angle(0,0,0)
@@ -114,11 +84,11 @@ function SWEP:ChangeGunPos(dtime)
 	end
 	
 	local huya = false//self.lerpaddcloseanim > (self:IsPistolHoldType() and 0.7 or 0.39)
-	local func = hg.postureFuncWorldModel[ply:GetNWFloat("InLegKick",0) > CurTime() and 3 or self.reload and 0 or (self:IsSprinting() or huya) and ((ply.posture == 3 and 3) or ((ply.posture == 3 or fakeRagdoll) and 3) or (self:IsPistolHoldType() and 3 or 3)) or ply.posture] or funcNil
+	-- local func = hg.postureFuncWorldModel[ply:GetNWFloat("InLegKick",0) > CurTime() and 3 or self.reload and 0 or (self:IsSprinting() or huya) and ((ply.posture == 3 and 3) or ((ply.posture == 3 or fakeRagdoll) and 3) or (self:IsPistolHoldType() and 3 or 3)) or ply.posture] or funcNil
 	
-	if not self.inspect then
-		func(self, ply, huya)
-	end
+	-- if not self.inspect then
+	-- 	func(self, ply, huya)
+	-- end
 
 	if (ply.posture == 7 or ply.posture == 8) and not self.reload and not ply.suiciding then
 		--gangsta mode!!!
@@ -195,7 +165,7 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
 		
 	self.setrhik = true
 	self.setlhik = !self:IsPistolHoldType() or !ply.suiciding
-	self.setlhik = (not (ply.posture == 7 or ply.posture == 8 or ( (self:IsPistolHoldType() or self.CanEpicRun) and self:IsSprinting() and !(ply.organism and ply.organism.rarmamputated) ) or (self:IsPistolHoldType() and ply.posture == 9) or (self:IsPistolHoldType() and ply.suiciding) ) or self.reload and self.setlhik or false)
+	self.setlhik = !self:IsResting() and (not (ply.posture == 7 or ply.posture == 8 or ( (self:IsPistolHoldType() or self.CanEpicRun) and self:IsSprinting() and !(ply.organism and ply.organism.rarmamputated) ) or (self:IsPistolHoldType() and ply.posture == 9) or (self:IsPistolHoldType() and ply.suiciding) ) or self.reload and self.setlhik or false)
 	self.setlhik = !(self:IsPistolHoldType() and (self:GetButtstockAttack() - CurTime() > -0.5)) and self.setlhik
 	
 	local tr = hg.eyeTrace(ply, 60, ent)
@@ -269,7 +239,11 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
         localPos:Zero()
         localAng:Zero()
 
-        local lpos, lang = self:RestedAnim(localPos, localAng, dtime)
+		local back = (bNoAdditional and Vector() or (self.AdditionalPos + self.AdditionalPos2))
+		back[3] = 0
+		back[2] = 0
+
+        local lpos, lang = self:RestedAnim(localPos + back, localAng, dtime)
 
         desiredPos = LocalToWorld(LerpVector(self.restlerp, vector_origin, -self.RestPosition - self.WorldPos) + lpos, lang, LerpVector(self.restlerp, desiredPos, restpos), desiredAng)
     end

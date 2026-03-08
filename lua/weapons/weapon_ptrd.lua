@@ -46,7 +46,7 @@ SWEP.weight = 4
 SWEP.ScrappersSlot = "Primary"
 SWEP.weaponInvCategory = 1
 SWEP.ShellEject = "RifleShellEject"
-SWEP.AutomaticDraw = true
+SWEP.AutomaticDraw = false
 SWEP.UseCustomWorldModel = false
 SWEP.Primary.ClipSize = 1
 SWEP.Primary.DefaultClip = 1
@@ -112,6 +112,7 @@ SWEP.AnimsEvents = {
 		[0] = function(self)
 			self:EmitSound("weapons/easternfront/ptrd41/handling/bolt_back.wav", 55, math_random(95, 105))
 			self:RejectShell(self.ShellEject)
+			self.drawBullet = true
 		end,
 		[0.2] = function(self)
 			self:EmitSound("weapons/universal/uni_crawl_l_03.wav", 45, math_random(95, 105))
@@ -190,6 +191,43 @@ function SWEP:ThinkAdd()
 		self.FakePos = LerpVector(ft * 2, self.FakePos, idlePos)
 		self.FakeAng = LerpAngle(ft * 2, self.FakeAng, idleAng)
 	end
+end
+
+hook.Add("HG_MovementCalc_2", "HG_PTRDReloading_Slow", function(mul, ply, cmd, mv)
+	local wep = IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon()
+	if wep and wep ~= NULL and wep:GetClass() == "weapon_ptrd" and wep.reload then
+		cmd:RemoveKey(IN_MOVELEFT)
+		cmd:RemoveKey(IN_MOVERIGHT)
+		cmd:RemoveKey(IN_JUMP)
+		if mv then
+			mv:RemoveKey(IN_MOVELEFT)
+			mv:RemoveKey(IN_MOVERIGHT)
+			mv:RemoveKey(IN_JUMP)
+		end
+
+		mul[1] = 0.5
+
+		if cmd:KeyDown(IN_DUCK) or ply:Crouching() then
+			cmd:AddKey(IN_DUCK)
+			if mv then
+				mv:AddKey(IN_DUCK)
+			end
+		else
+			cmd:RemoveKey(IN_DUCK)
+			if mv then
+				mv:RemoveKey(IN_DUCK)
+			end
+		end
+	end
+end)
+
+if CLIENT then
+	hook.Add("hg_AdjustMouseSensitivity", "HG_PTRDReloading_Sens", function(ply)
+		local wep = IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon()
+		if wep and wep ~= NULL and wep:GetClass() == "weapon_ptrd" and wep.reload then
+			return 0.1
+		end
+	end)
 end
 
 --// Falling on shoot

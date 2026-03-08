@@ -33,7 +33,7 @@ SWEP.bloodID = 3
 SWEP.HoldPos = Vector(-12,0,0)
 SWEP.HoldAng = Angle(0,0,0)
 
-SWEP.AttackTime = 0.35
+SWEP.AttackTime = 0.37
 SWEP.AnimTime1 = 1.5
 SWEP.WaitTime1 = 1
 SWEP.AttackLen1 = 45
@@ -52,6 +52,8 @@ SWEP.basebone = 94
 
 SWEP.weaponPos = Vector(0,5,-2)
 SWEP.weaponAng = Angle(0,-90,0)
+
+SWEP.AnimAlwaysBack = true
 
 SWEP.AnimList = {
     ["idle"] = "Idle",
@@ -93,10 +95,7 @@ SWEP.PenetrationSizePrimary = 2
 SWEP.PenetrationSizeSecondary = 3
 
 SWEP.StaminaPrimary = 30
-SWEP.StaminaSecondary = 10
-
-SWEP.AttackLen1 = 55
-SWEP.AttackLen2 = 30
+SWEP.StaminaSecondary = 60
 
 function SWEP:CanPrimaryAttack()
     self.DamageType = DMG_SLASH
@@ -126,6 +125,8 @@ function SWEP:CustomAttack2()
     ent.wep = self:GetClass()
     ent.owner = ply
     ent.damage = 25
+    ent.penetration = 5
+    ent.shouldntlodge = true
 
     local phys = ent:GetPhysicsObject()
 

@@ -37,7 +37,12 @@ function SWEP:Initialize()
 end
 
 local math = math
+local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_SERVER_CAN_EXECUTE + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
 function SWEP:Think()
+	if not self:GetOwner():KeyDown(IN_ATTACK) and hg_healanims:GetBool() then
+		self:SetHolding(math.max(self:GetHolding() - 12, 0))
+	end
+
 	self:SetHold(self.HoldType)
 	self.ModelScale = math.Clamp((self.modeValues[1] / (self.modeValuesdef[1][1] * 0.8)) * 1.1, 0.5, 1.1)
 end
@@ -68,13 +73,19 @@ end
 
 if SERVER then
 	function SWEP:Heal(ent, mode, bone)
-		local owner = self:GetOwner()
-		if owner:IsNPC() then
-			self:NPCHeal(owner, 0.25, "snd_jack_hmcd_bandage.wav")
+		if ent:IsNPC() then
+			self:NPCHeal(ent, 0.25, "snd_jack_hmcd_bandage.wav")
 		end
 	
 		local org = ent.organism
 		if not org then return end
+
+		local owner = self:GetOwner()
+		if ent == hg.GetCurrentCharacter(owner) and hg_healanims:GetBool() then
+			self:SetHolding(math.min(self:GetHolding() + 10, 100))
+
+			if self:GetHolding() < 100 then return end
+		end
 	
 		local done = self:Bandage(ent, bone)
 		if self.modeValues[1] <= 0 and self.ShouldDeleteOnFullUse then

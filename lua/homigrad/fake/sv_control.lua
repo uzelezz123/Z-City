@@ -1,6 +1,6 @@
 
 local vecZero = Vector(0, 0, 0)
-local vectorUp = Vector(0, 0, 1)
+local angZero = Angle(0, 0, 0)
 local shadowparams = {}
 
 --[[
@@ -47,17 +47,6 @@ local left_arm = {
 	["ValveBiped.Bip01_L_Hand"] = true,
 }
 
---[[
-local ent = hg.GetCurrentCharacter(Entity(1))
-for i = 0,ent:GetBoneCount()-1 do
-	print(i,ent:GetBoneName(i),ent:TranslateBoneToPhysBone(i))
-end
-
-for i = 0,ent:GetPhysicsObjectCount()-1 do
-	print(i,ent:GetBoneName(ent:TranslatePhysBoneToBone(i)),i)
-end
---]]
-
 hg.cachedmodels = hg.cachedmodels or {}
 
 local function realPhysNum(ragdoll, physNumber)
@@ -79,9 +68,7 @@ local oldtime
 function hg.ShadowControl(ragdoll, physNumber, ss, ang, maxang, maxangdamp, pos, maxspeed, maxspeeddamp)
 	physNumber = realPhysNum(ragdoll, physNumber) or 0
 	local phys = ragdoll:GetPhysicsObjectNum(physNumber)
-	--print(phys:GetMass(), hg.IdealMassPlayer[ragdoll:GetBoneName(ragdoll:TranslatePhysBoneToBone(physNumber))])
-	--print(ragdoll:GetPhysicsObject():GetMass())
-	--phys:SetMass(120)
+
 	shadowparams.secondstoarrive = ss
 	shadowparams.angle = ang
 	shadowparams.maxangular = maxang and maxang * (ragdoll.power or 1)-- * (hg.IdealMassPlayer[physNumber] and hg.IdealMassPlayer[physNumber] / phys:GetMass() or 0)
@@ -90,6 +77,7 @@ function hg.ShadowControl(ragdoll, physNumber, ss, ang, maxang, maxangdamp, pos,
 	shadowparams.maxspeed = maxspeed and maxspeed * (ragdoll.power or 1)
 	shadowparams.maxspeeddamp = maxspeeddamp
 	shadowparams.dampfactor = 0.9
+
 	phys:Wake()
 	phys:ComputeShadowControl(shadowparams)
 end
@@ -101,32 +89,24 @@ hook.Add("Fake", "Contorl", function(ply, ragdoll)
 	ragdoll.cooldownRH = 0
 end)
 
---local ragdollFake = hg.ragdollFake or {}
 local att, trace, ent
+
 local tr = {
 	filter = {}
 }
 
+local hg_fake_stamina = CreateConVar("hg_fake_stamina", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "Enables stamina when ragdolled", 0, 1)
+
 local util_TraceLine, util_TraceHull = util.TraceLine, util.TraceHull
 local game_GetWorld = game.GetWorld
 local ang, ang2, ang3 = Angle(0, 0, 0), Angle(0, 0, 0),  Angle(0, 0, 0)
-local angZero = Angle(0, 0, 0)
-local vecZero = Vector(0, 0, 0)
-local hullVec = Vector(3, 3, 6)
-local vecAimHands = Vector(0, 0, -4.5)
 local spine, time, rhand, lhand
---local Organism = hg.organism
+
 local height = Vector(0, 0, 72) --28 eye level if crouched
 local util_PointContents, bit_band, hook_Run = util.PointContents, bit.band, hook.Run
 local forceArm = 600
 local forceArm_dump = 450
-local forceArmForward = 120
-local forceArmForward_dump = 105
-local forceArmWater = 5
-local forceArmWater_dump = 0
-local forceArmGun = 9000
-local forceArmGun_dump = 1000
-local fakeshockFall = 0.1
+
 local models_female = {
 	["models/player/group01/female_01.mdl"] = true,
 	["models/player/group01/female_02.mdl"] = true,
@@ -141,21 +121,11 @@ local models_female = {
 	["models/player/group03/female_05.mdl"] = true,
 	["models/player/group03/police_fem.mdl"] = true
 }
-local hook_Run = hook.Run
-local vector_zero = Vector(0,0,0)
-local vector_usehull = Vector(6,6,6)
---[[
-	ValveBiped.Bip01_L_Thigh
-	ValveBiped.Bip01_L_Calf
-	ValveBiped.Bip01_L_Foot
-	ValveBiped.Bip01_L_Toe0
-]]
 
---[[local mainbones = {
-	["ValveBiped.Bip01_Pelvis"] = true,
-	["ValveBiped.Bip01_Spine2"] = true,
-	["ValveBiped.Bip01_Head1"] = true,
-}--]]
+local vector_zero = Vector(0,0,0)
+local vector_usehull = Vector(6, 6, 6)
+
+local hg_shitty_fake = CreateConVar("hg_shitty_fake", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "enable shitty fake", 0, 1)
 
 local speedupbones = {
 	["ValveBiped.Bip01_L_Foot"] = true,
@@ -322,7 +292,7 @@ hook.Add("Think", "Fake", function()
 				angl:RotateAroundAxis(angl:Forward(), 90)
 				angl:RotateAroundAxis(angl:Up(), 90)
 				angl:RotateAroundAxis(angl:Forward(), ishgweapon(wep) and not wep:IsPistolHoldType() and 120 or 180)
-				angl:RotateAroundAxis(angl:Up(), -0)
+				angl:RotateAroundAxis(angl:Up(), ishgweapon(wep) and wep:IsResting() and 50 - ply:EyeAngles().p or 0)
 				shadowControl(ragdoll, 1, 0.1, angl, 250, 20)
 			end
 
@@ -389,7 +359,7 @@ hook.Add("Think", "Fake", function()
 		
 		if not wep.RagdollFunc then
 			local force = math.max(1 - org.larm / 1.3, 0)
-			if !IsValid(ragdoll.ConsLH) and (ply:KeyDown(IN_ATTACK) and !ishgweapon(wep)) or ((ishgweapon(wep) or wep.ismelee2) and (ply:KeyDown(IN_USE) or ply:KeyDown(IN_ATTACK2))) then// || ply:InVehicle() then
+			if !IsValid(ragdoll.ConsLH) and (ply:KeyDown(IN_ATTACK) and !ishgweapon(wep)) or (((ishgweapon(wep) and !wep:IsResting()) or wep.ismelee2) and (ply:KeyDown(IN_USE) or ply:KeyDown(IN_ATTACK2))) then// || ply:InVehicle() then
 				if org.canmove then
 					//if !ply:InVehicle() then
 						ang2:Set(angles)
@@ -404,7 +374,7 @@ hook.Add("Think", "Fake", function()
 						ang2:RotateAroundAxis(ang2:Forward(), 135)
 						ang2:RotateAroundAxis(ang2:Up(), 20)
 						shadowControl(ragdoll, 5, 0.001, ang2, forceArm * 2, forceArm_dump, ragdoll:GetPhysicsObjectNum(realPhysNum(ragdoll,5)):GetPos() + ang2:Forward() * 15 + ((vellen > 150 and ragdoll:GetPhysicsObject():GetVelocity() / 224) or vector_zero), 500, 50)
-						if ply:WaterLevel() == 1 then shadowControl(ragdoll, 1, 0.001, nil, nil, nil, ragdoll:GetPhysicsObjectNum(realPhysNum(ragdoll,5)):GetPos(), forceArmWater, forceArmWater_dump) end
+						if ply:WaterLevel() == 1 then shadowControl(ragdoll, 1, 0.001, nil, nil, nil, ragdoll:GetPhysicsObjectNum(realPhysNum(ragdoll,5)):GetPos(), 5, 0) end
 					/*else
 						ang2:Set(angles)
 						ang2:RotateAroundAxis(angles:Up(), 0)
@@ -440,7 +410,9 @@ hook.Add("Think", "Fake", function()
 						org.painadd = org.painadd + ragdoll.dtime * 5
 					end
 
-					org.stamina.subadd = org.stamina.subadd + 0.05 * (ragdoll.staminaRightModifyer or 0.5) * (on_ground and 0.25 or 1)
+					if hg_fake_stamina:GetBool() then
+						org.stamina.subadd = org.stamina.subadd + 0.05 * (ragdoll.staminaRightModifyer or 0.5) * (on_ground and 0.25 or 1)
+					end
 				end
 
 				if IsValid(ragdoll.ConsLH) then
@@ -459,7 +431,10 @@ hook.Add("Think", "Fake", function()
 					if org.larm == 1 or org.larmdislocation then
 						org.painadd = org.painadd + ragdoll.dtime * 5
 					end
-					org.stamina.subadd = org.stamina.subadd + 0.05 * (ragdoll.staminaLeftModifyer or 0.5) * (on_ground and 0.25 or 1)
+
+					if hg_fake_stamina:GetBool() then
+						org.stamina.subadd = org.stamina.subadd + 0.05 * (ragdoll.staminaLeftModifyer or 0.5) * (on_ground and 0.25 or 1)
+					end
 				end
 			end
 
@@ -517,7 +492,7 @@ hook.Add("Think", "Fake", function()
 						ang2:RotateAroundAxis(ang2:Up(), ishgweapon(wep) and 1 or 20)
 						ang2:RotateAroundAxis(ang2:Forward(), ishgweapon(wep) and 120 or 0)
 						shadowControl(ragdoll, 7, 0.001, ang2, forceArm * 2, forceArm_dump, ragdoll:GetPhysicsObjectNum(realPhysNum(ragdoll,7)):GetPos() + ang2:Forward() * 15 + ((vellen > 150 and ragdoll:GetPhysicsObject():GetVelocity() / 224) or vector_zero), ishgweapon(wep) and 500 or 500, ishgweapon(wep) and 50 or 50)
-						if ply:WaterLevel() == 1 then shadowControl(ragdoll, 1, 0.001, nil, nil, nil, ragdoll:GetPhysicsObjectNum(7):GetPos(), forceArmWater, forceArmWater_dump) end
+						if ply:WaterLevel() == 1 then shadowControl(ragdoll, 1, 0.001, nil, nil, nil, ragdoll:GetPhysicsObjectNum(7):GetPos(), 5, 0) end
 					/*else
 						ang2:Set(angles)
 						ang2:RotateAroundAxis(angles:Up(), 0)
@@ -571,10 +546,11 @@ hook.Add("Think", "Fake", function()
 			end
 
 			if ply:KeyDown(IN_SPEED) and org.canmove and !org.larmamputated and (!ply.HandsStun or ply.HandsStun < CurTime()) then
-				--and org.shock < fakeshockFall
 				if IsValid(ragdoll.ConsLH) then
-					org.stamina.subadd = org.stamina.subadd + 0.06 * (ragdoll.staminaLeftModifyer or 0.5) * ( IsValid(ragdoll.ConsRH) and 0.35 or 1.25) * (on_ground and 0.25 or 1)
-
+					if hg_fake_stamina:GetBool() then
+						org.stamina.subadd = org.stamina.subadd + 0.06 * (ragdoll.staminaLeftModifyer or 0.5) * ( IsValid(ragdoll.ConsRH) and 0.35 or 1.25) * (on_ground and 0.25 or 1)
+					end
+					
 					local ent2 = ragdoll.ConsLH.Ent2
 					local ply2 = hg.RagdollOwner(ent2) or ent2
 
@@ -599,7 +575,7 @@ hook.Add("Think", "Fake", function()
 						})
 
 						local useent = (IsValid(usetrace.Entity) and usetrace.Entity) or false
-						if useent and not useent:IsVehicle() then useent:Use(ply) end
+						if useent and not useent:IsVehicle() and hook.Run("PlayerUse", ply, useent) then useent:Use(ply) end
 						local wep = useent and useent:IsWeapon() and useent or false
 						ply.force_pickup = true
 						if IsValid(wep) and hook.Run("PlayerCanPickupWeapon", ply, wep) then ply:PickupWeapon(wep) end
@@ -659,10 +635,11 @@ hook.Add("Think", "Fake", function()
 			end
 
 			if ply:KeyDown(IN_WALK) and org.canmove and !(ishgweapon(wep) or wep.ismelee2) and !org.rarmamputated and (!ply.HandsStun or ply.HandsStun < CurTime()) then
-				--and org.shock < fakeshockFall
 				if IsValid(ragdoll.ConsRH) then
-					org.stamina.subadd = org.stamina.subadd + 0.06 * (ragdoll.staminaRightModifyer or 1) * ( IsValid(ragdoll.ConsLH) and 0.35 or 1.25) * (on_ground and 0.25 or 1)
-				
+					if hg_fake_stamina:GetBool() then
+						org.stamina.subadd = org.stamina.subadd + 0.06 * (ragdoll.staminaRightModifyer or 1) * ( IsValid(ragdoll.ConsLH) and 0.35 or 1.25) * (on_ground and 0.25 or 1)
+					end
+					
 					local ent2 = ragdoll.ConsRH.Ent2
 					local ply2 = hg.RagdollOwner(ent2) or ent2
 
@@ -687,7 +664,7 @@ hook.Add("Think", "Fake", function()
 						})
 
 						local useent = (IsValid(usetrace.Entity) and usetrace.Entity) or false
-						if useent and not useent:IsVehicle() then useent:Use(ply) end
+						if useent and not useent:IsVehicle() and hook.Run("PlayerUse", ply, useent) then useent:Use(ply) end
 						local wep = useent and useent:IsWeapon() and useent or false
 						ply.force_pickup = true
 						if IsValid(wep) and hook.Run("PlayerCanPickupWeapon", ply, wep) then ply:PickupWeapon(wep) end

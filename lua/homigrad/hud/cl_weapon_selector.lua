@@ -52,7 +52,7 @@ local AcsentColor = Color(155,0,0)
 local gradient_u = Material("vgui/gradient-d")
 
 function WS.WeaponSelectorDraw( ply )
-    if not IsValid( ply ) or not ply:Alive() then return end
+    if not IsValid( ply ) or not ply:Alive() or GetGlobalBool("RadialInventory", false) then return end
     if WS.Show < CurTime() then 
         WS.SelectedSlot = WS.LastSelectedSlot 
         WS.SelectedSlotPos = -1
@@ -185,7 +185,6 @@ local function GetUpper(Weapons)
     if Weapons[WS.SelectedSlot] == nil or Weapons[WS.SelectedSlot][WS.SelectedSlotPos] == nil then
         GetUpper(Weapons)
     end
-
 end
 
 local function GetDown(Weapons)
@@ -198,7 +197,6 @@ local function GetDown(Weapons)
     if Weapons[WS.SelectedSlot] == nil or Weapons[WS.SelectedSlot][WS.SelectedSlotPos] == nil then
         GetDown(Weapons)
     end
-
 end
 
 local LastSelected = 0
@@ -216,11 +214,11 @@ local function canUseSelector(ply)
         return true
     end
 
-    return IsAiming(ply) or (IsValid(wep) and wep:GetClass() == "weapon_physgun" and ply:KeyDown(IN_ATTACK)) or (lply.organism and lply.organism.pain and lply.organism.pain > 100)
+    return IsAiming(ply) or (IsValid(wep) and wep:GetClass() == "weapon_physgun" and ply:KeyDown(IN_ATTACK)) or (lply.organism and lply.organism.pain and lply.organism.pain > 100) or GetGlobalBool("RadialInventory", false)
 end
 
 function WS.ChangeSelectionWep( ply, key )
-    if not IsValid( ply ) or not ply:Alive() then return end
+    if not IsValid( ply ) or not ply:Alive() or GetGlobalBool("RadialInventory", false) then return end
     if ply.organism and ply.organism.otrub then return end
     if canUseSelector( ply ) then return end
     --print(canUseSelector( ply ))
@@ -270,7 +268,7 @@ function WS.ChangeSelectionWep( ply, key )
 end
 
 function WS.SetActuallyWeapon( ply, cmd )
-    if not IsValid( ply ) or not ply:Alive() then return end
+    if not IsValid( ply ) or not ply:Alive() or GetGlobalBool("RadialInventory", false) then return end
     if (cmd:KeyDown( IN_ATTACK ) or cmd:KeyDown( IN_ATTACK2 )) and WS.Show > CurTime() then
 
         if WS.Selected and WS.Selected > CurTime() then 

@@ -59,8 +59,8 @@ local function PrecacheAccessoryModels()
     
     timer.Simple(0.1, function()
         if APmodule.PlayerModels then
-            for _, sexModels in pairs(APmodule.PlayerModels) do
-                for _, modelData in pairs(sexModels) do
+            for _, sexModels in SortedPairs(APmodule.PlayerModels) do
+                for _, modelData in SortedPairs(sexModels) do
                     if modelData.mdl then
                         util.PrecacheModel(modelData.mdl)
                     end
@@ -69,7 +69,7 @@ local function PrecacheAccessoryModels()
         end
         
         if hg.Accessories then
-            for _, accessory in pairs(hg.Accessories) do
+            for _, accessory in SortedPairs(hg.Accessories) do
                 if accessory.model then
                     util.PrecacheModel(accessory.model)
                 end
@@ -118,7 +118,7 @@ local function CreateStyledAccessoryMenu(parent, title)
     menu:SetPos(cx,cy)
     menu:MakePopup()
     menu:SetDraggable(false)
-    menu:ShowCloseButton(true)
+    menu:ShowCloseButton(false)
     
     menu.CurrentPreviewIcon = nil  
     
@@ -379,7 +379,7 @@ function PANEL:PostInit()
         --print(tMdl.mdl)
 
         local mats = Entity:GetMaterials()
-        for k, v in pairs(tMdl.submatSlots) do
+        for k, v in SortedPairs(tMdl.submatSlots) do
             local slot = 1
             for i = 1, #mats do
                 if mats[i] == v then slot = i-1 break end
@@ -394,7 +394,7 @@ function PANEL:PostInit()
         end
         local bodygroups = Entity:GetBodyGroups()
         tbl.ABodygroups = tbl.ABodygroups or {}
-        for k, v in ipairs(bodygroups) do
+        for k, v in SortedPairs(bodygroups) do
             if !tbl.ABodygroups[v.name] then continue end
             for i = 0, #v.submodels do
                 local b = v.submodels[i]
@@ -444,11 +444,11 @@ function PANEL:PostInit()
         main.AppearanceTable.AModel = str
     end
 
-    for k, v in pairs(APmodule.PlayerModels[1]) do
+    for k, v in SortedPairs(APmodule.PlayerModels[1]) do
         modelSelector:AddChoice(k)
     end
 
-    for k, v in pairs(APmodule.PlayerModels[2]) do
+    for k, v in SortedPairs(APmodule.PlayerModels[2]) do
         modelSelector:AddChoice(k)
     end
 
@@ -594,7 +594,7 @@ function PANEL:PostInit()
         scroll:Dock(FILL)
         scroll:DockMargin(ScreenScale(2), ScreenScale(2), ScreenScale(2), ScreenScale(2))
         
-        for _, presetName in ipairs(presetList) do
+        for _, presetName in SortedPairs(presetList) do
             local presetBtn = vgui.Create("DButton", scroll)
             presetBtn:Dock(TOP)
             presetBtn:DockMargin(2, 2, 2, 0)
@@ -719,7 +719,7 @@ function PANEL:PostInit()
         hatSelectMenu = CreateStyledAccessoryMenu(nil, "Select Hat")
         table.insert(accessoryMenus, hatSelectMenu)
         
-        for k, v in pairs(hg.Accessories) do
+        for k, v in SortedPairs(hg.Accessories) do
             if v.placement != "head" and v.placement != "ears" then continue end
             if not lply:PS_HasItem(k) and v.bPointShop and !hg.Appearance.GetAccessToAll(lply) then continue end
             
@@ -782,7 +782,7 @@ function PANEL:PostInit()
         faceSelectorMenu = CreateStyledAccessoryMenu(nil, "Select Face Accessory")
         table.insert(accessoryMenus, faceSelectorMenu)
         
-        for k, v in pairs(hg.Accessories) do
+        for k, v in SortedPairs(hg.Accessories) do
             if v.placement != "face" then continue end
             if not lply:PS_HasItem(k) and v.bPointShop and !hg.Appearance.GetAccessToAll(lply) then continue end
             
@@ -846,7 +846,7 @@ function PANEL:PostInit()
         bodySelectorMenu = CreateStyledAccessoryMenu(nil, "Select Body Accessory")
         table.insert(accessoryMenus, bodySelectorMenu)
         
-        for k, v in pairs(hg.Accessories) do
+        for k, v in SortedPairs(hg.Accessories) do
             if v.placement != "torso" and v.placement != "spine" then continue end
             if not lply:PS_HasItem(k) and v.bPointShop and !hg.Appearance.GetAccessToAll(lply) then continue end
             
@@ -904,7 +904,7 @@ function PANEL:PostInit()
     function bodyMatSelector:DoClick()
         main.modelPosID = "Torso"
         bodyMatSelectorMenu = DermaMenu()
-        for k, v in pairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
+        for k, v in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
             local mater = bodyMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AClothes.main = k
@@ -948,7 +948,7 @@ function PANEL:PostInit()
     function legsMatSelector:DoClick()
         main.modelPosID = "Legs"
         legsMatSelectorMenu = DermaMenu()
-        for k, v in pairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
+        for k, v in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
             local mater = legsMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AClothes.pants = k
@@ -986,7 +986,7 @@ function PANEL:PostInit()
     function bootsMatSelector:DoClick()
         main.modelPosID = "Boots"
         bootsMatSelectorMenu = DermaMenu()
-        for k, v in pairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
+        for k, v in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
             local mater = bootsMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AClothes.boots = k
@@ -1024,7 +1024,7 @@ function PANEL:PostInit()
     function glovesSelector:DoClick()
         main.modelPosID = "Hands"
         glovesSelectorMenu = DermaMenu()
-        for k, v in pairs(hg.Appearance.Bodygroups["HANDS"][tMdl.sex and 2 or 1]) do
+        for k, v in SortedPairs(hg.Appearance.Bodygroups["HANDS"][tMdl.sex and 2 or 1]) do
             if not lply:PS_HasItem(v["ID"]) and v[2] and !hg.Appearance.GetAccessToAll(lply) then continue end
             glovesSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")

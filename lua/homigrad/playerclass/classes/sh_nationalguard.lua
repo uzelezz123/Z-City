@@ -77,3 +77,20 @@ function CLASS.Guilt(self, Victim)
 
     return 1
 end
+
+hook.Add("HG_PlayerFootstep", "nationalguard_footsteps", function(ply, pos, foot, sound, volume, rf)
+	local chr = hg.GetCurrentCharacter(ply)
+	if ply:Alive() and ply.PlayerClassName == "nationalguard" then
+		local ent = hg.GetCurrentCharacter(ply)
+
+		if not (ply:IsWalking() or ply:Crouching()) and ent == ply then
+			local snd = "zcitysnd/" .. string.Replace(sound, "player/footsteps", "player/footsteps_military/")
+			if SoundDuration(snd) <= 0 then
+				snd = sound -- missing footsteps fix
+			end
+			EmitSound(snd, pos, ply:EntIndex(), CHAN_AUTO, volume, 75, nil, changePitch(math.random(95,105)) )
+
+			return true
+		end
+	end
+end)

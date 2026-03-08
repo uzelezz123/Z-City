@@ -12,7 +12,7 @@ function hg.Appearance.CreateAppearanceFile(strFile_name, tblAppearance)
 end
 
 function hg.Appearance.LoadAppearanceFile(strFile_name)
-	if not file.Exists(dir .. strFile_name .. ".json", "DATA") then return false, "no file [data/zcity/appearances/" .. strFile_name .. ".json]" end
+	if not file.Exists(dir .. strFile_name .. ".json", "DATA") then return false end
 	local tblAppearance = util.JSONToTable(file.Read(dir .. strFile_name .. ".json"))
 
 	if not hg.Appearance.AppearanceValidater(tblAppearance) then return false, "file is damaged [data/zcity/appearances/" .. strFile_name .. ".json]"  end
@@ -39,7 +39,7 @@ net.Receive("Get_Appearance", function()
         net.WriteBool(not tbl)
     net.SendToServer()
 
-	if not tbl and not forced_random then lply:ChatPrint("[Appearance] file load failed - " .. reason) end
+	if not tbl and not forced_random and reason then lply:ChatPrint("[Appearance] file load failed - " .. reason) end
 end)
 
 local function OnlyGetAppearance()

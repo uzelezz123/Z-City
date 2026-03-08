@@ -197,11 +197,11 @@ function ENT:Explode()
 				mask = MASK_SHOT,
 				filter = self
 			})
-		if line.Hit then
-			ParticleEffect("pcf_jack_groundsplode_small3",selfPos,-vector_up:Angle())
-		else
+		--if line.Hit then
+		--	ParticleEffect("pcf_jack_groundsplode_small3",selfPos,-vector_up:Angle())
+		--else
 			ParticleEffect("pcf_jack_airsplode_small3",selfPos,-vector_up:Angle())
-		end
+		--end
 	else
 		local effectdata = EffectData()
 		effectdata:SetOrigin(selfPos)

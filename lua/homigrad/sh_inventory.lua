@@ -146,6 +146,7 @@ if CLIENT then
 		end
 	end)
 
+	local clr_text = Color(255,255,255,45)
 	OpenInv = function(ent)
 		if IsValid(plyMenu) then
 			plyMenu:Remove()
@@ -188,10 +189,9 @@ if CLIENT then
 		plyMenu.Created = CurTime()
 		--plyMenu.OldPaint = 
 		plyMenu.PaintOver = function(self, w, h)
-
 			draw.DrawText(name, "HomigradFontSmall", w / 2, 10, color_white, TEXT_ALIGN_CENTER)
 
-			draw.DrawText("R - Close | LMB - Take | RMB - Item menu", "HomigradFontSmall", w / 2, h - h*0.055 , Color(255,255,255,45), TEXT_ALIGN_CENTER)
+			draw.DrawText("R - Close | LMB - Take | RMB - Item menu", "HomigradFontSmall", w / 2, h - h*0.055 , clr_text, TEXT_ALIGN_CENTER)
 		end
 		function plyMenu:Think()
 			local ent = self.ent

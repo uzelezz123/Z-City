@@ -101,21 +101,10 @@ function SWEP:PrimaryAttack()
 	end
 end
 
-if CLIENT then
-	surface.CreateFont("huyhuy", {
-		font = "CloseCaption_Normal", --  Use the font-name which is shown to you by your operating system Font Viewer, not the file name
-		extended = true,
-		size = ScreenScale(15),
-		weight = 500,
-		blursize = 0,
-		scanlines = 0,
-		antialias = false,
-		strikeout = false,
-		shadow = false,
-		outline = false,
-	})
-	
 
+--// i think it's better to rewrite all of ts stuff below..
+
+if CLIENT then
 	local colWhite = Color(255, 255, 255, 255)
 	local colGray = Color(200, 200, 200, 200)
 	local lerpthing = 1
@@ -481,11 +470,8 @@ if SERVER then
 	
 	function SWEP:PostHeal(ent, mode)
 		local org = ent.organism
-		if not zb then return end 
-		if not zb.modes then return end
-		local mode_hmcd = zb.modes["hmcd"]
 		
-		if(org and IsValid(org.owner) and mode_hmcd)then
+		if(org and IsValid(org.owner))then
 			local organism_owner = org.owner
 			
 			if(organism_owner.SubRole == "traitor_chemist")then
@@ -494,13 +480,13 @@ if SERVER then
 				end
 				
 				if((self.ConsumePoisoned_KCN or 0) > 0)then
-					local ply_kcn_accumulated = mode_hmcd.AddChemicalToPlayer(organism_owner, "KCN", 50 * (self.ConsumePoisoned_KCN or 0))
+					local ply_kcn_accumulated = AddChemicalToPlayer(organism_owner, "KCN", 50 * (self.ConsumePoisoned_KCN or 0))
 					
 					if(ply_kcn_accumulated > 100)then
 						self:PoisonKCNOrganism(org)
 					end
 					
-					mode_hmcd.NetworkChemicalResistanceOfPlayer(organism_owner)
+					NetworkChemicalResistanceOfPlayer(organism_owner)
 					
 					organism_owner.PassiveAbility_ChemicalAccumulation_NextNetworkTime = CurTime() + 1
 				end

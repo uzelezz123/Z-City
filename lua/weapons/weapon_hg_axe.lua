@@ -27,26 +27,26 @@ SWEP.weight = 2.5
 
 SWEP.HoldType = "pistol"
 
-SWEP.HoldPos = Vector(-9,0,0)
-SWEP.HoldAng = Angle(0,0,-20)
+SWEP.HoldPos = Vector(-9, 0, 0)
+SWEP.HoldAng = Angle(0, 0, -20)
 
-SWEP.AttackTime = 0.5
+SWEP.AttackTime = 0.48
 SWEP.AnimTime1 = 2
 SWEP.WaitTime1 = 1.3
-SWEP.ViewPunch1 = Angle(1,1,-1)
+SWEP.ViewPunch1 = Angle(1, 1, -1)
 
 SWEP.Attack2Time = 0.3
 SWEP.AnimTime2 = 1
 SWEP.WaitTime2 = 0.8
-SWEP.ViewPunch2 = Angle(0,0,-2)
+SWEP.ViewPunch2 = Angle(0, 0, -2)
 
-SWEP.attack_ang = Angle(0,0,0)
-SWEP.sprint_ang = Angle(15,0,0)
+SWEP.attack_ang = Angle(0, 0, 0)
+SWEP.sprint_ang = Angle(15, 0, 0)
 
 SWEP.basebone = 94
 
-SWEP.weaponPos = Vector(0,0,0.5)
-SWEP.weaponAng = Angle(0,-90,-13)
+SWEP.weaponPos = Vector(0, 0, 0.5)
+SWEP.weaponAng = Angle(0, -90, -13)
 
 SWEP.AnimList = {
     ["idle"] = "Idle",
@@ -70,7 +70,7 @@ SWEP.PenetrationSizeSecondary = 1.5
 SWEP.StaminaPrimary = 40
 SWEP.StaminaSecondary = 15
 
-SWEP.AttackLen1 = 75
+SWEP.AttackLen1 = 65
 SWEP.AttackLen2 = 40
 
 if CLIENT then
@@ -93,6 +93,8 @@ SWEP.DeploySnd = "physics/wood/wood_plank_impact_soft2.wav"
 SWEP.AttackPos = Vector(0,0,0)
 
 SWEP.NoHolster = true
+
+SWEP.AnimAlwaysBack = true
 
 SWEP.AttackTimeLength = 0.155
 SWEP.Attack2TimeLength = 0.01

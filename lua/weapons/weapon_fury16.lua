@@ -45,10 +45,19 @@ SWEP.HolsterSnd = ""
 
 SWEP.showstats = false
 
+local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_SERVER_CAN_EXECUTE + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
+
+function SWEP:Think()
+	self:SetBodyGroups("11")
+	if not self:GetOwner():KeyDown(IN_ATTACK) and hg_healanims:GetBool() then
+		self:SetHolding(math.max(self:GetHolding() - 4, 0))
+	end
+end
+
 function SWEP:Animation()
 	local hold = self:GetHolding()
-    self:BoneSet("r_upperarm", vector_origin, Angle(0, (-55*hold/65) + hold / 2, 0))
-    self:BoneSet("r_forearm", vector_origin, Angle(-hold / 6, -hold / 0.8, (-20*hold/100)))
+    self:BoneSet("r_upperarm", vector_origin, Angle(0, -hold + (100 * (hold / 100)), 0))
+    self:BoneSet("r_forearm", vector_origin, Angle(-hold / 6, -hold * 2, -15))
 end
 
 function SWEP:NPCHeal(npc, mul, snd)
@@ -71,6 +80,7 @@ end
 function SWEP:OwnerChanged()
 	local owner = self:GetOwner()
 	if IsValid(owner) and owner:IsNPC() then
+		self:SpawnGarbage(nil, nil, nil, self.Color, "2211")
 		self:NPCHeal(owner, 20, "snd_jack_hmcd_needleprick.wav")
 	end
 end
@@ -78,22 +88,26 @@ end
 if SERVER then
 	function SWEP:Heal(ent, mode)
 		if ent:IsNPC() then
+			self:SpawnGarbage(nil, nil, nil, self.Color, "2211")
 			self:NPCHeal(ent, 20, "snd_jack_hmcd_needleprick.wav")
 		end
 
 		local org = ent.organism
 		if not org then return end
-		self:SetBodygroup(1, 1)
+
+		local owner = self:GetOwner()
+		if ent == hg.GetCurrentCharacter(owner) and hg_healanims:GetBool() then
+			self:SetHolding(math.min(self:GetHolding() + 4, 100))
+
+			if self:GetHolding() < 100 then return end
+		end
+
 		local owner = self:GetOwner()
 		local entOwner = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or owner
 		entOwner:EmitSound("snd_jack_hmcd_needleprick.wav", 80, math.random(115, 120))
 
 		if org.berserk >= 0.4 then
-			ent:Kill()
-		end
-
-		if org.noradrenaline >= 1 then
-			--ent:Kill()
+			hg.ExplodeHead(ent)
 		end
 
 		org.noradrenaline = org.noradrenaline + 1.25
@@ -108,6 +122,7 @@ if SERVER then
 
 		if self.modeValues[1] == 0 then
 			owner:SelectWeapon("weapon_hands_sh")
+			self:SpawnGarbage(nil, nil, nil, self.Color, "2211")
 			self:Remove()
 		end
 	end

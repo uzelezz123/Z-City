@@ -114,17 +114,24 @@ if SERVER then
     util.AddNetworkString("AnotherLightningEffect")
     util.AddNetworkString("PluvCommand")
 
-    COMMANDS.god = {function(ply)
+    COMMANDS.zc_god = {function(ply)
         if not ply.organism then return end
         
-        ply.organism.godmode = true
-    end,2}
+        ply.organism.godmode = !ply.organism.godmode
+		ply:Notify(ply.organism.godmode and "now i'm immortal..." or "now i'm mortal")
+		return
+    end,1}
 
-    COMMANDS.ungod = {function(ply)
+	COMMANDS.zc_cloak = {function(ply)
         if not ply.organism then return end
-        
-        ply.organism.godmode = nil
-    end,2}
+		ply.cloak = !ply.cloak
+        ply:SetMaterial(ply.cloak and "NULL" or nil)
+		ply:DrawShadow(!ply.cloak)
+		ply:SetCollisionGroup(ply.cloak and COLLISION_GROUP_DEBRIS or COLLISION_GROUP_PLAYER)
+		ply:RemoveAllDecals()
+		ply:Notify(ply.cloak and "now i'm invisible..." or "now i'm visible")
+		return
+    end,1}
 
     COMMANDS.punish = {function(ply, args)
         if #args < 1 then

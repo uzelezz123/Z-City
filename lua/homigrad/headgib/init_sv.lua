@@ -44,20 +44,49 @@ gib_ragdols = gib_ragdols or {}
 local gib_ragdols = gib_ragdols
 
 local VectorRand, ents_Create = VectorRand, ents.Create
+local vector_up = Vector(0,0,1)
 local function PhysCallback( ent, data )
 	--data.HitPos -- data.HitNormal
 	if data.DeltaTime < 0.2 then return end
 	ent:EmitSound("physics/flesh/flesh_squishy_impact_hard"..math.random(4)..".wav")
-	util.Decal("Blood", data.HitPos - data.HitNormal * 1, data.HitPos + data.HitNormal * 1, ent)
+	-- if !data.HitEntity:IsPlayer() and !data.HitEntity:IsRagdoll() and math.abs(data.HitNormal.z) < 0.75 then
+	-- 	ent:SetMoveType(MOVETYPE_NONE)
+	-- 	ent:SetSolid(SOLID_NONE)
+
+	-- 	local tr = util.QuickTrace(data.HitPos - data.HitNormal * 1, data.HitNormal)
+	-- 	ent:SetPos(tr.HitPos)
+	-- 	local entindex = ent:EntIndex()
+	-- 	local speed = math.Rand(0.2,0.4)
+	-- 	local randspeed = math.Rand(-0.3,0.3)
+	-- 	local needDecal = CurTime() + 1
+	-- 	ent:SetModelScale(0, 10)
+	-- 	SafeRemoveEntityDelayed(ent, 10)
+	-- 	timer.Create("meatMove"..entindex, 0.1, 0, function()
+	-- 		if !IsValid(ent) then timer.Remove("meatMove"..entindex) return end
+	-- 		local tr = util.QuickTrace(ent:GetPos(), -data.HitNormal:Angle():Up())
+	-- 		if math.abs(tr.HitNormal.z) > 0.75 then timer.Remove("meatMove"..entindex) return end
+	-- 		local ang = data.HitNormal:Angle()
+	-- 		ent:SetPos(ent:GetPos() - ang:Up() * speed + ang:Right() * randspeed)
+	-- 		randspeed = LerpFT(0.05,randspeed, 0)
+	-- 		if needDecal < CurTime() then
+	-- 			needDecal = CurTime() + math.Rand(1,3)
+	-- 			util.Decal("Normal.Blood24", ent:GetPos() - data.HitNormal * 1, ent:GetPos() + data.HitNormal * 1, ent)
+	-- 		end
+	-- 	end)
+	-- end
+
+	util.Decal("Normal.Blood24", data.HitPos - data.HitNormal * 1, data.HitPos + data.HitNormal * 1, ent)
 end
 
-local grub, mat = Model("models/grub_nugget_small.mdl"), "models/flesh"
+local grub, mat, gamemod = Model("models/grub_nugget_small.mdl"), "models/flesh", engine.ActiveGamemode()
+local meatModels = {
+	Model("models/props_junk/watermelon01_chunk02a.mdl"),
+}
 function SpawnMeatGore(mainent, pos, count, force)
-	--models/grub_nugget_small.mdl
 	force = force or Vector(0,0,0)
 	for i = 1, (count or math.random(8, 10)) do
 		local ent = ents_Create("prop_physics")
-		ent:SetModel(grub)
+		ent:SetModel(meatModels[math.random(#meatModels)])
 		ent:SetSubMaterial(0, mat)
 		ent:SetPos(pos)
 		ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
@@ -65,10 +94,17 @@ function SpawnMeatGore(mainent, pos, count, force)
 		ent:SetAngles(AngleRand(-180,180))
 		ent:Activate()
 		ent:Spawn()
+
 		local phys = ent:GetPhysicsObject()
 		if IsValid(phys) then
 			phys:SetVelocity(mainent:GetVelocity() + VectorRand(-65,65) + force / 10)
 			phys:AddAngleVelocity(VectorRand(-65,65))
+		end
+
+		if zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox" then
+			ent:DrawShadow(false)
+			ent:SetModelScale(0, 120)
+			SafeRemoveEntityDelayed(ent, 120)
 		end
 
 		ent:AddCallback( "PhysicsCollide", PhysCallback )

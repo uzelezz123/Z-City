@@ -67,7 +67,7 @@ SWEP.Primary.Sound = {"homigrad/weapons/rifle/fal.wav", 85, 90, 100}
 SWEP.SupressedSound = {"ak74/ak74_suppressed_fp.wav", 65, 90, 100}
 SWEP.Primary.SoundEmpty = {"zcitysnd/sound/weapons/ak47/handling/ak47_empty.wav", 75, 100, 105, CHAN_WEAPON, 2}
 SWEP.Primary.Force = 30
-SWEP.Primary.Wait = 0.12
+SWEP.Primary.Wait = 0.10
 SWEP.ReloadTime = 4.8
 
 SWEP.WepSelectIcon2 = Material("entities/zcity/drako.png")
@@ -113,6 +113,6 @@ SWEP.attPos = Vector(0.25, -2.1, 28)
 SWEP.attAng = Angle(0, 0.4, 0)
 
 SWEP.weight = 2.5
-SWEP.addweight = -1.5
-SWEP.podkid = 0.2
-SWEP.animposmul = 1.5
+SWEP.addweight = -0
+SWEP.podkid = 0.0
+SWEP.animposmul = 1

@@ -287,6 +287,7 @@ if SERVER then
 
 		if not wep.Drum then return end
 
+		wep:AttachAnim()
 		if wep.Drum[val] != 0 then
 			local value = -(-wep.Drum[val])
 			wep.Drum[val] = 0
@@ -309,10 +310,12 @@ if SERVER then
 
 	concommand.Add("hg_rolldrum",function(ply, cmd, args)
 		local wep = ply:GetActiveWeapon()
-		if IsValid(wep) and wep.Drum then
+		if IsValid(wep) and wep.Drum and (ply.DrumCD or 0) < CurTime() then
+			wep:AttachAnim()
 			wep:ShiftDrum(math.random(6))
 			ply:EmitSound("weapons/357/357_spin1.wav")
 			wep.Rolled = true
+			ply.DrumCD = CurTime() + 0.5
 		end
 	end)
 end
@@ -347,7 +350,7 @@ end
 
 function SWEP:Unload()
 	if CLIENT then return end
-	
+
 	if self.SendDrum then
 		for i = 1,#self.Drum do
 			self.Drum[i] = 0

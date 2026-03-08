@@ -18,7 +18,7 @@ SWEP.AttachmentAng = Angle(0,0,0)
 
 
 SWEP.FakeAttachment = "1"
---Entity(1):GetActiveWeapon():GetWM():SetSubMaterial(0,"NULL")
+
 
 SWEP.FakeEjectBrassATT = "2"
 SWEP.FakeReloadSounds = {
@@ -182,170 +182,10 @@ function SWEP:DrawPost()
 	end
 end
 
-local lfang2 = Angle(0, -25, -1)
-local lfang21 = Angle(0, 20, -1)
-local lfang1 = Angle(-5, -5, -5)
-local lfang0 = Angle(-15, -22, 20)
-local vec_zero = Vector(0,0,0)
-local ang_zero = Angle(0,0,0)
 function SWEP:AnimHoldPost()
-
 end
--- RELOAD ANIM AKM
-SWEP.ReloadAnimLH = {
-	Vector(0,0,0),
-	Vector(-1.5,1.5,-8),
-	Vector(-1.5,1.5,-8),
-	Vector(-1.5,1.5,-8),
-	Vector(-6,7,-9),
-	Vector(-15,7,-15),
-	Vector(-15,6,-15),
-	Vector(-13,5,-5),
-	Vector(-1.5,1.5,-8),
-	Vector(-1.5,1.5,-8),
-	Vector(-1.5,1.5,-8),
-	"fastreload",
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-}
-
-SWEP.ReloadSlideAnim = {
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	2.5,
-	2.5,
-	0,
-	0,
-	0,
-	0
-}
-
-SWEP.ReloadAnimRH = {
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,0),
-	Vector(0,0,1),
-	Vector(8,1,2),
-	Vector(9,4.5,-4.5),
-	Vector(9,4.5,-4.5),
-	Vector(8,4.5,-4.5),
-	Vector(-1,4.5,-4.5),
-	Vector(-1,4.5,-4.5),
-	Vector(0,4,-1),
-	Vector(0,5,0),
-	"reloadend",
-	Vector(-2,2,1),
-	Vector(0,0,0),
-}
-
-SWEP.ReloadAnimLHAng = {
-	Angle(0,0,0),
-	Angle(-90,0,110),
-	Angle(-90,0,110),
-	Angle(-90,0,110),
-	Angle(-70,0,110),
-	Angle(-50,0,110),
-	Angle(-90,0,110),
-	Angle(-90,0,110),
-	Angle(-90,0,110),
-	Angle(-90,0,110),
-	Angle(-90,0,110),
-	Angle(-60,0,95),
-	Angle(0,0,60),
-	Angle(0,0,30),
-	Angle(0,0,2),
-	Angle(0,0,0),
-}
-
-SWEP.ReloadAnimRHAng = {
-	Angle(0,0,0),
-	Angle(0,0,0),
-	Angle(0,0,0),
-	Angle(0,0,0),
-	Angle(0,0,0),
-	Angle(0,0,0),
-	Angle(0,0,0),
-	Angle(0,0,0),
-	Angle(0,0,0),
-	Angle(20,0,-60),
-	Angle(20,0,-60),
-	Angle(20,0,-60),
-	Angle(0,0,0),
-}
-
-SWEP.ReloadAnimWepAng = {
-	Angle(0,0,0),
-	Angle(-15,15,-17),
-	Angle(-14,14,-22),
-	Angle(-10,15,-24),
-	Angle(12,14,-23),
-	Angle(11,15,-20),
-	Angle(12,14,-19),
-	Angle(11,14,-20),
-	Angle(7,9,-21),
-	Angle(0,14,-21),
-	Angle(0,15,-22),
-	Angle(0,24,-23),
-	Angle(0,25,-22),
-	Angle(-15,24,-25),
-	Angle(-15,25,-23),
-	Angle(5,0,2),
-	Angle(0,0,0),
-}
 
 -- Inspect Assault
-
 SWEP.InspectAnimWepAng = {
 	Angle(0,0,0),
 	Angle(4,4,15),

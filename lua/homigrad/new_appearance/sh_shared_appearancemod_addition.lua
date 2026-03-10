@@ -714,28 +714,32 @@ local function AddCustomFacemaps()
     end
 	]]
 
+	local FacemapSlotModels = {}
+
 	    local function AddFacemap(matOverride, strName, matMaterial, model)
         hg.Appearance.FacemapsSlots[matOverride] = hg.Appearance.FacemapsSlots[matOverride] or {}
         hg.Appearance.FacemapsSlots[matOverride][strName] = matMaterial
+
+		local targetModels = {}
         if model then
             model = string.lower(model)
 			hg.Appearance.FacemapsModels[model] = matOverride
-        end
 
 
-		    -- НОВАЯ логика (для мод-меню)
-		if model then
+			hg.Appearance.ModelFaceSlots[model] = hg.Appearance.ModelFaceSlots[model] or {}
+			hg.Appearance.ModelFaceSlots[model][matOverride] = true
 
-			model = string.lower(model)
+			FacemapSlotModels[matOverride] = FacemapSlotModels[matOverride] or {}
+			FacemapSlotModels[matOverride][model] = true
+			targetModels = FacemapSlotModels[matOverride]
+		elseif FacemapSlotModels[matOverride] then
+				targetModels = FacemapSlotModels[matOverride]
+		end
 
-			hg.Appearance.MultiFacemaps[model] =
-				hg.Appearance.MultiFacemaps[model] or {}
-
-			hg.Appearance.MultiFacemaps[model][strName] =
-				hg.Appearance.MultiFacemaps[model][strName] or {}
-
-			hg.Appearance.MultiFacemaps[model][strName][matOverride] =
-				matMaterial
+		for modelPath, _ in pairs(targetModels) do
+			hg.Appearance.MultiFacemaps[modelPath] = hg.Appearance.MultiFacemaps[modelPath] or {}
+			hg.Appearance.MultiFacemaps[modelPath][strName] = hg.Appearance.MultiFacemaps[modelPath][strName] or {}
+			hg.Appearance.MultiFacemaps[modelPath][strName][matOverride] = matMaterial
 		end
 
 
@@ -1071,3 +1075,4 @@ hook.Add("ZPointshopLoaded", "CustomAppearance_AddBodygroups", function()
 end)
 
 print("[ZCityAppearanceMod] Дополнение загружено!")
+

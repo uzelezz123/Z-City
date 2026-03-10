@@ -95,8 +95,11 @@ end
 -- 2. Ôóíęöč˙ ńîçäŕíč˙ ěĺíţ ń čęîíęŕěč (čç âŕřĺăî ôŕéëŕ)
 -----------------------------------------------------------------------
 local function CreateClothesIconMenu(parent, title, clothesTable, sex, currentSelection, onSelect, showColorPicker, partName, currentModelName, currentModelPath, appearanceTable, onClose, scrollKey)
+    local selectedName = string.NiceName(currentSelection or "normal")
+    local baseTitle = title or "Select Clothing"
+
     local menu = vgui.Create("DFrame")
-    menu:SetTitle(title or "Select Clothing")
+    menu:SetTitle(baseTitle .. " - " .. selectedName)
     menu:SetSize(ScreenScale(226), ScreenScale(220))
 
     -- Ďîçčöčîíčđîâŕíčĺ
@@ -172,7 +175,7 @@ local function CreateClothesIconMenu(parent, title, clothesTable, sex, currentSe
     currentLabel:Dock(FILL)
     currentLabel:DockMargin(ScreenScale(4), 0, 0, 0)
     currentLabel:SetFont("ZCity_Tiny")
-    currentLabel:SetText("Current: " .. (currentSelection or "normal"))
+    currentLabel:SetText("Current: " .. selectedName)
     currentLabel:SetTextColor(colors.mainText)
     currentLabel:SetContentAlignment(4)
 
@@ -200,11 +203,13 @@ local function CreateClothesIconMenu(parent, title, clothesTable, sex, currentSe
 
         local paletteHeaderBtn = vgui.Create("DImageButton", menu)
         paletteHeaderBtn:SetImage("icon16/palette.png")
-        paletteHeaderBtn:SetSize(16, 16)
+        paletteHeaderBtn:SetSize(24, 24)
         paletteHeaderBtn:SetTooltip("Open color palette")
         function paletteHeaderBtn:Think()
             if not IsValid(menu) or not IsValid(menu.btnClose) then return end
-            self:SetPos(menu.btnClose:GetX() - self:GetWide() - 4, 2)
+            local closeX, closeY = menu.btnClose:GetPos()
+            local closeH = menu.btnClose:GetTall()
+            self:SetPos(closeX - self:GetWide() - 6, closeY + math.floor((closeH - self:GetTall()) * 0.5))
         end
 
         local currentColor = onSelect and onSelect.getCurrentColor and onSelect.getCurrentColor() or Color(255,255,255)
@@ -310,6 +315,7 @@ local function CreateClothesIconMenu(parent, title, clothesTable, sex, currentSe
         previewModel:DockMargin(2, 2, 2, 2)
         previewModel:SetModel(modelPath)
         previewModel:SetAnimated(false)
+        previewModel:SetAnimSpeed(0)
 
         -- Íŕńňđîéęŕ ęŕěĺđű â çŕâčńčěîńňč îň ÷ŕńňč ňĺëŕ
         local camPos, lookAt, fov
@@ -345,12 +351,13 @@ local function CreateClothesIconMenu(parent, title, clothesTable, sex, currentSe
 
         function previewModel:LayoutEntity(ent)
             if not IsValid(ent) then return end
-            if ent.__AppearanceFrozenClothes and ent.__AppearanceFrozenClothes == clothesId then return end
             ent:SetSequence(ent:LookupSequence("idle_suitcase"))
             ent:SetCycle(0)
             ent:SetPlaybackRate(0)
             ent.AutomaticFrameAdvance = false
             ent:SetAngles(Angle(0, 0, 0))
+
+            if ent.__AppearanceFrozenClothes and ent.__AppearanceFrozenClothes == clothesId then return end
 
             local modelData = hg.Appearance.PlayerModels[sex] and hg.Appearance.PlayerModels[sex][modelName]
             if not modelData or not modelData.submatSlots then return end
@@ -477,8 +484,11 @@ end
 -- Ôóíęöč˙ ńîçäŕíč˙ ěĺíţ äë˙ Facemap
 -----------------------------------------------------------------------
 local function CreateFacemapIconMenu(parent, title, combinedVariants, sortedNames, sex, currentSelection, onSelect, partName, currentModelName, currentModelPath, appearanceTable, onClose, scrollKey)
+    local selectedName = string.NiceName(currentSelection or "Default")
+    local baseTitle = title or "Select Face"
+
     local menu = vgui.Create("DFrame")
-    menu:SetTitle(title or "Select Face")
+    menu:SetTitle(baseTitle .. " - " .. selectedName)
     menu:SetSize(ScreenScale(170), ScreenScale(220))
 
     -- Ďîçčöčîíčđîâŕíčĺ ęŕę â ClothesIconMenu
@@ -555,7 +565,7 @@ local function CreateFacemapIconMenu(parent, title, combinedVariants, sortedName
     currentLabel:Dock(FILL)
     currentLabel:DockMargin(ScreenScale(4), 0, 0, 0)
     currentLabel:SetFont("ZCity_Tiny")
-    currentLabel:SetText("Current: " .. (currentSelection or "Default"))
+    currentLabel:SetText("Current: " .. selectedName)
     currentLabel:SetTextColor(colors.mainText)
     currentLabel:SetContentAlignment(4)
 
@@ -572,6 +582,7 @@ local function CreateFacemapIconMenu(parent, title, combinedVariants, sortedName
         previewModel:DockMargin(2, 2, 2, 2)
         previewModel:SetModel(modelPath)
         previewModel:SetAnimated(false)
+        previewModel:SetAnimSpeed(0)
         ApplyFacemapCamera(previewModel, sex == 2)
 
         previewModel:SetDirectionalLight(BOX_RIGHT, Color(255, 0, 0))
@@ -589,12 +600,13 @@ local function CreateFacemapIconMenu(parent, title, combinedVariants, sortedName
 
         function previewModel:LayoutEntity(ent)
             if not IsValid(ent) then return end
-            if ent.__AppearanceFrozenFacemap and ent.__AppearanceFrozenFacemap == varName then return end
             ent:SetSequence(ent:LookupSequence("idle_suitcase"))
             ent:SetCycle(0)
             ent:SetPlaybackRate(0)
             ent.AutomaticFrameAdvance = false
             ent:SetAngles(Angle(0, 0, 0))
+
+            if ent.__AppearanceFrozenFacemap and ent.__AppearanceFrozenFacemap == varName then return end
 
             local modelData = hg.Appearance.PlayerModels[sex] and hg.Appearance.PlayerModels[sex][modelName]
             if not modelData or not modelData.mdl then return end

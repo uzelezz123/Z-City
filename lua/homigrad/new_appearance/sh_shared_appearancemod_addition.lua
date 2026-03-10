@@ -16,7 +16,7 @@ hg.PointShop = hg.PointShop or {}
 hg.Appearance.MenuPerf = hg.Appearance.MenuPerf or {
     showcaseCols = 15,
     allFacemapsCols = 15,
-    allFacemapsHeaderGapFactor = 0.35,
+    allFacemapsHeaderGapFactor = 0.43,
     clothesCols = 4,
     facemapCols = 3
 }

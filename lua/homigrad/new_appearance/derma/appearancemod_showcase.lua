@@ -11,7 +11,7 @@ local ICON_W = 150
 local ICON_H = 310
 local FACEMAP_ICON_SIZE = 128
 local FACEMAP_ICON_SPACING = 6
-local FACEMAP_SECTION_HEADER_PAD = math.floor(FACEMAP_ICON_SIZE * (((hg.Appearance.MenuPerf and hg.Appearance.MenuPerf.allFacemapsHeaderGapFactor) or 0.35)))
+local FACEMAP_SECTION_HEADER_PAD = math.floor(FACEMAP_ICON_SIZE * (((hg.Appearance.MenuPerf and hg.Appearance.MenuPerf.allFacemapsHeaderGapFactor) or 0.43)))
 
 --[[
 local ICON_W = 150
@@ -79,6 +79,7 @@ function hg.Appearance.OpenShowcaseMenu(appearanceTable)
         mdl:SetModel(modelPath)
 
         mdl:SetAnimated(false)
+        mdl:SetAnimSpeed(0)
 
         ----------------------------------------------------------------
         --                ÊÀÌÅÐÀ ÈÊÎÍÊÈ (ÐÅÄÀÊÒÈÐÓÉ ÇÄÅÑÜ)
@@ -107,12 +108,13 @@ function hg.Appearance.OpenShowcaseMenu(appearanceTable)
 
         function mdl:LayoutEntity(ent)
             if not IsValid(ent) then return end
-            if ent.__AppearanceFrozenShowcase then return end
-
             ent:SetAngles(Angle(0,0,0))
             ent:SetSequence(ent:LookupSequence("idle_suitcase"))
+            ent:SetCycle(0)
             ent:SetPlaybackRate(0)
             ent.AutomaticFrameAdvance = false
+
+            if ent.__AppearanceFrozenShowcase then return end
 
             local mats = ent:GetMaterials()
 
@@ -275,6 +277,7 @@ function hg.Appearance.OpenAllFacemapsMenu(appearanceTable)
         mdl:SetSize(iconSize - 4, iconSize - 4)
         mdl:SetModel(modelData.mdl)
         mdl:SetAnimated(false)
+        mdl:SetAnimSpeed(0)
         ApplyFacemapCameraBySex(mdl, modelData.sex and true or false)
         mdl:SetDirectionalLight(BOX_RIGHT, Color(255, 0, 0))
         mdl:SetDirectionalLight(BOX_LEFT, Color(125, 155, 255))
@@ -284,13 +287,13 @@ function hg.Appearance.OpenAllFacemapsMenu(appearanceTable)
 
         function mdl:LayoutEntity(ent)
             if not IsValid(ent) then return end
-            if ent.__AppearanceFrozenFacemapAll and ent.__AppearanceFrozenFacemapAll == varName then return end
-
             ent:SetAngles(Angle(0, 0, 0))
             ent:SetSequence(ent:LookupSequence("idle_suitcase"))
             ent:SetCycle(0)
             ent:SetPlaybackRate(0)
             ent.AutomaticFrameAdvance = false
+
+            if ent.__AppearanceFrozenFacemapAll and ent.__AppearanceFrozenFacemapAll == varName then return end
 
             local mats = ent:GetMaterials()
             local slots = modelData.submatSlots or {}

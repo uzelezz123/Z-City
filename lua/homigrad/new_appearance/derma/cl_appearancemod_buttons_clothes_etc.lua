@@ -30,6 +30,16 @@ local clr_menu = Color(15, 15, 20, 250)
 
 local scrollPositions = {}
 
+local function ApplyBaseAppearanceButtonStyle(btn)
+    if not IsValid(btn) then return end
+    btn:SetFont("ZCity_Tiny")
+    function btn:Paint(w, h)
+        draw.RoundedBox(4, 0, 0, w, h, colors.secondary)
+        surface.SetDrawColor(colors.scrollbarBorder)
+        surface.DrawOutlinedRect(0, 0, w, h, 1)
+    end
+end
+
 -- Ôóíęöč˙ ńîçäŕíč˙ ńňčëčçîâŕííîăî ńęđîëëŕ (ĺńëč ĺ¸ íĺň â îđčăčíŕëĺ)
 if not CreateStyledScrollPanel then
     function CreateStyledScrollPanel(parent)
@@ -58,7 +68,7 @@ end
 local function CreateClothesIconMenu(parent, title, clothesTable, sex, currentSelection, onSelect, showColorPicker, partName, currentModelName, currentModelPath, appearanceTable, onClose, scrollKey)
     local menu = vgui.Create("DFrame")
     menu:SetTitle(title or "Select Clothing")
-    menu:SetSize(ScreenScale(170), ScreenScale(220))
+    menu:SetSize(ScreenScale(226), ScreenScale(220))
 
     -- Ďîçčöčîíčđîâŕíčĺ
     local x, y
@@ -112,11 +122,11 @@ local function CreateClothesIconMenu(parent, title, clothesTable, sex, currentSe
 
 
 
-    -- Ńĺňęŕ 3x
+    -- Ńĺňęŕ 4x
     local grid = vgui.Create("DGrid", scroll)
     grid:Dock(TOP)
-    grid:SetCols(3)
-    grid:SetColWide(ScreenScale(52))
+    grid:SetCols(4)
+    grid:SetColWide(ScreenScale(53))
     grid:SetRowHeight(ScreenScale(56))
 
     -- Ďŕíĺëü ń ňĺęóůčě âűáîđîě
@@ -879,27 +889,42 @@ local function ModifyAppearanceMenu(panel)
         ["Facemap"] = "facemap"      -- ňĺńňčđóĺě
     }
 
-    --[[
-    ------------------------------------------------------
-    ------------------------------------------------------
-    ÝŇÎ ŇĹŃŇÎÂŔß ĘÍÎĎĘŔ, ÍŔ ÁÓÄÓŮĹĹ
-    ------------------------------------------------------
-    ------------------------------------------------------
-    
-
-    local showcaseBtn = vgui.Create("DButton", panel)
-    showcaseBtn:SetText("SHOWCASE")
-    showcaseBtn:SetSize(120,30)
-    showcaseBtn:SetPos(20, 200)
-
-    function showcaseBtn:DoClick()
-
-        hg.Appearance.OpenShowcaseMenu(panel.AppearanceTable)
-
+    if not IsValid(panel.ShowcaseBtn) then
+        local showcaseBtn = vgui.Create("DButton", panel)
+        showcaseBtn:SetText("SHOWCASE")
+        showcaseBtn:SetSize(ScreenScale(100), ScreenScale(16))
+        ApplyBaseAppearanceButtonStyle(showcaseBtn)
+        function showcaseBtn:Think()
+            if not IsValid(panel) then return end
+            local margin = ScreenScale(6)
+            self:SetPos(panel:GetWide() - self:GetWide() - margin, panel:GetTall() - self:GetTall() - margin)
+        end
+        function showcaseBtn:DoClick()
+            hg.Appearance.OpenShowcaseMenu(panel.AppearanceTable)
+        end
+        panel.ShowcaseBtn = showcaseBtn
     end
-    
 
-    ]]
+    if not IsValid(panel.AllFacemapsBtn) then
+        local allFacemapsBtn = vgui.Create("DButton", panel)
+        allFacemapsBtn:SetText("ALL_FACEMAPS")
+        allFacemapsBtn:SetSize(ScreenScale(100), ScreenScale(16))
+        ApplyBaseAppearanceButtonStyle(allFacemapsBtn)
+        function allFacemapsBtn:Think()
+            if not IsValid(panel) then return end
+            local margin = ScreenScale(6)
+            local spacing = ScreenScale(4)
+            local rightButton = panel.ShowcaseBtn
+            if not IsValid(rightButton) then return end
+            self:SetPos(rightButton:GetX() - self:GetWide() - spacing, panel:GetTall() - self:GetTall() - margin)
+        end
+        function allFacemapsBtn:DoClick()
+            if hg.Appearance.OpenAllFacemapsMenu then
+                hg.Appearance.OpenAllFacemapsMenu(panel.AppearanceTable)
+            end
+        end
+        panel.AllFacemapsBtn = allFacemapsBtn
+    end
 
     ------------------------------------------------------
     ------------------------------------------------------

@@ -121,18 +121,23 @@ local function IsChokeZoneHit(ent, tr)
     end
 
     if ent:IsRagdoll() then
-        -- Allow grabbing ragdolls not only by exact head hit: neck/chest area works too.
+        -- Any ragdoll should be a valid choke target (including spawned prop_ragdoll).
+        if tr.Entity == ent then return true end
+
+        -- Extra proximity fallback around neck/chest for humanoid ragdolls.
         if tr.HitPos then
             local checkBones = {10, 9, 1, 2}
             for _, bone in ipairs(checkBones) do
                 local physIdx = hg.realPhysNum(ent, bone)
-                local obj = ent:GetPhysicsObjectNum(physIdx)
-                if IsValid(obj) and obj:GetPos():Distance(tr.HitPos) <= 40 then
-                    return true
+                if physIdx ~= nil and physIdx >= 0 then
+                    local obj = ent:GetPhysicsObjectNum(physIdx)
+                    if IsValid(obj) and obj:GetPos():Distance(tr.HitPos) <= 40 then
+                        return true
+                    end
                 end
             end
         end
-        return tr.PhysicsBone and tr.PhysicsBone == hg.realPhysNum(ent, 10) or false
+        return false
     end
 
     return false
@@ -149,31 +154,22 @@ local function ResolveStrangleTarget(self, ent)
     return ent
 end
 
-local function ConvertNPCToRagdoll(npc, owner)
-    if not IsValid(npc) or not npc:IsNPC() then return nil end
-
-    local rag = ents.Create("prop_ragdoll")
-    if not IsValid(rag) then return nil end
-
-    rag:SetModel(npc:GetModel())
-    rag:SetPos(npc:WorldSpaceCenter())
-    rag:SetAngles(npc:GetAngles())
-    rag:Spawn()
-    rag:Activate()
-
-    local phys = rag:GetPhysicsObject()
-    if IsValid(phys) then
-        phys:SetVelocity(owner:GetAimVector() * 120)
+local function FindModeNPCRagdoll(npcPos, npcModel, existing)
+    local best, bestDist
+    for _, ent in ipairs(ents.FindInSphere(npcPos, 220)) do
+        if ent:IsRagdoll() and not existing[ent] then
+            local sameModel = (ent:GetModel() == npcModel)
+            local dist = ent:GetPos():DistToSqr(npcPos)
+            if sameModel then dist = dist * 0.6 end
+            if not best or dist < bestDist then
+                best = ent
+                bestDist = dist
+            end
+        end
     end
-
-    local targetPos = owner:GetShootPos() + owner:GetAimVector() * 55 - Vector(0, 0, 36)
-    rag:SetPos(targetPos)
-
-    npc:TakeDamage(math.max(npc:Health(), 1000), owner, owner)
-    if IsValid(npc) then npc:Remove() end
-
-    return rag
+    return best
 end
+
 
 
 -- Start strangling: ragdoll victim and weld our ragdoll hands to their head
@@ -185,11 +181,33 @@ local function StartStrangle(self, victim)
     -- if we are in fake mode, do not allow strangling
     if IsValid(owner.FakeRagdoll) then return end
 
-    -- NPC support: instantly kill NPC and convert to ragdoll, then strangle like any ragdoll.
+    -- NPC support: use ZCity's own death ragdoll entity instead of creating a copy.
     if IsValid(victim) and victim:IsNPC() then
-        victim = ConvertNPCToRagdoll(victim, owner)
-    end
+        local npc = victim
+        local npcPos = npc:WorldSpaceCenter()
+        local npcModel = npc:GetModel()
+        local existing = {}
+        for _, ent in ipairs(ents.FindInSphere(npcPos, 150)) do
+            if ent:IsRagdoll() then existing[ent] = true end
+        end
 
+        npc:TakeDamage(math.max(npc:Health(), 1000), owner, owner)
+
+        local timerId = "FiberwireNPCRag_" .. self:EntIndex() .. "_" .. npc:EntIndex()
+        timer.Create(timerId, 0.05, 8, function()
+            if not IsValid(self) then timer.Remove(timerId) return end
+            if self:GetStrangling() then timer.Remove(timerId) return end
+            local ownerNow = self:GetOwner()
+            if not IsValid(ownerNow) or not ownerNow:IsPlayer() or IsValid(ownerNow.FakeRagdoll) then timer.Remove(timerId) return end
+
+            local rag = FindModeNPCRagdoll(npcPos, npcModel, existing)
+            if IsValid(rag) then
+                timer.Remove(timerId)
+                StartStrangle(self, rag)
+            end
+        end)
+        return
+    end
 
     -- Make sure the victim is ragdolled; do not ragdoll attacker
     local rag = victim
@@ -372,17 +390,17 @@ function SWEP:Deploy()
 
     self.ForceIdleAfterDeploy = true
 
-    timer.Simple(0.04, function()
-         if not IsValid(self) then return end
-         local owner = self:GetOwner()
-         if not IsValid(owner) then return end
-         if owner:GetActiveWeapon() ~= self then return end
-         if self.GetStrangling and self:GetStrangling() then return end
-         -- kick into idle to apply LH off state and sync for all clients
-         self:PlayAnim("idle2", 10, true, nil, false, true)
-         self:HideDummyBone()
-     end)
-
+    if CLIENT then
+        timer.Simple(0.04, function()
+            if not IsValid(self) then return end
+            local owner = self:GetOwner()
+            if not IsValid(owner) then return end
+            if owner:GetActiveWeapon() ~= self then return end
+            if self.GetStrangling and self:GetStrangling() then return end
+            self:PlayAnim("idle2", 10, true)
+            self:HideDummyBone()
+        end)
+    end
     return ok
 end
 
@@ -489,14 +507,11 @@ function SWEP:CustomAttack()
     local hitEnt = tr.Entity
     if not IsValid(hitEnt) then return true end
 
-
     local zoneOK = IsChokeZoneHit(hitEnt, tr)
     local angleOK = true
     if zoneOK and angleOK then
         local target = ResolveStrangleTarget(self, hitEnt)
         StartStrangle(self, target)
-
-        StartStrangle(self, ragTarget)
 
         -- animations are handled inside StartStrangle()
 
@@ -649,11 +664,12 @@ function SWEP:CustomThink()
     hg.ShadowControl(rag, 1, 0.2, nil, nil, nil, spinePos, 500, 120)
     hg.ShadowControl(rag, 2, 0.2, nil, nil, nil, spinePos, 500, 120)
 
-    -- Make victim show struggle: hands try to hold the neck using bullet-hit pattern
+    -- Make victim show struggle only while a living player is being choked.
     local ragPly2 = hg.RagdollOwner and hg.RagdollOwner(rag) or nil
     local ragOrg = ragPly2 and ragPly2.organism or nil
     local knockedOut = ragOrg and ragOrg.otrub == true
-    if not knockedOut then
+    local allowStruggle = IsValid(ragPly2) and ragPly2:IsPlayer() and ragPly2:Alive() and not knockedOut
+    if allowStruggle then
         local headPhys = rag:GetPhysicsObjectNum(hg.realPhysNum(rag, 10))
         local lhandPhys = rag:GetPhysicsObjectNum(hg.realPhysNum(rag, 5))
         local rhandPhys = rag:GetPhysicsObjectNum(hg.realPhysNum(rag, 7))
@@ -754,6 +770,24 @@ end
 -- No custom Think needed; base melee handles attack ticks
 
 if SERVER then
+    -- Prevent the currently strangled ragdoll from physically colliding with the strangler.
+    hook.Add("ShouldCollide", "FiberwireNoCollideStranglerAndVictim", function(ent1, ent2)
+        if not IsValid(ent1) or not IsValid(ent2) then return end
+
+        local rag, ply
+        if ent1:IsRagdoll() and ent2:IsPlayer() then
+            rag, ply = ent1, ent2
+        elseif ent2:IsRagdoll() and ent1:IsPlayer() then
+            rag, ply = ent2, ent1
+        else
+            return
+        end
+
+        if rag.Strangler == ply then
+            return false
+        end
+    end)
+
     -- block fake controls while strangled
     hook.Add("CanControlFake", "FiberwireStrangleLock", function(ply, rag)
         local r = ply and ply.FakeRagdoll

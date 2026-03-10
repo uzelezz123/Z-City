@@ -319,9 +319,9 @@ local function CreateClothesIconMenu(parent, title, clothesTable, sex, currentSe
             lookAt = Vector(0, 0, 15)
             fov = 30
         elseif partName == "boots" then
-            camPos = Vector(60, 0, 5)
-            lookAt = Vector(0, 0, 3)
-            fov = 25
+            camPos = Vector(60, 0, 20) -- was 5
+            lookAt = Vector(0, 8, 0)
+            fov = 15
         end
 
         previewModel:SetCamPos(camPos)

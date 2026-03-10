@@ -171,6 +171,23 @@ local function FindModeNPCRagdoll(npcPos, npcModel, existing)
 end
 
 
+local function PrepNPCDeathRagdoll(rag)
+    if not IsValid(rag) or not rag:IsRagdoll() then return end
+
+    -- remember original group so StopStrangle can restore it correctly
+    rag._fiberwire_spawn_colgroup = rag:GetCollisionGroup()
+    rag:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
+
+    for i = 0, rag:GetPhysicsObjectCount() - 1 do
+        local phys = rag:GetPhysicsObjectNum(i)
+        if IsValid(phys) then
+            phys:SetVelocity(vector_origin)
+            phys:AddAngleVelocity(-phys:GetAngleVelocity())
+        end
+    end
+end
+
+
 
 -- Start strangling: ragdoll victim and weld our ragdoll hands to their head
 local function StartStrangle(self, victim)
@@ -191,7 +208,14 @@ local function StartStrangle(self, victim)
             if ent:IsRagdoll() then existing[ent] = true end
         end
 
-        npc:TakeDamage(math.max(npc:Health(), 1000), owner, owner)
+        local dmg = DamageInfo()
+        dmg:SetDamage(math.max(npc:Health(), 1000))
+        dmg:SetAttacker(owner)
+        dmg:SetInflictor(IsValid(self) and self or owner)
+        dmg:SetDamageType(DMG_SLASH)
+        dmg:SetDamageForce(vector_origin)
+        dmg:SetDamagePosition(npcPos)
+        npc:TakeDamageInfo(dmg)
 
         local timerId = "FiberwireNPCRag_" .. self:EntIndex() .. "_" .. npc:EntIndex()
         timer.Create(timerId, 0.05, 8, function()
@@ -202,6 +226,7 @@ local function StartStrangle(self, victim)
 
             local rag = FindModeNPCRagdoll(npcPos, npcModel, existing)
             if IsValid(rag) then
+                PrepNPCDeathRagdoll(rag)
                 timer.Remove(timerId)
                 StartStrangle(self, rag)
             end
@@ -239,7 +264,8 @@ local function StartStrangle(self, victim)
     rag.StrangleLocked = true -- lock fake controls & get-up
     self.NoIdleLoop = true -- prevent idle from overwriting the loop
     -- disable collisions during choke to avoid knocking down strangler
-    rag._oldCollisionGroup = rag:GetCollisionGroup()
+    rag._oldCollisionGroup = rag._fiberwire_spawn_colgroup or rag:GetCollisionGroup()
+    rag._fiberwire_spawn_colgroup = nil
     rag:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 
     -- FIX: Сохраняем исходную регенерацию кислорода жертвы

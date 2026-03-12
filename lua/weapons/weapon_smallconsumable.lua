@@ -77,13 +77,13 @@ SWEP.WaterModel = {
 	["models/foodnhouseholditems/juicesmall.mdl"] = true
 }
 
-local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_SERVER_CAN_EXECUTE + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
+local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
 
 if SERVER then
 	local ang_eat = Angle(6, 0, 0)
 	function SWEP:Heal(ent, mode, bone)
 		if ent:IsNPC() then
-			self:SpawnGarbage(self:GetCurModel())
+			self:SpawnGarbage(self:GetCurModel() or nil)
 			self:NPCHeal(ent, 0.2, "snd_jack_hmcd_eat"..math.random(4)..".wav")
 		end
 
@@ -114,7 +114,7 @@ if SERVER then
 		--self:SetHolding(0.98)
 		if self.Eating > 5 then
 			self:GetOwner():SelectWeapon("weapon_hands_sh")
-			self:SpawnGarbage(self:GetCurModel())
+			self:SpawnGarbage(self:GetCurModel() or nil)
 			self:Remove()
 		end
 		

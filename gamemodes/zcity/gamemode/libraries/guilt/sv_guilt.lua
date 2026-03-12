@@ -121,6 +121,7 @@ hook.Add("HomigradDamage", "GuiltReg", function(ply, dmgInfo, hitgroup, ent, har
 
     if not IsValid(Attacker) or not Attacker:IsPlayer() then return end
     if not IsValid(Victim) or not (Victim:IsPlayer() or (Victim.organism.fakePlayer and Victim.organism.alive)) then return end
+	if Victim:IsNPC() or Victim:IsNextBot() then return end
 
     local id = Victim:IsPlayer() and Victim:SteamID() or Victim:EntIndex()
     local id2 = Attacker:IsPlayer() and Attacker:SteamID() or Attacker:EntIndex()

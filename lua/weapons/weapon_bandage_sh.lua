@@ -38,7 +38,7 @@ SWEP.WorkWithFake = true
 SWEP.offsetVec = Vector(4, -3.5, 0)
 SWEP.offsetAng = Angle(90, 90, 0)
 
-local hg_healanims = CreateConVar("hg_healanims", 0, FCVAR_SERVER_CAN_EXECUTE + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
+local hg_healanims = CreateConVar("hg_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
 
 modelshuy = modelshuy or {}
 
@@ -421,7 +421,7 @@ function SWEP:SpawnGarbage(mdl_custom, skin_custom, snd_custom, clr_custom, bgs_
 	if not matrix then return end
 
 	local ent = ents_Create("prop_physics")
-	ent:SetModel(Model((mdl_custom and mdl_custom ~= nil and isstring(mdl_custom)) and mdl_custom or self.WorldModel))
+	ent:SetModel(Model((mdl_custom and mdl_custom ~= "" and mdl_custom ~= nil and isstring(mdl_custom)) and mdl_custom or self.WorldModel))
 
 	if skin_custom and skin_custom ~= nil and isnumber(skin_custom) then
 		ent:SetSkin(skin_custom or 0)

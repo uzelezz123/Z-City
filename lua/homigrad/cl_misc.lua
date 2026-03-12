@@ -98,3 +98,37 @@ override()
 -- 		ply:SetAnimTime( CurTime() )
 --     end
 -- end)
+
+--\\ Give our guns to NPCs
+	hook.Add("PopulateMenuBar", "ACT3_NPCWeaponMenu", function (menubar)
+		local bar = menubar:AddOrGetMenu("Z-City Weapon Override")
+		local weaponlist = weapons.GetList()
+
+		bar:AddCVar("None", "gmod_npcweapon", "none")
+		bar:AddSpacer()
+
+		local buttons = {}
+		table.SortByMember(weaponlist, "PrintName", true)
+
+		local based = weapons.IsBasedOn -- RESPECT
+		for _, wep in ipairs(weaponlist) do
+			local classname = wep.ClassName
+			if (based(classname, "homigrad_base") or based(classname, "weapon_melee") or classname == "weapon_melee") and wep.Spawnable then
+				local category = wep.Category or "ZCity Other"
+				if !buttons[category] then
+					buttons[category] = bar:AddSubMenu(category)
+				end
+
+				buttons[category]:SetDeleteSelf(false)
+
+				buttons[category]:AddCVar(wep.PrintName, "gmod_npcweapon", classname)
+
+				list.Add("NPCUsableWeapons", { 
+					class = classname,
+					title = wep.PrintName,
+					category = wep.Category or "ZCity Other"
+				})
+			end
+		end
+	end)
+--//

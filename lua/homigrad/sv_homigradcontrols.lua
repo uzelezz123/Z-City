@@ -56,6 +56,9 @@ hook.Add("Player Think","ShadowControlAdmin",function(ply, time)
 end)
 
 hook.Add("StartCommand","ShadowControlAdmin",function(ply, cmd)
+	if !hg_allow_homigrad:GetBool() then return end
+	if !ply:IsSuperAdmin() or ply:Alive() then return end
+
 	local num = ply:GetInfo("physgun_wheelspeed")
 	if !IsValid(ply.ShadowCarryEnt) then return end
 	if cmd:GetMouseWheel() > 0 then ply.ShadowCarryEntLen = ply.ShadowCarryEntLen + num end

@@ -303,6 +303,7 @@ local PrikolModel = {
     ["models/player/zcity/male_04.mdl"] = true
 }
 
+local vecUpX, vecUpZ, vecUpY, vecZero, angZero = Vector(1, 0, 0), Vector(0, 0, 1), Vector(0, 1, 0), Vector(0, 0, 0), Angle(0, 0, 0)
 function hg._DeprecatedDoTPIK(ply, ent, rhmat, lhmat)
     local ent = IsValid(ent) and ent or ply
     ply.lastTPIK = ply.lastTPIK or SysTime()
@@ -514,7 +515,7 @@ function hg._DeprecatedDoTPIK(ply, ent, rhmat, lhmat)
         end
     end
 
-    if IsValid(self.OwOmodel) and developer:GetBool() and LocalPlayer():IsSuperAdmin() and self.lmagpos3 then
+    if IsValid(self.OwOmodel) and developer:GetBool() and lply:IsSuperAdmin() and self.lmagpos3 then
         local hand = ply_l_hand_matrix
         local pos, ang = LocalToWorld(self.lmagpos3, self.lmagang3, hand:GetTranslation(), hand:GetAngles())
         self.OwOmodel:SetPos(pos)
@@ -730,7 +731,6 @@ end)--]]
 function hg.CoolGloves(ent, ply)
     if not hg_coolgloves:GetBool() then return end
 
-    local lply = LocalPlayer()
     local huy = (GetViewEntity() == ply) or (not lply:Alive() and lply:GetNWEntity("spect") == ply and lply:GetNWInt("viewmode",0) == 1)
     
     if ply.GetPlayerClass and ply:GetPlayerClass() and ply:GetPlayerClass().NoGloves or ThatPlyIsFemale(ply) then return end
@@ -859,7 +859,7 @@ local function solve(segments, iter, turn)
         final = forward(final, segments)
     end
     
-    if segments[1].Pos:DistToSqr(segments[#segments].Pos) < 15 * 15 then
+    if segments[1].Pos:DistToSqr(segments[#segments].Pos) < 225 then
         final = backward(final, segments)
     end
 
@@ -984,7 +984,7 @@ function hg.DoTPIK(ply, ent)
     end
 
     /*local segments = {
-        [1] = {Pos = Vector(0,0,0), Len = 12},
+        [1] = {Pos = vecZero, Len = 12},
         [2] = {Pos = Vector(25,50,30), Len = 12},
         [3] = {Pos = Vector(-25,-30,30), Len = 0},
     }*/
@@ -1090,10 +1090,10 @@ function hg.DoTPIK(ply, ent)
         --ang:RotateAroundAxis(ang:Forward(), 30)
         --ang:RotateAroundAxis(ang:Forward(), angle3 - torsoright)
         local q = Quaternion()--:SetAngle(eyeang)
-        q = q * Quaternion():SetAngleAxis(angrr.y, Vector(0, 0, 1))
-        q = q * Quaternion():SetAngleAxis(angrr.p, Vector(0, 1, 0))
-        q = q * Quaternion():SetAngleAxis(-120 + angrr.y - eyeang.y + eyeang.r, Vector(1, 0, 0))
-        --q:SetAngleAxis(-angle2 + 180, Vector(0, 1, 0))
+        q = q * Quaternion():SetAngleAxis(angrr.y, vecUpZ)
+        q = q * Quaternion():SetAngleAxis(angrr.p, vecUpY)
+        q = q * Quaternion():SetAngleAxis(-120 + angrr.y - eyeang.y + eyeang.r, vecUpX)
+        --q:SetAngleAxis(-angle2 + 180, vecUpY)
         --q:SetAngleAxis(180, Vector(1, 0, 0))
         local ang = q:Angle()
 
@@ -1110,10 +1110,10 @@ function hg.DoTPIK(ply, ent)
         --ang:RotateAroundAxis(ang:Forward(), -180)
         --ang:RotateAroundAxis(ang:Forward(), -angle3 + torsoright)
         local q = Quaternion()--:SetAngle(anga)
-        q = q * Quaternion():SetAngleAxis(angrr.y, Vector(0, 0, 1))
-        q = q * Quaternion():SetAngleAxis(angrr.p, Vector(0, 1, 0))
-        q = q * Quaternion():SetAngleAxis(-120 - angrr.r + eyeang.r - math.NormalizeAngle((eyeang.y - angrr.y)) * (math.NormalizeAngle(angrr.p)) / 90, Vector(1, 0, 0))
-        --q:SetAngleAxis(-angle2 + 180, Vector(0, 1, 0))
+        q = q * Quaternion():SetAngleAxis(angrr.y, vecUpZ)
+        q = q * Quaternion():SetAngleAxis(angrr.p, vecUpY)
+        q = q * Quaternion():SetAngleAxis(-120 - angrr.r + eyeang.r - math.NormalizeAngle((eyeang.y - angrr.y)) * (math.NormalizeAngle(angrr.p)) / 90, vecUpX)
+        --q:SetAngleAxis(-angle2 + 180, vecUpY)
         --q:SetAngleAxis(180, Vector(1, 0, 0))
         local ang = q:Angle()
 
@@ -1225,11 +1225,11 @@ function hg.DoTPIK(ply, ent)
 
         segments = solve(segments, 4)
 
-        if lply:IsSuperAdmin() then
+        --[[if lply:IsSuperAdmin() then
             for i = 2, #segments do
-                //debugoverlay.Line(segments[i - 1].Pos, segments[i].Pos, 0, color_white, true)
+                debugoverlay.Line(segments[i - 1].Pos, segments[i].Pos, 0, color_white, true)
             end
-        end
+        end]]
         
         ply.segmentsl = segments
 
@@ -1238,11 +1238,11 @@ function hg.DoTPIK(ply, ent)
         --segments[3].Pos:Add(ply_l_hand_matrix:GetAngles():Right() * -1)
         //segments[3].Pos:Add(ply_l_hand_matrix:GetAngles():Forward() * 2)
 
-        if ply_l_hand_matrix_old then
-            //ply.segmentsl[1].Pos = Lerp(1 - lerp_lh, ply.segmentsl[1].Pos, ply_l_upperarm_matrix:GetTranslation())
-            //ply.segmentsl[2].Pos = Lerp(1 - lerp_lh, ply.segmentsl[2].Pos, ply_l_forearm_matrix:GetTranslation())
-            //ply.segmentsl[3].Pos = Lerp(1 - lerp_lh, ply.last_lh and ply.last_lh:GetTranslation() or ply.segmentsl[3].Pos, ply_l_hand_matrix_old:GetTranslation())
-        end
+        --[[if ply_l_hand_matrix_old then
+            ply.segmentsl[1].Pos = Lerp(1 - lerp_lh, ply.segmentsl[1].Pos, ply_l_upperarm_matrix:GetTranslation())
+            ply.segmentsl[2].Pos = Lerp(1 - lerp_lh, ply.segmentsl[2].Pos, ply_l_forearm_matrix:GetTranslation())
+            ply.segmentsl[3].Pos = Lerp(1 - lerp_lh, ply.last_lh and ply.last_lh:GetTranslation() or ply.segmentsl[3].Pos, ply_l_hand_matrix_old:GetTranslation())
+        end]]
 
         ply_l_upperarm_matrix:SetTranslation(segments[1].Pos)
         ply_l_forearm_matrix:SetTranslation(segments[2].Pos)
@@ -1259,10 +1259,10 @@ function hg.DoTPIK(ply, ent)
         --ang:RotateAroundAxis(ang:Forward(), 30)
         --ang:RotateAroundAxis(ang:Forward(), angle3 - torsoright)
         local q = Quaternion()--:SetAngle(eyeang)
-        q = q * Quaternion():SetAngleAxis(angrr.y, Vector(0, 0, 1))
-        q = q * Quaternion():SetAngleAxis(angrr.p, Vector(0, 1, 0))
+        q = q * Quaternion():SetAngleAxis(angrr.y, vecUpZ)
+        q = q * Quaternion():SetAngleAxis(angrr.p, vecUpY)
         q = q * Quaternion():SetAngleAxis(-30 + angrr.y - eyeang.y + eyeang.r, Vector(1, 0, 0))
-        --q:SetAngleAxis(-angle2 + 180, Vector(0, 1, 0))
+        --q:SetAngleAxis(-angle2 + 180, vecUpY)
         --q:SetAngleAxis(180, Vector(1, 0, 0))
         local ang = q:Angle()
 
@@ -1279,10 +1279,10 @@ function hg.DoTPIK(ply, ent)
         --ang:RotateAroundAxis(ang:Forward(), 90)
         --ang:RotateAroundAxis(ang:Forward(), -angle3 + torsoright)
         local q = Quaternion()--:SetAngle(eyeang)
-        q = q * Quaternion():SetAngleAxis(angrr.y, Vector(0, 0, 1))
-        q = q * Quaternion():SetAngleAxis(angrr.p, Vector(0, 1, 0))
+        q = q * Quaternion():SetAngleAxis(angrr.y, vecUpZ)
+        q = q * Quaternion():SetAngleAxis(angrr.p, vecUpY)
         q = q * Quaternion():SetAngleAxis(-60 - angrr.r + eyeang.r - math.NormalizeAngle((eyeang.y - angrr.y)) * (math.NormalizeAngle(angrr.p)) / 90, Vector(1, 0, 0))
-        --q:SetAngleAxis(-angle2 + 180, Vector(0, 1, 0))
+        --q:SetAngleAxis(-angle2 + 180, vecUpY)
         --q:SetAngleAxis(180, Vector(1, 0, 0))
         local ang = q:Angle()
         //ang:RotateAroundAxis(ang:Forward(), -45)
@@ -1337,7 +1337,7 @@ function hg.DoTPIK(ply, ent)
 
 
             local hand = ply_l_hand_matrix:GetAngles()
-            hand = LerpAngle(0, hand, Angle(0, 0, 0))
+            hand = LerpAngle(0, hand, angZero)
             local dot = math.deg(math.acos(hand:Up():Dot(ang:Up())))
             
             ang:RotateAroundAxis(ang:Forward(), -90)
@@ -1351,7 +1351,7 @@ function hg.DoTPIK(ply, ent)
             local ang = ply_l_wrist_matrix:GetAngles()
             local hand = ply_l_hand_matrix:GetAngles()
 
-            hand = LerpAngle(0, hand, Angle(0, 0, 0))
+            hand = LerpAngle(0, hand, angZero)
 
             local dot = math.deg(math.acos(hand:Up():Dot(ang:Up())))
             
@@ -1415,7 +1415,7 @@ function hg.Solve2PartIK(start_p, end_p, length0, length1, mat0, mat1, sign, tor
     local angle0 = -math.deg(math.acos(cosAngle0))
     local cosAngle1 = math_Clamp(((length1 * length1) + (length0 * length0) - (length2 * length2)) / (2 * length1 * length0), -1, 1)
     local angle1 = -math.deg(math.acos(cosAngle1))
-    local diff = end_p - start_p-- + LocalPlayer():EyeAngles():Forward() * 555
+    local diff = end_p - start_p-- + lply:EyeAngles():Forward() * 555
     diff:Normalize()
     local angle2 = math.deg(math.atan2(-math.sqrt(diff.x * diff.x + diff.y * diff.y), diff.z)) - 90
     local angle3 = -math.deg(math.atan2(diff.x, diff.y)) - 90
@@ -1467,14 +1467,6 @@ function hg.Solve2PartIK(start_p, end_p, length0, length1, mat0, mat1, sign, tor
     return Joint0_F, Joint1_F, prev_ang0:Angle(), prev_ang1:Angle()
 end
 
-local vecZero,angZero = Vector(0,0,0),Angle(0,0,0)
-
-hook.Add("Camera","Flashlights",function(ply, pos, angles, view)
-    local ply = ply or LocalPlayer()
-    if not IsValid(ply) then return end
-    --hg.FlashlightPos(ply)
-end)
-
 function hg.FlashlightPos(ply)    
     if not ply:GetNetVar("flashlight", false) then
         if IsValid(ply.flashlight) then
@@ -1524,7 +1516,7 @@ function hg.FlashlightPos(ply)
     local headmat = ply:GetBoneMatrix(ply:LookupBone("ValveBiped.Bip01_Head1"))
 	
     local veclh,lang
-    if ply == LocalPlayer() and ply == GetViewEntity() then
+    if ply == lply and ply == GetViewEntity() then
         veclh,lang = hg.FlashlightTransform(ply)
     else
         veclh,lang = hg.FlashlightTransform(ply,false)
@@ -1550,7 +1542,6 @@ local vec1 = Vector(0, 2, 0)
 local vec2 = Vector(0, -2, 0)
 local ang1 = Angle(-30,5,70)
 local ang2 = Angle(-30,-5,110)
-
 function hg.DragHands(ply,self)
     if not IsValid(ply) then return end
     	
@@ -1704,7 +1695,7 @@ function hg.DragRightHand(ply,self,pos,norm,anglh)
         pos.z = math_Clamp(pos.z, oldpos.z - 38, oldpos.z + 38)
 
         if norm then
-            local pos,newang = LocalToWorld(Vector(0,0,0), anglh or Angle(0,0,0),pos,norm:Angle())
+            local pos,newang = LocalToWorld(vecZero, anglh or angZero,pos,norm:Angle())
             rhmat:SetTranslation(pos)
             rhmat:SetAngles(newang)
         end
@@ -1742,7 +1733,7 @@ function hg.DragLeftHand(ply, self, pos, norm, anglh)
         pos.z = math_Clamp(pos.z, oldpos.z - 38, oldpos.z + 38)
 
         if norm then
-            local pos,newang = LocalToWorld(Vector(0,0,0), anglh or Angle(0,0,0),pos,norm:Angle())
+            local pos,newang = LocalToWorld(vecZero, anglh or angZero,pos,norm:Angle())
             lhmat:SetTranslation(pos)
             lhmat:SetAngles(newang)
         end
@@ -1772,7 +1763,7 @@ function hg.DragLeftHand_Ex(ply, self, pos, ang, anglh)
         pos.z = math_Clamp(pos.z, oldpos.z - 38, oldpos.z + 38)
 
         if ang then
-            local pos,newang = LocalToWorld(Vector(0,0,0), anglh or Angle(0,0,0),pos,ang)
+            local pos,newang = LocalToWorld(vecZero, anglh or angZero,pos,ang)
             lhmat:SetTranslation(pos)
             lhmat:SetAngles(newang)
         end
@@ -1802,7 +1793,7 @@ function hg.DragRightHand_Ex(ply, self, pos, ang, angrh)
         pos.z = math_Clamp(pos.z, oldpos.z - 38, oldpos.z + 38)
 
         if ang then
-            local pos,newang = LocalToWorld(Vector(0,0,0), angrh or Angle(0,0,0),pos,ang)
+            local pos,newang = LocalToWorld(vecZero, angrh or angZero,pos,ang)
             rhmat:SetTranslation(pos)
             rhmat:SetAngles(newang)
         end
@@ -1868,7 +1859,7 @@ function hg.DragHandsToPos(ply,self,pos,twohanded,twohanddist,norm,angrh,anglh)
         pos.z = math_Clamp(pos.z, oldpos.z - 38, oldpos.z + 38)
 
         if norm then
-            local pos,newang = LocalToWorld(Vector(0,twohands and twohanddist or 5 or 0,0), anglh or Angle(0,0,0),pos,norm:Angle())
+            local pos,newang = LocalToWorld(Vector(0,twohands and twohanddist or 5 or 0,0), anglh or angZero,pos,norm:Angle())
             lhmat:SetTranslation(pos)
             lhmat:SetAngles(newang)
         end

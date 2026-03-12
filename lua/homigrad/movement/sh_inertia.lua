@@ -1,13 +1,13 @@
 local Angle, Vector, AngleRand, VectorRand, math, hook, util, game = Angle, Vector, AngleRand, VectorRand, math, hook, util, game
 --\\ Inertia & stuff
 	--\\ Antibhop accelerate (not used anyway)
-		-- hook.Add("OnPlayerHitGround", "Movement", function(ply, inWater, onFloater, speed)
-		-- 	local vel = ply:GetVelocity()
+		--[[hook.Add("OnPlayerHitGround", "Movement", function(ply, inWater, onFloater, speed)
+			local vel = ply:GetVelocity()
 
-		-- 	if(ply.MovementInertia and vel:LengthSqr() > 10000)then
-		-- 		//ply.MovementInertia = ply.MovementInertia + (vel / vel:Length() * math.abs(vel[3])) * 0.75
-		-- 	end
-		-- end)
+			if (ply.MovementInertia and vel:LengthSqr() > 10000) then
+				ply.MovementInertia = ply.MovementInertia + (vel / vel:Length() * math.abs(vel[3])) * 0.75
+			end
+		end)]]
 	--//
 
 	--\\ Side movement calculation
@@ -45,8 +45,9 @@ local Angle, Vector, AngleRand, VectorRand, math, hook, util, game = Angle, Vect
 
 	local hg_movement_stamina_debuff = CreateConVar("hg_movement_stamina_debuff", "0.3", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Multiply movement debuff when having low stamina", 0, 1)
 	local hg_inertiamul = CreateConVar("hg_inertiamul", "1", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Multiply inertia for player movement", 0.01, 5)
-	local vecZero = Vector()
-	local vomitVPAng = Angle(1,0,0)
+	local hg_divejump = CreateConVar("hg_divejump", "0", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Toggle dive jumps on crouch jump", 0, 1)
+
+	local vomitVPAng, vecZero = Angle(1, 0, 0), Vector()
 	hook.Add("SetupMove", "HG(StartCommand)", function(ply, mv, cmd)
 		--\\ DeltaTime
 			ply.LastStartCommand = ply.LastStartCommand or SysTime()
@@ -81,9 +82,13 @@ local Angle, Vector, AngleRand, VectorRand, math, hook, util, game = Angle, Vect
 
 			cmd:AddKey(IN_DUCK)
 			mv:AddKey(IN_DUCK)
+
+			if ply.MovementInertia then
+				ply.MovementInertia:Zero()
+			end
 		end
 
-		if(ply:GetMoveType() == MOVETYPE_NOCLIP)then
+		if (ply:GetMoveType() == MOVETYPE_NOCLIP) then
 			hook.Run("HG_MovementCalc", vecZero, 0, 1, ply, cmd, mv)
 			hook.Run("HG_MovementCalc_2", {1}, ply, cmd, mv)
 
@@ -96,10 +101,14 @@ local Angle, Vector, AngleRand, VectorRand, math, hook, util, game = Angle, Vect
 
 		local runnin = ply:KeyDown(IN_SPEED) and not ply:Crouching() and ply:KeyDown(IN_FORWARD)
 
-		if runnin then
-			--mv:SetSideSpeed(0) --meh
-			--cmd:SetSideMove(0)
+		--[[if runnin then
+			mv:SetSideSpeed(0) --meh
+			cmd:SetSideMove(0)
 			cmd:RemoveKey(IN_BACK)
+		end]]
+
+		if not IsValid(ply.FakeRagdoll) and ply:KeyDown(IN_SPEED) and not ply:Crouching() and ply:KeyDown(IN_BACK) then
+			cmd:RemoveKey(IN_SPEED)
 		end
 
 		local wep = ply:GetActiveWeapon()
@@ -467,19 +476,19 @@ local Angle, Vector, AngleRand, VectorRand, math, hook, util, game = Angle, Vect
 			end
 		end
 
-		--// Dive jump (too op)
-		--[[
-		ply.lastInDuck = ply:KeyPressed(IN_DUCK) and CurTime() or ply.lastInDuck or 0
-		ply.lastInJump = ply:KeyPressed(IN_JUMP) and CurTime() or ply.lastInJump or 0
-		if(SERVER && rag == ply && (ply.lastInJump + 0.1 > CurTime()) && (ply.lastInDuck + 0.1 > CurTime()))then
-			local force = ply:GetAimVector() * 400
-			force[3] = 0
-			local torso = ply:TranslateBoneToPhysBone(ply:LookupBone("ValveBiped.Bip01_Spine2"))
-			local phystorso = hg.IdealMassPlayer["ValveBiped.Bip01_Spine2"]
-			hg.AddForceRag(ply, torso, force * phystorso, 0.5)
-			hg.Fake(ply)
+		--// Dive jump
+		if hg_divejump:GetBool() then
+			ply.lastInDuck = ply:KeyPressed(IN_DUCK) and CurTime() or ply.lastInDuck or 0
+			ply.lastInJump = ply:KeyPressed(IN_JUMP) and CurTime() or ply.lastInJump or 0
+			if(SERVER && rag == ply && (ply.lastInJump + 0.1 > CurTime()) && (ply.lastInDuck + 0.1 > CurTime()))then
+				local force = ply:GetAimVector() * 400
+				force[3] = 0
+				local torso = ply:TranslateBoneToPhysBone(ply:LookupBone("ValveBiped.Bip01_Spine2"))
+				local phystorso = hg.IdealMassPlayer["ValveBiped.Bip01_Spine2"]
+				hg.AddForceRag(ply, torso, force * phystorso, 0.5)
+				hg.Fake(ply)
+			end
 		end
-		--]]
 
 		--print(speed.." "..(CLIENT and "c" or "s"))
 		--speed = SERVER and speed + 50 or speed

@@ -389,3 +389,23 @@ local math_random, math_Rand = math.random, math.Rand
 		end
 	end)
 --//
+
+--\\ Give our guns to NPCs
+	local function addNPCweps()
+		local weaponlist = weapons.GetList()
+		local based = weapons.IsBasedOn -- RESPECT
+		for _, wep in ipairs(weaponlist) do
+			local classname = wep.ClassName
+			if (based(classname, "homigrad_base") or based(classname, "weapon_melee") or classname == "weapon_melee") and wep.Spawnable then
+				list.Add("NPCUsableWeapons", { 
+					class = classname,
+					title = wep.PrintName,
+					category = wep.Category or "ZCity Other"
+				})
+			end
+		end
+	end
+
+	hook.Add("Initialize", "addNPCweps", addNPCweps)
+	hook.Add("InitPostEntity", "addNPCweps", addNPCweps)
+--//

@@ -40,9 +40,9 @@ local function WhomILookinAt(ply, cone, dist)
 end
 
 function SWEP:Deploy()
+	local owner = self:GetOwner()
 	if not IsFirstTimePredicted() then
 		self:PlayAnim("draw",1)
-		local owner = self:GetOwner()
 		if not IsValid(owner:GetViewModel()) then
 			owner:GetViewModel():SetPlaybackRate(.1)
 		end
@@ -54,6 +54,10 @@ function SWEP:Deploy()
 	self:SetFists(false)
 	self:SetNextDown(CurTime())
 	self:PlayAnim("draw",1)
+	if owner:HasWeapon("weapon_hands_sh") then
+		owner:StripWeapon("weapon_hands_sh")
+	end
+
 	return true
 end
 

@@ -85,6 +85,7 @@ local lerpedq = Quaternion()
 local hg_newfakecam = ConVarExists("hg_newfakecam") and GetConVar("hg_newfakecam") or CreateConVar("hg_newfakecam", 0, FCVAR_ARCHIVE, "New camera rotate", 0, 1)
 local rollang = 0
 local ctime
+local vecUpX, vecUpY, vecUpZ = Vector(1, 0, 0), Vector(0, 1, 0), Vector(0, 0, 1)
 hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 	if IsValid(follow) and ctime != CurTime() then
 		ctime = CurTime()
@@ -113,8 +114,12 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 		oldlean = 0
 		lean_lerp = 0
 	end
-	
-	--local follow = follow or lply
+
+	--[[local follow
+	if not lply:OnGround() and lply:GetMoveType() ~= MOVETYPE_NOCLIP then
+		follow = follow or lply
+	end]]
+
 	if lply:InVehicle() and not IsValid(follow) then
 		tbl.override_angle = true
 		tbl.angle = angle_zero
@@ -122,7 +127,7 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 	end
 
 	if !IsValid(follow) then
-		tbl.angle.roll = 0 + lean_lerp * 10
+		tbl.angle.roll = lean_lerp * 10
 		
 		return
 	end
@@ -152,10 +157,9 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 	rollang = rollang + lean_lerp * 0.5
 
 	local q = Quaternion():SetAngle(angle)
-
-    local q_pitch = Quaternion():SetAngleAxis(y / 50, Vector(0, 1, 0))
-    local q_yaw = Quaternion():SetAngleAxis(-x / 50, Vector(0, 0, 1))
-    local q_roll = Quaternion():SetAngleAxis(lean_lerp * 0.5 + huy + x / 50 * math.abs(angle.pitch / 90), Vector(1, 0, 0))
+    local q_pitch = Quaternion():SetAngleAxis(y / 50, vecUpY)
+    local q_yaw = Quaternion():SetAngleAxis(-x / 50, vecUpZ)
+    local q_roll = Quaternion():SetAngleAxis(lean_lerp * 0.5 + huy + x / 50 * math.abs(angle.pitch / 90), vecUpX)
 	
 	q = q * q_pitch * q_yaw * q_roll
 
@@ -704,7 +708,7 @@ hook.Add("ServerRagdollTransferDecals","raghuy", function(ent, rag)
 end)
 
 
-hook.Add("OnEntityCreated", "TryCopyAppearanceNow", function( ent )
+--[[hook.Add("OnEntityCreated", "TryCopyAppearanceNow", function( ent )
 	--if not ent:IsRagdoll() then return end
 	--for k,ply in ipairs(ents.FindInSphere(ent:GetPos(),15)) do
 	--	if ply:IsPlayer() then
@@ -718,9 +722,10 @@ hook.Add("OnEntityCreated", "TryCopyAppearanceNow", function( ent )
 	--		ent:SetNetVar("Accessories", ply:GetNetVar("Accessories","none"))
 	--	end
 	--end
-end)
-local sphereRadius = 12
-hook.Add("Move","PushAwayRagdolls",function(ply)
+end)]]
+
+--[[local sphereRadius = 12
+hook.Add("Move","PushAwayRagdolls",function(ply) --// lagging
 	do return end
 	if not ply:Alive() and not hg.GetCurrentCharacter(ply):IsPlayer() then return end
 	local playerPos = ply:GetPos()
@@ -736,4 +741,4 @@ hook.Add("Move","PushAwayRagdolls",function(ply)
 		end
 		ent.pushCooldown = CurTime() + 0.1
     end
-end)
+end)]]

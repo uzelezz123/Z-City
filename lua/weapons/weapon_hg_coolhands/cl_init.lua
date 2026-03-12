@@ -1,7 +1,8 @@
 include("shared.lua")
 SWEP.Category = "ZCity Other"
-SWEP.PrintName = "CoolHands"
-SWEP.Spawnable = false --// Use this hands if you like it more.. - Mannytko
+SWEP.PrintName = "Cool Hands"
+SWEP.AdminOnly = true
+SWEP.Spawnable = true --// Use this hands if you like it more.. - Mannytko
 SWEP.Instructions = "LMB - raise fists\nRELOAD - lower fists\n\nIn the raised state:\nLMB - strike\nRMB - block\n\nIn the lowered state: RMB - raise the object, RMB+R - check the pulse (when used on someone's head or hand)\n\nWhen holding the object: RELOAD - fix the object in air, E - spin the object in the air."
 SWEP.blockinganim = 0
 SWEP.animtime = 0
@@ -635,7 +636,7 @@ function SWEP:PrimaryAttack(forcespecial)
 	end
 
 	if CLIENT and self.IsLocal and self:IsLocal() then
-		ViewPunch(special_attack and specang1 or Angle(-1, -(rand and -3 or 3), (rand and -8 or 8)))
+		ViewPunch(special_attack and specang1 or Angle(-1, -(rand and -3 or 3), (rand and -9 or 9)))
 		//ViewPunch2(special_attack and Angle(5, -2, 2) or Angle((-1), -(rand and 2 or -2), (rand and 6 or -6)))
 		if special_attack then
 			if not isfur then

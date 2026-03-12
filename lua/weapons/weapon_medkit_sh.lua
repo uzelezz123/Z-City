@@ -54,7 +54,7 @@ SWEP.modeValuesdef = {
 SWEP.ShouldDeleteOnFullUse = true
 
 local math = math
-local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_SERVER_CAN_EXECUTE + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
+local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
 function SWEP:Think()
 	if not self:GetOwner():KeyDown(IN_ATTACK) and hg_healanims:GetBool() then
 		self:SetHolding(math.max(self:GetHolding() - 12, 0))

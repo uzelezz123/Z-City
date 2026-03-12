@@ -1,13 +1,21 @@
 --
 local PLAYER = FindMetaTable("Player")
 
-local vpang = Angle(2, 0, 0)
+local vpang = Angle(2, -1, 1)
 function PLAYER:LegAttack()
     if not self:Alive() or hg.GetCurrentCharacter(self):IsRagdoll() or self:GetNWFloat("InLegKick",0) > CurTime() or not self:IsOnGround() or self:IsSprinting() then return end
     if self.InLegKick and self.InLegKick > CurTime() then return end
     if self:GetNWBool("TauntStopMoving", false) then return end
     if hook.Run( "PlayerCanLegAttack", self ) == false then return end
-    local hands = self:GetWeapon("weapon_hands_sh")
+
+	local handClass = "weapon_hands_sh"
+	if self:HasWeapon("weapon_hg_coolhands") then
+		handClass = "weapon_hg_coolhands"
+	else
+		handClass = "weapon_hands_sh"
+	end
+
+    local hands = self:GetWeapon(handClass)
     if not IsValid(hands) then
         self:Notify("Where is your hands swep???", 1, "WHERE YOUR HANDS AT??", 0)
     return end
@@ -138,7 +146,7 @@ function PLAYER:LegAttack()
                     local dmginfo = DamageInfo()
 
                     dmginfo:SetAttacker(self)
-                    local inflictor = self:GetWeapon("weapon_hands_sh")
+                    local inflictor = self:GetWeapon(handClass)
                     dmginfo:SetInflictor(inflictor)
                     dmginfo:SetDamage(dmg)
                     dmginfo:SetDamageForce(normal * dmg)

@@ -187,7 +187,7 @@ hg.radialOptions = hg.radialOptions or {}
 local colBlack = Color(0, 0, 0, 152)
 local colOption = Color(40, 0, 55, 152)
 local colWhite = Color(255, 255, 255, 255)
-local colWhiteTransparent = Color(176, 40, 40, 100)
+local colWhiteTransparent = Color(0, 155, 40, 100)
 local colTransparent = Color(0, 0, 0, 0)
 local matHuy = Material("vgui/white")
 local vecXY = Vector(0, 0)
@@ -198,8 +198,8 @@ local current_option = 1
 local current_option_select = 1
 local hook_Run = hook.Run
 
-local incoentCol = Color(128,0,0)
-local taitorCol = Color(155,0,0)
+local incoentCol = Color(0,255,0)
+local taitorCol = Color(0,255,0)
 
 local menuPanel
 

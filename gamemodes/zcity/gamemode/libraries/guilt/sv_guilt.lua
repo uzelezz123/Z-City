@@ -111,6 +111,7 @@ local function IsLookingAt(ply, targetVec)
 end
 
 hook.Add("HomigradDamage", "GuiltReg", function(ply, dmgInfo, hitgroup, ent, harm) 
+    if not IsKarmaEnabled() then return end
     local Attacker, Victim = dmgInfo:GetAttacker(), ply
     
     --[[if !IsValid(Attacker) and dmgInfo:GetInflictor().steamid then
@@ -180,7 +181,7 @@ hook.Add("HomigradDamage", "GuiltReg", function(ply, dmgInfo, hitgroup, ent, har
 
     local rnd, cround = CurrentRound()
     
-    if rnd.GuiltDisabled or GetConVar("zb_dev"):GetBool() then return end
+    if not IsKarmaEnabled() or rnd.GuiltDisabled or GetConVar("zb_dev"):GetBool() then return end
 
     if Attacker == Victim then return end
 
@@ -222,7 +223,11 @@ hook.Add("HomigradDamage", "GuiltReg", function(ply, dmgInfo, hitgroup, ent, har
     
     local guiltadd = amt * 60
     Attacker.Guilt = (Attacker.Guilt or 0) + guiltadd
-    Attacker.Karma = math.Clamp((Attacker.Karma or 100) - add * math.max(((1 - (zb.GuiltTable[Victim][Attacker] or 0)) / 1),0), -60, zb.MaxKarma)
+    local oldKarma = Attacker.Karma or 100
+    Attacker.Karma = math.Clamp(oldKarma - add * math.max(((1 - (zb.GuiltTable[Victim][Attacker] or 0)) / 1),0), -60, zb.MaxKarma)
+    if oldKarma ~= Attacker.Karma then
+        Attacker:ChatPrint("Seu karma mudou para " .. math.Round(Attacker.Karma))
+    end
 
     zb.HarmDoneKarma[Victim][Attacker] = zb.HarmDoneKarma[Victim][Attacker] + add
 
@@ -303,7 +308,11 @@ hook.Add("Player Think", "karmagain", function(ply)
     if (ply.KarmaGainThink or 0) > CurTime() then return end
     ply.KarmaGainThink = CurTime() + 120
 
+    local oldKarma = ply.Karma
     ply.Karma = math.Clamp(ply.Karma + (ply.Karma > 100 and 0.1 or (ply.KarmaGain or 0.75)), 0, zb.MaxKarma)// * (1 + ply:HasPurchase("zpremium")), 0, zb.MaxKarma)
+    if oldKarma ~= ply.Karma then
+        ply:ChatPrint("Seu karma mudou para " .. math.Round(ply.Karma))
+    end
     
     ply:SetNetVar("Karma", ply.Karma)
     //ply:guilt_SetValue( ply.Karma or 100 )

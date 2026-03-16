@@ -1,0 +1,2 @@
+- [x] Criar convar `zb_karma_enabled` em shared.lua (default 1)
+- [x] Editar sv_guilt.lua: IsKarmaEnabled() = convar:GetBool(); early return no GuiltReg se disabled

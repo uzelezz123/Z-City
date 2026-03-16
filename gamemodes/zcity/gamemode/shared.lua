@@ -9,6 +9,14 @@ team.SetUp(2, "Players3", Color(0, 255, 0))
 
 DeriveGamemode("sandbox")
 
+-- Toggle karma enabled
+CreateConVar("zb_karma_enabled", "1", FCVAR_REPLICATED + FCVAR_ARCHIVE, "Enable karma system", 0, 1)
+
+function IsKarmaEnabled()
+    return GetConVar("zb_karma_enabled"):GetBool()
+end
+
+
 local blur = Material("pp/blurscreen")
 local hg_potatopc -- НАДО ЭТО ГОВНО ПЕРЕПИСАТЬ НОРМАЛЬНО, И ВСЕ МЕНЮШКИ ОДИНАКОВЫЕ ТОЖЕ!!!
 function hg.DrawBlur(panel, amount, passes, alpha)

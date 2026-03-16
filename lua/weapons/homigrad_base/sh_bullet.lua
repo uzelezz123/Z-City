@@ -813,8 +813,21 @@ if CLIENT then
 		if self.EjectAddAng then
 			_,ejectAng = LocalToWorld(vecZero,self.EjectAddAng,vecZero,attmuzle.Ang) 
 		end
-		if self.CustomSecShell then self:MakeShell(self.CustomSecShell, pos, ejectAng, ang:Forward() * 75) end
-		if ammotype.Shell or self.CustomShell then self:MakeShell(ammotype.Shell or self.CustomShell, pos, ejectAng, ang:Forward() * 105) return end
+		if self.CustomSecShell then 
+			local right_vel = self:GetRight() * math.random(50, 150)
+			local up_vel = self:GetUp() * math.Rand(-40, 60)
+			local fwd_vel = self:GetForward() * math.random(120, 220)
+			local rand_vel = right_vel + up_vel + fwd_vel
+			self:MakeShell(self.CustomSecShell, pos, ejectAng + Angle(math.random(-15,15), math.random(-30,30), 0) + (self.CustomEjectAngle or Angle(0,0,0)), rand_vel) 
+		end
+		if ammotype.Shell or self.CustomShell then 
+			local right_vel = self:GetRight() * math.random(50, 150)
+			local up_vel = self:GetUp() * math.Rand(-40, 60)
+			local fwd_vel = self:GetForward() * math.random(120, 220)
+			local rand_vel = right_vel + up_vel + fwd_vel
+			self:MakeShell(ammotype.Shell or self.CustomShell, pos, ejectAng + Angle(math.random(-15,15), math.random(-30,30), 0) + (self.CustomEjectAngle or Angle(0,0,0)), rand_vel) 
+			return 
+		end
 		local effectdata = EffectData()
 		effectdata:SetOrigin(pos)
 		effectdata:SetAngles(ang)

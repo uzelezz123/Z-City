@@ -1736,7 +1736,12 @@ function SWEP:GetAdditionalValues()
 	if self:IsClient() and self:IsZoom() then
 		self.ZoomAnimLerp = LerpFT(0.05,self.ZoomAnimLerp or 0,self.k > 0.2 and self.k < 0.6 and 1 or 0)
 		self.AdditionalPosPreLerp[1] = self.AdditionalPosPreLerp[1] + math.ease.InOutBack(self.ZoomAnimLerp) * 3
-		self.AdditionalAngPreLerp[3] = self.AdditionalAngPreLerp[3] + math.ease.InOutBack(self.ZoomAnimLerp) * 4
+		self.AdditionalAngPreLerp[3] = self.AdditionalAngPreLerp[3] + math.ease.InOutBack(self.ZoomAnimLerp) * 2
+		if self.k > 0.65 and self.k < 0.75 then
+			local punchAng = Angle(math.Rand(-0.5, 0.5), math.Rand(-0.5, 0.5), math.Rand(-1, 1))
+			ViewPunch(punchAng)
+			ViewPunch2(-punchAng)
+		end
 		if not self.zoomingBigSnd and self.k > 0.6 and not self:IsPistolHoldType() then
 			self:EmitSound("weapons/universal/uni_ads_in_0" .. math.random(6) .. ".wav",40)
 			self.zoomingBigSnd = true

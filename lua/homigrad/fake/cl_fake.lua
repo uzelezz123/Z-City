@@ -22,7 +22,7 @@ end
 local vpangs
 
 hook.Add("CreateMove", "asdasdas22", function(cmd)
-	if hg.InGame() then return end
+	if hg.InGame() or !GetCoolCameraBool() then return end
 
 	hook.Run("InputMouseApply", cmd, 0, 0, (realanglelerp or Angle()) + (vpangs or Angle()))
 end)

@@ -230,6 +230,7 @@ local coldMat = Material("effects/shaders/zb_colda")
 local grainMat = Material("effects/shaders/zb_grain2")
 local heatMat = Material("effects/shaders/zb_heat")
 local zombMat = grainMat -- Material("effects/shaders/zb_zomb")
+local blindMat = Material("effects/shaders/zb_blind")
 
 local PainLerp = 0
 local O2Lerp = 0
@@ -347,7 +348,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 	if not organism.brain then stopthings() return end
 	local org = organism
 
-		if org.blindness or amtflashed >= 0.8 then
+		if blindMat and not blindMat:IsError() and (org.blindness or amtflashed >= 0.8) then
 		local blindness = ((org.blindness and math.Round(org.blindness) == 0) or amtflashed >= 0.8) and 0 or (org.blindness)
 		render.UpdateScreenEffectTexture()
 		render.UpdateFullScreenDepthTexture()

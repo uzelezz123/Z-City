@@ -162,6 +162,11 @@ if SERVER then
 			net.WriteBool(self:WaterLevel() > 0)
 			net.WriteString(self.SoundWater)
 		net.Broadcast()
+		if hg and hg.PlayExtraExplosionSound then
+			hg.PlayExtraExplosionSound(SelfPos, self:EntIndex(), 1)
+		else
+			EmitSound("explosionextra/explode_" .. math.random(1, 9) .. ".wav", SelfPos, self:EntIndex() + 700, CHAN_ITEM, 1, 145, 0, math.random(95, 105))
+		end
 
 
 		local dis = self.BlastDis / 0.01905

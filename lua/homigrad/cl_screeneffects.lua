@@ -341,9 +341,19 @@ hook.Add("Post Post Processing", "ItHurts", function()
 	if IsValid(PainStation) then
 		PainStation:SetVolume(0)
 	end
-	if IsValid(RealityStation) then
-		RealityStation:SetVolume(0)
-	end
+	    if IsValid(RealityStation) then
+        local pain_vol = 0
+        if org.pain and org.pain > 50 then
+            pain_vol = math.Clamp((org.pain - 50) / 50, 0, 1)
+        end
+
+        local o2_vol = 0
+        if org.o2 and org.o2[1] and org.o2[1] < 10 then
+            o2_vol = math.Clamp((10 - org.o2[1]) / 10, 0, 1)
+        end
+
+        RealityStation:SetVolume(math.max(pain_vol, o2_vol))
+    end
 	
 	if !lply:Alive() and !IsValid(spect) then stopthings() return end
 	if !lply:Alive() and viewmode != 1 then stopthings() return end

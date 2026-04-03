@@ -15,7 +15,7 @@ MODE.LootSpawn = true
 MODE.LootOnTime = true
 
 MODE.Chance = 0.05
-MODE.LootDivTime = 500
+MODE.LootDivTime = 1000
 
 MODE.LootTable = {
 	{40, {
@@ -33,6 +33,7 @@ MODE.LootTable = {
 
 		{1,"weapon_matches"},
 		{1,"weapon_zippo_tpik"},
+		{0.1,"weapon_flaregun"},
 
 		{0.2,"weapon_morphine"},
 		{0.2,"weapon_mannitol"},
@@ -84,6 +85,7 @@ MODE.LootTable = {
 		{3.5,"weapon_m1911"},
 		{3,"weapon_m9beretta"},
 		{2,"weapon_fn45"},
+		{2,"weapon_flaregun"},
 	}},
 	{6, {
 		{9,"weapon_hk_usp"},
@@ -157,6 +159,55 @@ MODE.LootTableStandard = {
 		{0.07,"weapon_hg_machete"},
 	}},
 }
+
+local function BuildMixedLootTable()
+	local mixedLootTable = {}
+	local STD_CATEGORY_MULTIPLIER = 1
+	local SOE_CATEGORY_MULTIPLIER = 0.15
+
+	local function appendLootTable(sourceLootTable, scale)
+		for _, weightedCategory in ipairs(sourceLootTable or {}) do
+			local categoryLoot = {}
+			for _, weightedItem in ipairs(weightedCategory[2] or {}) do
+				categoryLoot[#categoryLoot + 1] = {weightedItem[1], weightedItem[2]}
+			end
+			mixedLootTable[#mixedLootTable + 1] = {(weightedCategory[1] or 1) * (scale or 1), categoryLoot}
+		end
+	end
+
+	appendLootTable(MODE.LootTableStandard, STD_CATEGORY_MULTIPLIER)
+	appendLootTable(MODE.LootTable, SOE_CATEGORY_MULTIPLIER)
+
+	return mixedLootTable
+end
+
+MODE.MixedLootTable = BuildMixedLootTable()
+
+local gunmanMixedWeapons = {
+	"weapon_px4beretta",
+	"weapon_remington870",
+	"weapon_kar98",
+}
+
+local gunmanWeaponAttachments = {
+	["weapon_px4beretta"] = {"supressor4"},
+	["weapon_remington870"] = {"supressor5","holo1","holo2","holo15"},
+	["weapon_kar98"] = {"optic12"},
+}
+
+local function GiveMixedGunmanWeapon(ply)
+	local gun = ply:Give(gunmanMixedWeapons[math.random(#gunmanMixedWeapons)])
+	if IsValid(gun) then
+		local attachmentPool = gunmanWeaponAttachments[gun:GetClass()]
+		if attachmentPool and #attachmentPool > 0 then
+			hg.AddAttachmentForce(ply,gun,attachmentPool[math.random(#attachmentPool)])
+			if math.random(1,100) <= 35 and #attachmentPool > 1 then
+				hg.AddAttachmentForce(ply,gun,attachmentPool[math.random(#attachmentPool)])
+			end
+		end
+	end
+	return gun
+end
 
 -- MODE.TraitorWords = {
 	-- "пистолет",
@@ -280,7 +331,7 @@ MODE.Types.standard = {
 		ply:SetNetVar("Inventory",inv)
 	end,
 	GunManLoot = function(ply)
-		ply:Give("weapon_px4beretta")
+		GiveMixedGunmanWeapon(ply)
 		ply.organism.recoilmul = 1
 	end,
 	PoliceTime = 220,
@@ -563,11 +614,8 @@ MODE.Types.soe = {
 		ply:SetNetVar("Inventory",inv)
 	end,
 	GunManLoot = function(ply)
-		local gun = ply:Give( ( math.random(1,2) > 1 and "weapon_remington870" ) or "weapon_kar98" )
+		GiveMixedGunmanWeapon(ply)
 		ply.organism.recoilmul = 1.0
-		if gun:GetClass() == "weapon_kar98" then
-			hg.AddAttachmentForce(ply,gun,"optic12")
-		end
 		local inv = ply:GetNetVar("Inventory")
 		inv["Weapons"]["hg_sling"] = true
 		ply:SetNetVar("Inventory",inv)
@@ -632,6 +680,13 @@ end
 
 function MODE:SubModes()
 	return modes
+end
+
+function MODE:GetLootTable()
+	if self.Type == "standard" or self.Type == "soe" then
+		local _, lootCategory = hg.WeightedRandomSelect(self.MixedLootTable)
+		return lootCategory
+	end
 end
 
 function MODE:Intermission()

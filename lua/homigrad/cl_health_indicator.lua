@@ -407,77 +407,60 @@ hook.Add("HUDPaint", "HG_HealthIndicator", function()
         camRenderX = 0
     end
     
-    cam.Start3D(camPos, lookAng, 50, camRenderX, viewY, w, h)
+        cam.Start3D(camPos, lookAng, 50, camRenderX, viewY, w, h)
         render.SuppressEngineLighting(true)
         render.MaterialOverride(whiteMat)
         
         local time = CurTime()
-
-        -- Draw healthy parts
         local col = math.Clamp(consciousness, 0, 1)
-        render.SetColorModulation(col, col, col)
-        
+
         healthModel:SetPos(modelOffset)
         healthModel:SetAngles(Angle(0, 0, 0))
-        
         for i = 0, ply:GetNumBodyGroups() - 1 do
             healthModel:SetBodygroup(i, ply:GetBodygroup(i))
         end
         healthModel:SetSkin(ply:GetSkin())
-        
+        healthModel:SetupBones()
+
+        -- Base model (healthy parts)
+        render.SetColorModulation(col, col, col)
         for partName, partData in pairs(bodyParts) do
             local state = limbStates[partName]
             if state and (state.health > 0 or state.isBroken or state.isDislocated or state.amputated) then
                 for _, boneName in ipairs(partData.bones) do
                     local boneID = healthModel:LookupBone(boneName)
-                    if boneID then ScaleBoneAndChildren(healthModel, boneID, Vector(0,0,0)) end
+                    if boneID then healthModel:ManipulateBoneScale(boneID, Vector(0,0,0)) end
                 end
             end
         end
-        healthModel:SetupBones()
         healthModel:DrawModel()
         for partName, partData in pairs(bodyParts) do
             for _, boneName in ipairs(partData.bones) do
                 local boneID = healthModel:LookupBone(boneName)
-                if boneID then ScaleBoneAndChildren(healthModel, boneID, Vector(1,1,1)) end
+                if boneID then healthModel:ManipulateBoneScale(boneID, Vector(1,1,1)) end
             end
         end
 
-        -- Draw damaged parts
+        -- Damaged parts
         for partName, partData in pairs(bodyParts) do
             local state = limbStates[partName]
             if state and state.health > 0 and not state.isBroken and not state.isDislocated then
                 local r = state.health
                 render.SetColorModulation(col, col * (1 - r), col * (1 - r))
-                
                 for _, boneName in ipairs(partData.bones) do
                     local boneID = healthModel:LookupBone(boneName)
-                    if boneID then
-                        local matrix = healthModel:GetBoneMatrix(boneID)
-                        if matrix then
-                            redModel:SetBoneMatrix(boneID, matrix)
-                        end
-                    end
+                    if boneID then healthModel:ManipulateBoneScale(boneID, Vector(1,1,1)) end
                 end
             else
-                 for _, boneName in ipairs(partData.bones) do
-                    local boneID = redModel:LookupBone(boneName)
-                    if boneID then ScaleBoneAndChildren(redModel, boneID, Vector(0,0,0)) end
+                for _, boneName in ipairs(partData.bones) do
+                    local boneID = healthModel:LookupBone(boneName)
+                    if boneID then healthModel:ManipulateBoneScale(boneID, Vector(0,0,0)) end
                 end
             end
         end
-        redModel:SetPos(modelOffset)
-        redModel:SetAngles(Angle(0,0,0))
-        redModel:SetupBones()
-        redModel:DrawModel()
-        for partName, partData in pairs(bodyParts) do
-            for _, boneName in ipairs(partData.bones) do
-                local boneID = redModel:LookupBone(boneName)
-                if boneID then ScaleBoneAndChildren(redModel, boneID, Vector(1,1,1)) end
-            end
-        end
+        healthModel:DrawModel()
 
-        -- Draw broken/dislocated parts
+        -- Broken/Dislocated parts
         local val = (math.sin(time * FRACTURE_BLINK_SPEED) + 1) / 2
         render.SetColorModulation(val, 0, 0)
         for partName, partData in pairs(bodyParts) do
@@ -485,28 +468,22 @@ hook.Add("HUDPaint", "HG_HealthIndicator", function()
             if state and (state.isBroken or state.isDislocated) then
                 for _, boneName in ipairs(partData.bones) do
                     local boneID = healthModel:LookupBone(boneName)
-                    if boneID then
-                        local matrix = healthModel:GetBoneMatrix(boneID)
-                        if matrix then
-                            blinkModel:SetBoneMatrix(boneID, matrix)
-                        end
-                    end
+                    if boneID then healthModel:ManipulateBoneScale(boneID, Vector(1,1,1)) end
                 end
             else
                 for _, boneName in ipairs(partData.bones) do
-                    local boneID = blinkModel:LookupBone(boneName)
-                    if boneID then ScaleBoneAndChildren(blinkModel, boneID, Vector(0,0,0)) end
+                    local boneID = healthModel:LookupBone(boneName)
+                    if boneID then healthModel:ManipulateBoneScale(boneID, Vector(0,0,0)) end
                 end
             end
         end
-        blinkModel:SetPos(modelOffset)
-        blinkModel:SetAngles(Angle(0,0,0))
-        blinkModel:SetupBones()
-        blinkModel:DrawModel()
+        healthModel:DrawModel()
+
+        -- Reset all bones
         for partName, partData in pairs(bodyParts) do
             for _, boneName in ipairs(partData.bones) do
-                local boneID = blinkModel:LookupBone(boneName)
-                if boneID then ScaleBoneAndChildren(blinkModel, boneID, Vector(1,1,1)) end
+                local boneID = healthModel:LookupBone(boneName)
+                if boneID then healthModel:ManipulateBoneScale(boneID, Vector(1,1,1)) end
             end
         end
 

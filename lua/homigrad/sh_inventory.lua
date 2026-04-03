@@ -249,7 +249,7 @@ if CLIENT then
 				count = count + ((ent:IsPlayer() or ent:IsRagdoll()) and ((hg.TraitorLoot[i] and ent:IsPlayer()) and 2 or 0.5) or 1) * (not ent.foundloot[i] and 1 or 0)
 			end
 		end
-		local time = CurTime() + 3
+				local time = CurTime() + 1.5
 		function DScrollPanel:Paint(w, h)
 			txt = "Searching"
 			if time > 0 then
@@ -257,7 +257,7 @@ if CLIENT then
 					txt = txt .. "."
 				end
 				if time < CurTime() then
-					time = CurTime() + 3
+					time = CurTime() + 1.5
 				end
 			end
 			draw.DrawText((plyMenu.Created + count + 3) < CurTime() and "" or txt, "ZCity_Small", w / 2, h / 2.8, Color(255,255,255,15), TEXT_ALIGN_CENTER)
@@ -290,7 +290,7 @@ if CLIENT then
 				button:DockMargin(5, 0, 2, 0)
 				button:SetSize(0,0)
 				--button:SetSize(sizeX / 5.8, sizeY / 5.8)
-				button.Created = CurTime() + (!ent.foundloot[i] and 2 or 0) + count2
+				button.Created = CurTime() + (!ent.foundloot[i] and 1 or 0) + count2
 				button.Think = function(self)
 					if self.Created and (self.Created < CurTime()) then
 						self:SetSize(sizeX / 5.8, sizeY / 5.8)

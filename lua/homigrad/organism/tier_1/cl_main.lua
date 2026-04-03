@@ -113,7 +113,23 @@ local forsaken_scene_end = 0
 local forsaken_scene_duration = 4
 local forsaken_fadein = 0.15
 local forsaken_fadeout = 2
-local forsaken_text = "deathed"
+local forsaken_text_phrases = {
+    "deathed",
+    "wow you fucking suck",
+    "ez",
+	"back to the lobby",
+	"died",
+	"dayum",
+	"that must have hurt",
+	"bind g fake",
+	"FORSAKEN",
+	"neck broken",
+	"how are you this bad",
+	"go play roblox",
+	"ouch",
+}
+
+local forsaken_text = forsaken_text_phrases[math.random(1, #forsaken_text_phrases)]
 local forsaken_sound = "otxo/sndHeartDie.wav"
 local forsaken_soundfade_release_until = 0
 surface.CreateFont("ZCity_Veteran_Forsaken", {

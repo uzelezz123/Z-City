@@ -7,6 +7,33 @@ end
 
 ENT.LegacyInDoorSound = false
 
+ENT.ExplosionExtraSounds = {
+	"explosionextra/explode_1.wav",
+	"explosionextra/explode_2.wav",
+	"explosionextra/explode_3.wav",
+	"explosionextra/explode_4.wav",
+	"explosionextra/explode_5.wav",
+	"explosionextra/explode_6.wav",
+	"explosionextra/explode_7.wav",
+	"explosionextra/explode_8.wav",
+	"explosionextra/explode_9.wav"
+}
+
+function ENT:PlayExtraExplosionSound(pos)
+	if hg and hg.PlayExtraExplosionSound then
+		hg.PlayExtraExplosionSound(pos, self:EntIndex(), 1)
+		return
+	end
+
+	local snd = self.ExplosionExtraSounds[math.random(#self.ExplosionExtraSounds)]
+	EmitSound(snd, pos, self:EntIndex() + 600, CHAN_ITEM, 1, 145, 0, math.random(95, 105))
+	timer.Simple(0.04, function()
+		if IsValid(self) then
+			EmitSound(snd, pos, self:EntIndex() + 601, CHAN_AUTO, 0.7, 135, 0, math.random(90, 100))
+		end
+	end)
+end
+
 function ENT:Initialize()
 	self:SetModel(self.Model)
 	self:PhysicsInit(SOLID_VPHYSICS)
@@ -218,6 +245,7 @@ function ENT:Explode()
 		net.WriteBool(self:WaterLevel() > 0)
 		net.WriteString(self.SoundWater[math.random(#self.SoundWater)])
 	net.Broadcast()
+	self:PlayExtraExplosionSound(selfPos)
 
 	if self:WaterLevel() > 0 then
 		self:EmitSound(self.SoundWater, 140, 85, 1, CHAN_WEAPON)
@@ -265,7 +293,7 @@ function ENT:Explode()
 		EmitSound(self.DebrisSounds[math.random(#self.DebrisSounds)], self:GetPos(), self:EntIndex(), CHAN_AUTO, 1, 80)
 	end
 
-	local blastRadius = self.BlastDis / 0.01905
+		local blastRadius = self.BlastDis / 0.01905
 	local nearRadius = 150
 	local damage = 35
 	local attacker = IsValid(self.owner) and self.owner or self
@@ -388,12 +416,11 @@ function ENT:Explode()
 	Poof:SetScale(1.2)
 	util.Effect("eff_jack_hmcd_shrapnel",Poof,true,true)
 
-		timer.Simple(0, function()
+	timer.Simple(0, function()
 		util.ScreenShake( selfPos, 35, 200, 1, 1000 )
-
-		local ammo = "Metal Debris"
+				local ammo = "Metal Debris"
 		local ammotype = hg.ammotypeshuy[ammo].BulletSettings
-
+		
 		local co = coroutine.create(function()
 
 			local LastShrapnel = SysTime()
@@ -408,8 +435,7 @@ function ENT:Explode()
 					local Tr = util.QuickTrace(selfPos, dir * 10000, self)
 
 					if Tr.Hit and !Tr.HitSky and !Tr.HitWorld then
-						local bullet = {}
-
+												local bullet = {}
 						bullet.Speed = ammotype.Speed
 						bullet.Distance = ammotype.Distance or 56756
 						bullet.penetrated = 0

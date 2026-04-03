@@ -204,6 +204,11 @@ local function ExplodeTheItem(self,ent)
 				net.WriteBool(ent:WaterLevel() > 0)
 				net.WriteString(self.SoundWater)
 			net.Broadcast()
+			if hg and hg.PlayExtraExplosionSound then
+				hg.PlayExtraExplosionSound(EntPos, ent:EntIndex(), 1)
+			else
+				EmitSound("explosionextra/explode_" .. math.random(1, 9) .. ".wav", EntPos, ent:EntIndex() + 800, CHAN_ITEM, 1, 145, 0, math.random(95, 105))
+			end
 
 			if self:WaterLevel() == 0 then
 				ParticleEffect("pcf_jack_groundsplode_medium",ent:GetPos(),-vector_up:Angle())

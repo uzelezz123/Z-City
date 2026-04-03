@@ -142,6 +142,11 @@ local function RunExplosion(owner, impactPos, startPos)
     util.BlastDamage(IsValid(owner) and owner or game.GetWorld(), IsValid(owner) and owner or game.GetWorld(), impactPos, 280, 95)
     util.ScreenShake(impactPos, 12, 130, 0.9, 1400)
     sound.Play("slayerevent/SlayerGotExplosion.wav", impactPos, 150, 100, 1)
+    if hg and hg.PlayExtraExplosionSound then
+        hg.PlayExtraExplosionSound(impactPos, 0, 1)
+    else
+        EmitSound("explosionextra/explode_" .. math.random(1, 9) .. ".wav", impactPos, 900, CHAN_ITEM, 1, 145, 0, math.random(95, 105))
+    end
 
     SpawnTimedPfx("pfx8_03", impactPos, angle_zero, 0.4)
 

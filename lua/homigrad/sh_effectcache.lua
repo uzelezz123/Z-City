@@ -74,6 +74,8 @@ PrecacheParticleSystem("pcf_jack_groundsplode_medium")
 PrecacheParticleSystem("pcf_jack_groundsplode_large")
 PrecacheParticleSystem("pcf_jack_airsplode_medium")
 PrecacheParticleSystem("pcf_jack_airsplode_large")
+PrecacheParticleSystem("pcf_jack_incendiary_air_sm2")
+PrecacheParticleSystem("fire_jet_01")
 
 -- Impacts
 AddParticles("particles/impact_fx.pcf")

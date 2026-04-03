@@ -28,7 +28,8 @@ postprs.addtiveLayer = {
 	toytown_h = 0,
 	brightness = 0,
 	sharpen = 0,
-	sharpen_dist = 0
+	sharpen_dist = 0,
+	grayscale = 0
 }
 
 postprs.layers = postprs.layers or {}
@@ -52,7 +53,8 @@ local addtiveLayer = postprs.addtiveLayer
 local tab = {
 	["$pp_colour_brightness"] = 0,
 	["$pp_colour_contrast"] = 1,
-	["$pp_colour_colour"] = 1
+	["$pp_colour_colour"] = 1,
+	["$pp_colour_grayscale"] = 0
 }
 
 --local potatopc = GetConVar("hg_potatopc") or CreateClientConVar("hg_potatopc", "0", true, false, "enable this if you are noob", 0, 1)
@@ -75,6 +77,7 @@ hook.Add("RenderScreenspaceEffects", "homigrad", function()
 	//if not brain_motionblur then DrawMotionBlur(addtiveLayer.blur_addalpha, addtiveLayer.blur_drawalpha, addtiveLayer.blur_delay) end
 	//DrawToyTown(addtiveLayer.toytown, addtiveLayer.toytown_h * ScrH())
 	tab["$pp_colour_brightness"] = addtiveLayer.brightness
+	tab["$pp_colour_grayscale"] = addtiveLayer.grayscale
 	DrawColorModify(tab)
 
 	hook_Run("Post Pre Post Processing")
@@ -162,6 +165,37 @@ hook.Add("Post Processing", "Main", function()
 		LayerWeight("water", 0.5, 0)
 		LayerWeight("water2", 0.01, 0)
 	end
+
+	local org = ply.organism
+	if not org then
+		addtiveLayer.grayscale = Lerp(FrameTime() * 2, addtiveLayer.grayscale, 0)
+		return
+	end
+
+	local grayscale = 0
+	local fear = org.fear or 0
+	if fear > 0.1 then
+		grayscale = math.max(grayscale, (fear - 0.1) * 0.9)
+	end
+
+	if IsValid(PainStation) and PainStation:GetState() == GMOD_CHANNEL_PLAYING then
+		grayscale = math.max(grayscale, 0.5)
+	end
+
+	if IsValid(RealityStation) and RealityStation:GetState() == GMOD_CHANNEL_PLAYING then
+		grayscale = math.max(grayscale, 0.5)
+	end
+
+	if IsValid(NoiseStation2) and NoiseStation2:GetState() == GMOD_CHANNEL_PLAYING then
+		grayscale = math.max(grayscale, 0.5)
+	end
+
+	local o2 = org.o2 and org.o2[1] or 100
+	if o2 < 30 then
+		grayscale = math.max(grayscale, 1 - (o2 / 30))
+	end
+
+	addtiveLayer.grayscale = Lerp(FrameTime() * 2, addtiveLayer.grayscale, grayscale)
 
 	oldWaterLevel = waterLevel
 

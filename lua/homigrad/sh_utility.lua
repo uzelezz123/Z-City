@@ -865,25 +865,25 @@ local IsValid = IsValid
 
 	--\\ Suicide
 	if SERVER then
-		local hg_huyside = CreateConVar("hg_huyside", "1", {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Enable rare suicide cutscene", 0, 1)
+		local hg_huyside = CreateConVar("hg_huyside", "1", {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "enable cutscene thijng", 0, 1)
 		concommand.Add("suicide", function(ply)
 			if not hg.CanSuicide(ply) then
-				ply:ChatPrint("no nigga")
+				ply:ChatPrint("nigga no")
 				return
 			end
-			local wep = ply:GetActiveWeapon()
-			local org = ply.organism
-			local fear = (org and org.fear) or 0
 
-			if hg_huyside:GetBool() and IsValid(wep) and wep.ishgweapon and not wep.ismelee and not wep.ismelee2 then
+			local wep = ply:GetActiveWeapon()
+			local is_gun = IsValid(wep) and wep.ishgweapon and not wep.ismelee and not wep.ismelee2
+
+			if is_gun and hg_huyside:GetBool() then
+				local org = ply.organism
+				local fear = (org and org.fear) or 0
 				local chance = 0.01 + (fear * 0.89) -- at fear 1, chance is 0.9
 				if math.random() <= chance then
 					ply.suiciding = !ply.suiciding
 					return
 				end
 			end
-
-			ply:Kill()
 		end)
 	end
 

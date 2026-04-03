@@ -27,7 +27,7 @@ local Selects = {
         fade:AlphaTo(255, 0.3)
 
         local lbl = vgui.Create("DLabel", fade)
-        lbl:SetText("goodbye.")
+        lbl:SetText("bye nigga")
         lbl:SetFont("ZC_MM_Title")
         lbl:SetTextColor(Color(255, 255, 255))
         lbl:SizeToContents()

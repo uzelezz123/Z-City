@@ -231,11 +231,6 @@ local grainMat = Material("effects/shaders/zb_grain2")
 local heatMat = Material("effects/shaders/zb_heat")
 local zombMat = grainMat -- Material("effects/shaders/zb_zomb")
 
-local blindMat
-timer.Simple(1, function()
-    blindMat = Material("effects/shaders/zb_blind")
-end)
-
 local PainLerp = 0
 local O2Lerp = 0
 local assimilatedLerp = 0
@@ -336,25 +331,14 @@ local stations = {
 local choosera = 1
 local tempolerp = 0
 hook.Add("Post Post Processing", "ItHurts", function()
-	if not org then return end
 	local spect = IsValid(lply:GetNWEntity("spect")) and lply:GetNWEntity("spect")
 	
 	if IsValid(PainStation) then
 		PainStation:SetVolume(0)
 	end
-	    if IsValid(RealityStation) then
-        local pain_vol = 0
-        if org.pain and org.pain > 50 then
-            pain_vol = math.Clamp((org.pain - 50) / 50, 0, 1)
-        end
-
-        local o2_vol = 0
-        if org.o2 and org.o2[1] and org.o2[1] < 10 then
-            o2_vol = math.Clamp((10 - org.o2[1]) / 10, 0, 1)
-        end
-
-        RealityStation:SetVolume(math.max(pain_vol, o2_vol))
-    end
+	if IsValid(RealityStation) then
+		RealityStation:SetVolume(0)
+	end
 	
 	if !lply:Alive() and !IsValid(spect) then stopthings() return end
 	if !lply:Alive() and viewmode != 1 then stopthings() return end
@@ -363,7 +347,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 	if not organism.brain then stopthings() return end
 	local org = organism
 
-		if blindMat and not blindMat:IsError() and (org.blindness or amtflashed >= 0.8) then
+		if org.blindness or amtflashed >= 0.8 then
 		local blindness = ((org.blindness and math.Round(org.blindness) == 0) or amtflashed >= 0.8) and 0 or (org.blindness)
 		render.UpdateScreenEffectTexture()
 		render.UpdateFullScreenDepthTexture()

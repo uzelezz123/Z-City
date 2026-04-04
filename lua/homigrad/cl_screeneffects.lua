@@ -700,7 +700,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 	else
 		brain_motionblur = false
 		show_image_time = 0
-		lobotomy_index = 0
+		lobotomy_index = nil
 	end
 	
 	if O2Lerp > 1 then

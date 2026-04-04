@@ -43,6 +43,8 @@ module[1] = function(org)
 	org.hemotransfusionshock = 0
 
 	org.survivalchance = 1
+	org.hemothorax = false
+	org.stamina_damage = 0
 
 	org.bleedingmul = 1.0
 	org.coagulation_multiplier = 1.0
@@ -187,6 +189,13 @@ module[2] = function(owner, org, mulTime)
 	org.internalBleedHeal = math.Approach(org.internalBleedHeal, 0, mulTime / 2)
 	
 	if bleed > 0 then org.blood = max(org.blood - bleed * mulTime * 10 * org.pulse / 70, 1) end
+
+	if org.internalBleed > 0.1 then
+		local chance = (org.internalBleed - 0.1) * 0.005 -- 0.5% chance at 1.1 internal bleeding
+		if math.random() < chance * mulTime then
+			org.hemothorax = true
+		end
+	end
 
 	if org.internalBleed > 0.1 then
 		local chance = (org.internalBleed - 0.1) * 0.005 -- 0.5% chance at 1.1 internal bleeding

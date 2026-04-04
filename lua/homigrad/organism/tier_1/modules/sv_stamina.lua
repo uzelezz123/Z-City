@@ -68,6 +68,8 @@ module[2] = function(owner, org, timeValue)
 	end
 
 	stamina.sub = stamina.sub + stamina.subadd + (org.painkiller > 1.6 and (stamina[1] > 10 and 0.8 or 0) or 0) + (org.analgesia > 1.7 and (stamina[1] > 10 and 2 or 0) or 0)
+	stamina.sub = stamina.sub + org.stamina_damage
+	org.stamina_damage = 0
 	stamina.sub = stamina.sub + (org.stamina_damage or 0)
 	org.stamina_damage = 0
 	stamina.sub = stamina.sub * (owner.StaminaExhaustMul or 1)

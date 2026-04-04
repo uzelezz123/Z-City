@@ -460,6 +460,11 @@ local hg_bloodimpacts = ConVarExists("hg_bloodimpacts") and GetConVar("hg_bloodi
 local net, math, hg, IsValid = net, math, hg, IsValid
 local takeRagdollDamage
 hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
+	if dmgInfo:IsDamageType(DMG_CRUSH) and ent:IsPlayer() and IsValid(ent.FakeRagdoll) then
+		RagdollCollision(ent.FakeRagdoll, {Speed = dmgInfo:GetDamage(), DeltaTime = 1, HitObject = dmgInfo:GetAttacker(), HitPos = dmgInfo:GetDamagePosition(), HitNormal = dmgInfo:GetDamageForce():GetNormalized()})
+		return true
+	end
+
 	if dmgInfo:IsDamageType(DMG_DISSOLVE) then return end
 
 	local attacker = dmgInfo:GetAttacker()

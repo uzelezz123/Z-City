@@ -1,4 +1,3 @@
---
 local PLAYER = FindMetaTable("Player")
 
 local vpang = Angle(2, 0, 0)
@@ -27,7 +26,10 @@ function PLAYER:LegAttack()
     local speedmul = (2 - (org.stamina[1] / org.stamina.max))
     local speed = 1.5 * speedmul
     local animstopAdjust = 0.3 * speedmul
-    local dmg = anim == "curbstomp_base" and 22 or 10 * (2 - speedmul)
+    local org = self.organism
+    if hg.IsGoodKarma(self) and org.karma > 75 then
+        dmg = dmg * math.min(1.25, 1 + (org.karma - 75) / 100)
+    end
 
     if isMidAir then
         local vel = self:GetVelocity():Length()
@@ -107,6 +109,10 @@ function PLAYER:LegAttack()
             local org = self.organism
             if org.rleg == 1 or org.rlegdislocation then
                 org.painadd = org.painadd + 20
+            end
+
+            if IsValid(tr.Entity) and tr.Entity:IsOnFire() then
+                tr.Entity:Extinguish()
             end
             
             local entss = {}--ents.FindInBox( tr.HitPos + rad, tr.HitPos - rad )
@@ -199,6 +205,10 @@ function PLAYER:LegAttack()
                     dmginfo:SetDamageForce(normal * dmg)
                     dmginfo:SetDamageType((ent:GetClass() == "func_breakable_surf") and DMG_SLASH or DMG_CLUB)
                     dmginfo:SetDamagePosition(tr.HitPos)
+
+                    if ent:IsOnFire() then
+                        dmginfo:SetDamageType(DMG_GENERIC)
+                    end
 
                     PenetrationGlobal = 1
 					MaxPenLenGlobal = 1

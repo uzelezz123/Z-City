@@ -27,50 +27,50 @@ local lastLifeState = nil
 local bodyParts = {
     lleg = {
         bones = {"ValveBiped.Bip01_L_Thigh", "ValveBiped.Bip01_L_Calf", "ValveBiped.Bip01_L_Foot"},
-        health = function(org) return org.lleg or 0 end,
+        health = function(org) return (org.lleg or 0) / 100 end,
         dislocated = function(org) return org.llegdislocation end,
         amputated = function(org) return org.llegamputated end,
         amputation_bone = "ValveBiped.Bip01_L_Calf",
     },
     rleg = {
         bones = {"ValveBiped.Bip01_R_Thigh", "ValveBiped.Bip01_R_Calf", "ValveBiped.Bip01_R_Foot"},
-        health = function(org) return org.rleg or 0 end,
+        health = function(org) return (org.rleg or 0) / 100 end,
         dislocated = function(org) return org.rlegdislocation end,
         amputated = function(org) return org.rlegamputated end,
         amputation_bone = "ValveBiped.Bip01_R_Calf",
     },
     larm = {
         bones = {"ValveBiped.Bip01_L_UpperArm", "ValveBiped.Bip01_L_Forearm", "ValveBiped.Bip01_L_Hand"},
-        health = function(org) return org.larm or 0 end,
+        health = function(org) return (org.larm or 0) / 100 end,
         dislocated = function(org) return org.larmdislocation end,
         amputated = function(org) return org.larmamputated end,
         amputation_bone = "ValveBiped.Bip01_L_Forearm",
     },
     rarm = {
         bones = {"ValveBiped.Bip01_R_UpperArm", "ValveBiped.Bip01_R_Forearm", "ValveBiped.Bip01_R_Hand"},
-        health = function(org) return org.rarm or 0 end,
+        health = function(org) return (org.rarm or 0) / 100 end,
         dislocated = function(org) return org.rarmdislocation end,
         amputated = function(org) return org.rarmamputated end,
         amputation_bone = "ValveBiped.Bip01_R_Forearm",
     },
     chest = {
         bones = {"ValveBiped.Bip01_Spine2", "ValveBiped.Bip01_Spine1", "ValveBiped.Bip01_Spine"},
-        health = function(org) return math.max(org.chest or 0, org.spine2 or 0, org.spine3 or 0) end,
+        health = function(org) return math.max(org.chest or 0, org.spine2 or 0) / 100 end,
     },
     pelvis = {
         bones = {"ValveBiped.Bip01_Pelvis"},
-        health = function(org) return math.max(org.pelvis or 0, org.spine1 or 0) end,
+        health = function(org) return math.max(org.pelvis or 0, org.spine1 or 0) / 100 end,
     },
     neck = {
         bones = {"ValveBiped.Bip01_Neck1"},
-        health = function(org) return org.spine3 or 0 end,
+        health = function(org) return (org.spine3 or 0) / 100 end,
         dislocated = function(org) return org.arteria end, -- Using dislocated for arteria damage
     },
     head = {
         bones = {"ValveBiped.Bip01_Head1"},
-        health = function(org) return org.skull or 0 end,
+        health = function(org) return (org.skull or 0) / 100 end,
         dislocated = function(org) return org.jawdislocation end, -- Using for jaw dislocation
-        broken = function(org) return org.jaw or 0 end, -- Using for jaw destruction
+        broken = function(org) return (org.jaw or 0) == 1 or (org.skull or 0) >= 60 end, -- Using for jaw destruction
         amputated = function(org) return org.headamputated end,
     },
 }

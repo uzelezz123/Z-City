@@ -876,13 +876,7 @@ local IsValid = IsValid
 			local is_gun = IsValid(wep) and wep.ishgweapon and not wep.ismelee and not wep.ismelee2
 
 			if is_gun and hg_huyside:GetBool() then
-				local org = ply.organism
-				local fear = (org and org.fear) or 0
-				local chance = 0.01 + (fear * 0.89) -- at fear 1, chance is 0.9
-				if math.random() <= chance then
-					ply.suiciding = !ply.suiciding
-					return
-				end
+				ply.suiciding = !ply.suiciding
 			end
 		end)
 	end

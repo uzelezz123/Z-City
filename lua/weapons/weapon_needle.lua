@@ -103,6 +103,10 @@ if SERVER then
 					org.lungsL[2] = 1
 				end
 			end
+
+			if org.trachea and org.trachea > 0 then
+				org.trachea = math.max(org.trachea - 0.75, 0)
+			end
 		end
 		
 		self.modeValues[1] = 0

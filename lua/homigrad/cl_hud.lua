@@ -455,6 +455,9 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 			local tRad = rInner + (hoverR - rInner) * 0.58
 
 			local txt = option[2]
+            if isfunction(txt) then
+                txt = txt()
+            end
 			if txt and !options_old then return end
 			if paining then
 				math.randomseed(math.Round(CurTime() / 5 + idx, 0))

@@ -33,26 +33,24 @@ local CRITICAL_MOODLES = {
     ["hunger_5"] = true,
     ["internal_bleed"] = true,
     ["overdose_4"] = true,
-    ["oxygen_3"] = true,
+    ["hypoxemia_3"] = true,
     ["pain_4"] = true,
     ["respfailure"] = true,
     ["rippedeye_4"] = true,
     ["hypovolemia_4"] = true,
     ["unconscious"] = true,
     ["sepsis"] = true,
-    ["horrified"] = true,
+    ["critical"] = true,
     ["deceased"] = true,
 }
 
 local VITAL_MOODLES = {
     ["bradycardia"] = true,
-    ["oxygen_1"] = true,
-    ["oxygen_2"] = true,
-    ["oxygen_3"] = true,
     ["hypoxemia_1"] = true,
     ["hypoxemia_2"] = true,
     ["hypoxemia_3"] = true,
     ["cardiac_arrest"] = true, -- Added for otrub visibility
+    ["incapacitated"] = true,
 }
 
 -- =======================================================
@@ -75,7 +73,7 @@ local MOODLE_INFO = {
     ["cold_3"] = { title = "Very Cold", desc = "Its really, REALLY cold." },
     ["cold_4"] = { title = "Hypothermia", desc = "Its... So... Cold..." },
 
-    ["concussion"] = { title = "Incapacitated", desc = "You need help to get up." },
+    ["incapacitated"] = { title = "Incapacitated", desc = "You need help to get up." },
     ["deaf_1"] = { title = "Tinnitus", desc = "Your sensitive ears are ringing." },
     ["deaf_2"] = { title = "Partial Deafness", desc = "You barely can hear." },
     ["deaf_3"] = { title = "Deaf", desc = "You cannot hear anything." },
@@ -86,9 +84,7 @@ local MOODLE_INFO = {
     ["depression_4"] = { title = "Desensitized", desc = "Life stopped making sense." },
 
 
-    ["fractured_neck"] = { title = "Broken Spine", desc = "You are paralyzed." },
-    ["dislocated_spine"] = { title = "Dislocated Spine", desc = "A part of your spine is out of place. You should fix it before it gets worse." },
-    ["partial_spine_break"] = { title = "Partially Broken Spine", desc = "Your spine is fractured. Movement is severely impaired and painful." },
+    ["fractured_neck"] = { title = "Spine Injury", desc = "Your spine is severely damaged, leaving you paralyzed." },
     ["dislocated_jaw"] = { title = "Dislocated Jaw", desc = "Your jaw is out of place, put it back in!" },
     ["dislocated_jaw_and_fractured_skull"] = { title = "Jaw and Skull Trauma", desc = "Your jaw is dislocated and your skull is fractured." },
     ["fractured_skull"] = { title = "Fractured Skull", desc = "WHERES YO HEAD AT??????????" },
@@ -108,7 +104,6 @@ local MOODLE_INFO = {
     ["faint_4"] = { title = "Syncope", desc = "I think im about to fall asleep right about now..." },
     ["fight_or_flight"] = { title = "Fight or Flight", desc = "Alert, Pain is numbed for now..." },
     ["fracture"] = { title = "Fracture", desc = "One of your limbs is broken, you should get it fixed..." },
-    ["fractured_neck"] = { title = "Fractured Neck", desc = "I cant move..." },
     ["fractured_ribs"] = { title = "Fractured Ribs", desc = "Better hope none of them are poking at your lungs..." },
     ["happy_1"] = { title = "Happy", desc = "Satisfied with what you have right now." },
     ["happy_2"] = { title = "Joyful", desc = "Life feels nice." },
@@ -133,9 +128,9 @@ local MOODLE_INFO = {
     ["overdose_2"] = { title = "Numb", desc = "This feels REALLY good..." },
     ["overdose_3"] = { title = "Drugged", desc = "I see sounds and hear colors..." },
     ["overdose_4"] = { title = "Overdosing", desc = "Okay, i think i took too much..." },
-    ["oxygen_1"] = { title = "Hypoxemic", desc = "My skin is all weird and rubbery..." },
-    ["oxygen_2"] = { title = "Hypoxemic", desc = "Air.. I need air..." },
-    ["oxygen_3"] = { title = "Critical Hypoxemia", desc = "..." },
+    ["hypoxemia_1"] = { title = "Hypoxemic", desc = "My skin is all weird and rubbery..." },
+    ["hypoxemia_2"] = { title = "Hypoxemic", desc = "Air.. I need air..." },
+    ["hypoxemia_3"] = { title = "Critical Hypoxemia", desc = "..." },
     ["pain_1"] = { title = "Minor Pain", desc = "Just some discomfort." },
     ["pain_2"] = { title = "Moderate Pain", desc = "Something might be wrong..." },
     ["pain_3"] = { title = "Severe Pain", desc = "Something is wrong..." },
@@ -155,7 +150,7 @@ local MOODLE_INFO = {
     ["trauma_4"] = { title = "Really fucking scared", desc = "You cant even comprehend your emotions." },
     ["unconscious"] = { title = "Unconscious", desc = "Unresponsive to stimuli, lights out!" },
     ["sepsis"] = { title = "Sepsis", desc = "Not so fun now is it?" },
-    ["horrified"] = { title = "Critically Injured", desc = "This is the end of you. Goodbye!" },
+    ["critical"] = { title = "Critically Injured", desc = "This is the end of you. Goodbye!" },
 }
 
 local color_white = Color(255, 255, 255)
@@ -318,7 +313,7 @@ hook.Add("HUDPaint", "Moodle_Draw", function()
 
     local function easeOutQuint(t) return 1 - (1 - t)^5 end
 
-    local is_otrub = ply:GetNWBool("otrub", false)
+    local consciousness = (IsValid(ply) and ply.organism and ply.organism.consciousness) or 1
 
     -- Create a sorted list of moodles to ensure consistent layout
     local sorted_moodles = {}
@@ -412,11 +407,8 @@ hook.Add("HUDPaint", "Moodle_Draw", function()
         
         -- Draw texture or fallback box
         if data.mat and not data.mat:IsError() then
-            if is_otrub then
-                surface.SetDrawColor(128, 128, 128, alpha)
-            else
-                surface.SetDrawColor(255, 255, 255, alpha)
-            end
+            local color_val = 128 + (127 * consciousness)
+            surface.SetDrawColor(color_val, color_val, color_val, alpha)
             surface.SetMaterial(data.mat)
             surface.DrawTexturedRect(drawX, drawY, drawW, drawH)
         else

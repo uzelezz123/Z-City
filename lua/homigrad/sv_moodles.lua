@@ -24,7 +24,21 @@ end
 local function manageMoodleState(ply, moodle, active, material, count, bypass_cooldown)
     ply.MoodleStates = ply.MoodleStates or {}
     local org = ply.organism
-    if org and (org.desensitized or 0) > 0 then
+
+    if org and org.otrub then
+        local otrub_moodles = {
+            ["cardiac_arrest"] = true,
+            ["bradycardia"] = true,
+            ["tachycardia"] = true,
+            ["hypoxemia"] = true,
+            ["incapacitated"] = true,
+            ["critical"] = true,
+            ["unconscious"] = true,
+        }
+        if not otrub_moodles[moodle:match("(.+)_%d+$") or moodle] then
+            active = false
+        end
+    elseif org and (org.desensitized or 0) > 0 then
         local desensitized_moodles = {
             ["bleeding"] = 0.2,
             ["hurt"] = 0.3,
@@ -168,9 +182,9 @@ local function SyncMoodles(ply)
     else
         manageHierarchicalMoodle(ply, "bleeding", {
             { threshold = 0.01, texture = "materials/moodles/Bleeding_1.png" },
-            { threshold = 0.025, texture = "materials/moodles/Bleeding_2.png" },
-            { threshold = 0.05, texture = "materials/moodles/Bleeding_3.png" },
-            { threshold = 0.065, texture = "materials/moodles/Bleeding_4.png" },
+            { threshold = 0.05, texture = "materials/moodles/Bleeding_2.png" },
+            { threshold = 0.1, texture = "materials/moodles/Bleeding_3.png" },
+            { threshold = 0.15, texture = "materials/moodles/Bleeding_4.png" },
         }, bleedRate)
     end
 
@@ -187,8 +201,8 @@ local function SyncMoodles(ply)
 
     -- Bradycardia & Tachycardia
     local pulse = org.pulse or 70
-    manageMoodleState(ply, "bradycardia", pulse < 40, "materials/moodles/Bradycardia_Moodle_Animated.png")
-    manageMoodleState(ply, "tachycardia", pulse > 120, "materials/moodles/Tachycardia_Moodle.png")
+    manageMoodleState(ply, "bradycardia", pulse < 40, "materials/moodles/heartbeat.png")
+    manageMoodleState(ply, "tachycardia", pulse > 120, "materials/moodles/heartbeat.png")
 
     -- Brain Damage
     manageHierarchicalMoodle(ply, "brain_damage", {
@@ -219,9 +233,9 @@ local function SyncMoodles(ply)
         { threshold = 42.0, texture = "materials/moodles/Heat_4.png" },
     }, temperature)
 
-    -- Concussion / Critical
-    manageMoodleState(ply, "concussion", org.incapacitated and not org.critical, "materials/moodles/Concussion_moodle.png")
-    manageMoodleState(ply, "horrified", org.critical, "materials/moodles/HorrifiedMoodle.png")
+    -- Incapacitated / Critical
+    manageMoodleState(ply, "incapacitated", org.incapacitated and not org.critical, "materials/moodles/Concussion_moodle.png")
+    manageMoodleState(ply, "critical", org.critical, "materials/moodles/HorrifiedMoodle.png")
 
     -- Tinnitus
     local tinnitus_active = (org.tinnitus_end_time or 0) > CurTime()
@@ -242,17 +256,9 @@ local function SyncMoodles(ply)
     -- manageMoodleState(ply, "happy_3", false, nil, nil, true)
     -- manageMoodleState(ply, "happy_4", false, nil, nil, true)
 
-    -- Dislocated Spine
-    local dislocated_spine = org.spine1dislocation or org.spine2dislocation or org.spine3dislocation
-    manageMoodleState(ply, "dislocated_spine", dislocated_spine, "materials/moodles/Dislocated_spine.png")
-
-    -- Partially Broken Spine
-    local is_partially_broken = ((org.spine1 > 0.75 and org.spine1 < 1) or (org.spine2 > 0.75 and org.spine2 < 1) or (org.spine3 > 0.75 and org.spine3 < 1))
-    manageMoodleState(ply, "partial_spine_break", is_partially_broken, "materials/moodles/Fractured_neck.png")
-
-    -- Broken Spine
-    local broken_spine = (org.spine1 == 1) or (org.spine2 == 1) or (org.spine3 == 1)
-    manageMoodleState(ply, "fractured_neck", broken_spine, "materials/moodles/Fractured_neck.png")
+    -- Spine Injury
+    local spine_injury = ((org.spine1 or 0) >= 1 and (org.spine2 or 0) >= 1) or (org.spine3 or 0) > 0.75
+    manageMoodleState(ply, "fractured_neck", spine_injury, "materials/moodles/Fractured_neck.png")
 
     local has_jaw = org.jawdislocation
     local has_skull = (org.skull or 0) >= 0.6
@@ -343,11 +349,11 @@ local function SyncMoodles(ply)
     -- Hunger
     local hunger = org.hungry or 0
     manageHierarchicalMoodle(ply, "hunger", {
-        { threshold = 1, texture = "materials/moodles/Hunger_1.png" },
-        { threshold = 30, texture = "materials/moodles/Hunger_2.png" },
-        { threshold = 60, texture = "materials/moodles/Hunger_3.png" },
-        { threshold = 80, texture = "materials/moodles/Hunger_4.png" },
-        { threshold = 100, texture = "materials/moodles/Hunger_5.png" },
+        { threshold = 1, texture = "materials/moodles/Hunger_3.png" },
+        { threshold = 40, texture = "materials/moodles/Hunger_4.png" },
+        { threshold = 75, texture = "materials/moodles/Hunger_5.png" },
+        --{ threshold = 80, texture = "materials/moodles/Hunger_4.png" },
+        --{ threshold = 100, texture = "materials/moodles/Hunger_5.png" },
     }, hunger)
 
     -- Internal Bleed
@@ -362,7 +368,7 @@ local function SyncMoodles(ply)
         { threshold = 1.25, texture = "materials/moodles/Overdose_Moodle_4.png" },
     }, overdose)
 
-    -- Oxygen (now includes CO poisoning, as CO2 is not implemented)
+    -- Hypoxemia (now includes CO poisoning, as CO2 is not implemented)
     local o2_val = org.o2 and org.o2[1]
     local o2_range = (org.o2 and org.o2.range) or 30
     local o2_pct = (o2_val and o2_range > 0) and (o2_val / o2_range) or 1
@@ -372,7 +378,7 @@ local function SyncMoodles(ply)
     -- A general "bad gas" level. Higher is worse.
     local gas_badness = (1 - o2_pct) + (co_level / 25)
 
-    manageHierarchicalMoodle(ply, "oxygen", {
+    manageHierarchicalMoodle(ply, "hypoxemia", {
         { threshold = 0.4, texture = "materials/moodles/Oxygen_Moodle_1.png" },
         { threshold = 0.8, texture = "materials/moodles/Oxygen_Moodle_2.png" },
         { threshold = 1.2, texture = "materials/moodles/Oxygen_Moodle_3.png" },

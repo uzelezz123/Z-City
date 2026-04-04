@@ -672,7 +672,7 @@ function GM:ScoreboardShow()
 		surface.SetDrawColor(mh2ColorFrameBorder)
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 		surface.SetFont("ZC_MM_Title")
-		local headerText = "the big city"
+		local headerText = "meleecity dickacy"
 		local headerW = surface.GetTextSize(headerText)
 		local time = CurTime()
 		local blinkChance = math.sin(time * 0.5)

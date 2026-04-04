@@ -298,7 +298,7 @@ function PANEL:Init()
     self.LogoY = ScreenScaleH(20)
     
     surface.SetFont("ZC_MM_Title")
-    local _, th = surface.GetTextSize("the big city")
+    local _, th = surface.GetTextSize("meleecity dickacy")
     self.LogoH = th
 
     self.MenuTop = self.LogoY + self.LogoH + ScreenScaleH(60)
@@ -2498,7 +2498,7 @@ function PANEL:Paint(w,h)
     end
     
     -- Title Transition Logic
-    local text1 = "the big city"
+    local text1 = "meleecity dickacy"
     
     surface.SetFont("ZC_MM_Title")
     

@@ -53,6 +53,13 @@ local Selects = {
     end},
 }
 
+surface.CreateFont("ZCity_Moodle", {
+    font = "JMH Typewriter",
+    size = ScreenScaleH(14),
+    weight = 500,
+    antialias = true
+})
+
 surface.CreateFont("ZCity_Veteran", {
     font = "Veteran Typewriter",
     size = ScreenScaleH(18),
@@ -99,14 +106,14 @@ function PANEL:InitializeMarkup()
 	local gm = string.lower(gmod.GetGamemode().Name .. " | " .. string.NiceName(zb ~= nil and zb.GetRoundName or mapname))
 
     if hg.PluvTown.Active then
-        local text = "<font=ZC_MM_Title>meleecity</font>\n<font=ZCity_Small>" .. gm .. "</font>"
+        local text = "<font=ZC_MM_Title>meleecity</font>\n<font=ZCity_Moodle>" .. gm .. "</font>"
 
         self.SelectedPluv = table.Random(hg.PluvTown.PluvMats)
 
         return markup.Parse(text)
     end
 
-    local text = "<font=ZC_MM_Title>meleecity</font>\n<font=ZCity_Small>" .. gm .. "</font>"
+    local text = "<font=ZC_MM_Title>meleecity</font>\n<font=ZCity_Moodle>" .. gm .. "</font>"
     return markup.Parse(text)
 end
 

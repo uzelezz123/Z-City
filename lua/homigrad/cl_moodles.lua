@@ -426,7 +426,7 @@ hook.Add("HUDPaint", "Moodle_Draw", function()
 
         -- Draw stack count if > 1
         if data.count and data.count > 1 and data.updating then
-            draw.SimpleText(tostring(data.count), "ZCity_Small", drawX + drawW - 4, drawY + drawH - 4, color_black, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+            draw.SimpleText(tostring(data.count), "ZCity_Moodle", drawX + drawW - 4, drawY + drawH - 4, color_black, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
         end
 
         -- New moodle notification
@@ -447,7 +447,7 @@ hook.Add("HUDPaint", "Moodle_Draw", function()
                     alignment = TEXT_ALIGN_CENTER
                     y_alignment = TEXT_ALIGN_TOP
                 end
-                draw.SimpleText(info.title, "ZCity_Medium", text_x, text_y, Color(255, 255, 255, fade_alpha), alignment, y_alignment)
+                draw.SimpleText(info.title, "ZCity_Moodle", text_x, text_y, Color(255, 255, 255, fade_alpha), alignment, y_alignment)
             end
         end
 
@@ -460,7 +460,7 @@ hook.Add("HUDPaint", "Moodle_Draw", function()
     -- Draw Tooltip
     if hovered and MOODLE_INFO[hovered] then
         local info = MOODLE_INFO[hovered]
-        local titleFont = "ZCity_Medium"
+        local titleFont = "ZCity_Moodle"
         local descFont = "ZCity_Moodle"
         local maxWidth = 200 -- Reduced from 340 to encourage wrapping
         

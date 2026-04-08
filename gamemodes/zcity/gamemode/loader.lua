@@ -34,6 +34,25 @@ LoadFromDir("zcity/gamemode/libraries")
 zb.modesHooks = {}
 zb.modes = zb.modes or {}
 
+local function addModeHook( MODE, hookName, func )
+	zb.modesHooks[MODE.name] = zb.modesHooks[MODE.name] or {}
+	zb.modesHooks[MODE.name][hookName] = func
+
+	hook.Add( hookName, "zb_modehook_" .. hookName, function( ... )
+		local Current = zb.CROUND_MAIN or zb.CROUND or "tdm"
+
+		local modeHooks = zb.modesHooks[Current]
+		if modeHooks and modeHooks[hookName] then
+			local ModeTable = zb.modes[Current]
+			local a, b, c, d, e, f = modeHooks[hookName]( ModeTable, ... )
+
+			if a ~= nil then
+				return a, b, c, d, e, f
+			end
+		end
+	end )
+end
+
 local function InitMode()
 	if table.IsEmpty(MODE) then return end
 
@@ -69,11 +88,9 @@ local function InitMode()
 		end
 	end
 
-	zb.modesHooks[name] = zb.modesHooks[name] or {}
-
 	for k, v2 in pairs(MODE) do
 		if isfunction(v2) then
-			zb.modesHooks[name][k] = v2
+			addModeHook(MODE, k, v2)
 		end
 	end
 end
@@ -133,27 +150,3 @@ end
 LoadModes()
 
 print("Z-City modes loaded!")
-
-zb.oldHook = zb.oldHook or hook.Call
-local oldHook = zb.oldHook
-
-function hook.Call(name, gm, ...)
-	local Current = zb.CROUND_MAIN or zb.CROUND or "tdm"
-
-	local modesHooks = zb.modesHooks[Current]
-
-	if modesHooks then -- technically an unnecessary nil check but i don't trust legacy code
-		local hookFunc = modesHooks[name]
-		if hookFunc then
-			local ModeTable = zb.modes[Current]
-
-			local a, b, c, d, e, f = hookFunc(ModeTable, ...)
-
-			if (a != nil) then
-				return a, b, c, d, e, f
-			end
-		end
-	end
-
-	return oldHook(name, gm, ...)
-end

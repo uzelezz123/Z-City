@@ -535,23 +535,6 @@ function GM:ScoreboardShow()
 	muteallbut.DoClick = function(self,w,h)
 		hg.muteall = not hg.muteall
 		
-		for i,ply in player.Iterator() do
-			if hg.muteall then
-				//ply.oldmutedspect = ply:IsMuted()
-
-				ply:SetVoiceVolumeScale(0)
-				//if IsValid(ply.soundButton) then
-					//ply.soundButton:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png")
-				//end
-			else
-				ply:SetVoiceVolumeScale((!hg.mutespect or ply:Alive()) and (hg.playerInfo[ply:SteamID()] and hg.playerInfo[ply:SteamID()][2] or 1) or 0)
-				//ply:SetMuted(ply.oldmuted)
-				//if IsValid(ply.soundButton) then
-					//ply.soundButton:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png")
-				//end
-				//ply.oldmuted = nil
-			end
-		end 
 	end
 
 	local mutespectbut = vgui.Create("DButton", scoreBoardMenu)
@@ -568,26 +551,6 @@ function GM:ScoreboardShow()
 	mutespectbut.DoClick = function(self,w,h)
 		hg.mutespect = not hg.mutespect
 		
-		for i,ply in player.Iterator() do
-			if ply:Alive() then continue end
-
-			if hg.mutespect then
-				ply:SetVoiceVolumeScale(0)
-				//ply.oldmutedspect = ply:IsMuted()
-
-				//ply:SetMuted(true)
-				//if IsValid(ply.soundButton) then
-					//ply.soundButton:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png")
-				//end
-			else
-				ply:SetVoiceVolumeScale(!hg.muteall and (hg.playerInfo[ply:SteamID()] and hg.playerInfo[ply:SteamID()][2] or 1) or 0)
-				//ply:SetMuted(ply.oldmutedspect)
-				//if IsValid(ply.soundButton) then
-					//ply.soundButton:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png")
-				//end
-				//ply.oldmutedspect = nil
-			end
-		end 
 	end
 
 	local ServerName = GetHostName() or "ZCity | Developer Server | #01"
@@ -1121,4 +1084,30 @@ hook.Add("Player Spawn", "GuiltKnown",function(ply)
 	if ply == LocalPlayer() then
 		system.FlashWindow()
 	end
+end)
+
+
+hook.Add('Think','mutes_here',function() -- я хз как правильнее это сделать
+    
+
+	for i,ply in player.Iterator() do
+		if ply:Alive() then continue end
+
+		if hg.mutespect then
+			ply:SetVoiceVolumeScale(0)
+
+		else
+			ply:SetVoiceVolumeScale(!hg.muteall and (hg.playerInfo[ply:SteamID()] and hg.playerInfo[ply:SteamID()][2] or 1) or 0)
+
+		end
+	end 
+
+		
+	for i,ply in player.Iterator() do
+		if hg.muteall then
+			ply:SetVoiceVolumeScale(0)
+		else
+			ply:SetVoiceVolumeScale((!hg.mutespect or ply:Alive()) and (hg.playerInfo[ply:SteamID()] and hg.playerInfo[ply:SteamID()][2] or 1) or 0)
+		end
+	end 
 end)

@@ -1,12 +1,27 @@
+local greendarker = Color(3, 32, 3)
+local green = Color(10, 120, 10)
+local notif = 0
 
 function MODE:AddHudPaint()
     local w, h = ScreenScale(60), ScreenScale(10)
+    local ply = LocalPlayer()
+    local money = ply:GetNWInt("TDM_Money", 0)
+    self.DisplayMoney = self.DisplayMoney or 0
+    self.LastMoney = self.LastMoney or 0
+    self.MoneyAnims = self.MoneyAnims or {}
     
+    if !ply:Alive() then return end
     if zb.rtype == "bomb" then
+
         local pts = zb.ClPoints["BOMB_ZONE_A"]
         local pts2 = zb.ClPoints["BOMB_ZONE_B"]
-        
-        if pts and #pts >= 2 then
+        if #pts < 2 then
+            if notif == 0 then
+                ply:PrintMessage(HUD_PRINTTALK,
+                "Gamemode is bomb and there's less than 2 points for bomb sites. Ask server admin to make exactly 2 points of each bomb sites using toolgun.")
+                notif = 1
+            end
+        elseif pts and #pts >= 2 then
             local center = pts[2].pos - pts[1].pos
             center = center / 2
             local pos = pts[1].pos + center
@@ -89,4 +104,33 @@ function MODE:AddHudPaint()
         surface.SetTextPos(tscr.x - lx / 2, h / 2 - ly / 2)
         surface.DrawText(txt)
     end
+
+    self.DisplayMoney = Lerp(FrameTime() * 6, self.DisplayMoney, money)
+
+    if money > self.LastMoney then
+        table.insert(self.MoneyAnims, {
+            amount = money - self.LastMoney,
+            startTime = CurTime(),
+            life = 1
+        })
+    end
+
+    self.LastMoney = money
+
+    draw.SimpleTextOutlined("$" .. math.floor(self.DisplayMoney), "ZB_InterfaceMedium",w * 0.1, ScrH() * 0.5,green,TEXT_ALIGN_LEFT,TEXT_ALIGN_TOP,ScreenScale(0.5),greendarker)
+
+    for k, v in ipairs(self.MoneyAnims) do
+        local progress = (CurTime() - v.startTime) / 1
+
+        if progress >= 1 then
+            table.remove(self.MoneyAnims, k)
+            continue
+        end
+
+        local yOffset = Lerp(progress, 0, -40)
+        local alpha = 255 * (1 - progress)
+
+        draw.SimpleText("+" .. v.amount,"ZB_InterfaceMedium",w * 0.1,ScrH() * 0.5 + yOffset,Color(0, 200, 0, alpha),TEXT_ALIGN_LEFT,TEXT_ALIGN_TOP)
+    end
+
 end

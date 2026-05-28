@@ -723,8 +723,12 @@ function hgWreckBuildings(blaster, pos, power, range, ignoreVisChecks) -- taken 
 					end
 
 					if proceed then
-						if mass <= myDestroyThreshold then
-							SafeRemoveEntity(prop)
+                        if mass <= myDestroyThreshold then
+                            if prop:GetClass() == "prop_ragdoll" or prop:IsNPC() then
+                                physObj:EnableMotion(true)
+                            else
+                                SafeRemoveEntity(prop)
+                            end
 						elseif mass <= myLoosenThreshold then
 							physObj:EnableMotion(true)
 							constraint.RemoveAll(prop)

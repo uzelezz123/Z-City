@@ -1,4 +1,3 @@
--- 
 util.AddNetworkString("Get_Appearance")
 util.AddNetworkString("OnlyGet_Appearance")
 hg.Appearance = hg.Appearance or {}
@@ -163,10 +162,24 @@ net.Receive("Get_Appearance",function(len,client)
 end)
 
 net.Receive("OnlyGet_Appearance",function(len,client)
+    -- FIX: Validating client to prevent errors from early disconnects
+    if not IsValid(client) then return end
+
     local tAppearance = net.ReadTable()
     local bRandom = !tAppearance or table.IsEmpty(tAppearance)
     --client:ChatPrint(bRandom)
-    client.CachedAppearance = bRandom and APmodule.GetRandomAppearance() or tAppearance
+    
+    -- FIX: Safely fallback to hg.Appearance.GetRandomAppearance if available
+    client.CachedAppearance = bRandom and (hg.Appearance.GetRandomAppearance and hg.Appearance.GetRandomAppearance() or APmodule.GetRandomAppearance()) or tAppearance
+    
+    -- FIX: Apply cached appearance immediately if the first spawn flag is pending
+    if client.HG_FirstSpawnPending then
+        client.HG_FirstSpawnPending = nil
+        
+        if isfunction(APmodule.ForceApplyAppearance) then
+            APmodule.ForceApplyAppearance(client, client.CachedAppearance)
+        end
+    end
 end)
 
 APmodule.ApplyAppearance = ApplyAppearance
@@ -196,3 +209,21 @@ if engine.ActiveGamemode() == "sandbox" then
         end)
     end)
 end
+
+-- FIX: Delay appearance application reliably on setup move to handle early load edge cases
+hook.Add("SetupMove", "HG_Appearance_Fix_SetupMove", function(ply, mv, cmd)
+    if not IsValid(ply) or ply:IsBot() then return end
+    
+    if not ply.HG_Debug_FirstSpawnApplied then
+        ply.HG_Debug_FirstSpawnApplied = true
+        ply.HG_FirstSpawnPending = true
+        
+        timer.Simple(3, function()
+            if not IsValid(ply) then return end
+            
+            if hg and hg.Appearance and hg.Appearance.ApplyAppearance then
+                hg.Appearance.ApplyAppearance(ply, nil, nil, nil, true)
+            end
+        end)
+    end
+end)

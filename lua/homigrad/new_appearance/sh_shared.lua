@@ -471,13 +471,17 @@ hg.Appearance.ValidateFunctions = {
 		return true
 	end,
 	AClothes = function(tbl)
-		if not istable(tbl) then return false end
-		if table.Count(tbl) > 3 then return false end
-		--for k, v in ipairs(tbl) do
-		--    if !hg.Appearance.Clothes[1][v] and !hg.Appearance.Clothes[2][v] then return false end
-		--end
-		return true
-	end,
+    if not istable(tbl) then return false end
+    if table.Count(tbl) > 3 then return false end
+    -- Блять, это уже было
+    for k, v in pairs(tbl) do
+        if not isstring(v) then return false end
+        if not hg.Appearance.Clothes[1][v] and not hg.Appearance.Clothes[2][v] then
+            return false
+        end
+    end
+    return true
+    end,
 	AName = function(str)
 		if not isstring(str) then return false end
 		return not IsInvalidName(str)

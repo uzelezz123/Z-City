@@ -118,10 +118,36 @@ end
 
 APmodule.ForceApplyAppearance = ForceApplyAppearance
 
+-- вообще был пулл реквест от другого типа но код был мусорным
+local function CanChangeAppearance(ply, bFromClientRequest)
+    if not IsValid(ply) or not ply:IsPlayer() then return false end
+
+    if bFromClientRequest then
+        if zb and zb.ROUND_STATE == 1 and not ply:IsAdmin() and not ply:IsSuperAdmin() then
+            return false
+        end
+
+        local now = CurTime()
+        if (ply.AppearanceNextApply or 0) > now then
+            return false
+        end
+
+        ply.AppearanceNextApply = now + 2
+    end
+
+    return true
+end
+
+APmodule.CanChangeAppearance = CanChangeAppearance
+
 local tWaitResponse = {}
 
 function ApplyAppearance(Client,tAppearance,bRandom,bResponeIsValid,bUseCahsed)
     if not IsValid(Client) then return end
+    -- блокаем смену апиренса до начала некст раунда что бы не было так сказать эксплойтеров
+    if not CanChangeAppearance(Client, bResponeIsValid) then
+        return
+    end
     if bRandom or (Client.IsBot and Client:IsBot()) or (Client.IsRagdoll and Client:IsRagdoll()) then
         tAppearance = APmodule.GetRandomAppearance()
         WearAppearance(Client,tAppearance)
@@ -130,7 +156,6 @@ function ApplyAppearance(Client,tAppearance,bRandom,bResponeIsValid,bUseCahsed)
     if bUseCahsed then
         tAppearance = APmodule.GetRandomAppearance()
         tAppearance = Client.CachedAppearance or tAppearance
-        --Client:ChatPrint(tAppearance.AModel)
         if !APmodule.AppearanceValidater(tAppearance) then tAppearance = APmodule.GetRandomAppearance() end
         net.Start("OnlyGet_Appearance")
         net.Send(Client)
@@ -163,9 +188,12 @@ net.Receive("Get_Appearance",function(len,client)
 end)
 
 net.Receive("OnlyGet_Appearance",function(len,client)
+    if not CanChangeAppearance(client, true) then
+        return
+    end
+
     local tAppearance = net.ReadTable()
     local bRandom = !tAppearance or table.IsEmpty(tAppearance)
-    --client:ChatPrint(bRandom)
     client.CachedAppearance = bRandom and APmodule.GetRandomAppearance() or tAppearance
 end)
 

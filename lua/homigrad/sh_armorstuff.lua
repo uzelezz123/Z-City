@@ -84,6 +84,11 @@ local function DrawFirstPersonHelmet(ply, strModel, vecAdjust, fFov, setMat)
 	cam.End3D()
 end
 
+
+---------ПОИНТЫ ЗАЩИТЫ БРОНИ ДЛЯ МОДОДЕЛОВ----------
+---------II - 4 protection, IIIA - 8 protection, III - 12 protection, III+ - 16 protection, IV - 22 protection
+
+
 hg.armor.torso = {
 	["vest1"] = {
 		"torso",

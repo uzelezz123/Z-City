@@ -37,12 +37,43 @@ SWEP.AmmoTypes2 = {
 	["9x19 mm Parabellum"] = {
 		[1] = {"9x19 mm Parabellum"},
 		[2] = {"9x19 mm Green Tracer"},
-		[3] = {"9x19 mm QuakeMaker"}
+		[3] = {"9x19 mm QuakeMaker"},
+		[4] = {"9x19 mm PBP gzh"}
+	}, 
+	["9x18 mm"] = {
+		[1] = {"9x18 mm"},
+		[2] = {"9x18 mm PBM"}
+	}, 
+	[".366 TKM"] = {
+		[1] = {".366 TKM"},
+		[2] = {".366 TKM 'Geksa'"}
+	}, 
+	["7.62x54 mm"] = {
+		[1] = {"7.62x54 mm"},
+		[2] = {"7.62x54 mm 7N26"}
+	}, 
+	["4.6x30 mm"] = {
+		[1] = {"4.6x30 mm"},
+		[2] = {"4.6x30 mm AP SX"}
+	}, 
+	["5.7x28 mm"] = {
+		[1] = {"5.7x28 mm"},
+		[2] = {"5.7x28 mm SS190"}
+	}, 
+	["5.45x39 mm"] = {
+		[1] = {"5.45x39 mm"},
+		[2] = {"5.45x39 mm BP 7N22"},
+		[3] = {"5.45x39 mm PPBS 7N39"}
+	}, 
+	["9x39 mm"] = {
+		[1] = {"9x39 mm"},
+		[2] = {"9x39 mm SP-6"}
 	}, 
 	["5.56x45 mm"] = {
 		[1] = {"5.56x45 mm"},
-		[2] = {"5.56x45 mm M856"},
-		[3] = {"5.56x45 mm AP"}
+		[2] = {"5.56x45 mm M855"},
+		[3] = {"5.56x45 mm M855A1"},
+		[4] = {"5.56x45 mm M995"}	
 	},
 	["7.62x39 mm"] = {
 		[1] = {"7.62x39 mm"},
@@ -60,6 +91,7 @@ SWEP.AmmoTypes2 = {
 	[".45 ACP"] = {
 		[1] = {".45 ACP"},
 		[2] = {".45 ACP Hydro Shock"},
+		[3] = {".45 ACP +P"}
 	},
 	[".50 Action Express"] = {
 		[1] = {".50 Action Express"},
@@ -68,11 +100,11 @@ SWEP.AmmoTypes2 = {
 	},
 	["9mm PAK Blank"] = {
 		[1] = {"9mm PAK Blank"},
-		[2] = {"9mm PAK Flash Defense"},
+		[2] = {"9mm PAK Flash Defense"}
 	},
 	["18x45mm Traumatic"] = {
 		[1] = {"18x45mm Traumatic"}, -- T
-		[2] = {"18x45mm Flash Defense"}, -- LAS
+		[2] = {"18x45mm Flash Defense"} -- LAS
 	},
 	["23x75 SH10"] = {
 		[1] = {"23x75 SH10"},
@@ -84,7 +116,7 @@ SWEP.AmmoTypes2 = {
 	["20/70 gauge"] = {
 		[1] = {"20/70 gauge"},
 		[2] = {"20/70 Slug"},
-		[3] = {"20/70 Flechette"},
+		[3] = {"20/70 Flechette"}
 	},
 }
 
@@ -951,7 +983,7 @@ if CLIENT then
 
 	function SWEP:DrawHUD()
 		if not IsValid(self:GetOwner()) then return end
-		local ammotype = (hg.ammotypeshuy[self.Primary.Ammo] and hg.ammotypeshuy[self.Primary.Ammo].BulletSettings and hg.ammotypeshuy[self.Primary.Ammo].BulletSettings.Icon) or matPistolAmmo
+		local ammotype = (hg.ammotypeshuy[self.Primary.Ammo].BulletSettings and hg.ammotypeshuy[self.Primary.Ammo].BulletSettings.Icon) or matPistolAmmo
 		self.DrawAmmoMetods[self.AmmoDrawMetod](self,ammotype)
 		
 		self.isscoping = false

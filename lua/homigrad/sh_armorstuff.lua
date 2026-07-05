@@ -245,7 +245,7 @@ hg.armor.torso = {
 		"",
 		Vector(-9, 2.5, 0),
 		Angle(0, 92, 90),
-		protection = 16,
+		protection = 22,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "",
 		femPos = Vector(0, 0, 0),

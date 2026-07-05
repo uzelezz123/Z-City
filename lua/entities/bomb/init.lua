@@ -110,7 +110,7 @@ function ENT:ActivateBomb()
 	self:SetNetVar("timer", CurTime() + self.ExplodeTime - (self.addtime or 0))
 	self.active = true
 	self:SetNWBool("active",true)
-	print(self:GetNWBool("active"))
+	--print(self:GetNWBool("active"))
 
 	net.Start("bomb_planted")
 		net.Broadcast()

@@ -18,8 +18,8 @@ hg.attachments.sight = {
 		},
 		mountType = "picatinny",
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
-		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_eotech_xps3-2_marks.png"),
-		holo_size = CLIENT and ScreenScale(0.4) or 1,
+		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_eotech_xps3-0_marks.png"),
+		holo_size = CLIENT and ScreenScale(0.5) or 1, --size of the holo
 		holo_lum = 0.1,
 		valid = true,
 	},
@@ -47,7 +47,7 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_sig_romeo_8t_lod0_mark.png"),
-		holo_size = CLIENT and ScreenScale(0.45) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(0.55) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(1, 0, 0),
 		PhysAng = Angle(0, 90, 0),
@@ -64,7 +64,7 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_walther_mrs_mark_001.png"),
-		holo_size = CLIENT and ScreenScale(0.3) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(0.4) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(1, 0, 0),
 		PhysAng = Angle(0, 90, 0),
@@ -81,7 +81,7 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_ekb_okp7_true_marks.png"),
-		holo_size = CLIENT and ScreenScale(0.3) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(0.38) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(1, 0, 0),
 		PhysAng = Angle(0, 90, 0),
@@ -98,7 +98,7 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("vgui/reticles/okp.png"),
-		holo_size = CLIENT and ScreenScale(0.3) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(0.45) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(1, 0, 0),
 		PhysAng = Angle(0, 90, 0),
@@ -115,7 +115,7 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_ekb_okp7_true_marks.png"),
-		holo_size = CLIENT and ScreenScale(0.3) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(0.38) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(0, 0, 2),
 		PhysAng = Angle(0, 90, 0),
@@ -132,7 +132,7 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("vgui/reticles/okp.png"),
-		holo_size = CLIENT and ScreenScale(0.3) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(0.45) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(0, 0, 2),
 		PhysAng = Angle(0, 90, 0),
@@ -149,7 +149,7 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_belomo_pk_06_mark_000.png"),
-		holo_size = CLIENT and ScreenScale(0.4) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(0.5) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(0, 0, 0),
 		PhysAng = Angle(0, 90, 0),
@@ -166,7 +166,7 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_aimpoint_micro_h1_high_marks.png"),
-		holo_size = CLIENT and ScreenScale(0.35) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(0.45) or 1, --size of the holo
 		holo_lum = 0.1,
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(0, 0, 0),
@@ -184,7 +184,7 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_leapers_utg_38_ita_1x30_mark2.png"),
-		holo_size = CLIENT and ScreenScale(0.3) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(0.35) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(0, 0, 0),
 		PhysAng = Angle(0, 90, 0),
@@ -201,7 +201,7 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_aimpoint_micro_h1_high_marks.png"),
-		holo_size = CLIENT and ScreenScale(0.4) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(0.5) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(0, 0, 0),
 		PhysAng = Angle(0, 90, 0),
@@ -218,7 +218,7 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("zcity/holo/1p87_ret_b_ca.png"),
-		holo_size = CLIENT and ScreenScale(1.1) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(1.4) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(0, 0, 0),
 		PhysAng = Angle(0, 90, 0),
@@ -235,7 +235,7 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("zcity/holo/1p87_ret_a_ca.png"),
-		holo_size = CLIENT and ScreenScale(1.5) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(2) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(0, 0, 0),
 		PhysAng = Angle(0, 90, 0),
@@ -251,8 +251,8 @@ hg.attachments.sight = {
 		mountType = "picatinny",
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
-		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_eotech_xps3-4_marks.png"),
-		holo_size = CLIENT and ScreenScale(0.4) or 1, --size of the holo
+		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_eotech_xps3-2_marks.png"),
+		holo_size = CLIENT and ScreenScale(0.5) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(0, 0, 0),
 		PhysAng = Angle(0, 90, 0),
@@ -273,7 +273,7 @@ hg.attachments.sight = {
 		mountAng = Angle(0, 0, 0),
 
 		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_base_sig_romeo_4_mark.png"),
-		holo_size = CLIENT and ScreenScale(0.35) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(0.55) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(0, 0, 0),
 		PhysAng = Angle(0, 90, 0),
@@ -290,7 +290,7 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_base_sig_romeo_4_mark.png"),
-		holo_size = CLIENT and ScreenScale(0.35) or 1, --size of the holo
+		holo_size = CLIENT and ScreenScale(0.65) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(0, 0, 0),
 		PhysAng = Angle(0, 90, 0),
@@ -304,14 +304,17 @@ hg.attachments.sight = {
 		"sight",
 		"models/weapons/arc9/darsu_eft/mods/scope_compact_prism.mdl",
 		Angle(180, 0, -90),
-		offset = Vector(0, 0, -0.02),
+		offset = Vector(0, 0.1, -0.02),
 		offsetView = Vector(-1.4, 0, 9),
 		{},
 		mountType = "picatinny",
 		holotex = "effects/arc9/rt",
 
 		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_base_sig_romeo_4_mark.png"),
-		holo_size = CLIENT and ScreenScale(0.35) or 1, --size of the holo
+		mount = "models/arc9zcity_eft_Shared/mount/eft_mount_ta51.mdl",
+		mountVec = Vector(-0.9, 0, -0.05),
+		mountAng = Angle(0, -180, 0),
+		holo_size = CLIENT and ScreenScale(0.55) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(0, 0, 0),
 		PhysAng = Angle(0, 90, 0),
@@ -334,11 +337,11 @@ hg.attachments.sight = {
 		scopemat = Material("decals/scope.png"),
 		mat = Material("effects/arc9/rt"),
 		perekrestie = Material("vgui/arc9_eft_shared/reticles/scope_30mm_burris_fullfield_tac30_1_4x24_marks.png"),
-		localScopePos = Vector(2, 0, 0),
+		localScopePos = Vector(0.55, 0, 0),
 		scope_blackout = 2000,
 		rot = 0,
-		FOVMin = 6,
-		FOVMax = 28,
+		FOVMin = 10,
+		FOVMax = 25,
 		FOVScoped = 40,
 		blackoutsize = 4000,
 		sizeperekrestie = 2200,
@@ -366,19 +369,19 @@ hg.attachments.sight = {
 		"models/weapons/arc9/darsu_eft/mods/scope_all_valday_ps320.mdl",
 		Angle(0, 0, -90),
 		offset = Vector(-1, 0, -0.02),
-		offsetView = Vector(-1.5, 0, 7),
+		offsetView = Vector(-1.5, 0, 8.5),
 		{},
 		mountType = "picatinny",
 		scopemat = Material("decals/scope.png"),
 		mat = Material("effects/arc9/rt"),
 		perekrestie = Material("decals/perekrestie11.png"),
-		localScopePos = Vector(2, 0, 1.5),
+		localScopePos = Vector(2.5, 0, 1.5),
 		scope_blackout = 1400,
 		rot = 0,
-		FOVMin = 3,
-		FOVMax = 10,
+		FOVMin = 4,
+		FOVMax = 15,
 		FOVScoped = 40,
-		blackoutsize = 4000,
+		blackoutsize = 4500,
 		sizeperekrestie = 3548,
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(1, 0, 0),
@@ -519,7 +522,7 @@ hg.attachments.sight = {
 		scopemat = Material("decals/scope.png"),
 		mat = Material("effects/arc9/rt"),
 		perekrestie = Material("vgui/arc9_eft_shared/reticles/scope_all_sig_bravo4_4x30_marks.png"),
-		localScopePos = Vector(0, 0, 1.36),
+		localScopePos = Vector(8, 0, 1.36),
 		scope_blackout = 1500,
 		rot = 0,
 		FOVMin = 11,
@@ -567,8 +570,8 @@ hg.attachments.sight = {
 		PhysPos = Vector(1, 0, 0),
 		PhysAng = Angle(0, 90, 0),
 
-		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_walther_mrs_mark_001.png"),
-		holo_size = CLIENT and ScreenScale(0.45) or 1, --size of the holo
+		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_leupold_deltapoint_marks.png"),
+		holo_size = CLIENT and ScreenScale(0.38) or 1, --size of the holo
 
 		holomodel = "models/weapons/arc9/darsu_eft/mods/scope_base_burris_fast_fire_3.mdl",
 		addholovec = Vector(0.4,0,2.3),
@@ -668,25 +671,25 @@ hg.attachments.sight = {
 		"sight",
 		"models/weapons/arc9_eft_shared/atts/scope/eft_scope_ta01.mdl",
 		Angle(0, 0, -90),
-		offset = Vector(0, 0.3, -0.03),
+		offset = Vector(0, 0.1, -0.03),
 		offsetView = Vector(-1.35, 0, 8),
 		{},
 		mountType = "picatinny",
 		scopemat = Material("decals/scope.png"),
 		mat = Material("effects/arc9/rt"),
 		perekrestie = Material("vgui/arc9_eft_shared/reticles/eft_reticle_ta01.png"),
-		localScopePos = Vector(0, 0, 1.35),
+		localScopePos = Vector(1, 0, 1.35),
 		scope_blackout = 1200,
 		rot = 0,
-		FOVMin = 7,
-		FOVMax = 7,
+		FOVMin = 8,
+		FOVMax = 8,
 		FOVScoped = 40,
-		blackoutsize = 4700,
+		blackoutsize = 4500,
 		sizeperekrestie = 4500,
 		perekrestieSize = true,
 
-		mount = "models/weapons/arc9/darsu_eft/mods/mount_vulcan_gen3.mdl",
-		mountVec = Vector(-0.9, 0, -0.3),
+		mount = "models/arc9zcity_eft_Shared/mount/eft_mount_ta51.mdl",
+		mountVec = Vector(-0.9, 0, -0.05),
 		mountAng = Angle(0, -180, 0),
 
 		PhysModel = "models/hunter/plates/plate025.mdl",
@@ -841,6 +844,68 @@ hg.attachments.sight = {
 
 		transformFunction = function(self,model,vecadd,ang) -- in transformfunction
 		end,
+	},
+	["optic14"] = {
+		"sight",
+		"models/arc9zcity_eft_Shared/optics/scope_elcan_specter.mdl",
+		Angle(0, 0, -90),
+		offset = Vector(0, 0, -0.02),
+		offsetView = Vector(-1.56, 0, 8),
+		{},
+		mountType = "picatinny",
+		scopemat = Material("decals/scope.png"),
+		mat = Material("effects/arc9/rtglass"),
+		perekrestie = Material("vgui/arc9_eft_shared/reticles/scope_all_elcan_specter_dr_marks.png"),
+		localScopePos = Vector(2, 0, 1.56),
+		scope_blackout = 1200,
+		rot = 0,
+		FOVMin = 5,
+		FOVMax = 14,
+		FOVScoped = 40,
+		blackoutsize = 4500,
+		sizeperekrestie = 3000,
+		perekrestieSize = true,
+
+		PhysModel = "models/hunter/plates/plate025.mdl",
+		PhysPos = Vector(1, 0, 0),
+		PhysAng = Angle(0, 90, 0),
+
+		drawFunction = function(self,model) -- in swep:drawattachment
+		end,
+
+		sightFunction = function(self)
+			self:DoRT()
+		end,
+
+		viewFunction = function(self,model,pos)
+			if self:KeyDown(IN_ATTACK2) then
+				if (IsValid(self:GetOwner().FakeRagdoll) and self:KeyDown(IN_JUMP)) or (!IsValid(self:GetOwner().FakeRagdoll) and self:KeyDown(IN_USE)) then
+					if not self.keypr then
+						self.viewmode1 = not self.viewmode1
+						self.keypr = true
+						self:EmitSound("universal/uni_lean_"..(self.viewmode1 and "in" or "out").."_0"..math.random(4)..".wav",35,math.random(95,105))
+					end
+				else
+					self.keypr = false
+				end
+			end
+
+			local ang = model:GetAngles()
+
+			if self.viewmode1 then
+				self.upview = Lerp(FrameTime()*12, self.upview or 0, 1.15)
+			else
+				self.upview = Lerp(FrameTime()*4, self.upview or 0, 0)
+			end
+
+			pos = pos + ang:Up() * self.upview
+
+			return pos
+		end,
+
+		transformFunction = function(self,model,pos,ang) -- in transformfunction
+		end,
+		valid = true,
 	},
 	["ironsight1"] = {
 		"sight",

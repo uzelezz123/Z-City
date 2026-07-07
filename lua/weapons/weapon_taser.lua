@@ -110,6 +110,10 @@ SWEP.RHAng = Angle(-2,-2,90)
 SWEP.LHPos = Vector(-1.2,-1.4,-2.8)
 SWEP.LHAng = Angle(5,9,-100)
 
+SWEP.ScreenPos = Vector(-0.45, -3.3, 0.7)
+SWEP.ScreenAng = Angle(90, 90, -180)
+SWEP.ScreenTextColor = Color(255, 255, 0)
+
 local finger1 = Angle(0,0,0)
 local finger2 = Angle(-15,45,-5)
 
@@ -327,38 +331,39 @@ end
 
 function SWEP:DrawWorldModel2()
 	local wm = self:GetWM()
-	local owner = self:GetOwner()
 	if not IsValid(wm) then return end
 
 	local boneId = wm:LookupBone("t.base")
 	if not boneId then return end
-	local pos,ang = wm:GetBonePosition(boneId)
 
-	ang:RotateAroundAxis(ang:Up(), 90)
-	ang:RotateAroundAxis(ang:Forward(), -180)
-	ang:RotateAroundAxis(ang:Right(), 90)
+	local pos, ang = wm:GetBonePosition(boneId)
+
+	ang = Angle(ang)
+
+	ang:RotateAroundAxis(ang:Up(), self.ScreenAng.y)
+	ang:RotateAroundAxis(ang:Forward(), self.ScreenAng.r)
+	ang:RotateAroundAxis(ang:Right(), self.ScreenAng.p)
 
 	pos = pos
-		+ ang:Forward() * -0.45
-		+ ang:Right() * -3.3
-		+ ang:Up() * 0.7
+		+ ang:Forward() * self.ScreenPos.x
+		+ ang:Right() * self.ScreenPos.y
+		+ ang:Up() * self.ScreenPos.z
 
 	local endTime = self:GetNWFloat("TaserEnd", 0)
 	local tasertext = "99"
 
 	if endTime > CurTime() then
-		local left = math.ceil(endTime - CurTime())
-		tasertext = string.format("%02d", left)
+		tasertext = string.format("%02d", math.ceil(endTime - CurTime()))
 	end
 
 	cam.Start3D2D(pos, ang, 0.015)
-		surface.SetDrawColor(0,0,0,255)
-		surface.DrawRect(0,0,60,25)
+		surface.SetDrawColor(0, 0, 0, 255)
+		surface.DrawRect(0, 0, 60, 25)
 		draw.SimpleText(
 			tasertext,
 			"TaserFont",
 			30, 12.5,
-			Color(255,255,0),
+			self.ScreenTextColor,
 			TEXT_ALIGN_CENTER,
 			TEXT_ALIGN_CENTER
 		)

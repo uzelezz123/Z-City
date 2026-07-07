@@ -344,9 +344,6 @@ function SWEP:DrawWorldModel2()
 		+ ang:Up() * 0.7
 
 	local endTime = self:GetNWFloat("TaserEnd", 0)
-
-	local attacking = self:CanUse() and !(self:KeyDown(IN_USE) and (IsValid(owner) and !IsValid(owner.FakeRagdoll))) and hg.KeyDown(ply, IN_ATTACK)
-	
 	local tasertext = "99"
 
 	if endTime > CurTime() then

@@ -1,3 +1,7 @@
+if CLIENT then
+	surface.CreateFont( "TaserFont", { font = "Digital-7", extended = true, size = 24, weight = 0, antialias = false })
+end
+
 SWEP.Base = "homigrad_base"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
@@ -6,7 +10,7 @@ SWEP.Author = "Taser"
 SWEP.Instructions = "A TASER is a conducted energy device (CED) primarily used to incapacitate people, allowing them to be approached and handled in an unresisting and thus less-lethal manner."
 SWEP.Category = "Weapons - Other"
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/w_pistol.mdl"
+SWEP.WorldModel = "models/realistic_police/taser/w_taser.mdl"
 SWEP.WorldModelFake = "models/realistic_police/taser/c_taser.mdl"
 
 SWEP.FakePos = Vector(-14.4, 2, 5.8)
@@ -96,6 +100,7 @@ SWEP.availableAttachments = {}
 
 function SWEP:InitializePost()
 	self.attachments.underbarrel = {[1] = "lasertaser0"}
+	self:SetNWFloat("TaserEnd", 0)
 end
 
 --local to head
@@ -200,7 +205,9 @@ function SWEP:Shoot(override)
 
 			local drugged = ply.organism and ply.organism.analgesia > 0.5
 
-            local time = math.random(5,7) * (drugged and 0.2 or 1)
+			local time = math.random(5, 7) * (drugged and 0.2 or 1)
+
+			self:SetNWFloat("TaserEnd", CurTime() + time)
 			
 			hg.StunPlayer(ply, time + 3 * (drugged and 0.2 or 1))
 
@@ -317,6 +324,50 @@ function SWEP:Shoot(override)
 		end
 	end
 end
+
+function SWEP:DrawWorldModel2()
+	local wm = self:GetWM()
+	local owner = self:GetOwner()
+	if not IsValid(wm) then return end
+
+	local boneId = wm:LookupBone("t.base")
+	if not boneId then return end
+	local pos,ang = wm:GetBonePosition(boneId)
+
+	ang:RotateAroundAxis(ang:Up(), 90)
+	ang:RotateAroundAxis(ang:Forward(), -180)
+	ang:RotateAroundAxis(ang:Right(), 90)
+
+	pos = pos
+		+ ang:Forward() * -0.45
+		+ ang:Right() * -3.3
+		+ ang:Up() * 0.7
+
+	local endTime = self:GetNWFloat("TaserEnd", 0)
+
+	local attacking = self:CanUse() and !(self:KeyDown(IN_USE) and (IsValid(owner) and !IsValid(owner.FakeRagdoll))) and hg.KeyDown(ply, IN_ATTACK)
+	
+	local tasertext = "99"
+
+	if endTime > CurTime() then
+		local left = math.ceil(endTime - CurTime())
+		tasertext = string.format("%02d", left)
+	end
+
+	cam.Start3D2D(pos, ang, 0.015)
+		surface.SetDrawColor(0,0,0,255)
+		surface.DrawRect(0,0,60,25)
+		draw.SimpleText(
+			tasertext,
+			"TaserFont",
+			30, 12.5,
+			Color(255,255,0),
+			TEXT_ALIGN_CENTER,
+			TEXT_ALIGN_CENTER
+		)
+	cam.End3D2D()
+end
+
 if SERVER then
     hook.Add("Should Fake Up","Tasered",function(ply)
         if ply and IsValid(ply.FakeRagdoll) then

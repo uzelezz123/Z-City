@@ -5,11 +5,11 @@ hg.GitHub_ReposName = "Z-City" -- please add your real git fork!
 
 local hg_loadcontent = CreateConVar("hg_loadcontent", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Toggle loading content to clients using 'resource.AddWorkshop' (need server restart to apply)")
 if SERVER and hg_loadcontent:GetBool() then
-	-- resource.AddWorkshop("3657285193") -- main addon
-	-- resource.AddWorkshop("3657897364") -- main content addon
-	-- resource.AddWorkshop("3657294321") -- first content addon
-	-- resource.AddWorkshop("3544105055") -- second content addon
-	-- resource.AddWorkshop("3257937532") -- distac content
+	 resource.AddWorkshop("3657285193") -- main addon
+	 resource.AddWorkshop("3657897364") -- main content addon
+	 resource.AddWorkshop("3657294321") -- first content addon
+	 resource.AddWorkshop("3544105055") -- second content addon
+	 resource.AddWorkshop("3257937532") -- distac content
 end
 -- if hg.GitHub_ReposOwner and hg.GitHub_ReposOwner != "" then
 -- 	http.Fetch( "https://api.github.com/repos/" .. hg.GitHub_ReposOwner .. "/" .. hg.GitHub_ReposName .. "/commits?sha=" .. hg.GitHub_Branch .. "&per_page=1",

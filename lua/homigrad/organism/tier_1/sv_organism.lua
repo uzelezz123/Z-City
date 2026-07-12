@@ -274,11 +274,9 @@ local function SendBareInfo(org)
     net.Send(rf)
 end
 
--- Expose network functions
 hg.send_organism = SendFullOrganism
 hg.send_bareinfo = SendBareInfo
 
--- Player meta helpers (added safely)
 local metaPlayer = FindMetaTable("Player")
 if metaPlayer then
     function metaPlayer:IsBerserk()

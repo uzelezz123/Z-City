@@ -1495,20 +1495,6 @@ util.AddNetworkString("hmcd_roundend")
 
 MODE.NextRoundMainTraitors = MODE.NextRoundMainTraitors or {}
 
-concommand.Add("hmcd_request_main_traitor", function(ply, cmd, args)
-    if not IsValid(ply) or not ply:IsAdmin() then return end
-    
-
-    if zb.ROUND_STATE == 1 then
-        ply:ChatPrint("when round end")
-        return
-    end
-    
-
-    MODE.NextRoundMainTraitors[ply:SteamID()] = true
-    ply:ChatPrint("true")
-end)
-
 hook.Add("RoundStateChange", "ResetNextRoundMainTraitors", function(old, new)
     if new == 2 then 
         MODE.NextRoundMainTraitors = {}

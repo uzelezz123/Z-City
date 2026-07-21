@@ -26,6 +26,10 @@ net.Receive("ZC_PMS_Apply", function(len, ply)
 	if IsUselessModel(mdl) then return end
 	util.PrecacheModel(mdl)
 
+	if player_manager.TranslateToPlayerModelName(mdl) ~= nil then
+		ply:ConCommand("cl_playermodel "..player_manager.TranslateToPlayerModelName(mdl))	-- Sets the player convar so your choice saves
+	end
+
 	local Appearance = ply.CurAppearance or hg.Appearance.GetRandomAppearance()
 	Appearance.AColthes = ""
 	ply:SetNetVar("Accessories", "")

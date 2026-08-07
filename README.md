@@ -10,14 +10,14 @@ Optional Discord RPC module for clients:
 The current version in the repository is 1.4.0
 
 ## The numbers in the version number indicate:
-A.Bcc -> 1.000
+`A.Bcc -> 1.000`
 - A -> Global updates
 - B -> New mechanics, gameplay changes
 - c -> Fixes and other small things
 
 ## Support us
 **Donation links:**
-- [Yoomoney](https://yoomoney.ru/fundraise/17GFEQH326Q.250101) 
+- [Yoomoney](https://yoomoney.ru/fundraise/17GFEQH326Q.250101)
 - [Boosty](https://boosty.to/sadsalat/donate)
 
 **Crypto**

@@ -203,16 +203,14 @@ if CLIENT then
 				hg.drawPart(segments[i],r,g,b,a)
 				if poses_right[i] then
 					local poly = {
-						poses_left[i+1],
-						poses_right[i],
-						poses_left[i],
-						poses_right[i+1],
+						{ x = i+1, y = i },
+						{ x = i, y = i+1 },
+						{ x = i+2, y = i+2 }
 					}
 					local poly2 = {
-						poses_right[i+1],
-						poses_left[i],
-						poses_right[i],
-						poses_left[i+1],
+						{ x = i+1, y = i },
+						{ x = i, y = i+1 },
+						{ x = i+2, y = i+2 }
 					}
 				
 					surface.DrawPoly( poly )

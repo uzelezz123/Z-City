@@ -43,8 +43,6 @@ SWEP.ReloadSoundes = {
 	"weapons/tfa_ins2/browninghp/magin.wav",
 	"weapons/tfa_ins2/browninghp/maghit.wav",
 	"weapons/tfa_ins2/browninghp/boltback.wav",
-	"none",
-	"none",
 	"weapons/tfa_ins2/browninghp/boltrelease.wav",
 	"none",
 	"none",
@@ -63,6 +61,7 @@ SWEP.Ergonomics = 0.7
 SWEP.Penetration = 6
 SWEP.WorldPos = Vector(5.5, -1, -4.5)
 SWEP.WorldAng = Angle(0, 0, 0)
+SWEP.attPos = Vector(0, 0, 6)
 SWEP.UseCustomWorldModel = true
 SWEP.lengthSub = 25
 SWEP.DistSound = "m9/m9_dist.wav"
@@ -141,10 +140,10 @@ SWEP.ReloadAnimLH = {
 	Vector(0,0,0),
 	"fastreload",
 	Vector(0,0,0),
-	Vector(5,0,5),
-	Vector(-2,1,1),
-	Vector(-2,1,1),
-	Vector(-2,1,1),
+	Vector(0,0,0),
+	Vector(0,0,0),
+	Vector(0,0,0),
+	Vector(0,0,0),
 	Vector(0,0,0),
 	"reloadend",
 	Vector(0,0,0)
@@ -157,16 +156,27 @@ SWEP.ReloadAnimLHAng = {
 	Angle(0,0,0),
 	Angle(0,0,0),
 	Angle(0,0,0),
-	Angle(-35,0,0),
-	Angle(-55,0,0),
-	Angle(-75,0,0),
-	Angle(-75,0,0),
-	Angle(-75,0,0),
-	Angle(-25,0,0),
+	Angle(0,0,0),
+	Angle(0,0,0),
+	Angle(0,0,0),
+	Angle(0,0,0),
+	Angle(0,0,0),
+	Angle(0,0,0),
 	Angle(0,0,0),
 }
 
 SWEP.ReloadAnimRH = {
+	Vector(0,0,0),
+	Vector(0,0,0),
+	Vector(0,0,0),
+	Vector(0,0,0),
+	Vector(0,0,0),
+	Vector(0,0,0),
+	Vector(5,0,-2),
+	Vector(5,0,-5),
+	Vector(0,0,-5),
+	Vector(5,0,-5),
+	Vector(0,0,-2),
 	Vector(0,0,0)
 }
 SWEP.ReloadAnimRHAng = {
@@ -178,10 +188,10 @@ SWEP.ReloadAnimWepAng = {
 	Angle(15,25,45),
 	Angle(-15,25,45),
 	Angle(0,0,-25),
-	Angle(0,0,-45),
-	Angle(-35,0,-25),
-	Angle(-35,2,-24),
-	Angle(-15,0,-45),
+	Angle(0,0,-95),
+	Angle(-35,0,-65),
+	Angle(-35,2,-64),
+	Angle(-15,0,-85),
 	Angle(0,0,0)
 }
 

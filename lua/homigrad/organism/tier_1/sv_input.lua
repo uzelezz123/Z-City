@@ -221,6 +221,14 @@ end
 function hg.organism.AddWound(ent, tr, bone, dmgInfo, dmgPos, dmgBlood, inputHole, outputHole)
 	local org = ent.organism
 	if org.superfighter then return end
+
+	-- Deep blade wounds can catch a vein. They bleed harder than a normal cut,
+	-- but remain much less dangerous than an arterial wound.
+	local veinCut = dmgInfo:IsDamageType(DMG_SLASH) and dmgBlood >= 3 and math.random(100) <= math.Clamp(dmgBlood * 2, 15, 55)
+	if veinCut then
+		dmgBlood = dmgBlood * 1.35
+		org.painadd = (org.painadd or 0) + math.min(dmgBlood * 0.2, 8)
+	end
 	
 	local physBone = bone != -1 and bone or math.random(0, ent:GetPhysicsObjectCount() - 1)
 	local bone = ent:TranslatePhysBoneToBone(physBone)
@@ -259,6 +267,10 @@ function hg.organism.AddWound(ent, tr, bone, dmgInfo, dmgPos, dmgBlood, inputHol
 				end)
 			end
 		end
+	end
+
+	if veinCut then
+		hook.Run("HG_VeinCut", org, ent:GetBoneName(bone), dmgInfo)
 	end
 end
 

@@ -176,14 +176,14 @@ male["ValveBiped.Bip01_Pelvis"] = {
 }
 
 local bone = 0.5
-male["ValveBiped.Bip01_L_UpperArm"] = {{"larmup", bone, Vector(6, 0, 0), Angle(0, 0, 0), Vector(6, 0.8, 0.8), Color(0, 255, 0)}, {"larmartery", 0, Vector(6, 0, -1), Angle(0, 0, 0), Vector(6, 0.1, 0.1), Color(255, 0, 0)},}
-male["ValveBiped.Bip01_R_UpperArm"] = {{"rarmup", bone, Vector(6, 0, 0), Angle(0, 0, 0), Vector(6, 0.8, 0.8), Color(0, 255, 0)}, {"rarmartery", 0, Vector(6, 0, 1), Angle(0, 0, 0), Vector(6, 0.1, 0.1), Color(255, 0, 0)},}
-male["ValveBiped.Bip01_L_Forearm"] = {{"larmdown", bone, Vector(6, -1, 0), Angle(0, 5, 0), Vector(6, 0.5, 0.5), Color(0, 255, 0)}, {"larmdown", bone, Vector(6, 1, 0), Angle(0, -5, 0), Vector(6, 0.5, 0.5), Color(0, 255, 0)}, {"larmartery", 0, Vector(6, -0.8, 0), Angle(0, 0, 0), Vector(6, 0.1, 0.1), Color(255, 0, 0)}, {"larmartery", 0, Vector(6, 0.8, 0), Angle(0, 0, 0), Vector(6, 0.1, 0.1), Color(255, 0, 0)},}
-male["ValveBiped.Bip01_R_Forearm"] = {{"rarmdown", bone, Vector(6, -1, 0), Angle(0, 5, 0), Vector(6, 0.5, 0.5), Color(0, 255, 0)}, {"rarmdown", bone, Vector(6, 1, 0), Angle(0, -5, 0), Vector(6, 0.5, 0.5), Color(0, 255, 0)}, {"rarmartery", 0, Vector(6, -0.8, 0), Angle(0, 0, 0), Vector(6, 0.1, 0.1), Color(255, 0, 0)}, {"rarmartery", 0, Vector(6, 0.8, 0), Angle(0, 0, 0), Vector(6, 0.1, 0.1), Color(255, 0, 0)},}
-male["ValveBiped.Bip01_L_Thigh"] = {{"llegup", bone, Vector(9, 0, 0), Angle(0, 0, 0), Vector(9, 1.5, 1.5), Color(0, 255, 0)}, {"llegartery", 0, Vector(9, 2, -1), Angle(0, 0, 0), Vector(9, 0.2, 0.2), Color(255, 0, 0)},}
-male["ValveBiped.Bip01_R_Thigh"] = {{"rlegup", bone, Vector(9, 0, 0), Angle(0, 0, 0), Vector(9, 1.5, 1.5), Color(0, 255, 0)}, {"rlegartery", 0, Vector(9, 2, 1), Angle(0, 0, 0), Vector(9, 0.2, 0.2), Color(255, 0, 0)},}
-male["ValveBiped.Bip01_L_Calf"] = {{"llegdown", bone, Vector(8, 0, 0), Angle(0, 0, 0), Vector(8, 1.5, 1.5), Color(0, 255, 0)}, {"llegartery", 0, Vector(6, 2, -1), Angle(0, 0, 0), Vector(6, 0.2, 0.2), Color(255, 0, 0)},}
-male["ValveBiped.Bip01_R_Calf"] = {{"rlegdown", bone, Vector(8, 0, 0), Angle(0, 0, 0), Vector(8, 1.5, 1.5), Color(0, 255, 0)}, {"rlegartery", 0, Vector(6, 2, 1), Angle(0, 0, 0), Vector(6, 0.2, 0.2), Color(255, 0, 0)},}
+male["ValveBiped.Bip01_L_UpperArm"] = {{"larmup", bone, Vector(6, 0, 0), Angle(0, 0, 0), Vector(6, 0.8, 0.8), Color(0, 255, 0)}, {"larmartery", 0, Vector(6, 0, -1), Angle(0, 0, 0), Vector(6, 0.25, 0.25), Color(255, 0, 0)},}
+male["ValveBiped.Bip01_R_UpperArm"] = {{"rarmup", bone, Vector(6, 0, 0), Angle(0, 0, 0), Vector(6, 0.8, 0.8), Color(0, 255, 0)}, {"rarmartery", 0, Vector(6, 0, 1), Angle(0, 0, 0), Vector(6, 0.25, 0.25), Color(255, 0, 0)},}
+male["ValveBiped.Bip01_L_Forearm"] = {{"larmdown", bone, Vector(6, -1, 0), Angle(0, 5, 0), Vector(6, 0.5, 0.5), Color(0, 255, 0)}, {"larmdown", bone, Vector(6, 1, 0), Angle(0, -5, 0), Vector(6, 0.5, 0.5), Color(0, 255, 0)}, {"larmartery", 0, Vector(6, -0.8, 0), Angle(0, 0, 0), Vector(6, 0.25, 0.25), Color(255, 0, 0)}, {"larmartery", 0, Vector(6, 0.8, 0), Angle(0, 0, 0), Vector(6, 0.25, 0.25), Color(255, 0, 0)},}
+male["ValveBiped.Bip01_R_Forearm"] = {{"rarmdown", bone, Vector(6, -1, 0), Angle(0, 5, 0), Vector(6, 0.5, 0.5), Color(0, 255, 0)}, {"rarmdown", bone, Vector(6, 1, 0), Angle(0, -5, 0), Vector(6, 0.5, 0.5), Color(0, 255, 0)}, {"rarmartery", 0, Vector(6, -0.8, 0), Angle(0, 0, 0), Vector(6, 0.25, 0.25), Color(255, 0, 0)}, {"rarmartery", 0, Vector(6, 0.8, 0), Angle(0, 0, 0), Vector(6, 0.25, 0.25), Color(255, 0, 0)},}
+male["ValveBiped.Bip01_L_Thigh"] = {{"llegup", bone, Vector(9, 0, 0), Angle(0, 0, 0), Vector(9, 1.5, 1.5), Color(0, 255, 0)}, {"llegartery", 0, Vector(9, 2, -1), Angle(0, 0, 0), Vector(9, 0.35, 0.35), Color(255, 0, 0)},}
+male["ValveBiped.Bip01_R_Thigh"] = {{"rlegup", bone, Vector(9, 0, 0), Angle(0, 0, 0), Vector(9, 1.5, 1.5), Color(0, 255, 0)}, {"rlegartery", 0, Vector(9, 2, 1), Angle(0, 0, 0), Vector(9, 0.35, 0.35), Color(255, 0, 0)},}
+male["ValveBiped.Bip01_L_Calf"] = {{"llegdown", bone, Vector(8, 0, 0), Angle(0, 0, 0), Vector(8, 1.5, 1.5), Color(0, 255, 0)}, {"llegartery", 0, Vector(6, 2, -1), Angle(0, 0, 0), Vector(6, 0.35, 0.35), Color(255, 0, 0)},}
+male["ValveBiped.Bip01_R_Calf"] = {{"rlegdown", bone, Vector(8, 0, 0), Angle(0, 0, 0), Vector(8, 1.5, 1.5), Color(0, 255, 0)}, {"rlegartery", 0, Vector(6, 2, 1), Angle(0, 0, 0), Vector(6, 0.35, 0.35), Color(255, 0, 0)},}
 local models_female = {
 	["models/player/group01/female_01.mdl"] = true,
 	["models/player/group01/female_02.mdl"] = true,

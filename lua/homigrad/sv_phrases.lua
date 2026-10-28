@@ -18,6 +18,70 @@ local bigPainPhrases = {
 	}
 }
 
+hg = hg or {}
+
+-- Automatic reactions use a wider stock HL2 pool than the manual phrase menu.
+-- Separate event pools make amputations and vessel cuts sound meaningfully severe.
+local traumaPhrases = {
+	wound = {
+		[1] = {"vo/npc/male01/pain01.wav", "vo/npc/male01/pain02.wav", "vo/npc/male01/pain03.wav", "vo/npc/male01/pain04.wav", "vo/npc/male01/pain05.wav", "vo/npc/male01/pain06.wav", "vo/npc/male01/ow01.wav", "vo/npc/male01/ow02.wav"},
+		[2] = {"vo/npc/female01/pain01.wav", "vo/npc/female01/pain02.wav", "vo/npc/female01/pain03.wav", "vo/npc/female01/pain04.wav", "vo/npc/female01/pain05.wav", "vo/npc/female01/pain06.wav", "vo/npc/female01/ow01.wav", "vo/npc/female01/ow02.wav"}
+	},
+	vessel = {
+		[1] = {"vo/npc/male01/help01.wav", "vo/npc/male01/goodgod.wav", "vo/npc/male01/ohno.wav", "vo/npc/male01/startle01.wav", "vo/npc/male01/startle02.wav", "vo/episode_1/npc/male01/cit_shock02.wav", "vo/episode_1/npc/male01/cit_shock03.wav"},
+		[2] = {"vo/npc/female01/help01.wav", "vo/npc/female01/goodgod.wav", "vo/npc/female01/ohno.wav", "vo/npc/female01/startle01.wav", "vo/npc/female01/startle02.wav", "vo/episode_1/npc/female01/cit_shock03.wav", "vo/episode_1/npc/female01/cit_shock04.wav"}
+	},
+	amputation = {
+		[1] = {"vo/episode_1/npc/male01/cit_pain04.wav", "vo/episode_1/npc/male01/cit_pain06.wav", "vo/episode_1/npc/male01/cit_pain07.wav", "vo/episode_1/npc/male01/cit_shock02.wav", "vo/episode_1/npc/male01/cit_shock04.wav", "vo/npc/male01/no02.wav"},
+		[2] = {"vo/episode_1/npc/female01/cit_pain04.wav", "vo/episode_1/npc/female01/cit_pain06.wav", "vo/episode_1/npc/female01/cit_pain07.wav", "vo/episode_1/npc/female01/cit_shock03.wav", "vo/episode_1/npc/female01/cit_shock04.wav", "vo/npc/female01/no02.wav"}
+	}
+}
+
+local function PlayTraumaPhrase(ply, kind, force)
+	if not IsValid(ply) or not ply:IsPlayer() or not ply:Alive() then return end
+	if ply.organism and ply.organism.otrub then return end
+	if not force and (ply.nextTraumaPhrase or 0) > CurTime() then return end
+	local pool = traumaPhrases[kind] and traumaPhrases[kind][ThatPlyIsFemale(ply) and 2 or 1]
+	if not pool then return end
+	local phrase = table.Random(pool)
+	local ent = hg.GetCurrentCharacter(ply)
+	if not IsValid(ent) or SoundDuration(phrase) == 0 then return end
+	ent:EmitSound(phrase, 78, ply.VoicePitch or 100, 1, CHAN_VOICE)
+	ply.nextTraumaPhrase = CurTime() + (force and 1.25 or math.Rand(2.5, 4.5))
+	ply.phrCld = math.max(ply.phrCld or 0, CurTime() + SoundDuration(phrase))
+	ply.lastPhr = phrase
+end
+hg.PlayTraumaPhrase = PlayTraumaPhrase
+
+hook.Add("HomigradDamage", "ExpandedInjuryPhrases", function(ply, dmgInfo, hitgroup, ent, harm)
+	if not IsValid(ply) or not ply:IsPlayer() then return end
+	local severity = harm or dmgInfo:GetDamage()
+	if severity >= 12 and (severity >= 35 or math.random(100) <= 45) then
+		PlayTraumaPhrase(ply, "wound", false)
+	end
+end)
+
+hook.Add("HG_ArteryCut", "VesselCutPhrases", function(org)
+	if org and IsValid(org.owner) then PlayTraumaPhrase(org.owner, "vessel", true) end
+end)
+
+hook.Add("HG_VeinCut", "VeinCutPhrases", function(org)
+	if not org or not IsValid(org.owner) then return end
+	PlayTraumaPhrase(org.owner, "vessel", false)
+	if org.isPly and not org.otrub and (org.owner.nextVeinWarning or 0) < CurTime() then
+		org.owner.nextVeinWarning = CurTime() + 12
+		org.owner:Notify(table.Random({
+			"This cut is bleeding more than it should...",
+			"The blade caught a vein!",
+			"I need to stop this bleeding!"
+		}), true, "vein", 0)
+	end
+end)
+
+hook.Add("OnAmputateLimb", "AmputationPhrases", function(org)
+	if org and IsValid(org.owner) then PlayTraumaPhrase(org.owner, "amputation", true) end
+end)
+
 local terrorist_phrases = {
 	normal = {
 		"mercenary/moving1.mp3",

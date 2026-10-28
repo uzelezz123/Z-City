@@ -3,10 +3,6 @@
 # Mini-City
 
 [![GitHub License](https://img.shields.io/github/license/uzelezz123/Z-City)](LICENSE)
-[![Steam Subscriptions](https://img.shields.io/steam/subscriptions/3657285193)](https://steamcommunity.com/sharedfiles/filedetails/?id=3657285193)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/uzelezz123/Z-City)]()
-[![GitHub Repo stars](https://img.shields.io/github/stars/uzelezz123/Z-City?style=flat)](https://github.com/uzelezz123/Z-City)
-![Discord](https://img.shields.io/discord/1271789595125743727)
 
 *Mini-City is a GMod addon which modifies character damage and controls. It also features its own custom weapon base and a dedicated gamemode.*
 

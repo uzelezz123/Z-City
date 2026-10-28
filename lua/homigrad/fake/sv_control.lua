@@ -95,7 +95,10 @@ local tr = {
 	filter = {}
 }
 
-local hg_fake_stamina = CreateConVar("hg_fake_stamina", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "Enables stamina when ragdolled", 0, 1)
+local hg_fake_stamina = CreateConVar("hg_fake_stamina", "0", FCVAR_ARCHIVE + FCVAR_NOTIFY, "Enables stamina when ragdolled", 0, 1)
+timer.Simple(0, function()
+	RunConsoleCommand("hg_fake_stamina", "0")
+end)
 
 local util_TraceLine, util_TraceHull = util.TraceLine, util.TraceHull
 local game_GetWorld = game.GetWorld
@@ -201,12 +204,11 @@ hook.Add("Think", "Fake", function()
 				local bonepos, boneang = ply:GetBonePosition(bone)
 				if bonepos and boneang then
 					local physobj = ragdoll:GetPhysicsObjectNum(i)
-					local mass = physobj:GetMass() / 5
-					
 					local name = ragdoll:GetBoneName(bone)
 
 					if IsValid(physobj) then
-						local bone_impulse = ply.HitBones and ply.HitBones[bonename] or CurTime()
+						local mass = physobj:GetMass() / 5
+						local bone_impulse = ply.HitBones and ply.HitBones[name] or CurTime()
 						local amt_impulse = (2 - math.Clamp(bone_impulse - CurTime(),0,2)) / 2
 						
 						local p = {}

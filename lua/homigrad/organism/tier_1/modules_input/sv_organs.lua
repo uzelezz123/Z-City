@@ -163,7 +163,8 @@ local arteryMessages ={
 local function hitArtery(artery, org, dmg, dmgInfo, boneindex, dir, hit)
 	if isCrush(dmgInfo) then return 1 end
 	if dmgInfo:IsDamageType(DMG_BLAST) then return 1 end
-	if dmgInfo:IsDamageType(DMG_SLASH) and (math.random(5) != 1) and dmg < 2 then return end
+	-- Blades should be a practical (but not guaranteed) way to open a vessel.
+	if dmgInfo:IsDamageType(DMG_SLASH) and dmg < 2 and math.random(2) != 1 then return end
 	org.painadd = org.painadd + dmg * 1
 	if org[artery] == 1 then return 0 end
 	if org[string.Replace(artery, "artery", "").."amputated"] then return end
@@ -185,6 +186,7 @@ local function hitArtery(artery, org, dmg, dmgInfo, boneindex, dir, hit)
 	local localPos, localAng, dir2 = getlocalshit(owner, bonea, dmgInfo, dir, hit)
 	table.insert(org.arterialwounds, {arterySize[artery], localPos, localAng, boneindex, CurTime(), dir2 * 100, artery})
 	owner:SetNetVar("arterialwounds", org.arterialwounds)
+	hook.Run("HG_ArteryCut", org, artery, dmgInfo)
 	--if IsValid(owner:GetNWEntity("RagdollDeath")) then owner:GetNWEntity("RagdollDeath"):SetNetVar("wounds",org.arterialwounds) end
 	return 0
 end

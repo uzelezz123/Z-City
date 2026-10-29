@@ -4,7 +4,7 @@ local PLUGIN = hg.Abnormalties
 --\\
 local convar_newbie = CreateClientConVar("abnormalties_newbie", "1", true, false, "Set to 1 if you want to see a hint again")
 
-PLUGIN.MainColor = Color(150, 0, 0)
+PLUGIN.MainColor = Color(184, 169, 201)
 --//
 -- abnormalties_help
 --\\

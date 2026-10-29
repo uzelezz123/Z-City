@@ -440,6 +440,7 @@ hook.Add("DoPlayerDeath", "Fake", function(ply)
 	if (not ply.Removed) and not IsValid(ragdoll) then
 		ragdoll = Ragdoll_Create(ply)
 		ply.FakeRagdoll = ragdoll
+		ply.fakeEnteredAt = CurTime()
 		NET_Fake(ragdoll, ply)
 	end
 
@@ -554,6 +555,7 @@ function hg.Fake(ply, huyragdoll, no_freemove, force)
 	NET_Fake(ragdoll, ply)
 	
 	ply.FakeRagdoll = ragdoll
+	ply.fakeEnteredAt = CurTime()
 	
 	if IsValid(ply.FakeRagdollOld) then
 		ply.FakeRagdollOld:Remove()
@@ -716,6 +718,10 @@ function hg.FakeUp(ply, forced, instant)
 
 	if ply:InVehicle() then forced = true end
 	//if ply:InVehicle() and ply:GetVehicle():WaterLevel() >= 3 then return end
+	if not forced and IsValid(ply.FakeRagdoll) then
+		local root = ply.FakeRagdoll:GetPhysicsObject()
+		if (ply.fakeEnteredAt or 0) + 0.85 > CurTime() or (IsValid(root) and root:GetVelocity():Length() > 180) then return false end
+	end
 	if not forced and (not IsValid(ply.FakeRagdoll) or not ply:Alive() or hook_Run("Should Fake Up", ply) ~= nil) then return false end
 	ply.fakecd = CurTime() + 2
 
@@ -789,7 +795,12 @@ function hg.FakeUp(ply, forced, instant)
 
 	if IsValid(ragdoll) then
 		local phys = ragdoll:GetPhysicsObject()
-		ply:SetVelocity(-ply:GetVelocity() + (IsValid(phys) and phys:GetVelocity() or vecZero)) --как это работает б**н
+		local carryVelocity = IsValid(phys) and phys:GetVelocity() or vecZero
+		carryVelocity = Vector(carryVelocity.x, carryVelocity.y, math.min(carryVelocity.z, 0))
+		if carryVelocity:Length2D() > 140 then
+			carryVelocity = carryVelocity:GetNormalized() * 140
+		end
+		ply:SetLocalVelocity(carryVelocity)
 		--hg.SetFreemove(ply, true)
 
 		if pos then

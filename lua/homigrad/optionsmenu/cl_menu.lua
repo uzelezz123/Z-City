@@ -52,7 +52,7 @@ hg.AddOptionPanel( "hg_maxsmoketrails", "slider", {desc = "Max amount of smoke t
 hg.AddOptionPanel( "hg_optimise_scopes", "slider", {desc = "Enable this if scoping makes your fps cry (1 - lowers quality of props around you, 2 - \"disables\" main render)",min = 0,max = 2,decimals = 0}, "optimization" )
 
 local red = Color(75,25,25)
-local redselected = Color(150,0,0)
+local redselected = Color(184,169,201)
 
 local blurMat = Material("pp/blurscreen")
 local Dynamic = 0

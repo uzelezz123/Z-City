@@ -215,7 +215,7 @@ if CLIENT then
             selectButton.Paint = function(self, w, h)
                 local buttonColor = self:IsHovered() and Color(180, 0, 0, 200) or Color(120, 0, 0, 200)
                 draw.RoundedBox(4, 0, 0, w, h, buttonColor)
-                surface.SetDrawColor(200, 0, 0, 255)
+                surface.SetDrawColor(184, 169, 201, 255)
                 surface.DrawOutlinedRect(0, 0, w, h, 1)
             end
             

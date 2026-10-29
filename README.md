@@ -18,7 +18,7 @@
 
 ## 📦 Versioning
 
-**Current version:** `1.4.2`
+**Current version:** `1.5.0`
 
 Our versioning system follows the **`A.B.cc`** format:
 

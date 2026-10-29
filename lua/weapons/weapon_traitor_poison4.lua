@@ -139,7 +139,7 @@ if CLIENT then
 		surface.SetMaterial(gradient_d)
 		surface.DrawTexturedRect( 0, 0, w, h )
 
-		surface.SetDrawColor( 150, 0, 0, 128)
+		surface.SetDrawColor(184, 169, 201, 128)
 		surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 	end
 	OpenMenu = function()
@@ -186,7 +186,7 @@ if CLIENT then
 			but.Paint = function(self, w, h)
 				PaintButton(self,w,h)
 				--[[draw.RoundedBox(10, 0, 0, w, h, col2) 
-				surface.SetDrawColor(255, 0, 0, 255) 
+				surface.SetDrawColor(184, 169, 201, 255)
 				surface.DrawOutlinedRect(0, 0, w, h)]]
 			end
 

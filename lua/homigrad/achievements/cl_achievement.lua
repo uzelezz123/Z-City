@@ -121,7 +121,7 @@ local function PaintFrame(self,w,h)
     surface.SetMaterial(gradient_d)
     surface.DrawTexturedRect( 0, 0, w, h )
 
-	surface.SetDrawColor( 150, 0, 0, 128)
+	surface.SetDrawColor(184, 169, 201, 128)
     surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 end
 
@@ -302,7 +302,7 @@ hook.Add("HUDPaint","hg_NewAchievement", function()
 		surface.SetMaterial(gradient_u)
 		surface.DrawTexturedRect( 0, HPos, WSize, HSize )
 	
-		surface.SetDrawColor( 150, 0, 0, 255)
+		surface.SetDrawColor(184, 169, 201, 255)
 		surface.DrawOutlinedRect( 0, HPos, WSize, HSize, 2.5 )
 
         surface.SetFont("HomigradFontMedium")

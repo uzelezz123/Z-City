@@ -132,7 +132,7 @@ local poisonable_entities = {
 }
 
 if CLIENT then
-	local colred = Color(150,0,0)
+	local colred = Color(184,169,201)
 	function SWEP:DrawHUD()
 		if GetViewEntity() ~= LocalPlayer() then return end
 		if LocalPlayer():InVehicle() then return end

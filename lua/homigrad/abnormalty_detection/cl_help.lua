@@ -259,7 +259,7 @@ function ABNORMALTIESHELP:OpenStats(Recipe)
 			{ x = -5, y = h+3 }
 		}
 		draw.NoTexture()
-		surface.SetDrawColor( 150, 0, 0, 255 )
+		surface.SetDrawColor(184, 169, 201, 255)
 		surface.DrawPoly(fancyayy)
 		local fancyayy1 ={
 			{ x = 0, y = 1 },

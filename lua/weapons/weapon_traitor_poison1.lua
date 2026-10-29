@@ -105,7 +105,7 @@ function SWEP:CanInject(ent,bone)
 end
 
 if CLIENT then
-	local colred = Color(190,40,40)
+	local colred = Color(184,169,201)
 	function SWEP:DrawHUD()
 		if GetViewEntity() ~= LocalPlayer() then return end
 		if LocalPlayer():InVehicle() then return end

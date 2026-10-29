@@ -182,7 +182,10 @@ module[2] = function(owner, org, mulTime)
 	
 	if bleed > 0 then org.blood = max(org.blood - bleed * mulTime * 10 * org.pulse / 70, 1) end
 	
-	if (org.internalBleed > 1 or org.pneumothorax > 0) and org.blood > 2000 and org.o2[1] > 0 then
+	-- Blood vomiting must be caused by meaningful internal/lung trauma. Previously
+	-- tiny residual values accumulated forever and made healthy players spit blood.
+	local canVomitBlood = (org.internalBleed > 8 or org.pneumothorax > 15) and org.blood > 2000 and org.o2[1] > 0
+	if canVomitBlood then
 		org.wantToVomit = org.wantToVomit or 0
 
 		org.wantToVomit = org.wantToVomit + math.Rand(0, org.internalBleed / 1000 + org.pneumothorax / 200) * mulTime * 5
@@ -190,9 +193,11 @@ module[2] = function(owner, org, mulTime)
 		if org.wantToVomit > 0.90 then
 			//owner:Notify(about_to_puke[math.random(#about_to_puke)], 15, "internalbleed_pre")
 		end
+	else
+		org.wantToVomit = math.max((org.wantToVomit or 0) - mulTime * 0.2, 0)
 	end
 
-	if org.wantToVomit > 1 then
+	if canVomitBlood and org.wantToVomit > 1 then
 		org.wantToVomit = 0
 
 		if org.isPly then owner:Notify(internalbleed_phrases[math.random(#internalbleed_phrases)], 15, "internalbleed") end

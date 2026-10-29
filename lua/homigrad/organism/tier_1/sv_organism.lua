@@ -74,6 +74,7 @@ hook.Add("Org Clear", "Main", function(org)
 	org.assimilated = 0
 	org.berserk = 0
 	org.noradrenaline = 0
+	org.fury55doses = 0
 
 	org.blindness = nil
 

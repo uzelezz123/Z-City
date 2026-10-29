@@ -22,6 +22,14 @@ local audible_pain = {
     "DEATH WOULD BE MERCY NOW...",
     "Just one moment without the pain..",
 	"I WISH I HAD SOME PAINKILLERS NOW. FUCK.",
+	"Something is very wrong. I can feel it.",
+	"Don't touch it! Just give me a second!",
+	"I can't think through this pain!",
+	"Keep pressure on it, keep pressure on it!",
+	"My whole body is shaking...",
+	"I need a medic, right now!",
+	"That went straight through me!",
+	"I can still move. I can still fight.",
 }
 
 local sharp_pain = {
@@ -182,6 +190,11 @@ local broken_limb = {
 	"I don't think it should bend here.",
 	"Oh fuck. It is snapped.",
 	"I don't see any open fracture, but I feel like I broke something",
+	"I heard it crack. That was definitely mine.",
+	"Don't make me put weight on that!",
+	"The bone is grinding when I move.",
+	"I can't use this limb anymore.",
+	"Hold it still! Hold it still!",
 }
 
 local dislocated_limb = {
@@ -190,6 +203,10 @@ local dislocated_limb = {
 	"No... I have to move it back in place.",
 	"It just hurts so much there. I might need a check up.",
 	"My limb is out of place.",
+	"The joint just popped out!",
+	"Every movement makes it worse.",
+	"I need somebody to set this back in place.",
+	"It feels like the joint is tearing apart.",
 }
 
 local hungry_a_bit = {

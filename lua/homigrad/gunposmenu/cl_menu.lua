@@ -1,7 +1,7 @@
 
 
 local red = Color(75,25,25)
-local redselected = Color(150,0,0)
+local redselected = Color(184,169,201)
 
 local blurMat = Material("pp/blurscreen")
 local Dynamic = 0
@@ -20,7 +20,7 @@ local function CreateOptionsMenu()
     function MainFrame:Paint( w, h )
         draw.RoundedBox( 0, 2.5, 2.5, w-5, h-5, Color( 0, 0, 0, 140) )
         BlurBackground(MainFrame)
-        surface.SetDrawColor( 255, 0, 0, 128)
+        surface.SetDrawColor(184, 169, 201, 128)
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
     end
 
@@ -30,7 +30,7 @@ local function CreateOptionsMenu()
 	function DScrollPanel:Paint( w, h )
 		BlurBackground(self)
 
-		surface.SetDrawColor( 255, 0, 0, 128)
+		surface.SetDrawColor(184, 169, 201, 128)
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 	end
 

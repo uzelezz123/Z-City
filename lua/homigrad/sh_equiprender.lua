@@ -446,7 +446,7 @@ if CLIENT then
 	local gray = Color(200, 200, 200)
 	local blue = Color(200, 200, 255)
 	local red = Color(75,25,25)
-	local redselected = Color(150,0,0)
+	local redselected = Color(184,169,201)
 	local whitey = Color(255, 255, 255)
 	local menuPanel
 	local chosen2

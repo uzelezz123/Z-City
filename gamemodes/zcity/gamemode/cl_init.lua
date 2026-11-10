@@ -120,7 +120,33 @@ hook.Add("HUDPaint","FUCKINGSAMENAMEUSEDINHOOKFUCKME",function()
 	surface.DrawText(txt)
 end)
 
+-- shrunk only on client so the camera aint inside the head
+local headHidden
+local headScale = Vector(0.01, 0.01, 0.01)
+
+local function showSpectatedHead()
+	if not headHidden then return end
+
+	local ent, bone = headHidden[1], headHidden[2]
+	-- the server may have changed the scale since
+	if IsValid(ent) and ent:GetManipulateBoneScale(bone) == headScale then
+		ent:ManipulateBoneScale(bone, Vector(1, 1, 1))
+	end
+
+	headHidden = nil
+end
+
+local function hideSpectatedHead(ent)
+	local bone = ent:LookupBone("ValveBiped.Bip01_Head1")
+	if not bone or ent:GetManipulateBoneScale(bone) ~= Vector(1, 1, 1) then return end
+
+	ent:ManipulateBoneScale(bone, headScale)
+	headHidden = {ent, bone}
+end
+
 hook.Add("HG_CalcView", "zzzzzzzUwU", function(ply, pos, angles, fov)
+	showSpectatedHead()
+
 	if not lply:Alive() then
 		if lply:KeyDown(IN_ATTACK) then
 			if not keydownattack then
@@ -190,6 +216,7 @@ hook.Add("HG_CalcView", "zzzzzzzUwU", function(ply, pos, angles, fov)
 		end
 
 		local eyePos, eyeAng = lply:EyePos(), lply:EyeAngles()
+		local znear
 		
 		local tr = {}
 		tr.start = pos
@@ -203,23 +230,29 @@ hook.Add("HG_CalcView", "zzzzzzzUwU", function(ply, pos, angles, fov)
 			pos = tr.HitPos + eyeAng:Forward() * 8
 			ang = eyeAng
 		elseif viewmode == 1 then
-			if ent ~= spect and IsValid(ent) then
-				local eyeAtt = ent:GetAttachment(ent:LookupAttachment("eyes"))
-				if eyeAtt then
-					ang = eyeAtt.Ang
-				else
-					ang = spect:EyeAngles()
-				end
+			local eyeAtt = ent ~= spect and ent:GetAttachment(ent:LookupAttachment("eyes"))
+			local neck = eyeAtt and ent:LookupBone("ValveBiped.Bip01_Neck1")
+			local neckMatrix = neck and ent:GetBoneMatrix(neck)
+
+			-- same point the ragdolled player sees from: neck bone shifted towards the eyes
+			if neckMatrix then
+				local neckAng = neckMatrix:GetAngles()
+				ang = eyeAtt.Ang
+				pos = neckMatrix:GetTranslation() + ang:Up() * 2 + neckAng:Right() * 4 + neckAng:Forward() * 4
+				znear = 1
 			else
-				ang = spect:EyeAngles()
+				ang = eyeAtt and eyeAtt.Ang or spect:EyeAngles()
+				pos = pos + spect:EyeAngles():Forward() * 8
 			end
-			pos = pos + spect:EyeAngles():Forward() * 8
 		else
 			pos = eyePos
 			ang = eyeAng
 		end
 		
 		ang[3] = 0
+
+		-- first person in a ragdoll only
+		if znear then hideSpectatedHead(ent) end
 		
 		local view
 		local hg_newspectate = GetConVar("hg_newspectate")
@@ -230,19 +263,22 @@ hook.Add("HG_CalcView", "zzzzzzzUwU", function(ply, pos, angles, fov)
 			end
 			
 			local lerpFactor = FrameTime() * 10
-			lply.spectLastPos = LerpVector(lerpFactor, lply.spectLastPos, pos)
+			-- no position smoothing in the eyes, the camera would lag behind the head
+			lply.spectLastPos = znear and pos or LerpVector(lerpFactor, lply.spectLastPos, pos)
 			lply.spectLastAng = LerpAngle(lerpFactor, lply.spectLastAng, ang)
 
 			view = {
 				origin = lply.spectLastPos,
 				angles = lply.spectLastAng,
 				fov = fov,
+				znear = znear,
 			}
 		else
 			view = {
 				origin = pos,
 				angles = ang,
 				fov = fov,
+				znear = znear,
 			}
 		end
 

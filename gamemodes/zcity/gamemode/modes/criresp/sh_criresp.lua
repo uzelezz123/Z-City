@@ -34,25 +34,99 @@ zb.Points.SNIPERSPAWN_CRI.Name = "SNIPERSPAWN_CRI"
 MODE.SWATModel = "models/css_seb_swat/css_swat.mdl"
 
 MODE.SWATPrimaries = {
-	{name = "M4A1 Holo", wep = "weapon_m4a1", atts = {"holo15", "grip3", "laser4"}},
-	{name = "HK416 Holo", wep = "weapon_hk416", atts = {"holo15", "grip3", "laser4"}},
-	{name = "P90", wep = "weapon_p90", atts = {"holo16"}},
-	{name = "MP7 Holo", wep = "weapon_mp7", atts = {"holo14"}},
-	{name = "M4A1 Suppressed", wep = "weapon_m4a1", atts = {"optic2", "grip3", "supressor7"}},
+	{name = "Remington 870", wep = "weapon_remington870"},
+	{name = "HK MP5", wep = "weapon_mp5", atts = {"supressor4"}},
+	{name = "AR-15", wep = "weapon_ar15", atts = {"holo1", "grip2", "supressor2"}},
+}
+
+MODE.SWATPistols = {
+	{name = "Beretta M9", wep = "weapon_m9beretta", atts = {"supressor4"}},
+	{name = "Beretta PX4", wep = "weapon_px4beretta", atts = {"supressor6"}},
+	{name = "Glock 17", wep = "weapon_glock17", atts = {"supressor4"}},
+	{name = "Glock 18C", wep = "weapon_glock18c"},
+	{name = "Glock 26", wep = "weapon_glock26"},
+	{name = "CZ 75", wep = "weapon_cz75", atts = {"supressor4"}},
 }
 
 MODE.SWATGear = {
-	{name = "Medkit", item = "weapon_medkit_sh"},
-	{name = "Tourniquet", item = "weapon_tourniquet"},
-	{name = "Walkie Talkie", item = "weapon_walkie_talkie"},
-	{name = "Knife", item = "weapon_melee"},
 	{name = "Flashbang", item = "weapon_hg_flashbang_tpik"},
-	{name = "Bloodbag", item = "weapon_bloodbag"},
-	{name = "Ballistic Shield", item = "weapon_ballistic_shield"},
-	{name = "Big Bandage", item = "weapon_bigbandage_sh"},
-	{name = "Grappling Hook", item = "weapon_grapplinghook"},
-	{name = "Door jam", item = "weapon_hg_jam"},
 }
 
-MODE.SWATGearSlots = 5
-MODE.SWATDefaultGear = {1, 2, 3, 5}
+MODE.SWATGearSlots = 1
+MODE.SWATDefaultGear = {1}
+
+MODE.SWATOperatives = {
+	{
+		id = "atf",
+		name = "ATF",
+		role = "ATF",
+		model = MODE.SWATModel,
+		color = Color(0, 0, 190),
+		primaries = MODE.SWATPrimaries,
+		pistols = MODE.SWATPistols,
+	},
+	{
+		id = "fbi",
+		name = "FBI",
+		role = "FBI Agent",
+		model = "models/player/police.mdl",
+		color = Color(30, 80, 200),
+		primaries = {
+			{name = "HK MP5", wep = "weapon_mp5", atts = {"supressor4"}},
+			{name = "Colt 9mm SMG", wep = "weapon_colt9mm"},
+			{name = "MAC-11", wep = "weapon_mac11"},
+			{name = "PL-15", wep = "weapon_pl15"},
+			{name = "PM-9", wep = "weapon_pm9"},
+			{name = "Steyr TMP", wep = "weapon_tmp"},
+			{name = "TEC-9", wep = "weapon_tec9"},
+			{name = "Uzi", wep = "weapon_uzi"},
+			{name = "AB-10", wep = "weapon_ab10"},
+			{name = "Remington 870", wep = "weapon_remington870"},
+			{name = "M16A2", wep = "weapon_m16a2"},
+			{name = "AR-15", wep = "weapon_ar15", atts = {"holo1", "grip2", "supressor2"}},
+			{name = "M4A1", wep = "weapon_m4a1", atts = {"holo1", "grip2", "supressor2"}},
+			{name = "Barrett M98B", wep = "weapon_m98b"},
+			{name = "SR25", wep = "weapon_sr25"},
+			{name = "SVD", wep = "weapon_svd"},
+			{name = "Mosin-Nagant", wep = "weapon_mosin"},
+		},
+		pistols = {
+			{name = "Beretta M9", wep = "weapon_m9beretta", atts = {"supressor4"}},
+			{name = "Beretta PX4", wep = "weapon_px4beretta", atts = {"supressor6"}},
+			{name = "Glock 17", wep = "weapon_glock17", atts = {"supressor4"}},
+			{name = "Glock 18C", wep = "weapon_glock18c"},
+			{name = "Glock 26", wep = "weapon_glock26"},
+			{name = "CZ 75", wep = "weapon_cz75", atts = {"supressor4"}},
+			{name = "CZ 75-A", wep = "weapon_cz75a", atts = {"supressor4"}},
+			{name = "HK USP", wep = "weapon_hk_usp"},
+			{name = "Makarov", wep = "weapon_makarov"},
+		},
+	},
+	{
+		id = "hrt",
+		name = "HRT",
+		role = "HRT Operator",
+		model = "models/player/riot.mdl",
+		color = Color(190, 100, 20),
+		primaries = {
+			{name = "HK MP5", wep = "weapon_mp5", atts = {"supressor4"}},
+			{name = "M4A1", wep = "weapon_m4a1", atts = {"holo1", "grip2", "supressor2"}},
+			{name = "M16A2", wep = "weapon_m16a2"},
+			{name = "HK416", wep = "weapon_hk416", atts = {"holo1", "grip2", "supressor2"}},
+			{name = "Remington 870", wep = "weapon_remington870"},
+			{name = "Barrett M98B", wep = "weapon_m98b"},
+			{name = "SR25", wep = "weapon_sr25"},
+			{name = "SVD", wep = "weapon_svd"},
+			{name = "Mosin-Nagant", wep = "weapon_mosin"},
+		},
+		pistols = {
+			{name = "Colt M1911", wep = "weapon_m1911"},
+			{name = "Glock 17", wep = "weapon_glock17", atts = {"supressor4"}},
+			{name = "Glock 18C", wep = "weapon_glock18c"},
+			{name = "Glock 26", wep = "weapon_glock26"},
+		},
+		tasers = {
+			{name = "Taser X26", wep = "weapon_taser"},
+		},
+	},
+}

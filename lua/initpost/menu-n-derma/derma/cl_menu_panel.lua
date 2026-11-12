@@ -8,6 +8,13 @@ local Selects = {
     {Title = "Disconnect", Func = function(luaMenu) RunConsoleCommand("disconnect") end},
     {Title = "Main Menu", Func = function(luaMenu) gui.ActivateGameUI() luaMenu:Close() end},
     {Title = "Discord", Func = function(luaMenu) luaMenu:Close() gui.OpenURL(DISCORD_URL)  end},
+    {Title = "Loadout",
+    GamemodeOnly = true,
+    Func = function(luaMenu,pp)
+        if hg.DrawLoadoutMenu then
+            hg.DrawLoadoutMenu(pp)
+        end
+    end},
     {Title = "Traitor Role",
     GamemodeOnly = true,
     CreatedFunc = function(self, parent, luaMenu)

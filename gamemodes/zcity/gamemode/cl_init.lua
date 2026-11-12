@@ -6,6 +6,10 @@ if not ConVarExists("hg_newspectate") then
     CreateClientConVar("hg_newspectate", "1", true, false, "Enables smooth spectator camera transitions", 0, 1)
 end
 
+if not ConVarExists("hg_vanilla_death_hud") then
+    CreateClientConVar("hg_vanilla_death_hud", "0", true, false, "Show the vanilla Z-City spectating overlay while dead", 0, 1)
+end
+
 function CurrentRound()
 	return zb.modes[zb.CROUND]
 end
@@ -104,6 +108,8 @@ local keydownreload
 
 hook.Add("HUDPaint","FUCKINGSAMENAMEUSEDINHOOKFUCKME",function()
     if LocalPlayer():Alive() then return end
+    local vanillaDeath = GetConVar("hg_vanilla_death_hud")
+    if not vanillaDeath or not vanillaDeath:GetBool() then return end
 	local spect = LocalPlayer():GetNWEntity("spect")
 	if not IsValid(spect) then return end
 	if viewmode == 3 then return end

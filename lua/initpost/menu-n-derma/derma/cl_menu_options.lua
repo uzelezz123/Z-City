@@ -105,6 +105,7 @@ hg.settings:AddOpt("Weapons","hg_highpitchgunfire", "Toggle high pitched gunfire
 hg.settings:AddOpt("View","hg_firstperson_death", "First-Person Death")
 hg.settings:AddOpt("View","hg_fov", "Field Of View")
 hg.settings:AddOpt("View","hg_newspectate", "Smooth Spectator Camera")
+hg.settings:AddOpt("View","hg_vanilla_death_hud", "Vanilla Death HUD")
 hg.settings:AddOpt("View","hg_cshs_fake", "C'sHS Ragdoll Camera")
 hg.settings:AddOpt("View","hg_gun_cam", "Gun Camera (ADMIN ONLY)")
 hg.settings:AddOpt("View","hg_nofovzoom", "Disable/Enable FOV Zoom")

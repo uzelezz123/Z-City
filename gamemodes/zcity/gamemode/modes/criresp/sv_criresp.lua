@@ -1,5 +1,5 @@
-MODE.name = "criresp"
-MODE.PrintName = "Crisis Response"
+MODE.name = "siege"
+MODE.PrintName = "Waco Siege"
 
 MODE.ForBigMaps = false
 MODE.ROUND_TIME = 1200
@@ -8,12 +8,21 @@ MODE.start_time = 90
 MODE.end_time = 9
 
 resource.AddFile("resource/fonts/Ethnocentric-Regular.ttf")
+resource.AddFile("sound/crawlspace.mp3")
+resource.AddFile("sound/endtimes.mp3")
 
-local overlimit = CreateConVar("criresp_over20", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, "Allow more than 20 players in Crisis Response", 0, 1)
-local primaries = MODE.SWATPrimaries
+local overlimit = CreateConVar("criresp_over20", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, "Allow more than 20 players in Waco Siege", 0, 1)
 local gearlist = MODE.SWATGear
 local gearslots = MODE.SWATGearSlots
 local defaultgear = MODE.SWATDefaultGear
+local operatives = MODE.SWATOperatives or {}
+
+local function GetOperative(id)
+	for _, op in ipairs(operatives) do
+		if op.id == id then return op end
+	end
+	return operatives[1]
+end
 
 util.AddNetworkString("criresp_start")
 util.AddNetworkString("criresp_begin")
@@ -37,6 +46,70 @@ end
 local assigned = {}
 local sniperPly = nil
 local shieldGiven = false
+local sniperGiven = false
+
+local function IsAttachmentBlocked(class, placement, att)
+	if class == "weapon_remington870" and (placement == "barrel" or string.sub(att, 1, 9) == "supressor") then
+		return true
+	end
+	return false
+end
+
+local function IsAttachmentCompatible(wep, att)
+	if not IsValid(wep) or not wep.attachments or not wep.availableAttachments then return false end
+
+	local placement
+	for _, tbl in pairs(hg.attachments) do
+		if tbl[att] then
+			placement = tbl[att][1]
+			break
+		end
+	end
+	if not placement then return false end
+	if IsAttachmentBlocked(wep:GetClass(), placement, att) then return false end
+
+	local avail = wep.availableAttachments[placement]
+	if not avail or not wep.attachments[placement] then return false end
+
+	local i
+	for n, atta in pairs(avail) do
+		if istable(atta) then
+			if atta[1] == att then
+				i = n
+				break
+			end
+		elseif atta == att then
+			i = n
+			break
+		end
+	end
+
+	local mountType = avail.mountType
+	local attMount = hg.attachments[placement][att] and hg.attachments[placement][att].mountType
+
+	if not avail[i] and not (mountType or attMount) then return false end
+
+	if istable(mountType) then
+		return attMount ~= nil and table.HasValue(mountType, attMount)
+	end
+
+	return mountType == attMount
+end
+
+local function ApplyCompatibleAttachments(ply, wep, atts)
+	if not atts then return end
+
+	local valid = {}
+	for _, att in ipairs(atts) do
+		if IsAttachmentCompatible(wep, att) then
+			valid[#valid + 1] = att
+		end
+	end
+
+	if #valid > 0 then
+		hg.AddAttachmentForce(ply, wep, valid)
+	end
+end
 
 function MODE:AssignTeams()
 	table.Empty(assigned)
@@ -71,12 +144,8 @@ function MODE:AssignTeams()
 		elseif i <= playing then
 			assigned[ply] = 1
 		else
-			ply:ChatPrint("Crisis Response is limited to 20 players, you are spectating this round")
+			ply:ChatPrint("Waco Siege is limited to 20 players, you are spectating this round")
 		end
-	end
-
-	if numSWAT >= 4 then
-		sniperPly = players[1]
 	end
 end
 
@@ -105,7 +174,7 @@ local function SyncReady()
 end
 
 net.Receive("criresp_ready", function(len, ply)
-	if zb.CROUND ~= "criresp" or zb.ROUND_STATE ~= 0 then return end
+	if zb.CROUND ~= "siege" or zb.ROUND_STATE ~= 0 then return end
 	if assigned[ply] == nil then return end
 
 	ply.criresp_ready = true
@@ -118,7 +187,12 @@ net.Receive("criresp_over20", function(len, ply)
 end)
 
 net.Receive("criresp_custom", function(len, ply)
-	local primary = net.ReadUInt(8)
+	local op = GetOperative(net.ReadString())
+	if not op then return end
+
+	local primaryIndex = net.ReadUInt(8)
+	local pistolIndex = net.ReadUInt(8)
+	local taser = net.ReadBool()
 	local groups = net.ReadString()
 	if #groups > 48 then groups = "" end
 
@@ -131,10 +205,23 @@ net.Receive("criresp_custom", function(len, ply)
 		end
 	end
 
+	local atts, seenAtts = {}, {}
+	for i = 1, math.min(net.ReadUInt(6), 32) do
+		local att = net.ReadString()
+		if #att > 0 and #att <= 32 and not seenAtts[att] then
+			seenAtts[att] = true
+			atts[#atts + 1] = att
+		end
+	end
+
 	ply.criresp_custom = {
-		primary = (primary > 0 and primary <= #primaries) and primary or nil,
+		operative = op.id,
+		primary = (primaryIndex > 0 and primaryIndex <= #(op.primaries or {})) and primaryIndex or nil,
+		pistol = (pistolIndex > 0 and pistolIndex <= #(op.pistols or {})) and pistolIndex or nil,
+		taser = (op.tasers and taser) or nil,
 		groups = groups,
-		gear = #gear > 0 and gear or nil
+		gear = #gear > 0 and gear or nil,
+		atts = #atts > 0 and atts or nil
 	}
 end)
 
@@ -155,7 +242,7 @@ function MODE:Intermission()
 	net.Broadcast()
 
 	timer.Create("criresp_readysync", 3, 0, function()
-		if zb.CROUND ~= "criresp" or zb.ROUND_STATE ~= 0 then
+		if zb.CROUND ~= "siege" or zb.ROUND_STATE ~= 0 then
 			timer.Remove("criresp_readysync")
 			return
 		end
@@ -192,36 +279,34 @@ end
 
 function MODE:ShouldRoundEnd()
 	if zb.ROUND_STATE ~= 1 then return false end
-	if zb.ROUND_BEGIN + 91 > CurTime() then return false end
+	if zb.ROUND_BEGIN + 51 > CurTime() then return false end
 
 	local aliveTeams = self:CheckAlivePlayers()
 	local endround, winner = zb:CheckWinner(aliveTeams)
 	return endround
 end
 
-local tblweps = {
-	[1] = {
-		"weapon_tokarev",
-		"weapon_glock17",
-		"weapon_revolver2",
-		"weapon_p22",
-		"weapon_revolver2",
-		"weapon_hk_usp",
-		"weapon_cz75",
-		"weapon_makarov", --;; стреляю хорошо
-		"weapon_m45",
-	}
-}
-
-local tblotheritems = {
-	[1] = {
-		"weapon_bigconsumable", --;; кормят хорошо
-		"weapon_bandage_sh",
-		"weapon_painkillers",
-		"weapon_sogknife",
-		"weapon_ducttape",
-		"weapon_hammer"
-	}
+local davidianWeapons = {
+	-- AKs
+	{wep = "weapon_akm", atts = {"holo6", "supressor1"}},
+	{wep = "weapon_ak74", atts = {"holo6", "supressor1"}},
+	{wep = "weapon_ak74u", atts = {"supressor1"}},
+	{wep = "weapon_ak203", atts = {"supressor1"}},
+	{wep = "weapon_ak200"},
+	-- rifles / SMG
+	{wep = "weapon_m16a2"},
+	{wep = "weapon_ar15", atts = {"holo1", "grip2"}},
+	{wep = "weapon_mac11", atts = {"supressor4"}},
+	-- only one .50 cal sniper per round
+	{wep = "weapon_m98b", sniper = true},
+	-- pistols
+	{wep = "weapon_m9beretta"},
+	{wep = "weapon_px4beretta"},
+	{wep = "weapon_glock17"},
+	{wep = "weapon_glock18c"},
+	{wep = "weapon_glock26"},
+	{wep = "weapon_revolver2"},
+	{wep = "weapon_revolver357"},
 }
 
 local tblarmors = {
@@ -242,19 +327,33 @@ local function GiveSuspect(ply)
 	ply.noSound = true
 
 	ply:SetPlayerClass("terrorist")
-	zb.GiveRole(ply, "Suspect", Color(190, 0, 0))
+	zb.GiveRole(ply, "Branch Davidian", Color(190, 0, 0))
 
-	local gun = ply:Give(tblweps[1][math.random(#tblweps[1])])
+	local pick
+	for i = 1, 30 do
+		local candidate = davidianWeapons[math.random(#davidianWeapons)]
+		if candidate.sniper and sniperGiven then continue end
+		pick = candidate
+		break
+	end
+	pick = pick or davidianWeapons[1]
+
+	if pick.sniper then sniperGiven = true end
+
+	local gun = ply:Give(pick.wep)
 	if IsValid(gun) and gun.GetMaxClip1 then
+		ApplyCompatibleAttachments(ply, gun, pick.atts)
 		ply:GiveAmmo(gun:GetMaxClip1() * 3, gun:GetPrimaryAmmoType(), true)
 	else
 		print("WTH???")
 	end
 
-	for _, item in ipairs(tblotheritems[1]) do
-		ply:Give(item)
-	end
+	ply:Give("weapon_hammer")
+	timer.Simple(0.2, function()
+		if IsValid(ply) then ply:SetAmmo(3, "Nails") end
+	end)
 
+	ply:Give("weapon_ducttape")
 	ply:Give("weapon_hands_sh")
 
 	ply:SetSuppressPickupNotices(false)
@@ -272,62 +371,56 @@ local function SpawnSWAT(ply, swatPlayers)
 	ply:SetSuppressPickupNotices(true)
 	ply.noSound = true
 
+	local custom = ply.criresp_custom
+	local op = GetOperative(custom and custom.operative) or operatives[1]
+	if not op then return end
+
 	ply:SetupTeam(ply:Team())
 	ply:SetPlayerClass("swat")
+	if op.model then ply:SetModel(op.model) end
 
 	local inv = ply:GetNetVar("Inventory")
 	inv["Weapons"]["hg_sling"] = true
 	ply:SetNetVar("Inventory", inv)
 
 	hg.AddArmor(ply, tblarmors[0][math.random(#tblarmors[0])])
-	ply:SetNetVar("HideArmorRender", true)
-	zb.GiveRole(ply, "SWAT", Color(0, 0, 190))
+	ply:SetNetVar("HideArmorRender", false)
+	zb.GiveRole(ply, op.role or op.name or "ATF", op.color or Color(0, 0, 190))
+	ply:SetPlayerColor((op.color or Color(0, 0, 190)):ToVector())
 
 	table.insert(swatPlayers, ply)
 
-	local custom = ply.criresp_custom
-	local primary = (custom and custom.primary) and primaries[custom.primary] or primaries[math.random(#primaries)]
+	local opPrimaries = op.primaries or {}
+	local primary = opPrimaries[(custom and custom.primary) or 1] or opPrimaries[1]
+	if not primary then return end
 
 	local gun = ply:Give(primary.wep)
 	if IsValid(gun) and gun.GetMaxClip1 then
-		hg.AddAttachmentForce(ply, gun, primary.atts)
+		ApplyCompatibleAttachments(ply, gun, (custom and custom.atts) or primary.atts)
 		ply:GiveAmmo(gun:GetMaxClip1() * 6, gun:GetPrimaryAmmoType(), true)
 	else
 		print("WTH???")
 	end
 
-	local gun = ply:Give("weapon_glock17")
-	if IsValid(gun) and gun.GetMaxClip1 then
-		ply:GiveAmmo(gun:GetMaxClip1() * 4, gun:GetPrimaryAmmoType(), true)
+	local opPistols = op.pistols or {}
+	local pistol = opPistols[(custom and custom.pistol) or 1] or opPistols[1]
+	if pistol then
+		local sidearm = ply:Give(pistol.wep)
+		if IsValid(sidearm) and sidearm.GetMaxClip1 then
+			ApplyCompatibleAttachments(ply, sidearm, pistol.atts)
+			ply:GiveAmmo(sidearm:GetMaxClip1() * 4, sidearm:GetPrimaryAmmoType(), true)
+		end
 	end
 
-	local taser = ply:Give("weapon_taser")
-	if IsValid(taser) then
-		ply:GiveAmmo(5, taser:GetPrimaryAmmoType(), true)
+	if op.tasers and custom and custom.taser then
+		local taser = ply:Give(op.tasers[1].wep)
+		if IsValid(taser) and taser.GetMaxClip1 then
+			ply:GiveAmmo(taser:GetMaxClip1() * 3, taser:GetPrimaryAmmoType(), true)
+		end
 	end
 
+	ply:Give("weapon_hg_flashbang_tpik")
 	ply:Give("weapon_handcuffs")
-
-	for _, idx in ipairs((custom and custom.gear) or defaultgear) do
-		local gear = gearlist[idx]
-		if not gear then continue end
-
-		if gear.item == "weapon_ballistic_shield" then
-			if shieldGiven then
-				ply:ChatPrint("Another operator already carries the shield")
-				continue
-			end
-			shieldGiven = true
-		end
-
-		local wep = ply:Give(gear.item)
-
-		if gear.item == "weapon_bloodbag" and IsValid(wep) and wep.modeValues then
-			wep.modeValues[1] = 1
-			wep.bloodtype = "o-"
-		end
-	end
-
 	ply:Give("weapon_hands_sh")
 
 	if custom and custom.groups and custom.groups ~= "" then
@@ -429,7 +522,7 @@ local function GetBonePos(body, boneName)
 	return matrix and matrix:GetTranslation() or body:GetBonePosition(boneId)
 end
 
---;; снайпера зовут джон зсити, он любит стрелять в плохих людей, он пережил многое но теперь он стоит на страже порядка славного городка зед, знайте если вы погибли выйдя из здание то это был именно он.
+--;; ÑÐ½Ð°Ð¹Ð¿ÐµÑ€Ð° Ð·Ð¾Ð²ÑƒÑ‚ Ð´Ð¶Ð¾Ð½ Ð·ÑÐ¸Ñ‚Ð¸, Ð¾Ð½ Ð»ÑŽÐ±Ð¸Ñ‚ ÑÑ‚Ñ€ÐµÐ»ÑÑ‚ÑŒ Ð² Ð¿Ð»Ð¾Ñ…Ð¸Ñ… Ð»ÑŽÐ´ÐµÐ¹, Ð¾Ð½ Ð¿ÐµÑ€ÐµÐ¶Ð¸Ð» Ð¼Ð½Ð¾Ð³Ð¾Ðµ Ð½Ð¾ Ñ‚ÐµÐ¿ÐµÑ€ÑŒ Ð¾Ð½ ÑÑ‚Ð¾Ð¸Ñ‚ Ð½Ð° ÑÑ‚Ñ€Ð°Ð¶Ðµ Ð¿Ð¾Ñ€ÑÐ´ÐºÐ° ÑÐ»Ð°Ð²Ð½Ð¾Ð³Ð¾ Ð³Ð¾Ñ€Ð¾Ð´ÐºÐ° Ð·ÐµÐ´, Ð·Ð½Ð°Ð¹Ñ‚Ðµ ÐµÑÐ»Ð¸ Ð²Ñ‹ Ð¿Ð¾Ð³Ð¸Ð±Ð»Ð¸ Ð²Ñ‹Ð¹Ð´Ñ Ð¸Ð· Ð·Ð´Ð°Ð½Ð¸Ðµ Ñ‚Ð¾ ÑÑ‚Ð¾ Ð±Ñ‹Ð» Ð¸Ð¼ÐµÐ½Ð½Ð¾ Ð¾Ð½.
 local function SniperShot(ply)
 	local body = GetBody(ply)
 	local headshot = math.random() <= 0.3
@@ -502,6 +595,7 @@ end
 function MODE:RoundStart()
 	timer.Remove("criresp_readysync")
 	shieldGiven = false
+	sniperGiven = false
 
 	net.Start("criresp_begin")
 	net.Broadcast()
@@ -514,16 +608,9 @@ function MODE:RoundStart()
 		if teamID == 0 then
 			ply:SetTeam(0)
 
-			if ply == sniperPly then
-				ply.criresp_sniper = true
-				timer.Create("SWATSpawn" .. ply:EntIndex(), 90, 1, function()
-					SpawnSniper(ply)
-				end)
-			else
-				timer.Create("SWATSpawn" .. ply:EntIndex(), 90, 1, function()
-					SpawnSWAT(ply, swatPlayers)
-				end)
-			end
+			timer.Create("SWATSpawn" .. ply:EntIndex(), 50, 1, function()
+				SpawnSWAT(ply, swatPlayers)
+			end)
 		else
 			ply:SetTeam(1)
 			ply:Spawn()
@@ -532,20 +619,6 @@ function MODE:RoundStart()
 			GiveSuspect(ply)
 		end
 	end
-
-	timer.Create("SWATSpawn", 91, 1, function()
-		if #swatPlayers > 0 then
-			local ramPlayer = swatPlayers[math.random(#swatPlayers)]
-			if not IsValid(ramPlayer) or ramPlayer:Team() == TEAM_SPECTATOR then return end
-			ramPlayer:Give("weapon_ram")
-		end
-	end)
-
-	BuildSniperZones()
-	timer.Create("criresp_sniperzone", 0.5, 0, function()
-		if zb.CROUND ~= "criresp" or zb.ROUND_STATE ~= 1 then return end
-		SniperZoneThink()
-	end)
 end
 
 function MODE:GiveEquipment()

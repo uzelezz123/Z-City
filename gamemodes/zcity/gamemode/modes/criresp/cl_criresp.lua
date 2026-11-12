@@ -1,5 +1,6 @@
 local MODE = MODE
-MODE.name = "criresp"
+MODE.name = "siege"
+MODE.PrintName = "Waco Siege"
 
 local bgMat = Material("criresp/backgrnd.png")
 local flagMat = Material("criresp/flaguus.png")
@@ -23,12 +24,24 @@ local criDim = Color(190, 150, 150, 200)
 
 local sndClick, sndHover = "shitty/tap_depress.wav", "shitty/tap-resonant.wav"
 
---;; если кому то в заебень ждать пока кто то включит режим чтоб вы могли все настроить
-local cv_music = CreateClientConVar("criresp_menumusic", "1", true, false, "Crisis Response menu music", 0, 1)
-local cv_musicvol = CreateClientConVar("criresp_menumusic_vol", "60", true, false, "Crisis Response menu music volume", 0, 100)
-local cv_loadout = CreateClientConVar("criresp_loadout", "0", true, false, "Crisis Response SWAT primary (0 = random)")
-local cv_gear = CreateClientConVar("criresp_gear", "1 2 3 5", true, false, "Crisis Response SWAT equipment")
-local cv_groups = CreateClientConVar("criresp_bodygroups", "", true, false, "Crisis Response SWAT bodygroups")
+--;; ÐµÑÐ»Ð¸ ÐºÐ¾Ð¼Ñƒ Ñ‚Ð¾ Ð² Ð·Ð°ÐµÐ±ÐµÐ½ÑŒ Ð¶Ð´Ð°Ñ‚ÑŒ Ð¿Ð¾ÐºÐ° ÐºÑ‚Ð¾ Ñ‚Ð¾ Ð²ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ Ñ€ÐµÐ¶Ð¸Ð¼ Ñ‡Ñ‚Ð¾Ð± Ð²Ñ‹ Ð¼Ð¾Ð³Ð»Ð¸ Ð²ÑÐµ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¸Ñ‚ÑŒ
+local cv_music = CreateClientConVar("criresp_menumusic", "1", true, false, "Waco Siege menu music", 0, 1)
+local cv_musicvol = CreateClientConVar("criresp_menumusic_vol", "60", true, false, "Waco Siege menu music volume", 0, 100)
+local cv_loadout = CreateClientConVar("criresp_loadout", "1", true, false, "Waco Siege primary (chosen in customization)")
+local cv_pistol = CreateClientConVar("criresp_pistol", "1", true, false, "Waco Siege sidearm (chosen in customization)")
+local cv_operative = CreateClientConVar("criresp_operative", "atf", true, false, "Waco Siege operative (chosen in customization)")
+local cv_taser = CreateClientConVar("criresp_taser", "0", true, false, "Waco Siege taser (chosen in customization)", 0, 1)
+local cv_gear = CreateClientConVar("criresp_gear", "1 2 3 5", true, false, "Waco Siege equipment")
+local cv_atts = CreateClientConVar("criresp_atts", "", true, false, "Waco Siege attachments")
+local cv_groups = CreateClientConVar("criresp_bodygroups", "", true, false, "Waco Siege bodygroups")
+
+local function GetOperative(id)
+	local ops = MODE.SWATOperatives or {}
+	for i, op in ipairs(ops) do
+		if op.id == id then return op, i end
+	end
+	return ops[1], 1
+end
 
 
 local menuMusic
@@ -42,12 +55,61 @@ local function PlayMenuMusic()
 	StopMenuMusic()
 	if not cv_music:GetBool() then return end
 
-	sound.PlayFile("sound/criresps/cri_mainmenu.mp3", "noblock", function(station)
+	sound.PlayFile("sound/crawlspace.mp3", "noblock", function(station)
 		if not IsValid(station) then return end
 		station:EnableLooping(true)
 		station:SetVolume(cv_musicvol:GetInt() / 100)
 		station:Play()
 		menuMusic = station
+	end)
+end
+
+local prepMusic
+local arrivalMusic
+local prepStart
+local arrivalStarted
+
+local function StopPrepMusic()
+	if IsValid(prepMusic) then prepMusic:Stop() end
+	prepMusic = nil
+end
+
+local function StopArrivalMusic()
+	if IsValid(arrivalMusic) then arrivalMusic:Stop() end
+	arrivalMusic = nil
+end
+
+local function StopSiegeAudio()
+	StopPrepMusic()
+	StopArrivalMusic()
+	prepStart = nil
+	arrivalStarted = false
+end
+
+local function StartPrepMusic()
+	StopPrepMusic()
+	prepStart = CurTime()
+	arrivalStarted = false
+
+	sound.PlayFile("sound/crawlspace.mp3", "noblock", function(station)
+		if not IsValid(station) then return end
+		station:SetVolume(0.6)
+		station:Play()
+		prepMusic = station
+	end)
+end
+
+local function StartArrivalMusic()
+	if arrivalStarted then return end
+	arrivalStarted = true
+
+	StopPrepMusic()
+
+	sound.PlayFile("sound/endtimes.mp3", "noblock", function(station)
+		if not IsValid(station) then return end
+		station:SetVolume(0.2)
+		station:Play()
+		arrivalMusic = station
 	end)
 end
 
@@ -58,12 +120,33 @@ local function SendCustomization()
 		if n then table.insert(gear, n) end
 	end
 
+	local atts = {}
+	for _, s in ipairs(string.Explode(" ", cv_atts:GetString())) do
+		if s ~= "" then table.insert(atts, s) end
+	end
+
+	local op = GetOperative(cv_operative:GetString())
+	if not op then return end
+
+	local primaries = op.primaries or {}
+	local pistols = op.pistols or {}
+	local selected = #primaries > 0 and math.Clamp(cv_loadout:GetInt(), 1, #primaries) or 0
+	local sidearm = #pistols > 0 and math.Clamp(cv_pistol:GetInt(), 1, #pistols) or 0
+	local taser = (op.tasers and cv_taser:GetBool()) and true or false
+
 	net.Start("criresp_custom")
-		net.WriteUInt(math.Clamp(cv_loadout:GetInt(), 0, 255), 8)
+		net.WriteString(op.id)
+		net.WriteUInt(selected, 8)
+		net.WriteUInt(sidearm, 8)
+		net.WriteBool(taser)
 		net.WriteString(cv_groups:GetString())
 		net.WriteUInt(math.min(#gear, 15), 4)
 		for i = 1, math.min(#gear, 15) do
 			net.WriteUInt(gear[i], 8)
+		end
+		net.WriteUInt(math.min(#atts, 32), 6)
+		for i = 1, math.min(#atts, 32) do
+			net.WriteString(atts[i])
 		end
 	net.SendToServer()
 end
@@ -116,6 +199,72 @@ local function WepModel(class)
 	local wep = weapons.Get(class)
 	local mdl = wep and wep.WorldModel
 	return (mdl and mdl ~= "") and mdl or "models/weapons/w_pistol.mdl"
+end
+
+local function IsAttachmentBlocked(class, placement, att)
+	if class == "weapon_remington870" and (placement == "barrel" or string.sub(att, 1, 9) == "supressor") then
+		return true
+	end
+	return false
+end
+
+local function IsAttachmentCompatibleClient(class, placement, att, avail)
+	local data = hg.attachments and hg.attachments[placement] and hg.attachments[placement][att]
+	if not data or not avail then return false end
+	if IsAttachmentBlocked(class, placement, att) then return false end
+
+	local listed
+	for _, entry in pairs(avail) do
+		if istable(entry) then
+			if entry[1] == att then listed = true break end
+		elseif entry == att then
+			listed = true
+			break
+		end
+	end
+
+	local mountType = avail.mountType
+	local attMount = data.mountType
+
+	if not listed and not (mountType or attMount) then return false end
+
+	if istable(mountType) then
+		return attMount ~= nil and table.HasValue(mountType, attMount)
+	end
+
+	return mountType == attMount
+end
+
+local function CompatibleAttachments(class)
+	local wep = weapons.GetStored(class) or weapons.Get(class)
+	local out = {}
+	if not wep or not wep.availableAttachments or not hg.attachments then return out end
+
+	for placement, avail in pairs(wep.availableAttachments) do
+		local pool = hg.attachments[placement]
+		if istable(avail) and pool then
+			for att, data in pairs(pool) do
+				local icon = hg.attachmentsIcons and hg.attachmentsIcons[att]
+				local model = data[2]
+				if att ~= "empty" and (model and model ~= "" or icon) and IsAttachmentCompatibleClient(class, placement, att, avail) then
+					out[#out + 1] = {
+						att = att,
+						placement = placement,
+						name = (hg.attachmentslaunguage and hg.attachmentslaunguage[att]) or att,
+						icon = icon,
+						model = model
+					}
+				end
+			end
+		end
+	end
+
+	table.sort(out, function(a, b)
+		if a.placement == b.placement then return a.name < b.name end
+		return a.placement < b.placement
+	end)
+
+	return out
 end
 
 
@@ -291,7 +440,7 @@ local function FitLabel(label, maxw)
 	return {{label, "CRI_Tiny"}}
 end
 
-local function Tile(parent, class, iconOverride, label, isSel, onClick)
+local function Tile(parent, class, iconOverride, label, isSel, onClick, modelOverride)
 	local t = vgui.Create("DButton", parent)
 	t:SetText("")
 	t.hover = 0
@@ -299,12 +448,17 @@ local function Tile(parent, class, iconOverride, label, isSel, onClick)
 	local labelH = ScreenScale(13)
 
 	local mat, boxed
-	if class then mat, boxed = ItemIcon(class, iconOverride) end
+	if class then
+		mat, boxed = ItemIcon(class, iconOverride)
+	elseif iconOverride then
+		mat, boxed = Material(iconOverride, "smooth mips"), true
+		if mat:IsError() then mat = nil end
+	end
 
-	if class and not mat then
+	if (class or modelOverride) and not mat then
 		local ico = vgui.Create("SpawnIcon", t)
 		ico:SetMouseInputEnabled(false)
-		ico:SetModel(WepModel(class))
+		ico:SetModel(modelOverride or WepModel(class))
 		t.PerformLayout = function(self, w, h)
 			ico:SetPos(4, 4)
 			ico:SetSize(w - 8, h - labelH - 6)
@@ -332,7 +486,7 @@ local function Tile(parent, class, iconOverride, label, isSel, onClick)
 	end
 
 	t.PaintOver = function(self, w, h)
-		if not class then
+		if not class and not mat and not modelOverride then
 			draw.SimpleText("?", "CRI_Title", w / 2, (h - labelH) / 2, criDim, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 
@@ -402,8 +556,8 @@ local function OpenMenu()
 		surface.SetDrawColor(criRed)
 		surface.DrawRect(0, headerH - 3, w, 3)
 
-		draw.SimpleText("CRISIS RESPONSE", "CRI_Huge", w * 0.5 + 4, headerH * 0.5 + 4, criShadow, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText("CRISIS RESPONSE", "CRI_Huge", w * 0.5, headerH * 0.5, criRed, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText("WACO SIEGE", "CRI_Huge", w * 0.5 + 4, headerH * 0.5 + 4, criShadow, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText("WACO SIEGE", "CRI_Huge", w * 0.5, headerH * 0.5, criRed, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		draw.SimpleText("Z-CITY", "CRI_Med", w * 0.99, headerH - ScreenScale(8), criRedDark, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 
 		if self.state == "waiting" then
@@ -612,11 +766,68 @@ local function OpenMenu()
 		local scr = ScreenBase()
 		TopBar(scr, "Customization")
 
-		local primaries = MODE.SWATPrimaries or {}
+		local operatives = MODE.SWATOperatives or {}
+		local selOp = 1
+		for i, o in ipairs(operatives) do
+			if o.id == cv_operative:GetString() then selOp = i break end
+		end
+		local op = operatives[selOp] or {}
+		local primaries = op.primaries or {}
+		local pistols = op.pistols or {}
 		local gearlist = MODE.SWATGear or {}
 		local slots = MODE.SWATGearSlots or 4
 
-		local selPrimary = cv_loadout:GetInt()
+		local selPrimary = math.Clamp(cv_loadout:GetInt(), 1, math.max(#primaries, 1))
+		if #primaries == 0 then selPrimary = 0 end
+		local selPistol = math.Clamp(cv_pistol:GetInt(), 1, math.max(#pistols, 1))
+		if #pistols == 0 then selPistol = 0 end
+		local selTaser = op.tasers and cv_taser:GetBool() or false
+
+		local pgrid, pistolGrid
+		local BuildPrimaryGrid, BuildPistolGrid, BuildBodygroups, SwitchOperative
+
+		local savedAtts = {}
+		for _, s in ipairs(string.Explode(" ", cv_atts:GetString())) do
+			if s ~= "" then savedAtts[s] = true end
+		end
+
+		local selAtts = {}
+		local attGrid, attTileSize
+
+		local function RebuildAttachments(includeSaved)
+			if not IsValid(attGrid) then return end
+
+			local primary = primaries[selPrimary]
+			local list = primary and CompatibleAttachments(primary.wep) or {}
+			local compat = {}
+			for _, a in ipairs(list) do compat[a.att] = a.placement end
+
+			selAtts = {}
+			if primary then
+				local function add(att)
+					local placement = compat[att]
+					if placement then selAtts[placement] = att end
+				end
+
+				for _, att in ipairs(primary.atts or {}) do add(att) end
+				if includeSaved then
+					for att in pairs(savedAtts) do add(att) end
+				end
+			end
+
+			attGrid:Clear()
+			for _, a in ipairs(list) do
+				local tile = Tile(attGrid, nil, a.icon, a.name, function() return selAtts[a.placement] == a.att end, function()
+					if selAtts[a.placement] == a.att then
+						selAtts[a.placement] = nil
+					else
+						selAtts[a.placement] = a.att
+					end
+				end, a.model)
+				tile:SetSize(attTileSize, attTileSize + ScreenScale(14))
+			end
+		end
+
 		local selGear = {}
 		for _, s in ipairs(string.Explode(" ", cv_gear:GetString())) do
 			local n = tonumber(s)
@@ -640,25 +851,31 @@ local function OpenMenu()
 
 		CriBar(units, "Special Units")
 
-		local swatCard = vgui.Create("DButton", units)
-		swatCard:Dock(TOP)
-		swatCard:SetTall(units:GetWide() * 0.85)
-		swatCard:SetText("")
-		swatCard.Selected = true
-		swatCard.OnCursorEntered = function() surface.PlaySound(sndHover) end
-		swatCard.Paint = function(self, w, h)
-			draw.RoundedBox(6, 0, 0, w, h, self.Selected and criPanelLight or criPanel)
-			surface.SetDrawColor(self.Selected and criRed or criWhite)
-			surface.DrawOutlinedRect(1, 1, w - 2, h - 2, 2)
+		for i, o in ipairs(operatives) do
+			local card = vgui.Create("DButton", units)
+			card:Dock(TOP)
+			card:SetTall(units:GetWide() * 0.7)
+			card:DockMargin(0, 0, 0, 8)
+			card:SetText("")
+			card.OnCursorEntered = function() surface.PlaySound(sndHover) end
+			card.Paint = function(self, w, h)
+				local selected = selOp == i
+				draw.RoundedBox(6, 0, 0, w, h, selected and criPanelLight or criPanel)
+				surface.SetDrawColor(selected and criRed or criWhite)
+				surface.DrawOutlinedRect(1, 1, w - 2, h - 2, 2)
 
-			local fw = w * 0.66
-			surface.SetDrawColor(255, 255, 255)
-			surface.SetMaterial(flagMat)
-			surface.DrawTexturedRect(w / 2 - fw / 2, h * 0.18, fw, fw * 0.55)
+				local fw = w * 0.66
+				surface.SetDrawColor(255, 255, 255)
+				surface.SetMaterial(flagMat)
+				surface.DrawTexturedRect(w / 2 - fw / 2, h * 0.18, fw, fw * 0.55)
 
-			draw.SimpleText("SWAT", "CRI_Med", w / 2, h * 0.82, criWhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText(o.name or string.upper(o.id or "?"), "CRI_Med", w / 2, h * 0.82, criWhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			end
+			card.DoClick = function()
+				surface.PlaySound(sndClick)
+				if SwitchOperative then SwitchOperative(i) end
+			end
 		end
-		swatCard.DoClick = function() surface.PlaySound(sndClick) end
 
 		local mid = vgui.Create("DPanel", body)
 		mid:Dock(LEFT)
@@ -685,7 +902,7 @@ local function OpenMenu()
 		local preview = vgui.Create("DModelPanel", previewBG)
 		preview:Dock(FILL)
 		preview:DockMargin(2, 2, 2, 2)
-		preview:SetModel(MODE.SWATModel or "models/css_seb_swat/css_swat.mdl")
+		preview:SetModel(op.model or MODE.SWATModel or "models/css_seb_swat/css_swat.mdl")
 		preview:SetFOV(54)
 		preview:SetCamPos(Vector(95, 0, 52))
 		preview:SetLookAt(Vector(0, 0, 40))
@@ -729,8 +946,12 @@ local function OpenMenu()
 			draw.SimpleText("HOLD LMB TO ROTATE", "CRI_Small", w / 2, h - 8, criDim, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
 		end
 
-		local pent = preview.Entity
-		if IsValid(pent) then
+		BuildBodygroups = function()
+			if not IsValid(groupScroll) or not IsValid(preview.Entity) then return end
+
+			groupScroll:GetCanvas():Clear()
+
+			local pent = preview.Entity
 			for _, bg in ipairs(pent:GetBodyGroups() or {}) do
 				local id, count = bg.id, pent:GetBodygroupCount(bg.id)
 				if count < 2 then continue end
@@ -742,39 +963,104 @@ local function OpenMenu()
 					function() return (groups[id] or 0) + 1 .. " / " .. count end)
 			end
 		end
+		BuildBodygroups()
 
 		local rightC = vgui.Create("DPanel", body)
 		rightC:Dock(FILL)
 		rightC.Paint = nil
 
-		local tileSize = ScreenScale(52)
+		local rightBottom = vgui.Create("DPanel", rightC)
+		rightBottom:Dock(BOTTOM)
+		rightBottom:SetTall(ScreenScale(22))
+		rightBottom.Paint = nil
 
-		CriBar(rightC, "Primary Weapon")
+		local content = vgui.Create("DScrollPanel", rightC)
+		content:Dock(FILL)
+		content:GetVBar():SetWide(4)
 
-		local pgrid = vgui.Create("DIconLayout", rightC)
-		pgrid:Dock(TOP)
-		pgrid:SetTall(tileSize + ScreenScale(16))
-		pgrid:DockMargin(0, 0, 0, 12)
+		local tileSize = ScreenScale(40)
+		local pistolTileSize = ScreenScale(34)
+
+		CriBar(content, "Pistols")
+
+		pistolGrid = vgui.Create("DIconLayout", content)
+		pistolGrid:Dock(TOP)
+		pistolGrid:SetTall((pistolTileSize + ScreenScale(16)) * 2)
+		pistolGrid:DockMargin(0, 0, 0, 12)
+		pistolGrid:SetSpaceX(6)
+		pistolGrid:SetSpaceY(6)
+
+		CriBar(content, "Primary Weapon")
+
+		local primaryScroll = vgui.Create("DScrollPanel", content)
+		primaryScroll:Dock(TOP)
+		primaryScroll:SetTall((tileSize + ScreenScale(16)) * 2)
+		primaryScroll:DockMargin(0, 0, 0, 12)
+		primaryScroll:GetVBar():SetWide(4)
+
+		pgrid = vgui.Create("DIconLayout", primaryScroll)
+		pgrid:Dock(FILL)
 		pgrid:SetSpaceX(6)
 		pgrid:SetSpaceY(6)
 
-		local randomTile = Tile(pgrid, nil, nil, "RANDOM", function() return selPrimary == 0 end, function()
-			selPrimary = 0
-		end)
-		randomTile:SetSize(tileSize, tileSize + ScreenScale(14))
+		BuildPrimaryGrid = function()
+			if not IsValid(pgrid) then return end
+			pgrid:Clear()
 
-		for i, p in ipairs(primaries) do
-			local tile = Tile(pgrid, p.wep, p.icon, p.name, function() return selPrimary == i end, function()
-				selPrimary = i
-			end)
-			tile:SetSize(tileSize, tileSize + ScreenScale(14))
+			for i, p in ipairs(primaries) do
+				local tile = Tile(pgrid, p.wep, p.icon, p.name, function() return selPrimary == i end, function()
+					selPrimary = i
+					RebuildAttachments(true)
+				end)
+				tile:SetSize(tileSize, tileSize + ScreenScale(14))
+			end
 		end
 
-		CriBar(rightC, "Equipment - " .. slots .. " slots")
+		BuildPistolGrid = function()
+			if not IsValid(pistolGrid) then return end
+			pistolGrid:Clear()
 
-		local ggrid = vgui.Create("DIconLayout", rightC)
+			for i, p in ipairs(pistols) do
+				local tile = Tile(pistolGrid, p.wep, p.icon, p.name, function() return selPistol == i end, function()
+					selPistol = i
+				end)
+				tile:SetSize(pistolTileSize, pistolTileSize + ScreenScale(14))
+			end
+
+			if op.tasers then
+				for _, t in ipairs(op.tasers) do
+					local tile = Tile(pistolGrid, t.wep, t.icon, t.name, function() return selTaser end, function()
+						selTaser = not selTaser
+					end)
+					tile:SetSize(pistolTileSize, pistolTileSize + ScreenScale(14))
+				end
+			end
+		end
+
+		BuildPistolGrid()
+		BuildPrimaryGrid()
+
+		CriBar(content, "Attachments")
+
+		local attScroll = vgui.Create("DScrollPanel", content)
+		attScroll:Dock(TOP)
+		attScroll:SetTall(scrh * 0.2)
+		attScroll:DockMargin(0, 0, 0, 12)
+		attScroll:GetVBar():SetWide(4)
+
+		attGrid = vgui.Create("DIconLayout", attScroll)
+		attGrid:Dock(FILL)
+		attGrid:SetSpaceX(6)
+		attGrid:SetSpaceY(6)
+
+		attTileSize = math.max(ScreenScale(34), math.floor(tileSize * 0.8))
+		RebuildAttachments(true)
+
+		CriBar(content, "Equipment - " .. slots .. " slots")
+
+		local ggrid = vgui.Create("DIconLayout", content)
 		ggrid:Dock(TOP)
-		ggrid:SetTall((tileSize + ScreenScale(16)) * 2)
+		ggrid:SetTall(tileSize + ScreenScale(16))
 		ggrid:SetSpaceX(6)
 		ggrid:SetSpaceY(6)
 
@@ -797,7 +1083,7 @@ local function OpenMenu()
 			tile:SetSize(tileSize, tileSize + ScreenScale(14))
 		end
 
-		local slotsInfo = vgui.Create("DPanel", rightC)
+		local slotsInfo = vgui.Create("DPanel", content)
 		slotsInfo:Dock(TOP)
 		slotsInfo:SetTall(ScreenScale(10))
 		slotsInfo:DockMargin(0, 4, 0, 0)
@@ -805,7 +1091,7 @@ local function OpenMenu()
 			--draw.SimpleText("SELECTED: " .. GearCount() .. " / " .. slots .. "  (HANDCUFFS AND SIDEARM ARE ALWAYS ISSUED)", "CRI_Small", 0, h / 2, criDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		end
 
-		local applyBtn = BoxButton(rightC, "Apply", function()
+		local applyBtn = BoxButton(rightBottom, "Apply", function()
 			local num = IsValid(preview.Entity) and preview.Entity:GetNumBodyGroups() or 0
 			local t = {}
 			for k = 0, num - 1 do t[k + 1] = groups[k] or 0 end
@@ -813,14 +1099,52 @@ local function OpenMenu()
 			local gear = {}
 			for i in SortedPairs(selGear) do table.insert(gear, i) end
 
+			local atts = {}
+			for _, att in pairs(selAtts) do atts[#atts + 1] = att end
+			table.sort(atts)
+
+			savedAtts = {}
+			for _, att in ipairs(atts) do savedAtts[att] = true end
+
+			RunConsoleCommand("criresp_operative", op.id or "atf")
 			RunConsoleCommand("criresp_loadout", selPrimary)
+			RunConsoleCommand("criresp_pistol", selPistol)
+			RunConsoleCommand("criresp_taser", selTaser and "1" or "0")
 			RunConsoleCommand("criresp_bodygroups", table.concat(t, " "))
 			RunConsoleCommand("criresp_gear", table.concat(gear, " "))
+			RunConsoleCommand("criresp_atts", table.concat(atts, " "))
 			timer.Simple(0.1, SendCustomization)
 
 		end)
-		applyBtn:Dock(BOTTOM)
-		applyBtn:SetTall(ScreenScale(18))
+		applyBtn:Dock(FILL)
+		applyBtn:DockMargin(0, 4, 0, 0)
+
+		SwitchOperative = function(index)
+			if index == selOp or not operatives[index] then return end
+
+			selOp = index
+			op = operatives[index]
+			primaries = op.primaries or {}
+			pistols = op.pistols or {}
+			selPrimary = #primaries > 0 and 1 or 0
+			selPistol = #pistols > 0 and 1 or 0
+			selTaser = false
+			table.Empty(groups)
+
+			if IsValid(preview) then
+				preview:SetModel(op.model or MODE.SWATModel or "models/css_seb_swat/css_swat.mdl")
+				preview.RotY = 35
+				if IsValid(preview.Entity) then
+					local seq = preview.Entity:LookupSequence("idle_suitcase")
+					if seq > 0 then preview.Entity:ResetSequence(seq) end
+				end
+			end
+
+			BuildPistolGrid()
+			BuildPrimaryGrid()
+			RebuildAttachments(true)
+			timer.Simple(0, BuildBodygroups)
+		end
 
 		return scr
 	end
@@ -859,8 +1183,8 @@ local function OpenMenu()
 		local dim = "<colour=170,140,140,255>"
 
 		local text1 = "<font=CRI_Med>" .. white .. "THE BASICS YOU WILL NEED TO PLAY</colour></font>\n\n"
-			.. "<font=CRI_Small>" .. white .. "1. PLAYING AS A </colour>" .. red .. "SUSPECT</colour>\n\n"
-			.. white .. "If you become a </colour>" .. red .. "suspect</colour>" .. white
+			.. "<font=CRI_Small>" .. white .. "1. PLAYING AS A </colour>" .. red .. "BRANCH DAVIDIAN</colour>\n\n"
+			.. white .. "If you become a </colour>" .. red .. "Davidian</colour>" .. white
 			.. ", you cannot waste a single minute. First of all, scan the area around you: barricade the doors with props, board up the windows, do everything you can so the </colour>"
 			.. blue .. "entry team</colour>" .. white
 			.. " has as much trouble as possible trying to breach the building. Understand one thing - only teamwork decides whether you win this round or not. Unlike the entry team you don't have serious firepower: your weapons are fairly weak and hitting an operator in the chest won't do you much good. Avoid direct contact with the </colour>"
@@ -910,6 +1234,7 @@ end
 local beginAt, endStats, menuShownAt
 
 net.Receive("criresp_start", function()
+	StopSiegeAudio()
 	readyN, readyT = 0, 0
 	menuShownAt = CurTime()
 	beginAt = nil
@@ -930,31 +1255,26 @@ end)
 net.Receive("criresp_begin", function()
 	beginAt = CurTime()
 
+	StopMenuMusic()
+	StopSiegeAudio()
+
 	if IsValid(menuPanel) then
 		local pnl = menuPanel
 		pnl:AlphaTo(0, 1.2, 0.4, function() if IsValid(pnl) then pnl:Remove() end end)
 	end
 
-	timer.Simple(3, function()
-		sound.PlayFile("sound/zbattle/criresp/criepmission.mp3", "mono noblock", function(station)
-			if IsValid(station) then
-				station:Play()
-				song = station
-				songfade = 1
-			end
-		end)
-	end)
+	StartPrepMusic()
 end)
 
 local teams = {
 	[0] = {
-		name = "A SWAT OPERATOR",
-		objective = "Negotiations failed. You will deploy when SWAT arrives, stand by...",
+		name = "AN ATF AGENT",
+		objective = "These cultists have gone crazy, we have to stop them.",
 		color = Color(70, 70, 255)
 	},
 	[1] = {
-		name = "A SUSPECT",
-		objective = "This is my fucking house, bitches, I can do what I want.",
+		name = "A BRANCH DAVIDIAN",
+		objective = "The army of Babylon came to slaughter God's chosen people, we must defend ourselves.",
 		color = Color(228, 49, 49)
 	},
 }
@@ -965,22 +1285,21 @@ local spectatorInfo = {
 	color = Color(160, 160, 160)
 }
 
-song = song or nil
-songfade = songfade or 0
-
 function MODE:RenderScreenspaceEffects()
 	if (menuShownAt or 0) + 1 < CurTime() then
 		zb.RemoveFade()
 	end
 
-	if zb.ROUND_BEGIN + 85 < CurTime() then
-		if songfade <= 0.01 and IsValid(song) then
-			song:Stop()
-			song = nil
-			surface.PlaySound(lply:Team() == 0 and "zbattle/criresp/barricadedsuspectstart.mp3" or "snd_jack_hmcd_policesiren.wav")
-		elseif IsValid(song) then
-			songfade = Lerp(0.01, songfade, 0)
-			song:SetVolume(songfade)
+	if not prepStart then return end
+
+	local elapsed = CurTime() - prepStart
+	if elapsed >= 50 then
+		if IsValid(prepMusic) then prepMusic:Stop() end
+		prepMusic = nil
+		StartArrivalMusic()
+	elseif elapsed >= 48 then
+		if IsValid(prepMusic) then
+			prepMusic:SetVolume(Lerp(1 - (elapsed - 48) / 2, 0.6, 0))
 		end
 	end
 end
@@ -1021,10 +1340,10 @@ function MODE:HUDPaint()
 					title, titleCol = "OPERATION OVER", criDim
 				end
 
-				draw.SimpleText("CRISIS RESPONSE", "CRI_Med", sw * 0.5, sh * 0.14, ColorAlpha(criRedDark, textAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText("WACO SIEGE", "CRI_Med", sw * 0.5, sh * 0.14, ColorAlpha(criRedDark, textAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				draw.SimpleText(title, "CRI_Title", sw * 0.5, sh * 0.32, ColorAlpha(titleCol, textAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
-				draw.SimpleText("SUSPECTS KILLED: " .. endStats.killed .. " / " .. endStats.total, "CRI_Med", sw * 0.5, sh * 0.48, ColorAlpha(criWhite, textAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText("DAVIDIANS KILLED: " .. endStats.killed .. " / " .. endStats.total, "CRI_Med", sw * 0.5, sh * 0.48, ColorAlpha(criWhite, textAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				draw.SimpleText("INCAPACITATED: " .. endStats.incap, "CRI_Med", sw * 0.5, sh * 0.55, ColorAlpha(criWhite, textAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				draw.SimpleText("ARRESTED: " .. endStats.arrested, "CRI_Med", sw * 0.5, sh * 0.62, ColorAlpha(criWhite, textAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
@@ -1049,9 +1368,19 @@ function MODE:HUDPaint()
 
 			if t > 1.5 then
 				local info = teams[lply:Team()] or spectatorInfo
+				if lply:Team() == 0 then
+					local op = GetOperative(cv_operative:GetString())
+					if op then
+						info = {
+							name = "AN " .. string.upper(op.name or "ATF") .. " AGENT",
+							objective = teams[0].objective,
+							color = op.color or teams[0].color,
+						}
+					end
+				end
 				local textAlpha = math.min(alpha, 255 * math.Clamp((t - 1.5) / 0.7, 0, 1))
 
-				draw.SimpleText("CRISIS RESPONSE", "CRI_Title", sw * 0.5, sh * 0.12, ColorAlpha(criRed, textAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText("WACO SIEGE", "CRI_Title", sw * 0.5, sh * 0.12, ColorAlpha(criRed, textAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				draw.SimpleText("YOU ARE " .. info.name, "CRI_Title", sw * 0.5, sh * 0.5, ColorAlpha(info.color, textAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				draw.SimpleText(info.objective, "CRI_Med", sw * 0.5, sh * 0.6, ColorAlpha(criWhite, textAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
@@ -1062,9 +1391,14 @@ function MODE:HUDPaint()
 		return
 	end
 
-	if zb.ROUND_BEGIN + 90 > CurTime() and zb.ROUND_BEGIN < CurTime() then
+	if zb.ROUND_BEGIN + 50 > CurTime() and zb.ROUND_BEGIN < CurTime() then
 		local color = Color(255 * -math.sin(CurTime() * 3), 25, 255 * math.sin(CurTime() * 3))
-		local text = "SWAT will arrive in: " .. string.FormattedTime(zb.ROUND_BEGIN + 90 - CurTime(), "%02i:%02i")
+		local faction = "Babylon Police"
+		if lply:Team() == 0 then
+			local op = GetOperative(cv_operative:GetString())
+			faction = op and (op.name or "ATF") or "ATF"
+		end
+		local text = faction .. " arrival in: " .. string.FormattedTime(zb.ROUND_BEGIN + 50 - CurTime(), "%02i:%02i")
 		draw.SimpleText(text, "CRI_Med", sw * 0.02, sh * 0.95, Color(0, 0, 0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		draw.SimpleText(text, "CRI_Med", sw * 0.02 - 2, sh * 0.95 - 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
@@ -1074,8 +1408,8 @@ end
 net.Receive("cri_roundend", function()
 	beginAt = nil
 	StopMenuMusic()
+	StopSiegeAudio()
 	if IsValid(menuPanel) then menuPanel:Remove() end
-	if IsValid(song) then song:Stop() song = nil end
 
 	endStats = {
 		start = CurTime(),

@@ -285,6 +285,10 @@ MODE.Types.standard = {
 		ply:SetNetVar("Inventory",inv)
 	end,
 	GunManLoot = function(ply)
+		if MODE.ApplyHeroLoadout then
+			MODE.ApplyHeroLoadout(ply)
+			return
+		end
 		ply:Give("weapon_px4beretta")
 		ply.organism.recoilmul = 1
 	end,
@@ -1601,12 +1605,19 @@ function MODE.SpawnPlayers(spawn_with_subroles)
             local sub_role = nil
             if(spawn_with_subroles and MODE.RoleChooseRoundTypes[MODE.Type])then
                 if(current_ply.isTraitor)then
-                    local sub_role_id = MODE.Type == "soe" and (current_ply:GetInfo(MODE.ConVarName_SubRole_Traitor_SOE) or "traitor_default_soe") or (current_ply:GetInfo(MODE.ConVarName_SubRole_Traitor) or "traitor_default")
+                    local sub_role_id = (current_ply:GetInfo(MODE.ConVarName_SubRole_Traitor_SOE) or "traitor_custom")
+                    if MODE.Type ~= "soe" then
+                        sub_role_id = current_ply:GetInfo(MODE.ConVarName_SubRole_Traitor) or "traitor_custom"
+                    end
 					sub_role = sub_role_id
                 end
 
                 if(current_ply.isGunner)then
-                    MODE.Types[MODE.Type].GunManLoot(current_ply)
+                    if MODE.ApplyHeroLoadout then
+                        MODE.ApplyHeroLoadout(current_ply)
+                    else
+                        MODE.Types[MODE.Type].GunManLoot(current_ply)
+                    end
                 end
 
                 if(sub_role)then
@@ -1615,7 +1626,7 @@ function MODE.SpawnPlayers(spawn_with_subroles)
                     elseif(current_ply.isTraitor)then
                         local role_info = MODE.SubRoles[sub_role]
                         if(!role_info or !MODE.RoleChooseRoundTypes[MODE.Type].Traitor[sub_role])then
-                            sub_role = MODE.RoleChooseRoundTypes[MODE.Type].TraitorDefaultRole or "traitor_default"
+                            sub_role = MODE.RoleChooseRoundTypes[MODE.Type].TraitorDefaultRole or "traitor_custom"
                             role_info = MODE.SubRoles[sub_role]
                         end
 

@@ -546,7 +546,7 @@ if CLIENT then
         if IsValid(isMenuOpen) then return end
         local frame = vgui.Create("ZFrame")
         isMenuOpen = frame
-        frame:SetSize(400, 200)
+        frame:SetSize(400, 264)
         frame:Center()
         frame:SetTitle("")
         frame:SetDraggable(true)
@@ -589,6 +589,16 @@ if CLIENT then
         manageBtn.DoClick = function()
             surface.PlaySound(SND_CLICK)
             OpenQueueManager()
+        end
+
+        local statsBtn = BigButton("Player Criminal Records", COL_ROW, COL_ROW_HOV)
+        statsBtn.DoClick = function()
+            surface.PlaySound(SND_CLICK)
+            if CRIMXP and CRIMXP.OpenAdminStats then
+                CRIMXP.OpenAdminStats()
+            else
+                chat.AddText(Color(255, 80, 80), "Criminal records menu is not available.")
+            end
         end
 
         local endBtn = BigButton("End Round", COL_ACCENT, COL_ACCENT_H)

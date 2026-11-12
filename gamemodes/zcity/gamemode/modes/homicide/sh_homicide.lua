@@ -11,9 +11,225 @@ MODE.ConVarName_SubRole_Traitor_SOE = "hmcd_subrole_traitor_soe"
 MODE.ConVarName_SubRole_Traitor = "hmcd_subrole_traitor"
 
 if(CLIENT)then
-	MODE.ConVar_SubRole_Traitor_SOE = CreateClientConVar(MODE.ConVarName_SubRole_Traitor_SOE, "traitor_default_soe", true, true, "Select traitor role in State of Emergency homicide mode")
-	MODE.ConVar_SubRole_Traitor = CreateClientConVar(MODE.ConVarName_SubRole_Traitor, "traitor_default", true, true, "Select murder role in Standard homicide modes")
+	MODE.ConVar_SubRole_Traitor_SOE = CreateClientConVar(MODE.ConVarName_SubRole_Traitor_SOE, "traitor_custom", true, true, "Select traitor role in State of Emergency homicide mode")
+	MODE.ConVar_SubRole_Traitor = CreateClientConVar(MODE.ConVarName_SubRole_Traitor, "traitor_custom", true, true, "Select murder role in Standard homicide modes")
 end
+
+--\\Loadout
+local HeroWeaponData = {
+	["weapon_px4beretta"] = {extraClips = 0},
+	["weapon_glock17"] = {extraClips = 0},
+	["weapon_hk_usp"] = {extraClips = 0},
+	["weapon_remington870"] = {extraClips = 0, sling = true},
+	["weapon_kar98"] = {extraClips = 0, sling = true},
+	["weapon_vpo209"] = {extraClips = 0},
+	["weapon_vpo136"] = {extraClips = 0},
+	["weapon_mosin"] = {extraClips = 0, sling = true},
+}
+
+local HeroUpgradeData = {
+	["hero_px4_silencer"] = {parent = "weapon_px4beretta", type = "attachment", attachment = "supressor4"},
+	["hero_px4_ammo"] = {parent = "weapon_px4beretta", type = "ammo", extraClips = 1},
+	["hero_glock_silencer"] = {parent = "weapon_glock17", type = "attachment", attachment = "supressor4"},
+	["hero_glock_rmr"] = {parent = "weapon_glock17", type = "attachment", attachment = "holo16"},
+	["hero_glock_laser"] = {parent = "weapon_glock17", type = "attachment", attachment = "laser3"},
+	["hero_glock_ammo"] = {parent = "weapon_glock17", type = "ammo", extraClips = 1},
+	["hero_usp_silencer"] = {parent = "weapon_hk_usp", type = "attachment", attachment = "supressor4"},
+	["hero_usp_ammo"] = {parent = "weapon_hk_usp", type = "ammo", extraClips = 1},
+	["hero_remington_sight"] = {parent = "weapon_remington870", type = "attachment", attachment = "holo16"},
+	["hero_remington_ammo"] = {parent = "weapon_remington870", type = "ammo", extraClips = 1},
+	["hero_kar98_scope"] = {parent = "weapon_kar98", type = "attachment", attachment = "optic12"},
+	["hero_kar98_ammo"] = {parent = "weapon_kar98", type = "ammo", extraClips = 1},
+	["hero_vpo209_silencer"] = {parent = "weapon_vpo209", type = "attachment", attachment = "supressor1"},
+	["hero_vpo209_optic"] = {parent = "weapon_vpo209", type = "attachment", attachment = "holo16"},
+	["hero_vpo209_ammo"] = {parent = "weapon_vpo209", type = "ammo", extraClips = 1},
+	["hero_vpo136_silencer"] = {parent = "weapon_vpo136", type = "attachment", attachment = "supressor1"},
+	["hero_vpo136_optic"] = {parent = "weapon_vpo136", type = "attachment", attachment = "holo16"},
+	["hero_vpo136_ammo"] = {parent = "weapon_vpo136", type = "ammo", extraClips = 1},
+	["hero_mosin_silencer"] = {parent = "weapon_mosin", type = "attachment", attachment = "supressor1"},
+	["hero_mosin_scope"] = {parent = "weapon_mosin", type = "attachment", attachment = "optic12"},
+	["hero_mosin_ammo"] = {parent = "weapon_mosin", type = "ammo", extraClips = 1},
+}
+
+local function ParseLoadoutString(dataStr)
+	local loadout = {}
+	if dataStr and dataStr ~= "" then
+		local ok, parsed = pcall(util.JSONToTable, dataStr)
+		if ok and istable(parsed) then
+			loadout = parsed
+		end
+	end
+	return loadout
+end
+
+local LegacyTraitorLoadout = {
+	skillset = "none",
+	weapons = {
+		"weapon_p22",
+		"weapon_p22_silencer",
+		"weapon_buck200knife",
+		"weapon_hg_rgd_tpik",
+		"weapon_adrenaline",
+		"weapon_hg_shuriken",
+		"weapon_hg_smokenade_tpik",
+		"weapon_traitor_ied",
+		"weapon_traitor_poison1",
+		"weapon_traitor_suit",
+		"weapon_hg_jam",
+		"weapon_walkie_talkie"
+	}
+}
+
+local TraitorSkillsetSubRoles = {
+	["infiltrator"] = "traitor_infiltrator",
+	["assassin"] = "traitor_assasin",
+	["chemist"] = "traitor_chemist",
+}
+
+local function ApplyTraitorLoadout(ply)
+	local loadout = ParseLoadoutString(ply:GetInfo("hmcd_traitor_loadout"))
+	local weaponsEmpty = not istable(loadout.weapons) or #loadout.weapons == 0
+	if (not loadout.skillset and weaponsEmpty) or (loadout.skillset == "none" and weaponsEmpty) then loadout = LegacyTraitorLoadout end
+
+	local skillset = loadout.skillset or "none"
+	local weaponsList = loadout.weapons or {}
+	ply.SubRole = TraitorSkillsetSubRoles[skillset] or ply.SubRole
+
+	ply.organism.stamina.max = 220
+	ply.organism.recoilmul = 1
+
+	if skillset == "infiltrator" then
+		-- Infiltrator specifics
+	elseif skillset == "assassin" then
+		ply.organism.recoilmul = 0.8
+		ply.organism.stamina.max = 300
+	elseif skillset == "chemist" then
+		if CleanChemicalsOfPlayer then CleanChemicalsOfPlayer(ply) end
+	end
+
+	local inv = ply:GetNetVar("Inventory", {})
+	inv["Weapons"] = inv["Weapons"] or {}
+	inv["Weapons"]["hg_flashlight"] = true
+	ply:SetNetVar("Inventory", inv)
+
+	for _, wep in pairs(weaponsList) do
+		if wep == "weapon_p22_silencer" then
+			timer.Simple(0.5, function()
+				if IsValid(ply) and ply:HasWeapon("weapon_p22") then
+					local w = ply:GetWeapon("weapon_p22")
+					if hg and hg.AddAttachmentForce then hg.AddAttachmentForce(ply, w, "supressor4") end
+				end
+			end)
+		elseif wep == "weapon_pl15_silencer" then
+			timer.Simple(0.5, function()
+				if IsValid(ply) and ply:HasWeapon("weapon_pl15") then
+					local w = ply:GetWeapon("weapon_pl15")
+					if hg and hg.AddAttachmentForce then hg.AddAttachmentForce(ply, w, "supressor4") end
+				end
+			end)
+		elseif wep == "weapon_p22_ammo" then
+			timer.Simple(0.5, function()
+				if IsValid(ply) and ply:HasWeapon("weapon_p22") then
+					local w = ply:GetWeapon("weapon_p22")
+					if IsValid(w) and w:GetPrimaryAmmoType() >= 0 then
+						ply:GiveAmmo(w:GetMaxClip1(), w:GetPrimaryAmmoType(), true)
+					end
+				end
+			end)
+		else
+			local w = ply:Give(wep)
+			if wep == "weapon_zoraki" then
+				timer.Simple(1, function() if IsValid(w) then w:ApplyAmmoChanges(2) end end)
+			end
+		end
+	end
+end
+
+local function ApplyHeroLoadout(ply)
+	local loadout = ParseLoadoutString(ply:GetInfo("hmcd_hero_loadout"))
+	local weaponsList = istable(loadout.weapons) and loadout.weapons or {}
+	local selectedWeapon = "weapon_px4beretta"
+
+	for _, weaponId in ipairs(weaponsList) do
+		if HeroWeaponData[weaponId] then
+			selectedWeapon = weaponId
+			break
+		end
+	end
+
+	ply.organism.recoilmul = 1
+
+	local inv = ply:GetNetVar("Inventory", {})
+	inv["Weapons"] = inv["Weapons"] or {}
+	inv["Weapons"]["hg_flashlight"] = true
+	if HeroWeaponData[selectedWeapon] and HeroWeaponData[selectedWeapon].sling then
+		inv["Weapons"]["hg_sling"] = true
+	end
+	ply:SetNetVar("Inventory", inv)
+
+	local weapon = ply:Give(selectedWeapon)
+	if not IsValid(weapon) then
+		return
+	end
+
+	if weapon:GetPrimaryAmmoType() >= 0 then
+		local baseInfo = HeroWeaponData[selectedWeapon]
+		local baseClips = baseInfo and baseInfo.extraClips or 0
+		if baseClips > 0 then
+			ply:GiveAmmo(weapon:GetMaxClip1() * baseClips, weapon:GetPrimaryAmmoType(), true)
+		end
+	end
+
+	local attachments = {}
+
+	for _, weaponId in ipairs(weaponsList) do
+		if weaponId == "weapon_walkie_talkie" then
+			ply:Give("weapon_walkie_talkie")
+			continue
+		end
+
+		if string.StartWith(weaponId, "ent_armor_") then
+			if hg and hg.AddArmor then
+				hg.AddArmor(ply, weaponId)
+			end
+			continue
+		end
+
+		local upgradeInfo = HeroUpgradeData[weaponId]
+		if not upgradeInfo or upgradeInfo.parent ~= selectedWeapon then
+			continue
+		end
+
+		if upgradeInfo.type == "ammo" then
+			if weapon:GetPrimaryAmmoType() >= 0 then
+				ply:GiveAmmo(upgradeInfo.amount or weapon:GetMaxClip1() * (upgradeInfo.extraClips or 0), weapon:GetPrimaryAmmoType(), true)
+			end
+		elseif upgradeInfo.type == "attachment" and upgradeInfo.attachment then
+			attachments[#attachments + 1] = upgradeInfo.attachment
+		end
+	end
+
+	if #attachments > 0 then
+		timer.Simple(0.5, function()
+			if not IsValid(ply) or not ply:HasWeapon(selectedWeapon) then
+				return
+			end
+			local activeWeapon = ply:GetWeapon(selectedWeapon)
+			if not IsValid(activeWeapon) then
+				return
+			end
+			for _, attachmentId in ipairs(attachments) do
+				if hg and hg.AddAttachmentForce then
+					hg.AddAttachmentForce(ply, activeWeapon, attachmentId)
+				end
+			end
+		end)
+	end
+end
+
+MODE.ApplyTraitorLoadout = ApplyTraitorLoadout
+MODE.ApplyHeroLoadout = ApplyHeroLoadout
+--//
 
 --; TODO
 --; Инженер - шахид бомба + иеды
@@ -22,6 +238,15 @@ MODE.SubRoles = {
 	--=\\Traitor
 	--==\\
 	--; https://youtu.be/zP7ux8WsYYI?si=S-Uw2EAehGR5WD3D
+	["traitor_custom"] = {
+		Name = "Loadout",
+		Description = [[You are the custom traitor.
+Your abilities and loadout are based on your selected preset or loadout.]],
+		Objective = "Use your loadout to murder everyone here.",
+		SpawnFunction = function(ply)
+			ApplyTraitorLoadout(ply)
+		end,
+	},
 	["traitor_default"] = {
 		Name = "Defoko",
 		Description = [[Default.
@@ -307,8 +532,9 @@ MODE.RoleChooseRoundStartTime = 10
 
 MODE.RoleChooseRoundTypes = {
 	["standard"] = {
-		TraitorDefaultRole = "traitor_default",
+		TraitorDefaultRole = "traitor_custom",
 		Traitor = {
+			["traitor_custom"] = true,
 			["traitor_default"] = true,
 			["traitor_infiltrator"] = true,
 			["traitor_chemist"] = true,
@@ -335,8 +561,9 @@ MODE.RoleChooseRoundTypes = {
 		},
 	},
 	["soe"] = {
-		TraitorDefaultRole = "traitor_default_soe",
+		TraitorDefaultRole = "traitor_custom",
 		Traitor = {
+			["traitor_custom"] = true,
 			["traitor_default_soe"] = true,
 			["traitor_infiltrator_soe"] = true,
 			-- ["traitor_chemist_soe"] = true,

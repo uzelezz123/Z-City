@@ -248,15 +248,9 @@ function SWEP:SprayDecals()
 end
 
 function SWEP:InitAdd()
-	if CLIENT then return end
-	self.AmmoGive = self:GetOwner().Profession and self:GetOwner().Profession == "builder" and 4 or 3
 end
 
 function SWEP:OwnerChanged()
-	if IsValid(self:GetOwner()) and SERVER then
-		self:GetOwner():GiveAmmo(self.AmmoGive, self.Ammo, true)
-		self.AmmoGive = 0
-	end
 end
 
 function SWEP:CanNail(Tr)

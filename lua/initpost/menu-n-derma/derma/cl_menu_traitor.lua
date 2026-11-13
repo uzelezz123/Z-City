@@ -168,6 +168,7 @@ local RoleConfigs = {
             ["weapon_hg_shuriken"] = {cost = 1, name = "Shuriken"},
             ["weapon_hg_smokenade_tpik"] = {cost = 2, name = "Smoke Grenade"},
             ["weapon_traitor_ied"] = {cost = 5, name = "IED"},
+            ["weapon_traitor_ied_shitty"] = {cost = 2, name = "Shitty IED"},
             ["weapon_traitor_poison1"] = {cost = 2, name = "Tetrodotoxin Syringe"},
             ["weapon_traitor_poison2"] = {cost = 2, name = "VX vial"},
             ["weapon_traitor_poison3"] = {cost = 4, name = "Cyanide Canister"},

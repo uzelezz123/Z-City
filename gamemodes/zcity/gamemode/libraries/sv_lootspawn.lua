@@ -275,7 +275,9 @@ function hg.GenerateLoot(ply,ent,func)
 		if (entName == "*ammo*") or string.find(entName, "ent_ammo") then
 			Tab = "Ammo"
 			
-			if !string.find(entName, "ent_ammo") then
+			if entName == "ent_ammo_nails" then
+				AmmoCount = math.random(1, 4)
+			elseif !string.find(entName, "ent_ammo") then
 				local ammo
 				if IsValid(ply) and math.random(3) == 1 then
 					for i, wep in RandomPairs(ply:GetWeapons()) do
@@ -425,6 +427,14 @@ hook.Add("ZB_InventoryChecked", "LootSpawn", function(ply, ent)
 			entName = string.Replace(entName,"ent_armor_","")
 			entName = string.Replace(entName,"ent_ammo_","")
 			functions[Tab](ent,entName,AmmoCount)
+		end
+	end
+
+	if ent.inventory.Weapons and ent.inventory.Weapons["weapon_hammer"] then
+		local nailsID = game.GetAmmoID("Nails")
+		ent.inventory.Ammo = ent.inventory.Ammo or {}
+		if nailsID and nailsID != -1 and not ent.inventory.Ammo[nailsID] then
+			functions["Ammo"](ent, "nails", math.random(1, 4))
 		end
 	end
 

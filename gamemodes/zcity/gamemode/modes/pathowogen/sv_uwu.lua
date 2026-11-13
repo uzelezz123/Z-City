@@ -678,6 +678,7 @@ MODE.LootTable = {
 		{6,"weapon_painkillers"},
 		{5,"weapon_bloodbag"},
 		{5,"weapon_hammer"},
+		{4,"ent_ammo_nails"},
 		{4,"weapon_walkie_talkie"},
 		{3,"hg_flashlight"},
 		{2,"weapon_pocketknife"},

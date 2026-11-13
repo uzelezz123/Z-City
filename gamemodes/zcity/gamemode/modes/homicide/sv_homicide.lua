@@ -51,6 +51,7 @@ MODE.LootTable = {
 	}},
 	{20,{
 		{12,"weapon_hammer"},
+		{10,"ent_ammo_nails"},
 		{6,"weapon_brick"},
 		{10,"weapon_pocketknife"},
 
@@ -147,6 +148,7 @@ MODE.LootTableStandard = {
 	}},
 	{35, {
 		{1,"weapon_hammer"},
+		{0.85,"ent_ammo_nails"},
 		{1,"weapon_brick"},
 		{1,"weapon_pocketknife"},
 		{0.32,"weapon_bat"},

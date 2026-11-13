@@ -2,6 +2,13 @@ local MODE = MODE
 MODE.SendFootStepEvery = 3
 -- MODE.SendFootStepEvery = 1
 
+local function IsCardboardBox(ent)
+	if not IsValid(ent) then return false end
+
+	local model = string.lower(ent:GetModel() or "")
+	return string.find(model, "cardboard_box", 1, true) != nil or string.find(model, "cardboard_jox", 1, true) != nil
+end
+
 util.AddNetworkString("HMCD_Professions_Abilities_AddFootstep")
 util.AddNetworkString("HMCD_Professions_Abilities_DisplayOrganismInfo")
 
@@ -96,6 +103,21 @@ concommand.Add("hg_create_pipebomb", function(ply)
 			ply:StripWeapon("weapon_leadpipe")
 
 			ply:Give("weapon_hg_pipebomb_tpik")--crafted!
+		end
+    end
+end)
+
+concommand.Add("hg_create_shitty_ied", function(ply)
+	if not IsValid(ply) then return end
+
+	if ply:Alive() and not ply.organism.otrub and ply.Profession == "engineer" then
+		local tr = hg.eyeTrace(ply)
+		if ply:GetAmmoCount("Nails") >= 9 and ply:HasWeapon("weapon_ducttape") and tr and IsCardboardBox(tr.Entity) then
+			ply:SetAmmo(ply:GetAmmoCount("Nails") - 9, "Nails")
+			ply:StripWeapon("weapon_ducttape")
+			tr.Entity:Remove()
+
+			ply:Give("weapon_traitor_ied_shitty")--crafted!
 		end
     end
 end)

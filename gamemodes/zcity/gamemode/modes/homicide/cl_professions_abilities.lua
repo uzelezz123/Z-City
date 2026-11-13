@@ -148,8 +148,19 @@ net.Receive("HMCD_Professions_Abilities_AddFootstep", function()
 	MODE.AddFootstep(net.ReadVector(), net.ReadFloat(), net.ReadBool(), net.ReadColor(false))
 end)
 
+local function IsCardboardBox(ent)
+	if not IsValid(ent) then return false end
+
+	local model = string.lower(ent:GetModel() or "")
+	return string.find(model, "cardboard_box", 1, true) != nil or string.find(model, "cardboard_jox", 1, true) != nil
+end
+
 local function createPipeBomb()
 	RunConsoleCommand("hg_create_pipebomb")
+end
+
+local function createShittyIED()
+	RunConsoleCommand("hg_create_shitty_ied")
 end
 
 local function createMolotov()
@@ -183,6 +194,14 @@ hook.Add("radialOptions", "EngineerCraft", function()
 		if have_ammo and have_pipe and have_nails then
 			local tbl = {createPipeBomb, "Create pipe bomb"}
         	hg.radialOptions[#hg.radialOptions + 1] = tbl
+		end
+
+		-- shitty IED
+		local have_tape = ply:HasWeapon("weapon_ducttape")
+		local tr = hg.eyeTrace(ply)
+		if have_tape and ply:GetAmmoCount("Nails") >= 9 and tr and IsCardboardBox(tr.Entity) then
+			local tbl = {createShittyIED, "Craft shitty IED"}
+			hg.radialOptions[#hg.radialOptions + 1] = tbl
 		end
 
 		-- molotov

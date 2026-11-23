@@ -585,7 +585,10 @@ function SWEP:Shoot(override)
 	primary.RealAutomatic = primary.RealAutomatic or weapons_Get(self:GetClass()).Primary.Automatic
 	primary.Automatic = primary.RealAutomatic
 	
-	if CLIENT then self:SetClip1(self:GetNWInt("Clip1")) end
+    if CLIENT then
+        local nwclip = self:GetNWInt("Clip1")
+        if nwclip > 0 or self:Clip1() <= 0 then self:SetClip1(nwclip) end
+    end
 	
 	self:PrimaryShoot()
 	self:PrimaryShootPost()

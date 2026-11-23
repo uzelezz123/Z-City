@@ -48,11 +48,29 @@ ENT.DrawOverlay = hg.DrawFirstPersonHelmet
     local HitBoxSet = "new_helmet3"
     ENT.HitBoxSet = HitBoxSet                     -- you can use same hitbox sets on other armor
     --\\ Plates HitBoxSets
-        local color_yellow = Color(255,255,0)
-        -- Fornt Plate
-            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Head1", HitBoxSet, 1, Vector(6.5, -6, 0), Angle(0, 0, 0), Vector(2, 1, 3.5), color_yellow, true)
-            local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Head1", HitBoxSet, 1, Vector(5.5, -4.5, 0), Angle(0, 0, 0), Vector(2, 1, 3.5), color_yellow, true)
+        local color_yellow = Color(0,238,255)
+        -- Fornt Glass
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Head1", HitBoxSet, 1, Vector(4.5, -7, 0), Angle(0, 30, 0), Vector(4, 1, 3.5), color_yellow, true)
+            --local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Head1", HitBoxSet, 1, Vector(5.5, -4.5, 0), Angle(0, 0, 0), Vector(2, 1, 3.5), color_yellow, true)
             hg.organism:CreateHitBox("Front",HitBox, HitBoxF)
+
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Head1", HitBoxSet, 1, Vector(3.4, -5, -4), Angle(0, 30, 90), Vector(4, 1, 3.5), color_yellow, true)
+            --local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Head1", HitBoxSet, 1, Vector(5.5, -4.5, 0), Angle(0, 0, 0), Vector(2, 1, 3.5), color_yellow, true)
+            hg.organism:CreateHitBox("FrontRight",HitBox, HitBoxF)
+
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Head1", HitBoxSet, 1, Vector(3.4, -5, 4), Angle(0, 30, 90), Vector(4, 1, 3.5), color_yellow, true)
+            --local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Head1", HitBoxSet, 1, Vector(5.5, -4.5, 0), Angle(0, 0, 0), Vector(2, 1, 3.5), color_yellow, true)
+            hg.organism:CreateHitBox("FrontLeft",HitBox, HitBoxF)
+        --//
+        local color_yellow = Color(238,255,0)
+        -- MainBox
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Head1", HitBoxSet, 1, Vector(5.7, 0, 0), Angle(0, 0, 0), Vector(3, 4, 3.5), color_yellow, true)
+            --local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Head1", HitBoxSet, 1, Vector(5.5, -4.5, 0), Angle(0, 0, 0), Vector(2, 1, 3.5), color_yellow, true)
+            hg.organism:CreateHitBox("Main",HitBox, HitBoxF)
+
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Head1", HitBoxSet, 1, Vector(0.7, 2, 0), Angle(0, 0, 0), Vector(2, 2, 3.5), color_yellow, true)
+            --local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Head1", HitBoxSet, 1, Vector(5.5, -4.5, 0), Angle(0, 0, 0), Vector(2, 1, 3.5), color_yellow, true)
+            hg.organism:CreateHitBox("MainDown",HitBox, HitBoxF)
         --//
     --//
     hg.organism:AddArmorInputList(HitBoxSet, ZC_ARMOR_SLOT_HEAD)
@@ -60,13 +78,15 @@ ENT.DrawOverlay = hg.DrawFirstPersonHelmet
 
     --\\ Plates
     local FP = "FrontPlate"
-    local BP = "BackPlate"
-    local SLP = "SideLPlate"
-    local SRP = "SideRPlate"
-    local TP = "TopPlate"
+    local MP = "Main"
 
     ENT.PlatesLinks = { -- this is links to armor, table down here, key is name of UID HitBox, value is string link ["FrontPlate"] etc.
         Front =         FP,
+        FrontRight =    FP,
+        FrontLeft =     FP,
+
+        Main =          MP,
+        MainDown =      MP
     }
 
     -- ENT.SideLinks = {                 -- for penetration damage type change, cuz i don't want rewrite organism hitbox system fully
@@ -86,9 +106,9 @@ ENT.DrawOverlay = hg.DrawFirstPersonHelmet
     --     RightSide =     "Right"
     -- }
 
-    --\\ FrontPlate
+    --\\ FrontGlass
         ENT[FP] = {}
-        ENT[FP].Protection = ZC_ARMOR_PROTCLASS_IIIA
+        ENT[FP].Protection = ZC_ARMOR_PROTCLASS_II
             --\\ Protection classes
                 -- ZC_ARMOR_PROTCLASS_II = 4
                 -- ZC_ARMOR_PROTCLASS_IIIA = 8
@@ -98,7 +118,7 @@ ENT.DrawOverlay = hg.DrawFirstPersonHelmet
         ENT[FP].ProtectionDamageMul = 0.6                   -- protected damage mul
         ENT[FP].PenetratedDamageMul = 0.9                   -- penetrated damage mul
 
-        ENT[FP].BalisticMaterial = ZC_ARMOR_MATERIAL_UHMWPE -- actually this is just a mul of degradation armor
+        ENT[FP].BalisticMaterial = ZC_ARMOR_MATERIAL_FIBERGLASS -- actually this is just a mul of degradation armor
             --\\ BalisticMaterials
                 -- ZC_ARMOR_MATERIAL_CERAMIC = 3
                 -- ZC_ARMOR_MATERIAL_TITAN = 1.8
@@ -109,11 +129,41 @@ ENT.DrawOverlay = hg.DrawFirstPersonHelmet
                 -- ZC_ARMOR_MATERIAL_KEVLAR_ARSTEEL = 0.6
                 -- ZC_ARMOR_MATERIAL_KEVLAR_TITAN = 0.45
                 -- ZC_ARMOR_MATERIAL_FIBERGLASS
-        ENT[FP].Durability = 50                            -- durability
-        ENT[FP].DurabilityMax = 50                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
+        ENT[FP].Durability = 30                            -- durability
+        ENT[FP].DurabilityMax = 30                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
         ENT[FP].DurabilityWarranty = 10                     -- guarantee that the protection level will not decrease (no debuff) upon the degradation
 
         ENT[FP].NeedPunch = true                           -- viewpunch after impact
+    --//       
+
+    --\\ FrontPlate
+        ENT[MP] = {}
+        ENT[MP].Protection = ZC_ARMOR_PROTCLASS_II
+            --\\ Protection classes
+                -- ZC_ARMOR_PROTCLASS_II = 4
+                -- ZC_ARMOR_PROTCLASS_IIIA = 8
+                -- ZC_ARMOR_PROTCLASS_III = 12
+                -- ZC_ARMOR_PROTCLASS_III_PLUS = 16
+                -- ZC_ARMOR_PROTCLASS_IV = 22
+        ENT[MP].ProtectionDamageMul = 0.6                   -- protected damage mul
+        ENT[MP].PenetratedDamageMul = 0.9                   -- penetrated damage mul
+
+        ENT[MP].BalisticMaterial = ZC_ARMOR_MATERIAL_POLYCARBONATE -- actually this is just a mul of degradation armor
+            --\\ BalisticMaterials
+                -- ZC_ARMOR_MATERIAL_CERAMIC = 3
+                -- ZC_ARMOR_MATERIAL_TITAN = 1.8
+                -- ZC_ARMOR_MATERIAL_ARSTEEL = 1.4
+
+                -- ZC_ARMOR_MATERIAL_KEVLAR = 0.9
+                -- ZC_ARMOR_MATERIAL_KEVLAR_CERAMIC = 0.75
+                -- ZC_ARMOR_MATERIAL_KEVLAR_ARSTEEL = 0.6
+                -- ZC_ARMOR_MATERIAL_KEVLAR_TITAN = 0.45
+                -- ZC_ARMOR_MATERIAL_FIBERGLASS
+        ENT[MP].Durability = 80                            -- durability
+        ENT[MP].DurabilityMax = 80                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
+        ENT[MP].DurabilityWarranty = 40                     -- guarantee that the protection level will not decrease (no debuff) upon the degradation
+
+        ENT[MP].NeedPunch = true                           -- viewpunch after impact
     --//       
 --//
 

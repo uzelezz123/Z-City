@@ -164,6 +164,16 @@ if CLIENT then
     end
     
     hg.DrawFirstPersonHelmet = DrawFirstPersonHelmet
+    local scrw, scrh = ScrW() + 1, ScrH() + 1
+
+    local function DrawSimpleOverlay(self, ply)
+        local mat = self.OverlayMaterial
+        surface.SetDrawColor( 255, 255, 255, 255 )
+		surface.SetMaterial( mat )
+		surface.DrawTexturedRect(-1, -1, scrw, scrh)
+    end
+
+    hg.DrawSimpleOverlay = DrawSimpleOverlay
 
     hook.Add("Post Pre Post Processing", "renderEquipmentOverlay", function()
         local Overlay = lply:GetEquipmentBySlot(ZC_ARMOR_SLOT_HEAD)

@@ -131,7 +131,7 @@ ENT.DrawOverlay = hg.DrawFirstPersonHelmet
 
     --\\ FrontPlate
         ENT[FP] = {}
-        ENT[FP].Protection = ZC_ARMOR_PROTCLASS_I
+        ENT[FP].Protection = ZC_ARMOR_MATERIAL_POLYCARBONATE
             --\\ Protection classes
                 -- ZC_ARMOR_PROTCLASS_II = 4
                 -- ZC_ARMOR_PROTCLASS_IIIA = 8

@@ -893,12 +893,18 @@ end
 function SWEP:PlayEffects(trace, attacktype)
     local owner = self:GetOwner()
     
-    if self:IsEntSoft(trace.Entity) then
+	local hitpos, hitnormal, entity = trace.HitPos, trace.HitNormal, trace.Entity
+    if self:IsEntSoft(entity) then
         owner:EmitSound(attacktype and self.Attack2HitFlesh or self.AttackHitFlesh, 50)
 
         if self.DamageType == DMG_SLASH then
-            util.Decal( "Blood", trace.HitPos + trace.HitNormal * 15, trace.HitPos - trace.HitNormal * 15, owner )
-            util.Decal( "Blood", trace.HitPos + trace.HitNormal * 2, owner:GetPos(), trace.Entity )
+            util.Decal( "Blood", hitpos + hitnormal * 15, hitpos - hitnormal * 15, owner )
+            util.Decal( "Blood", hitpos + hitnormal * 2, owner:GetPos(), entity )
+			if math.random(4) > 3 then
+				local effectdata = EffectData()
+				effectdata:SetOrigin( hitpos )
+				util.Effect( "BloodImpact", effectdata )
+			end
         end
     elseif not self.AttackHitPlayed then
         self.AttackHitPlayed = true
@@ -907,11 +913,23 @@ function SWEP:PlayEffects(trace, attacktype)
 
 		if self.weight >= 1.4 and trace.MatType ~= MAT_GLASS and not attacktype then
 			if self.DamageType ~= DMG_SLASH then
-				util.Decal("Impact.BluntAdd" .. math.random(bluntDecalsRand), trace.HitPos + trace.HitNormal, trace.HitPos - trace.HitNormal, owner)
+				util.Decal("Impact.BluntAdd" .. math.random(bluntDecalsRand), hitpos + hitnormal, hitpos - hitnormal, owner)
 			else
-				util.Decal("ManhackCut", trace.HitPos + trace.HitNormal, trace.HitPos - trace.HitNormal, owner)
+				util.Decal("ManhackCut", hitpos + hitnormal, hitpos - hitnormal, owner)
 			end
-			owner:ScreenShake(trace.HitPos, 35, 10, 0.5, 150, false)
+
+			local effectdata = EffectData()
+			effectdata:SetOrigin(hitpos)
+			effectdata:SetEntity(entity)
+			effectdata:SetStart(trace.StartPos)
+			effectdata:SetSurfaceProp(trace.SurfaceProps)
+			effectdata:SetDamageType(self.DamageType)
+			effectdata:SetHitBox(trace.HitBox)
+			effectdata:SetFlags(0x1)
+			util.Effect(entity:IsWorld() and "Impact_GMOD" or "Impact", effectdata, true, true)
+
+			owner:ScreenShake(hitpos, 35, 10, 0.5, 150, false)
+			owner:ViewPunch(AngleRand(-2, 2))
 		end
     end
 end

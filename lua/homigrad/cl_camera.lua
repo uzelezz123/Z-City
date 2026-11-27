@@ -363,6 +363,11 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	if not ply:Alive() and not follow then
 		if lply:GetNWInt("viewmode",0) == 1 then
 			ply = lply:GetNWEntity("spect",NULL)
+
+			-- target is in a ragdoll, the camera is built in the spectate hook
+			if IsValid(ply) and hg.GetCurrentCharacter(ply) ~= ply then
+				return hook.Run("HG_CalcView", lply, origin, angles, fov, znear, zfar)
+			end
 			
 			if IsValid(ply) then
 				origin = ply:EyePos()

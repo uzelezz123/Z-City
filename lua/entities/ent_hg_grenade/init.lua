@@ -345,13 +345,18 @@ function ENT:Explode()
 					dir[3] = dir[3] > 0 and math.abs(dir[3] - 0.5) or -math.abs(dir[3] + 0.5)
 					dir:Normalize()
 
-					local Tr = util.QuickTrace(selfPos, dir * 10000, self)
+					local Tr = util.TraceLine({
+						startpos = selfPos,
+						endpos = selfPos + dir * 4096,
+						filter = {game.GetWorld(), Entity(0)},
+						mask = MASK_SHOT
+					})
 
-					if Tr.Hit and !Tr.HitSky and !Tr.HitWorld then
+					if Tr.Hit then
 						local bullet = {}
 
 						bullet.Speed = ammotype.Speed
-						bullet.Distance = ammotype.Distance or 56756
+						bullet.Distance = ammotype.Distance or 4096
 						bullet.penetrated = 0
 						bullet.MaxPenLen = 100
 						bullet.Penetration = (ammotype.Penetration or (-(-self.Penetration))) * (self.PenetrationMultiplier or 1)
@@ -364,7 +369,7 @@ function ENT:Explode()
 						bullet.AmmoType = ammo
 						bullet.Attacker = self.owner
 						bullet.Inflictor = self
-						bullet.Distance = 56756
+						bullet.Distance = 4096
 						bullet.DisableLagComp = true
 						bullet.Filter = {self}
 						bullet.Dir = dir
